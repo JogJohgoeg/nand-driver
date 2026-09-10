@@ -1,0 +1,29 @@
+{
+  "build_id": "0e98fb766d2b99951d144db12235ca722c153d77a7ac8a6c2eeecbcb03005458",
+  "algorithm": "SHA-256 of sorted compact JSON path-to-SHA256 map before HTML build stamp",
+  "policy_sha256": "e36332d383997d51401897734cd3e79cf5038406feddb18b4d57ecfb141daa6c",
+  "netlists": {
+    "281": {
+      "sha256": "f138792b4a472c943626cad8ccf3fd4f6b00e49333494bc9fc19a5072eaff110",
+      "nNand": 39,
+      "nLatch": 0
+    },
+    "282": {
+      "sha256": "ebff06c6e6dd19aeddee100dbf4d758bfa7b44f07b2a896dcd8bc2cfb9da4ba9",
+      "nNand": 22,
+      "nLatch": 3
+    },
+    "one_clear_unburned": {
+      "sha256": "dde04f96fe0e70ddd096616e23820090578398ca1acc816d988210b599cd0b6a",
+      "nNand": 20,
+      "nLatch": 2
+    }
+  },
+  "chain": {
+    "cpu": "0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38",
+    "graph": "0xc32baB9E0C5490b805cc944a50A7346254A645b3",
+    "steering_cid": 281,
+    "memory_cid": 282,
+    "rpc": "https://bsc-rpc.publicnode.com"
+  }
+}

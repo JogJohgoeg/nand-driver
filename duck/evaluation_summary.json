@@ -1,0 +1,189 @@
+{
+  "fixed": {
+    "nand": {
+      "trials": 16,
+      "goals": 14,
+      "collisionFree": 0,
+      "collisionFreeGoals": 0,
+      "totalSteps": 45732,
+      "meanSteps": 2858.25,
+      "contactSteps": 4421,
+      "overrides": 0,
+      "warmupContactSteps": 0,
+      "falls": 0,
+      "timeouts": 2
+    },
+    "composite:two_clear": {
+      "trials": 16,
+      "goals": 12,
+      "collisionFree": 0,
+      "collisionFreeGoals": 0,
+      "totalSteps": 47002,
+      "meanSteps": 2937.625,
+      "contactSteps": 5588,
+      "overrides": 116,
+      "warmupContactSteps": 0,
+      "falls": 1,
+      "timeouts": 3
+    },
+    "composite:one_clear": {
+      "trials": 16,
+      "goals": 11,
+      "collisionFree": 0,
+      "collisionFreeGoals": 0,
+      "totalSteps": 44990,
+      "meanSteps": 2811.875,
+      "contactSteps": 5253,
+      "overrides": 204,
+      "warmupContactSteps": 0,
+      "falls": 2,
+      "timeouts": 3
+    }
+  },
+  "random": {
+    "1": {
+      "nand": {
+        "trials": 100,
+        "goals": 99,
+        "collisionFree": 54,
+        "collisionFreeGoals": 54,
+        "totalSteps": 154284,
+        "meanSteps": 1542.84,
+        "contactSteps": 1641,
+        "overrides": 0,
+        "warmupContactSteps": 0,
+        "falls": 1,
+        "timeouts": 0
+      },
+      "composite:two_clear": {
+        "trials": 100,
+        "goals": 99,
+        "collisionFree": 54,
+        "collisionFreeGoals": 54,
+        "totalSteps": 153358,
+        "meanSteps": 1533.58,
+        "contactSteps": 1566,
+        "overrides": 52,
+        "warmupContactSteps": 0,
+        "falls": 1,
+        "timeouts": 0
+      },
+      "composite:one_clear": {
+        "trials": 100,
+        "goals": 99,
+        "collisionFree": 54,
+        "collisionFreeGoals": 54,
+        "totalSteps": 153358,
+        "meanSteps": 1533.58,
+        "contactSteps": 1566,
+        "overrides": 52,
+        "warmupContactSteps": 0,
+        "falls": 1,
+        "timeouts": 0
+      }
+    },
+    "2": {
+      "nand": {
+        "trials": 100,
+        "goals": 90,
+        "collisionFree": 17,
+        "collisionFreeGoals": 17,
+        "totalSteps": 194153,
+        "meanSteps": 1941.53,
+        "contactSteps": 8424,
+        "overrides": 0,
+        "warmupContactSteps": 0,
+        "falls": 7,
+        "timeouts": 3
+      },
+      "composite:two_clear": {
+        "trials": 100,
+        "goals": 94,
+        "collisionFree": 17,
+        "collisionFreeGoals": 17,
+        "totalSteps": 197412,
+        "meanSteps": 1974.12,
+        "contactSteps": 8340,
+        "overrides": 628,
+        "warmupContactSteps": 0,
+        "falls": 3,
+        "timeouts": 3
+      },
+      "composite:one_clear": {
+        "trials": 100,
+        "goals": 88,
+        "collisionFree": 17,
+        "collisionFreeGoals": 17,
+        "totalSteps": 190799,
+        "meanSteps": 1907.99,
+        "contactSteps": 8295,
+        "overrides": 778,
+        "warmupContactSteps": 0,
+        "falls": 9,
+        "timeouts": 3
+      }
+    }
+  },
+  "paired": {
+    "1": {
+      "composite:two_clear": {
+        "gainedGoals": [],
+        "lostGoals": [],
+        "fewerContactSteps": 1,
+        "moreContactSteps": 1
+      },
+      "composite:one_clear": {
+        "gainedGoals": [],
+        "lostGoals": [],
+        "fewerContactSteps": 1,
+        "moreContactSteps": 1
+      }
+    },
+    "2": {
+      "composite:two_clear": {
+        "gainedGoals": [
+          3,
+          57,
+          70,
+          72,
+          93
+        ],
+        "lostGoals": [
+          32
+        ],
+        "fewerContactSteps": 13,
+        "moreContactSteps": 10
+      },
+      "composite:one_clear": {
+        "gainedGoals": [
+          70,
+          72,
+          93
+        ],
+        "lostGoals": [
+          9,
+          11,
+          32,
+          60,
+          63
+        ],
+        "fewerContactSteps": 11,
+        "moreContactSteps": 11
+      }
+    }
+  },
+  "unburnedProposals": {
+    "front_far_commit": {
+      "goals": 8,
+      "collisionFree": 0,
+      "steps": 51510,
+      "contactSteps": 2417
+    },
+    "side_clear_release": {
+      "goals": 12,
+      "collisionFree": 0,
+      "steps": 47004,
+      "contactSteps": 3277
+    }
+  }
+}
