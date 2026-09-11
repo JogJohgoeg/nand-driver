@@ -25,22 +25,25 @@
   --code-bg:#1B2430; --done:#B389D1;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;padding-block:0 64px;padding-inline:20px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "IBM Plex Sans","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;padding-block:0 64px;padding-inline:20px}
 .wrap{max-width:1040px;margin:0 auto}
 .prose{max-width:72ch}
-h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-wrap:balance;margin:0}
+h1,h2,h3{font-family:"Instrument Serif","Songti SC","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-weight:400;text-wrap:balance;margin:0}
 h1{font-size:clamp(44px,7vw,76px);line-height:1;letter-spacing:-.01em}
 h1 em{font-style:italic;color:var(--copper)}
-h2{font-size:30px;margin-top:56px;margin-bottom:12px}
+h2{font-size:32px;margin-top:64px;margin-bottom:14px}
+h2+.prose>p:first-child,h2+.ctx{margin-top:4px}
 h3{font-size:22px;margin-top:28px;margin-bottom:8px}
 p{margin:0 0 14px}
 .eyebrow{font:500 12px/1 "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 header{padding-block:56px 32px;border-bottom:1px solid var(--rule)}
-header .lede{font-size:19px;color:var(--ink);margin-top:20px;max-width:64ch}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);background:var(--surface);margin-top:28px}
-.facts div{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+header .lede{font-size:19px;line-height:1.65;color:var(--ink);margin-top:22px;max-width:64ch}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--rule);background:var(--rule);margin-top:28px}
+.facts div{padding:14px 16px;background:var(--surface)}
+.facts .wide{grid-column:1/-1}
+@media (max-width:640px){.facts{grid-template-columns:1fr 1fr}}
 .facts b{display:block;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.facts span{font-family:"IBM Plex Mono",monospace;font-size:14px;word-break:break-all;font-variant-numeric:tabular-nums}
+.facts span{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.5;word-break:break-all;font-variant-numeric:tabular-nums}
 code,pre,.mono{font-family:"IBM Plex Mono",monospace}
 code{background:var(--code-bg);padding:1px 5px;border-radius:3px;font-size:.92em}
 pre{background:var(--code-bg);padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5;border-left:3px solid var(--copper);margin:12px 0 18px}
@@ -70,18 +73,18 @@ button:focus-visible,.bit:focus-visible{outline:2px solid var(--signal);outline-
 .reg .r{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--rule);padding-bottom:6px}
 .reg .r b{font-weight:500;font-size:13px}
 .reg .r span{font-family:"IBM Plex Mono",monospace;font-size:14px;font-variant-numeric:tabular-nums}
-.phase{font-family:"Instrument Serif",Georgia,serif;font-size:40px;line-height:1;margin:2px 0 10px}
+.phase{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:40px;line-height:1;margin:2px 0 10px}
 .phase.DONE{color:var(--done)} .phase.TOOL,.phase.SUB{color:var(--copper-ink)}
 .latch{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.06em}
 .log{border-top:1px solid var(--rule);padding:0 18px 12px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13px}
-th{text-align:left;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule)}
-td{padding:7px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-variant-numeric:tabular-nums}
+th{text-align:left;white-space:nowrap;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule)}
+td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-variant-numeric:tabular-nums;line-height:1.55}
 td.mono{font-size:12px}
 .spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:8px}
 .spec table td:first-child{font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:nowrap}
 .rules{padding-left:0;list-style:none;margin:8px 0 0}
-.rules li{padding:8px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:110px 1fr;gap:12px}
+.rules li{padding:9px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:120px 1fr;gap:14px;line-height:1.6}
 .rules li b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:13px;color:var(--copper-ink)}
 .note{border-left:3px solid var(--signal);padding:6px 14px;color:var(--muted);font-size:15px;margin:14px 0}
 html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{display:none!important}
@@ -92,7 +95,7 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 .ctx{border:1px solid var(--rule);background:var(--surface);margin:18px 0 26px;max-width:72ch}
 .ctx .hd{padding:10px 16px;border-bottom:1px solid var(--rule);font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink)}
 .ctx ol{list-style:none;margin:0;padding:0}
-.ctx li{display:grid;grid-template-columns:76px 1fr;gap:12px;padding:10px 16px;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.5}
+.ctx li{display:grid;grid-template-columns:72px 1fr;gap:14px;padding:11px 16px;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.6}
 .ctx li:last-child{border-bottom:0}
 .ctx time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
 .ctx a{color:var(--copper-ink);text-decoration-color:var(--rule)}
@@ -113,7 +116,7 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
   <div class="facts">
     <div><b>circuitId</b><span>283</span></div>
     <div><b>circuitInfo</b><span>nIn 16 · nOut 15 · nState 10 · gates 162</span></div>
-    <div><b>tx</b><span>0x78b33f3056f10c759b22032307d5539d2314fe6c5239e94e172842390200905a</span></div>
+    <div class="wide"><b>tx</b><span>0x78b33f3056f10c759b22032307d5539d2314fe6c5239e94e172842390200905a</span></div>
     <div><b>block</b><span>121240525</span></div>
     <div><b>netlist</b><span>1104 bytes · sha256 93d65a3634679190…</span></div>
     <div><b>source</b><span><a href="https://openai.com/index/introducing-the-agents-api/">openai.com/index/introducing-the-agents-api</a></span></div>
