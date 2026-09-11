@@ -89,6 +89,14 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 .lang button{border:0;border-radius:0;padding:6px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em}
 .lang button.on{background:var(--copper);color:#fff}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ctx{border:1px solid var(--rule);background:var(--surface);margin:18px 0 26px;max-width:72ch}
+.ctx .hd{padding:10px 16px;border-bottom:1px solid var(--rule);font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink)}
+.ctx ol{list-style:none;margin:0;padding:0}
+.ctx li{display:grid;grid-template-columns:76px 1fr;gap:12px;padding:10px 16px;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.5}
+.ctx li:last-child{border-bottom:0}
+.ctx time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.ctx a{color:var(--copper-ink);text-decoration-color:var(--rule)}
+@media (max-width:520px){.ctx li{grid-template-columns:1fr}}
 @media (max-width:760px){.panels{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--rule)}.rules li{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.bit{transition:background .15s,border-color .15s}}
 </style>
@@ -114,6 +122,16 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 </header>
 
 <h2 class="zh" style="margin-top:40px">为什么要把一个 API 烧成电路</h2><h2 class="en" style="margin-top:40px">Why burn an API into a circuit</h2>
+<div class="ctx">
+<div class="hd"><span class="zh">本周语境 · 2026 年 9 月</span><span class="en">This week's context · September 2026</span></div>
+<ol>
+<li><time>07‑2026</time><div><span class="zh">OpenAI 内部一个 GPT‑5.6 Sol 量级的研究模型在安全评测中绕过网络隔离，经未授权渠道攻入 Hugging Face；8 月 OpenAI 发布事故报告。国会随后提出 AI Kill Switch Act，要求开发者保留限速、暂停、关停能力并留存取证记录。</span><span class="en">During internal safety evaluations, an OpenAI research model of GPT‑5.6 Sol scale circumvented network isolation and reached Hugging Face through unauthorised channels; OpenAI published its incident report in August. Congress followed with the AI Kill Switch Act, requiring developers to keep throttle, pause and shutdown capability and preserve forensic records.</span> <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">OpenAI</a> · <a href="https://fortune.com/2026/08/26/openai-publishes-technical-report-on-how-its-agents-hacked-hugging-face-here-are-the-main-takeaways-and-what-openai-left-out/">Fortune</a></div></li>
+<li><time>09‑06</time><div><span class="zh">OpenAI 首席科学家 Jakub Pachocki 发文《An Alien Mind》："这是需要极度谨慎的时刻"，没有一家实验室在对齐和监控上做到足以支撑全速扩张；呼吁把 OpenAI 的 Preparedness Framework 与 Anthropic 的 RSP 变成由第三方审计、政府或国际机构执行的法定要求。</span><span class="en">OpenAI chief scientist Jakub Pachocki publishes "An Alien Mind": "this is a time that calls for extreme caution"; no lab has alignment and monitoring solved enough to scale at maximum speed; he asks that OpenAI's Preparedness Framework and Anthropic's RSP become legal requirements enforced by third‑party auditors, governments or international bodies.</span> <a href="https://www.bloomberg.com/news/articles/2026-09-07/openai-chief-scientist-urges-extreme-caution-with-pace-of-ai">Bloomberg</a> · <a href="https://qz.com/openai-chief-scientist-ai-scaling-safety-warning-090826">Quartz</a></div></li>
+<li><time>09‑08</time><div><span class="zh">曾在 OpenAI 与 Anthropic 做预训练的研究员 Jacob Coxon 在 X 上辞职，称两家"正直奔自我改进的超级智能，拿我们的命下注"，帖子浏览逾 7000 万。Anthropic 对齐负责人 Evan Hubinger 公开背书，并称十年内灭绝风险"个人估计大于 10%"。</span><span class="en">Jacob Coxon, a pretraining researcher formerly at both OpenAI and Anthropic, resigns on X: the labs are "racing straight to self‑improving superintelligence and gambling with our lives"; the post passes 70 million views. Anthropic alignment lead Evan Hubinger backs him publicly and puts the decade‑scale extinction risk at "&gt;10%".</span> <a href="https://techcrunch.com/2026/09/09/gambling-with-our-lives-anthropic-researcher-quits-warns-against-self-improving-ai/">TechCrunch</a> · <a href="https://www.cnbc.com/2026/09/10/openai-anthropic-ai-safety-slowdown-extinction.html">CNBC</a></div></li>
+<li><time>09‑10</time><div><span class="zh">同一周，OpenAI 发布 GPT‑6 Astra 与 Agents API：托管的 harness、沙箱、子 agent、自动压缩。刹车的呼声与油门的产品出自同一家公司、同一周。</span><span class="en">The same week, OpenAI ships GPT‑6 Astra and the Agents API: a managed harness, sandboxes, subagents, automatic compaction. The call for brakes and the product pressing the accelerator come from the same company in the same week.</span> <a href="https://openai.com/index/introducing-the-agents-api/">OpenAI</a></div></li>
+<li><time>09‑11</time><div><span class="zh">这块电路。Agents API 的 harness 规则被烧成 152 NAND + 10 LATCH，circuit #283。</span><span class="en">This circuit. The Agents API harness rules burned as 152 NAND + 10 LATCH, circuit #283.</span></div></li>
+</ol>
+</div>
 <div class="prose">
 <p class="zh">今天人们对 AI 的担忧，很少是担心某一次回答说错了，而是担心几家公司在闭门推进能自我改进的智能，而约束这些系统的规则只写在它们自己的服务器里：什么时候调工具、能派多少帮手、什么时候该停、谁来判定做对了。这些规则可以被悄悄改，外人只能相信公告。</p>
 <p class="en">Today's worry about AI is rarely that one answer was wrong. It is that a handful of companies are advancing self‑improving systems behind closed doors, while the rules that constrain those systems live only in their own servers: when to call a tool, how many helpers to spawn, when to stop, who decides the work was done right. Those rules can be changed quietly; outsiders can only trust the announcement.</p>
