@@ -148,29 +148,82 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 <div class="prose"><p class="zh">下面的逻辑不是重写的 JavaScript 版本，而是把 netlist 字节解码后按 TapeOut 的 <code>step()</code> 语义逐门求值。点左栏拨动观测位，按 <em>Step</em> 送入一拍；<em>Play sample</em> 会重放一段完整会话：tool search → MCP 并行调用 → 失败重试 → vault 授权 → 三个子 agent → 排队 → 压缩 → 完成付费。</p>
 <p class="en">This is not a JavaScript rewrite: the netlist bytes are decoded and evaluated gate by gate with TapeOut's <code>step()</code> semantics. Toggle observation bits on the left and press <em>Step</em> to feed one tick; <em>Play sample</em> replays a full session: tool search → parallel MCP call → failed call retried → vault grant → three subagents → a fourth queued → compaction → finish and pay.</p></div>
 
-<div class="sim">
+<div class="sim" id="sim283">
   <div class="sim-head">
     <span class="eyebrow">circuit 283 · live step()</span>
     <div class="btns">
-      <button id="btnStep" class="primary">Step</button>
-      <button id="btnPlay">Play sample session</button>
-      <button id="btnReset">Reset</button>
+      <button id="btnStep283" class="primary">Step</button>
+      <button id="btnPlay283">Play sample session</button>
+      <button id="btnReset283">Reset</button>
     </div>
   </div>
   <div class="panels">
-    <div class="panel"><h4>Observations · 16 inputs</h4><div id="inputs"></div></div>
-    <div class="panel"><h4>Register · 10 LATCH</h4>
-      <div class="phase" id="phase">MODEL</div>
-      <div class="reg" id="reg"></div>
-      <div class="latch" id="latch"></div>
+    <div class="panel"><h4 id="hIn283"></h4><div id="inputs283"></div></div>
+    <div class="panel"><h4 id="hReg283"></h4>
+      <div class="phase" id="phase283">MODEL</div>
+      <div class="reg" id="reg283"></div>
+      <div class="latch" id="latch283"></div>
     </div>
-    <div class="panel"><h4>Actions · 15 outputs (last step)</h4><div id="outputs" class="bits"></div>
-      <div class="note" id="explain"></div></div>
+    <div class="panel"><h4 id="hOut283"></h4><div id="outputs283" class="bits"></div>
+      <div class="note" id="explain283"></div></div>
   </div>
-  <div class="log"><table><thead><tr><th>#</th><th>phase</th><th>inputs high</th><th>actions</th><th>state (hex)</th></tr></thead><tbody id="logBody"></tbody></table></div>
+  <div class="log"><table><thead><tr><th>#</th><th>phase</th><th>inputs high</th><th>actions</th><th>state (hex)</th></tr></thead><tbody id="logBody283"></tbody></table></div>
 </div>
 
-<h2 class="zh">接口</h2><h2 class="en">Interface</h2>
+
+<h2 class="zh" id="c284">Circuit 284：v3，熔断版</h2><h2 class="en" id="c284en">Circuit 284: v3, the fuses</h2>
+<div class="prose">
+<p class="zh">#283 证明了 API 可以烧成电路；#284 让它能接真实 agent 长期跑。同一天烧上链，接口从 16/15/10 扩到 <strong>16 输入 / 17 输出 / 23 LATCH</strong>，295 NAND。所有会把会话拖死的失败路径都有了单向熔断，每一次 abort 带 3 位原因码，付费按 judge 分档。下面的模拟器装的是 #284 的 2157 字节。</p>
+<p class="en">#283 showed an API can be burned into a circuit; #284 makes it usable by real agents for long sessions. Burned the same day, the interface grows from 16/15/10 to <strong>16 in / 17 out / 23 LATCH</strong>, 295 NAND. Every failure path that could drag a session to death now has a one‑way fuse, every abort carries a 3‑bit reason code, and payment is graded by the judge. The simulator below holds #284's 2157 bytes.</p>
+</div>
+<div class="facts">
+  <div><b>circuitId</b><span>284</span></div>
+  <div><b>circuitInfo</b><span>nIn 16 · nOut 17 · nState 23 · gates 318</span></div>
+  <div><b>block</b><span>121331172</span></div>
+  <div class="wide"><b>tx</b><span>0x57ca530d5c3b2500ce0237848fa293ec480b7a750b44e0a5b451377f96435bee</span></div>
+  <div><b>netlist</b><span>2157 bytes · sha256 de800761487244af…</span></div>
+  <div><b>proofs</b><span>A/B miter UNSAT · 16 safety props · indep. Verilog UNSAT</span></div>
+  <div><b>verified on chain</b><span>64 step() vectors</span></div>
+</div>
+<h3 class="zh">熔断与上限（全部单向，全部经 SAT 证明）</h3><h3 class="en">Fuses and caps (all one‑way, all SAT‑proved)</h3>
+<div style="overflow-x:auto"><table><thead><tr><th><span class="zh">项目</span><span class="en">item</span></th><th>#283 (v2)</th><th>#284 (v3)</th><th><span class="zh">abort 码</span><span class="en">abort code</span></th></tr></thead><tbody>
+<tr><td><span class="zh">轮数上限（call_model 与 compact 都计）</span><span class="en">turn cap (call_model and compact both count)</span></td><td>7</td><td>255</td><td>2</td></tr>
+<tr><td><span class="zh">工具重试</span><span class="en">tool retries</span></td><td>1</td><td>3</td><td>3</td></tr>
+<tr><td><span class="zh">子 agent 并发</span><span class="en">concurrent subagents</span></td><td>3</td><td>7</td><td>—</td></tr>
+<tr><td><span class="zh">子 agent 失败（新输入 sub_fail；等待 3 拍无果视同失败）</span><span class="en">subagent failures (new input sub_fail; 3 waits with no report count as one)</span></td><td><span class="zh">无</span><span class="en">none</span></td><td>3</td><td>4</td></tr>
+<tr><td><span class="zh">连续 compact 无效</span><span class="en">consecutive ineffective compacts</span></td><td><span class="zh">活锁</span><span class="en">livelock</span></td><td>3</td><td>6</td></tr>
+<tr><td><span class="zh">连续 tool_search</span><span class="en">consecutive tool_search</span></td><td><span class="zh">无</span><span class="en">none</span></td><td>3</td><td>7</td></tr>
+<tr><td><span class="zh">预算耗尽 / vault 拒绝</span><span class="en">budget_low / vault denied</span></td><td>abort</td><td>abort</td><td>1 / 5</td></tr>
+<tr><td><span class="zh">付费</span><span class="en">payment</span></td><td>1 bit</td><td><span class="zh">judge 2 位 → pay 2 位（0 不付、1 部分、2 全额）</span><span class="en">judge 2 bits → pay 2 bits (0 none, 1 partial, 2 full)</span></td><td>—</td></tr>
+</tbody></table></div>
+<div class="prose">
+<p class="zh"><strong>证明</strong>：2^39 个状态×输入无法穷举，改用 SAT。spec 经两条独立路径降级（结构哈希 517 门、yosys+ABC 289 门），kissat miter 判 UNSAT；封装后的链上字节再证一次。16 条安全性质逐条证明对全部 2^39 行成立：DONE 吸收、DONE 只经 abort/finish 进入、turns 单调、abort/finish/call 互斥、pay ⇒ finish∧judge、finish 时 pay 位等于 judge 位、四个计数器不越界、等待超时必触发、原因码非零 ⇔ abort。最后由 Grok 4.6 只看文字规格独立手写 Verilog，与参考 miter：前两轮各被抓出一个具体反例（搜索封顶时误发 tool_search；同拍 sub_req+sub_done+sub_fail 时计数错），第三轮 UNSAT。</p>
+<p class="en"><strong>Proofs</strong>: 2^39 state×input rows cannot be enumerated, so SAT. The spec is lowered by two independent paths (structural hashing, 517 gates; yosys+ABC, 289 gates) and kissat proves the miter UNSAT; the wrapped on‑chain bytes are proved again. Sixteen safety properties are proved for every one of the 2^39 rows: DONE absorbs, DONE only via abort/finish, turns monotone, abort/finish/call exclusive, pay ⇒ finish ∧ judge, pay bits equal judge bits on finish, four counters never exceed their caps, the wait timeout always fires, reason code ≠ 0 ⇔ abort. Finally Grok 4.6 wrote an independent Verilog from the prose spec alone and it was mitered against the reference: two concrete counterexamples in the first two rounds (tool_search emitted at the search cap; a counter slip when sub_req, sub_done and sub_fail arrive in one tick), UNSAT on the third.</p>
+<p class="zh"><strong>接入</strong>：链上 <code>step(284, state, inputs)</code>，state 3 字节（23 位）、inputs 2 字节（16 位）、outputs 3 字节（17 位）。Grok 4.6 与 Composer 2.5 已各跑一局，每拍链上 step() 与本地一致，均以 pay=2（全额）结束。仓库 <code>agent_api_netlist/v5/</code>（内部构建号 v5，公开版本号 v3）。</p>
+<p class="en"><strong>Driving it</strong>: on chain, <code>step(284, state, inputs)</code> with state 3 bytes (23 bits), inputs 2 bytes (16 bits), outputs 3 bytes (17 bits). Grok 4.6 and Composer 2.5 have each run a session; every tick matched on‑chain step() and both ended with pay=2 (full). Repo dir <code>agent_api_netlist/v5/</code> (internal build v5, public version v3).</p>
+</div>
+<div class="sim" id="sim284">
+  <div class="sim-head">
+    <span class="eyebrow">circuit 284 · live step()</span>
+    <div class="btns">
+      <button id="btnStep284" class="primary">Step</button>
+      <button id="btnPlay284">Play sample session</button>
+      <button id="btnReset284">Reset</button>
+    </div>
+  </div>
+  <div class="panels">
+    <div class="panel"><h4 id="hIn284"></h4><div id="inputs284"></div></div>
+    <div class="panel"><h4 id="hReg284"></h4>
+      <div class="phase" id="phase284">MODEL</div>
+      <div class="reg" id="reg284"></div>
+      <div class="latch" id="latch284"></div>
+    </div>
+    <div class="panel"><h4 id="hOut284"></h4><div id="outputs284" class="bits"></div>
+      <div class="note" id="explain284"></div></div>
+  </div>
+  <div class="log"><table><thead><tr><th>#</th><th>phase</th><th>inputs high</th><th>actions</th><th>state (hex)</th></tr></thead><tbody id="logBody284"></tbody></table></div>
+</div>
+<h2 class="zh">接口（#283）</h2><h2 class="en">Interface (#283)</h2>
 <div class="prose"><p class="zh">三组位。观测位由 harness 每拍填入，动作位告诉 harness 下一拍做什么，寄存器由电路自己维护。位序即字节序：<code>pack()</code> 把第 i 位放在第 i/8 字节的第 i%8 位。</p>
 <p class="en">Three groups of bits. The harness fills the observation bits every tick, the action bits tell the harness what to do next, and the register is maintained by the circuit itself. Bit order is byte order: <code>pack()</code> puts bit i at byte i/8, bit i%8.</p></div>
 <div class="spec">
@@ -299,81 +352,96 @@ state=0x8903 inputs=0x2ae5  ->  newState=0x5003 outputs=0x0160</code></pre>
 (function(){
 let lang='zh';
 try{ lang=localStorage.getItem('c283lang') || ((navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'); }catch(e){ lang=(navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'; }
-function setLang(l){ lang=l; document.documentElement.setAttribute('data-lang',l); document.getElementById('langZh').classList.toggle('on',l==='zh'); document.getElementById('langEn').classList.toggle('on',l==='en'); try{localStorage.setItem('c283lang',l);}catch(e){} if(typeof renderExplain==='function') renderExplain(); }
+const sims=[];
+function setLang(l){ lang=l; document.documentElement.setAttribute('data-lang',l); document.getElementById('langZh').classList.toggle('on',l==='zh'); document.getElementById('langEn').classList.toggle('on',l==='en'); try{localStorage.setItem('c283lang',l);}catch(e){} sims.forEach(s=>s.relabel()); }
 document.getElementById('langZh').onclick=()=>setLang('zh'); document.getElementById('langEn').onclick=()=>setLang('en');
 const T={
- zh:{none:'尚未送入任何一拍。', reset:'已复位：MODEL 相位，寄存器全 0。', pre:'已预先重放示例会话（13 拍）。按 Reset 清空后自己拨位试。',
-     step:(n,ph,hi,acts,nx)=>`第 ${n} 拍：在 ${ph} 相位收到 [${hi}]，电路输出 [${acts}]，进入 ${nx}。`, sample:(k,note)=>`示例第 ${k} 拍 · ${note.zh}`},
- en:{none:'No tick fed yet.', reset:'Reset: MODEL phase, register all zero.', pre:'The 13-tick sample session has been replayed. Press Reset to clear and try your own bits.',
-     step:(n,ph,hi,acts,nx)=>`Tick ${n}: in phase ${ph} with [${hi}], the circuit output [${acts}] and moved to ${nx}.`, sample:(k,note)=>`Sample tick ${k} · ${note.en}`}};
-let lastExplain=null; function renderExplain(){ if(lastExplain) document.getElementById('explain').textContent=lastExplain(T[lang]); }
-const NL_HEX = "0x010000920100008d0100007a01000071010000760100005e0100006101000067010000b2010000b3000000140000140000000800000800000017000017000000180000180000001900001900000012000012000000130000130000000a00000a00000009000009000000020000020000000d00000d0000000b00000b0000001500001500000016000016000000030000030000000e00000e0000000c00000c00000006000006000000040000040000000500000500000021000022000000300000300000001700001800000032000032000000190000330000002300003400000035000035000000310000360000003700003700000024000038000000390000390000002500003a0000003b00003b0000002600003c0000003d00003d0000000b00003e0000003f00003f000000150000160000004100004100000040000041000000430000430000000d00003c000000450000450000000e0000460000002700003e000000480000480000002a000049000000120000220000004b00004b0000000c00004c000000210000130000004e00004e0000000800004f0000004d0000500000005100005100000047000052000000530000530000004a00005400000055000055000000430000560000005700005700000019000057000000590000590000003400005a0000005b00005b0000001800005c0000001e00005d0000001f0000590000005d00005f000000600000600000000200003a000000620000620000000f000063000000200000580000005b00006500000066000066000000280000290000000c00006800000069000069000000440000690000002800006b0000004300006a0000001500006d0000002900006e0000006c00006f000000700000700000006b00006d000000720000720000002900007200000016000073000000740000750000001d00004f000000770000770000001400004e000000770000790000002b00004600000031000035000000140000780000007c00007d0000007e00007e0000007b00007f000000800000800000001c00007800000003000049000000830000830000000600008400000082000085000000860000860000001200001300000062000088000000890000890000008100008a0000008b00008b0000008700008c000000400000420000002c00004c0000008e00008f000000900000900000008c00009100000007000086000000040000860000002e00008600000095000095000000050000960000002f0000960000002d0000840000001e0000200000009a00009a0000003100009b0000009c00009c0000001f00009d0000009e00009e0000001100009f0000001b00009e000000090000380000001000009f0000001a00009e000000430000560000009800009800000097000097000000940000940000009900009900000093000093000000a20000a2000000430000430000008e00008f0000004700004700000062000062000000640000640000007b00007f000000a30000a4000000a00000a1";
-const IN = ["model_done","model_tool","tool_type1","tool_type0","tool_known","tool_batch","tool_ok","ctx_high","budget_low","sub_req","sub_done","secret_req","vault_ok","judge_ok","env1","env0"];
-const OUT = ["call_model","run_fn","run_mcp","run_builtin","tool_search","tool_parallel","compact","spawn_sub","wait_sub","vault_grant","finish","pay","abort","env_sel1","env_sel0"];
-const GROUPS = [["model",[0,1,7,0]],["tool",[2,3,4,5,6]],["subagent",[9,10]],["budget / vault / judge",[8,11,12,13]],["env (latched on first step)",[14,15]]];
-const N_IN=16,N_OUT=15;
-// decode netlist
-const bytes = Uint8Array.from(NL_HEX.replace(/^0x/,'').match(/../g).map(h=>parseInt(h,16)));
-const gates=[]; for(let i=0;i<bytes.length;){const op=bytes[i]; const n=op===0?2:1; const a=[];
-  for(let k=0;k<n;k++){const o=i+1+3*k; a.push((bytes[o]<<16)|(bytes[o+1]<<8)|bytes[o+2]);} gates.push([op,...a]); i+=1+3*n;}
-const N_ST = gates.filter(g=>g[0]===1).length;
-function step(state, inputs){
-  const w=[0,1,...inputs]; let li=0;
-  for(const g of gates){ if(g[0]===0) w.push(1-(w[g[1]]&w[g[2]])); else w.push(state[li++]); }
-  const ns=[]; for(const g of gates) if(g[0]===1) ns.push(w[g[1]]);
-  return [ns, w.slice(-N_OUT)];
-}
-// ui state
-let inputs = new Array(N_IN).fill(0), state = new Array(N_ST).fill(0), n=0;
-const $=id=>document.getElementById(id);
-const inputsEl=$('inputs'), outEl=$('outputs'), reg=$('reg'), logBody=$('logBody');
-// build inputs
-const seen=new Set();
-for(const [label,idx] of GROUPS){ const g=document.createElement('div'); g.className='group';
-  g.innerHTML=`<div class="g">${label}</div>`; const bits=document.createElement('div'); bits.className='bits';
-  for(const i of idx){ if(seen.has(i)) continue; seen.add(i); const b=document.createElement('button'); b.type='button'; b.className='bit'; b.id='in_'+i; b.textContent=IN[i]; b.setAttribute('aria-pressed','false');
-    b.onclick=()=>{inputs[i]^=1; b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));}; bits.appendChild(b);} g.appendChild(bits); inputsEl.appendChild(g);}
-for(let i=0;i<N_OUT;i++){const b=document.createElement('span'); b.className='bit out'; b.id='out_'+i; b.textContent=OUT[i]; outEl.appendChild(b);}
-function phaseName(s){return ["MODEL","TOOL","SUB","DONE"][s[0]*2+s[1]];}
-function hex(bits){let v=0; bits.forEach((b,i)=>v|=b<<i); return v.toString(16).padStart(Math.ceil(bits.length/8)*2,'0');}
-function render(out){
-  const ph=phaseName(state); const pe=$('phase'); pe.textContent=ph; pe.className='phase '+ph;
-  reg.innerHTML=[["phase",ph],["err (retry used)",state[2]],["subagents running",state[3]*2+state[4]+" / 3"],["turns",state[5]*4+state[6]*2+state[7]+" / 7"],["env latched",["hosted","own infra","partner sandbox","(11)"][state[8]*2+state[9]]]]
-    .map(([k,v])=>`<div class="r"><b>${k}</b><span>${v}</span></div>`).join('');
-  $('latch').textContent='LATCH bits: '+state.join('')+'  (0x'+hex(state)+')';
-  for(let i=0;i<N_OUT;i++) $('out_'+i).classList.toggle('on',!!(out&&out[i]));
-}
-function setInputs(obj){inputs=new Array(N_IN).fill(0); for(const k in obj) inputs[IN.indexOf(k)]=obj[k]; for(let i=0;i<N_IN;i++){const b=$('in_'+i); b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));}}
-function doStep(note){
-  const ph=phaseName(state); const [ns,out]=step(state,inputs);
-  const hi=IN.filter((_,i)=>inputs[i]).join(', ')||'—'; const acts=OUT.filter((_,i)=>out[i]).join(', ')||'—';
-  const tr=document.createElement('tr'); tr.innerHTML=`<td>${n}</td><td>${ph}</td><td class="mono">${hi}</td><td class="mono">${acts}</td><td class="mono">${hex(state)} → ${hex(ns)}</td>`; logBody.appendChild(tr);
-  state=ns; n++; render(out);
-  const nx=phaseName(state); lastExplain=note||(t=>t.step(n,ph,hi,acts,nx)); renderExplain();
-}
-const P={env1:1,env0:0};
+ zh:{reset:'已复位：MODEL 相位，寄存器全 0。', pre:n=>`已预先重放示例会话（${n} 拍）。按 Reset 清空后自己拨位试。`,
+     step:(n,ph,hi,acts,nx)=>`第 ${n} 拍：在 ${ph} 相位收到 [${hi}]，电路输出 [${acts}]，进入 ${nx}。`, sample:(k,note)=>`示例第 ${k} 拍 · ${note.zh}`,
+     hIn:n=>`Observations · ${n} inputs`, hReg:n=>`Register · ${n} LATCH`, hOut:n=>`Actions · ${n} outputs (last step)`},
+ en:{reset:'Reset: MODEL phase, register all zero.', pre:n=>`The ${n}-tick sample session has been replayed. Press Reset to clear and try your own bits.`,
+     step:(n,ph,hi,acts,nx)=>`Tick ${n}: in phase ${ph} with [${hi}], the circuit output [${acts}] and moved to ${nx}.`, sample:(k,note)=>`Sample tick ${k} · ${note.en}`,
+     hIn:n=>`Observations · ${n} inputs`, hReg:n=>`Register · ${n} LATCH`, hOut:n=>`Actions · ${n} outputs (last step)`}};
 const N=(zh,en)=>({zh,en});
-const SAMPLE=[
- [N("开始（partner sandbox）→ tool search","start (partner sandbox) → tool search"),{...P,model_tool:1}],
- [N("MCP 工具并行批调用","mcp tool batch"),{...P,model_tool:1,tool_known:1,tool_type0:1,tool_batch:1}],
- [N("工具失败一次","tool fails once"),{...P,tool_ok:0,tool_type0:1,tool_batch:1}],
- [N("重试成功","retry ok"),{...P,tool_ok:1}],
- [N("密钥请求获批","secret request granted"),{...P,secret_req:1,vault_ok:1}],
- [N("派子 agent 1/3","spawn sub 1/3"),{...P,sub_req:1}],[N("派子 agent 2/3","spawn sub 2/3"),{...P,sub_req:1}],[N("派子 agent 3/3","spawn sub 3/3"),{...P,sub_req:1}],
- [N("第 4 个请求排队","4th request waits"),{...P,sub_req:1}],
- [N("一个完成，继续","one finishes / continues"),{...P,sub_done:1}],
- [N("压缩上下文","compact"),{...P,ctx_high:1}],
- [N("模型完成且 judge 通过 → finish, pay","model done + judge ok → finish, pay"),{...P,model_done:1,judge_ok:1}],
- [N("DONE 忽略后续输入","DONE ignores further input"),{...P,model_done:1,judge_ok:1,sub_req:1}],
-];
-function reset(){state=new Array(N_ST).fill(0); n=0; logBody.innerHTML=''; setInputs({}); render(null); lastExplain=t=>t.reset; renderExplain();}
-let playing=false;
-function play(){ if(playing) return; playing=true; reset(); let k=0;
-  const tick=()=>{ if(k>=SAMPLE.length){playing=false; return;} const [note,obj]=SAMPLE[k++]; setInputs(obj); const kk=k; doStep(t=>t.sample(kk,note)); setTimeout(tick, matchMedia('(prefers-reduced-motion: reduce)').matches?0:650); };
-  tick(); }
-$('btnStep').onclick=()=>doStep(); $('btnReset').onclick=reset; $('btnPlay').onclick=play;
-// resting state: show the sample session already played so the first frame is informative
-setLang(lang); reset(); SAMPLE.forEach(([note,obj],i)=>{ setInputs(obj); doStep(t=>t.sample(i+1,note)); }); setInputs({}); lastExplain=t=>t.pre; renderExplain();
+function decode(hex){ const b=Uint8Array.from(hex.replace(/^0x/,'').match(/../g).map(h=>parseInt(h,16))); const g=[];
+  for(let i=0;i<b.length;){const op=b[i]; const n=op===0?2:1; const a=[]; for(let k=0;k<n;k++){const o=i+1+3*k; a.push((b[o]<<16)|(b[o+1]<<8)|b[o+2]);} g.push([op,...a]); i+=1+3*n;} return g; }
+function hex(bits){let v=0n; bits.forEach((b,i)=>{ if(b) v|=1n<<BigInt(i); }); return v.toString(16).padStart(Math.ceil(bits.length/8)*2,'0');}
+function makeSim(cfg){
+  const gates=decode(cfg.nl), N_OUT=cfg.OUT.length, N_ST=gates.filter(g=>g[0]===1).length;
+  function step(state, inputs){ const w=[0,1,...inputs]; let li=0;
+    for(const g of gates){ if(g[0]===0) w.push(1-(w[g[1]]&w[g[2]])); else w.push(state[li++]); }
+    const ns=[]; for(const g of gates) if(g[0]===1) ns.push(w[g[1]]); return [ns, w.slice(-N_OUT)]; }
+  const $=k=>document.getElementById(k+cfg.id);
+  let inputs=new Array(cfg.IN.length).fill(0), state=new Array(N_ST).fill(0), n=0, lastExplain=null;
+  const seen=new Set();
+  for(const [label,idx] of cfg.groups){ const g=document.createElement('div'); g.className='group'; g.innerHTML=`<div class="g">${label}</div>`;
+    const bits=document.createElement('div'); bits.className='bits';
+    for(const i of idx){ if(seen.has(i)) continue; seen.add(i); const b=document.createElement('button'); b.type='button'; b.className='bit'; b.id='in_'+cfg.id+'_'+i; b.textContent=cfg.IN[i]; b.setAttribute('aria-pressed','false');
+      b.onclick=()=>{inputs[i]^=1; b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));}; bits.appendChild(b);} g.appendChild(bits); $('inputs').appendChild(g);}
+  for(let i=0;i<N_OUT;i++){const b=document.createElement('span'); b.className='bit out'; b.id='out_'+cfg.id+'_'+i; b.textContent=cfg.OUT[i]; $('outputs').appendChild(b);}
+  const phaseName=s=>["MODEL","TOOL","SUB","DONE"][s[0]*2+s[1]];
+  function render(out){ const ph=phaseName(state); const pe=$('phase'); pe.textContent=ph; pe.className='phase '+ph;
+    $('reg').innerHTML=cfg.regs(state,ph).map(([k,v])=>`<div class="r"><b>${k}</b><span>${v}</span></div>`).join('');
+    $('latch').textContent='LATCH bits: '+state.join('')+'  (0x'+hex(state)+')';
+    for(let i=0;i<N_OUT;i++) document.getElementById('out_'+cfg.id+'_'+i).classList.toggle('on',!!(out&&out[i])); }
+  function setInputs(obj){ inputs=new Array(cfg.IN.length).fill(0); for(const k in obj) inputs[cfg.IN.indexOf(k)]=obj[k];
+    for(let i=0;i<cfg.IN.length;i++){const b=document.getElementById('in_'+cfg.id+'_'+i); b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));} }
+  function renderExplain(){ if(lastExplain) $('explain').textContent=lastExplain(T[lang]); }
+  function doStep(note){ const ph=phaseName(state); const [ns,out]=step(state,inputs);
+    const hi=cfg.IN.filter((_,i)=>inputs[i]).join(', ')||'—'; const acts=cfg.OUT.filter((_,i)=>out[i]).join(', ')||'—';
+    const tr=document.createElement('tr'); tr.innerHTML=`<td>${n}</td><td>${ph}</td><td class="mono">${hi}</td><td class="mono">${acts}</td><td class="mono">${hex(state)} → ${hex(ns)}</td>`; $('logBody').appendChild(tr);
+    state=ns; n++; render(out); const nx=phaseName(state); lastExplain=note||(t=>t.step(n,ph,hi,acts,nx)); renderExplain(); }
+  function reset(){ state=new Array(N_ST).fill(0); n=0; $('logBody').innerHTML=''; setInputs({}); render(null); lastExplain=t=>t.reset; renderExplain(); }
+  let playing=false;
+  function play(){ if(playing) return; playing=true; reset(); let k=0;
+    const tick=()=>{ if(k>=cfg.sample.length){playing=false; return;} const [note,obj]=cfg.sample[k++]; setInputs(obj); const kk=k; doStep(t=>t.sample(kk,note)); setTimeout(tick, matchMedia('(prefers-reduced-motion: reduce)').matches?0:650); };
+    tick(); }
+  function relabel(){ $('hIn').textContent=T[lang].hIn(cfg.IN.length); $('hReg').textContent=T[lang].hReg(N_ST); $('hOut').textContent=T[lang].hOut(N_OUT); renderExplain(); }
+  $('btnStep').onclick=()=>doStep(); $('btnReset').onclick=reset; $('btnPlay').onclick=play;
+  reset(); cfg.sample.forEach(([note,obj],i)=>{ setInputs(obj); doStep(t=>t.sample(i+1,note)); }); setInputs({}); lastExplain=t=>t.pre(cfg.sample.length); relabel();
+  return {relabel};
+}
+// ---------------- #283 (v2) ----------------
+const P2={env1:1,env0:0};
+sims.push(makeSim({ id:'283', nl:"0x010000920100008d0100007a01000071010000760100005e0100006101000067010000b2010000b3000000140000140000000800000800000017000017000000180000180000001900001900000012000012000000130000130000000a00000a00000009000009000000020000020000000d00000d0000000b00000b0000001500001500000016000016000000030000030000000e00000e0000000c00000c00000006000006000000040000040000000500000500000021000022000000300000300000001700001800000032000032000000190000330000002300003400000035000035000000310000360000003700003700000024000038000000390000390000002500003a0000003b00003b0000002600003c0000003d00003d0000000b00003e0000003f00003f000000150000160000004100004100000040000041000000430000430000000d00003c000000450000450000000e0000460000002700003e000000480000480000002a000049000000120000220000004b00004b0000000c00004c000000210000130000004e00004e0000000800004f0000004d0000500000005100005100000047000052000000530000530000004a00005400000055000055000000430000560000005700005700000019000057000000590000590000003400005a0000005b00005b0000001800005c0000001e00005d0000001f0000590000005d00005f000000600000600000000200003a000000620000620000000f000063000000200000580000005b00006500000066000066000000280000290000000c00006800000069000069000000440000690000002800006b0000004300006a0000001500006d0000002900006e0000006c00006f000000700000700000006b00006d000000720000720000002900007200000016000073000000740000750000001d00004f000000770000770000001400004e000000770000790000002b00004600000031000035000000140000780000007c00007d0000007e00007e0000007b00007f000000800000800000001c00007800000003000049000000830000830000000600008400000082000085000000860000860000001200001300000062000088000000890000890000008100008a0000008b00008b0000008700008c000000400000420000002c00004c0000008e00008f000000900000900000008c00009100000007000086000000040000860000002e00008600000095000095000000050000960000002f0000960000002d0000840000001e0000200000009a00009a0000003100009b0000009c00009c0000001f00009d0000009e00009e0000001100009f0000001b00009e000000090000380000001000009f0000001a00009e000000430000560000009800009800000097000097000000940000940000009900009900000093000093000000a20000a2000000430000430000008e00008f0000004700004700000062000062000000640000640000007b00007f000000a30000a4000000a00000a1",
+  IN:["model_done","model_tool","tool_type1","tool_type0","tool_known","tool_batch","tool_ok","ctx_high","budget_low","sub_req","sub_done","secret_req","vault_ok","judge_ok","env1","env0"],
+  OUT:["call_model","run_fn","run_mcp","run_builtin","tool_search","tool_parallel","compact","spawn_sub","wait_sub","vault_grant","finish","pay","abort","env_sel1","env_sel0"],
+  groups:[["model",[0,1,7]],["tool",[2,3,4,5,6]],["subagent",[9,10]],["budget / vault / judge",[8,11,12,13]],["env (latched on first step)",[14,15]]],
+  regs:(s,ph)=>[["phase",ph],["err (retry used)",s[2]],["subagents running",s[3]*2+s[4]+" / 3"],["turns",s[5]*4+s[6]*2+s[7]+" / 7"],["env latched",["hosted","own infra","partner sandbox","(11)"][s[8]*2+s[9]]]],
+  sample:[
+   [N("开始（partner sandbox）→ tool search","start (partner sandbox) → tool search"),{...P2,model_tool:1}],
+   [N("MCP 工具并行批调用","mcp tool batch"),{...P2,model_tool:1,tool_known:1,tool_type0:1,tool_batch:1}],
+   [N("工具失败一次","tool fails once"),{...P2,tool_ok:0,tool_type0:1,tool_batch:1}],
+   [N("重试成功","retry ok"),{...P2,tool_ok:1}],
+   [N("密钥请求获批","secret request granted"),{...P2,secret_req:1,vault_ok:1}],
+   [N("派子 agent 1/3","spawn sub 1/3"),{...P2,sub_req:1}],[N("派子 agent 2/3","spawn sub 2/3"),{...P2,sub_req:1}],[N("派子 agent 3/3","spawn sub 3/3"),{...P2,sub_req:1}],
+   [N("第 4 个请求排队","4th request waits"),{...P2,sub_req:1}],
+   [N("一个完成，继续","one finishes / continues"),{...P2,sub_done:1}],
+   [N("压缩上下文","compact"),{...P2,ctx_high:1}],
+   [N("模型完成且 judge 通过 → finish, pay","model done + judge ok → finish, pay"),{...P2,model_done:1,judge_ok:1}],
+   [N("DONE 忽略后续输入","DONE ignores further input"),{...P2,model_done:1,judge_ok:1,sub_req:1}]]}));
+// ---------------- #284 (v3) ----------------
+const CODES=["—","budget_low","turns cap","tool retries","subagent failures","vault denied","compaction ineffective","tool_search cap"];
+sims.push(makeSim({ id:'284', nl:"0x01000102010000fb010000c1010000c5010000a3010000ad010000b20100003801000095010001330100012001000090010000b60100011801000131010000c90100012501000113010000d00100012d010001290100013e0100013a00000019000019000000130000130000000d00000d0000000c00000c0000002a0000120000002d00002d000000260000250000002f00002f0000003000002e000000310000310000003200002c0000003300002b0000003400002a000000350000350000003600001a000000370000290000000a00000a000000120000120000002a00003a0000003b00003b0000003c0000390000003d00003d0000002200001c0000003f00003f0000001e00001d0000004100004100000042000040000000430000430000001f000020000000450000450000001b0000210000004700004700000048000046000000490000490000004a0000440000004b00003e0000004c00004c0000001a00001a0000001900004e0000004f00004f0000005000000d0000005100004d00000052000052000000530000090000005400005400000023000024000000560000550000000e00000e00000002000002000000090000090000005300005a0000005b00005b0000005c0000590000005d00005d0000005e0000580000005f00005f0000006000000b0000006100006100000018000017000000630000630000006400001600000065000062000000660000660000005e00000e000000680000680000006900000f000000030000030000000b00000b0000006000006c0000006d00006d0000006e00006b0000001300003a0000007000007000000071000008000000340000340000007300002c000000500000340000007500002e000000760000760000007700007400000078000072000000790000790000007a00006a0000007b00007b0000007c0000660000007d00007d0000007e00006f0000001d00001d0000007f00007f000000810000570000004b000022000000830000830000008400008200000085000085000000860000210000008700008700000088000046000000890000890000008a00001e0000008b0000800000008b00008b0000008d00001d0000008e00008c0000008f00008f00000037000037000000910000290000003500004e0000009300009200000094000094000000170000170000001800001800000097000096000000980000980000007400002a0000009a00009a0000009b0000660000009c00009c0000009d0000990000009e0000160000009a000067000000a00000a0000000a1000064000000a200009f00000016000016000000990000a4000000a500009d000000a6000097000000a0000018000000a80000a7000000a9000017000000a90000a9000000ab000096000000ac0000aa000000a60000a0000000ae000097000000ae0000ae000000b0000018000000b10000af0000001e00001e000000890000b3000000b400008b000000b50000b5000000140000140000001400001500000008000008000000710000b9000000ba0000ba000000bb0000b8000000bc0000bc000000bd000015000000be0000b7000000bf000072000000c00000c000000070000015000000c20000ba000000c30000be000000c40000c400000021000021000000850000c6000000c7000087000000c80000c80000003b00002400000023000023000000cb0000240000003c000009000000cd0000cd000000ce0000cc000000cf0000ca00000056000056000000d100005500000027000028000000d30000d3000000060000060000006e000003000000d60000d6000000d70000d5000000d80000d8000000d90000d40000000f00000f000000690000db000000dc0000da000000dd0000dd000000750000750000004c00002d000000e00000df000000e10000de000000e20000e20000003c00000a0000004b00004b000000e500003e000000b80000b8000000bb0000e7000000e80000e6000000e90000e9000000ea0000d2000000eb0000eb000000ec0000e4000000ed0000ed000000ee0000e30000005c000002000000f00000f0000000d7000006000000f20000bc000000f30000f3000000ef0000ef00000013000012000000f60000f0000000f70000f7000000f80000f5000000f90000f9000000fa0000f400000065000065000000fc00006200000074000074000000fe00002e000000ff0000fd00000100000100000001010000fa000000f1000011000000f1000010000000f3000007000000f300000400000004000004000000f30001070000010800010800000109000005000000050000050000010900010b000000e80000e40000010d00010d0000003c00005a0000003c000024000001100000cb0000011100010f000001120001120000001f00001f00000088000020000001150001140000011600008900000117000117000000d90000d3000001190001190000008e00008e0000011b00001c0000001c00001c0000008e00011d0000011e00011c0000011f00011f000000220000220000008200008200000122000121000001230000850000012400012400000025000025000000260001260000012700010000000128000128000000260000260000012a0001260000012b0001000000012c00012c000000200000200000008700012e0000012f000115000001300001300000001b00001b0000011c0001320000011a00002800000028000028000000d6000135000001360000f4000001370001370000013800013400000139000139000000270000270000013400013b0000013c0000f40000013d00013d0000007e00006f0000010c00010c0000010a00010a0000010600010600000119000119000001050001050000005700005700000066000066000000ff0000fd0000006a00006a000000f00000f00000010400010400000103000103000000ee0000e3000000e30000d2000000ec0000da0000010e0000de",
+  IN:["model_done","model_tool","tool_type1","tool_type0","tool_known","tool_batch","tool_ok","ctx_high","budget_low","sub_req","sub_done","sub_fail","secret_req","vault_ok","judge1","judge0"],
+  OUT:["call_model","run_fn","run_mcp","run_builtin","tool_search","tool_parallel","compact","spawn_sub","wait_sub","vault_grant","finish","pay1","pay0","abort","code2","code1","code0"],
+  groups:[["model",[0,1,7]],["tool",[2,3,4,5,6]],["subagent",[9,10,11]],["budget / vault",[8,12,13]],["judge (2 bits: 2 = full, 1 = partial)",[14,15]]],
+  regs:(s,ph)=>{ const t=s.slice(9,17).reduce((a,b,i)=>a+b*(1<<i),0); return [["phase",ph],["tool retries used",s[2]*2+s[3]+" / 3"],["subagents running",s[4]*4+s[5]*2+s[6]+" / 7"],["subagent failures",s[7]*2+s[8]+" / 3"],["turns (calls + compacts)",t+" / 255"],["consecutive compacts",s[17]*2+s[18]+" / 3"],["waiting ticks",s[19]*2+s[20]+" / 3"],["consecutive searches",s[21]*2+s[22]+" / 3"]]; },
+  sample:[
+   [N("开始 → tool search","start → tool search"),{model_tool:1}],
+   [N("function 工具并行调用","function tool batch"),{model_tool:1,tool_known:1,tool_batch:1}],
+   [N("工具失败第 1 次 → 重试","tool fails 1 → retry"),{tool_ok:0,tool_batch:1}],
+   [N("工具失败第 2 次 → 重试","tool fails 2 → retry"),{tool_ok:0,tool_batch:1}],
+   [N("重试成功，err 清零","retry ok, err clears"),{tool_ok:1}],
+   [N("派子 agent 1","spawn sub 1"),{sub_req:1}],[N("派子 agent 2","spawn sub 2"),{sub_req:1}],
+   [N("一个子 agent 失败（sub_fail，失败计数 1）","one subagent fails (sub_fail, failures 1)"),{sub_fail:1}],
+   [N("另一个完成","the other finishes"),{sub_done:1}],
+   [N("上下文高 → compact（计入 turns）","ctx high → compact (counts as a turn)"),{ctx_high:1}],
+   [N("上下文仍高 → 第 2 次 compact","ctx still high → 2nd compact"),{ctx_high:1}],
+   [N("压缩生效，计数清零","compaction worked, counter clears"),{}],
+   [N("模型完成，judge 全额 → finish, pay=2","model done, judge full → finish, pay=2"),{model_done:1,judge1:1}],
+   [N("DONE 忽略后续输入","DONE ignores further input"),{model_done:1,sub_req:1}]]}));
+setLang(lang);
 })();
 </script>
 
