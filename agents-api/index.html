@@ -113,6 +113,16 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
   </div>
 </header>
 
+<h2 class="zh" style="margin-top:40px">为什么要把一个 API 烧成电路</h2><h2 class="en" style="margin-top:40px">Why burn an API into a circuit</h2>
+<div class="prose">
+<p class="zh">今天人们对 AI 的担忧，很少是担心某一次回答说错了，而是担心几家公司在闭门推进能自我改进的智能，而约束这些系统的规则只写在它们自己的服务器里：什么时候调工具、能派多少帮手、什么时候该停、谁来判定做对了。这些规则可以被悄悄改，外人只能相信公告。</p>
+<p class="en">Today's worry about AI is rarely that one answer was wrong. It is that a handful of companies are advancing self‑improving systems behind closed doors, while the rules that constrain those systems live only in their own servers: when to call a tool, how many helpers to spawn, when to stop, who decides the work was done right. Those rules can be changed quietly; outsiders can only trust the announcement.</p>
+<p class="zh">模型本身我们暂时验证不了：27B 参数一次前向的证明成本比推理高几个数量级。但 agent 系统里，模型只是一个零件，其余全部是规则，而规则可以今天就钉死在公开的地方。把 API 烧成电路，就是把一家公司的办事流程刻成一块石碑：每条规则是几个开关，谁都能拿着石碑自己走一遍，看某次执行是不是照规矩来的。公司改不了石碑，也不能事后说"流程本来不是这样"。</p>
+<p class="en">The model itself we cannot verify yet: proving one forward pass of a 27B model costs orders of magnitude more than running it. But in an agent system the model is one part; everything else is rules, and rules can be pinned in public today. Burning an API into a circuit carves a company's procedure into a stone tablet: every rule is a handful of switches, anyone can walk the tablet themselves and check whether a given run followed it. The company cannot edit the tablet, nor claim afterwards that the procedure was never like that.</p>
+<p class="zh">模型是办事员，电路是流程。办事员可以换，聪明或笨都行，但只能按石碑上的流程动：该叫工具就叫工具，失败只准重试一次，帮手最多三个，办得对才付钱。执行仍在链下，规则和判定在链上。这不解决"模型会不会失控"，它解决的是更朴素的一层：约束模型的那套规则，不该只有制定者自己能看、能改。#283 是第一块石碑，刻的是 OpenAI 昨天发布的 Agents API。</p>
+<p class="en">The model is the clerk; the circuit is the procedure. The clerk can be swapped, clever or dull, but can only move as the tablet allows: call a tool when told, retry a failure once, at most three helpers, get paid only when the work checks out. Execution stays off chain; the rules and the judgment live on chain. This does not settle whether models can go out of control. It settles a plainer layer: the rules that constrain a model should not be visible and editable only by whoever wrote them. #283 is the first tablet, carved from the Agents API OpenAI published yesterday.</p>
+</div>
+
 <h2 class="zh">实时模拟：链上网表在你浏览器里跑</h2><h2 class="en">Live simulation: the on‑chain netlist running in your browser</h2>
 <div class="prose"><p class="zh">下面的逻辑不是重写的 JavaScript 版本，而是把 netlist 字节解码后按 TapeOut 的 <code>step()</code> 语义逐门求值。点左栏拨动观测位，按 <em>Step</em> 送入一拍；<em>Play sample</em> 会重放一段完整会话：tool search → MCP 并行调用 → 失败重试 → vault 授权 → 三个子 agent → 排队 → 压缩 → 完成付费。</p>
 <p class="en">This is not a JavaScript rewrite: the netlist bytes are decoded and evaluated gate by gate with TapeOut's <code>step()</code> semantics. Toggle observation bits on the left and press <em>Step</em> to feed one tick; <em>Play sample</em> replays a full session: tool search → parallel MCP call → failed call retried → vault grant → three subagents → a fourth queued → compaction → finish and pay.</p></div>
@@ -253,15 +263,6 @@ state=0x8903 inputs=0x2ae5  ->  newState=0x5003 outputs=0x0160</code></pre>
 <p class="en">It cannot stop an agent that does not connect to it, and a connected one can still lie about its observations. What it guarantees is that a session claiming to follow #283 can be checked tick by tick by anyone; to make lying costly, bind settlement to the pay bit.</p>
 </div>
 
-<h2 class="zh">为什么要把一个 API 烧成电路</h2><h2 class="en">Why burn an API into a circuit</h2>
-<div class="prose">
-<p class="zh">API 是一家公司的办事流程，写在它自己的服务器里，想改就改，你只能信它今天说的。烧成电路，就是把这套流程刻在一块公开的石碑上：每条规则都是几个开关拼出来的，谁都能拿着石碑自己走一遍，看某次执行是不是照规矩来的。</p>
-<p class="zh">模型是办事员，电路是流程。办事员可以换，聪明或笨都行，但只能按石碑上的流程动：该叫工具就叫工具，失败只准重试一次，帮手最多三个，办得对才付钱。执行仍在链下，规则和判定在链上。这是"验证 agent 系统里除模型以外的一切"的最便宜的做法。</p>
-<p class="zh">#283 是第一块。同一方法适用于 A2A 的任务生命周期、网关结算、以及任何能写成有限状态机的协议。</p>
-<p class="en">An API is a company's office procedure, written in its own servers, changed whenever it likes; you can only trust what it says today. Burning it into a circuit carves that procedure into a public stone tablet: every rule is a handful of switches, and anyone can walk the tablet themselves to check whether a given run followed the rules.</p>
-<p class="en">The model is the clerk; the circuit is the procedure. The clerk can be swapped, clever or dull, but can only move as the tablet allows: call a tool when told, retry a failure once, at most three helpers, get paid only when the work checks out. Execution stays off chain; the rules and the judgment live on chain. It is the cheapest way to verify everything in an agent system except the model.</p>
-<p class="en">#283 is the first tablet. The same method applies to the A2A task lifecycle, gateway settlement, and any protocol that can be written as a finite state machine.</p>
-</div>
 </div>
 
 <script>
