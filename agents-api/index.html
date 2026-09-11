@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Agents API harness control loop burned as TapeOut circuit #283 (152 NAND + 10 LATCH) on BSC: interface, live simulator, how to drive it.">
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Circuit 283</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#172033; --muted:#5B6577; --rule:#D7DDE6;
+  --copper:#B4611F; --copper-ink:#8F4A12; --signal:#157F7C; --signal-bg:#DDF1EF; --off:#E9EDF2;
+  --code-bg:#EEF1F5; --done:#6B3A8C;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F141B; --surface:#161D27; --ink:#E4E9F1; --muted:#93A0B4; --rule:#2A3442;
+  --copper:#D9884A; --copper-ink:#F0A66A; --signal:#3FB8B2; --signal-bg:#173B3A; --off:#1E2833;
+  --code-bg:#1B2430; --done:#B389D1;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F141B; --surface:#161D27; --ink:#E4E9F1; --muted:#93A0B4; --rule:#2A3442;
+  --copper:#D9884A; --copper-ink:#F0A66A; --signal:#3FB8B2; --signal-bg:#173B3A; --off:#1E2833;
+  --code-bg:#1B2430; --done:#B389D1;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;padding-block:0 64px;padding-inline:20px}
+.wrap{max-width:1040px;margin:0 auto}
+.prose{max-width:72ch}
+h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:clamp(44px,7vw,76px);line-height:1;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--copper)}
+h2{font-size:30px;margin-top:56px;margin-bottom:12px}
+h3{font-size:22px;margin-top:28px;margin-bottom:8px}
+p{margin:0 0 14px}
+.eyebrow{font:500 12px/1 "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header{padding-block:56px 32px;border-bottom:1px solid var(--rule)}
+header .lede{font-size:19px;color:var(--ink);margin-top:20px;max-width:64ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);background:var(--surface);margin-top:28px}
+.facts div{padding:14px 16px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.facts b{display:block;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.facts span{font-family:"IBM Plex Mono",monospace;font-size:14px;word-break:break-all;font-variant-numeric:tabular-nums}
+code,pre,.mono{font-family:"IBM Plex Mono",monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:3px;font-size:.92em}
+pre{background:var(--code-bg);padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5;border-left:3px solid var(--copper);margin:12px 0 18px}
+pre code{background:none;padding:0}
+a{color:var(--copper-ink)}
+/* simulator */
+.sim{background:var(--surface);border:1px solid var(--rule);margin-top:20px}
+.sim-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--rule)}
+.sim-head .eyebrow{color:var(--copper-ink)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font:500 13px "IBM Plex Sans",sans-serif;padding:8px 14px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:3px}
+button.primary{background:var(--copper);border-color:var(--copper);color:#fff}
+button:hover{filter:brightness(1.05)}
+button:focus-visible,.bit:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.panels{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:0}
+.panel{padding:16px 18px;border-right:1px solid var(--rule)}
+.panel:last-child{border-right:0}
+.panel h4{margin:0 0 10px;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.group{margin-bottom:12px}
+.group .g{font-size:11px;color:var(--muted);margin-bottom:4px}
+.bits{display:flex;flex-wrap:wrap;gap:6px}
+.bit{font:400 12px/1 "IBM Plex Mono",monospace;padding:7px 9px;border:1px solid var(--rule);background:var(--off);border-radius:3px;cursor:pointer;user-select:none;color:var(--ink)}
+.bit.on{background:var(--signal-bg);border-color:var(--signal);color:var(--signal);font-weight:500}
+.bit.out{cursor:default}
+.bit.out.on{background:var(--copper);border-color:var(--copper);color:#fff}
+.reg{display:grid;gap:8px}
+.reg .r{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--rule);padding-bottom:6px}
+.reg .r b{font-weight:500;font-size:13px}
+.reg .r span{font-family:"IBM Plex Mono",monospace;font-size:14px;font-variant-numeric:tabular-nums}
+.phase{font-family:"Instrument Serif",Georgia,serif;font-size:40px;line-height:1;margin:2px 0 10px}
+.phase.DONE{color:var(--done)} .phase.TOOL,.phase.SUB{color:var(--copper-ink)}
+.latch{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.log{border-top:1px solid var(--rule);padding:0 18px 12px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule)}
+td{padding:7px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-variant-numeric:tabular-nums}
+td.mono{font-size:12px}
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:8px}
+.spec table td:first-child{font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:nowrap}
+.rules{padding-left:0;list-style:none;margin:8px 0 0}
+.rules li{padding:8px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:110px 1fr;gap:12px}
+.rules li b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:13px;color:var(--copper-ink)}
+.note{border-left:3px solid var(--signal);padding:6px 14px;color:var(--muted);font-size:15px;margin:14px 0}
+html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{display:none!important}
+.lang{display:flex;gap:0;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.lang button{border:0;border-radius:0;padding:6px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em}
+.lang button.on{background:var(--copper);color:#fff}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+@media (max-width:760px){.panels{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--rule)}.rules li{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.bit{transition:background .15s,border-color .15s}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="topbar"><div class="eyebrow">TapeOut · BSC · CPU 0x6Fb4…5B38</div>
+    <div class="lang" role="group" aria-label="language"><button type="button" id="langZh">中文</button><button type="button" id="langEn">EN</button></div></div>
+  <h1>Circuit <em>283</em></h1>
+  <p class="lede zh">OpenAI 在 2026‑09‑10 发布的 Agents API，其 harness 控制回路被写成一份 <strong>152 NAND + 10 LATCH</strong> 的网表，于次日烧在链上。模型、工具、子 agent 都在链下；这块电路只负责"下一步该做什么"，而且每一步都可以被任何人逐门重算。本页把链上那 1104 字节原样装进浏览器，你可以直接拨动观测位看它动作。</p>
+  <p class="lede en">The harness control loop of OpenAI's Agents API (announced 2026‑09‑10) written as a <strong>152 NAND + 10 LATCH</strong> netlist and burned on chain the next day. Model, tools and subagents stay off‑chain; this circuit only decides "what to do next", and every step can be recomputed gate by gate by anyone. This page loads the exact 1104 on‑chain bytes into your browser so you can flip observation bits and watch it act.</p>
+  <div class="facts">
+    <div><b>circuitId</b><span>283</span></div>
+    <div><b>circuitInfo</b><span>nIn 16 · nOut 15 · nState 10 · gates 162</span></div>
+    <div><b>tx</b><span>0x78b33f3056f10c759b22032307d5539d2314fe6c5239e94e172842390200905a</span></div>
+    <div><b>block</b><span>121240525</span></div>
+    <div><b>netlist</b><span>1104 bytes · sha256 93d65a3634679190…</span></div>
+    <div><b>verified</b><span>2^26 local exhaustive · 64 on-chain step() vectors</span></div>
+  </div>
+</header>
+
+<h2 class="zh">实时模拟：链上网表在你浏览器里跑</h2><h2 class="en">Live simulation: the on‑chain netlist running in your browser</h2>
+<div class="prose"><p class="zh">下面的逻辑不是重写的 JavaScript 版本，而是把 netlist 字节解码后按 TapeOut 的 <code>step()</code> 语义逐门求值。点左栏拨动观测位，按 <em>Step</em> 送入一拍；<em>Play sample</em> 会重放一段完整会话：tool search → MCP 并行调用 → 失败重试 → vault 授权 → 三个子 agent → 排队 → 压缩 → 完成付费。</p>
+<p class="en">This is not a JavaScript rewrite: the netlist bytes are decoded and evaluated gate by gate with TapeOut's <code>step()</code> semantics. Toggle observation bits on the left and press <em>Step</em> to feed one tick; <em>Play sample</em> replays a full session: tool search → parallel MCP call → failed call retried → vault grant → three subagents → a fourth queued → compaction → finish and pay.</p></div>
+
+<div class="sim">
+  <div class="sim-head">
+    <span class="eyebrow">circuit 283 · live step()</span>
+    <div class="btns">
+      <button id="btnStep" class="primary">Step</button>
+      <button id="btnPlay">Play sample session</button>
+      <button id="btnReset">Reset</button>
+    </div>
+  </div>
+  <div class="panels">
+    <div class="panel"><h4>Observations · 16 inputs</h4><div id="inputs"></div></div>
+    <div class="panel"><h4>Register · 10 LATCH</h4>
+      <div class="phase" id="phase">MODEL</div>
+      <div class="reg" id="reg"></div>
+      <div class="latch" id="latch"></div>
+    </div>
+    <div class="panel"><h4>Actions · 15 outputs (last step)</h4><div id="outputs" class="bits"></div>
+      <div class="note" id="explain"></div></div>
+  </div>
+  <div class="log"><table><thead><tr><th>#</th><th>phase</th><th>inputs high</th><th>actions</th><th>state (hex)</th></tr></thead><tbody id="logBody"></tbody></table></div>
+</div>
+
+<h2 class="zh">接口</h2><h2 class="en">Interface</h2>
+<div class="prose"><p class="zh">三组位。观测位由 harness 每拍填入，动作位告诉 harness 下一拍做什么，寄存器由电路自己维护。位序即字节序：<code>pack()</code> 把第 i 位放在第 i/8 字节的第 i%8 位。</p>
+<p class="en">Three groups of bits. The harness fills the observation bits every tick, the action bits tell the harness what to do next, and the register is maintained by the circuit itself. Bit order is byte order: <code>pack()</code> puts bit i at byte i/8, bit i%8.</p></div>
+<div class="spec">
+<table><thead><tr><th>in</th><th>name</th><th>meaning</th></tr></thead><tbody>
+<tr><td>0</td><td>model_done</td><td><span class="zh">模型返回最终答案（end_turn）</span><span class="en">model returned a final answer (end_turn)</span></td></tr>
+<tr><td>1</td><td>model_tool</td><td><span class="zh">模型请求调用工具</span><span class="en">model requested a tool call</span></td></tr>
+<tr><td>2,3</td><td>tool_type1,0</td><td>00 function · 01 MCP · 1x builtin</td></tr>
+<tr><td>4</td><td>tool_known</td><td><span class="zh">工具定义已加载（否则先 tool_search）</span><span class="en">tool definition already loaded (else tool_search first)</span></td></tr>
+<tr><td>5</td><td>tool_batch</td><td><span class="zh">请求程序化并行调用</span><span class="en">programmatic parallel call requested</span></td></tr>
+<tr><td>6</td><td>tool_ok</td><td><span class="zh">上一次工具调用成功</span><span class="en">last tool call succeeded</span></td></tr>
+<tr><td>7</td><td>ctx_high</td><td><span class="zh">上下文接近上限</span><span class="en">context near its limit</span></td></tr>
+<tr><td>8</td><td>budget_low</td><td><span class="zh">token 或轮数预算耗尽</span><span class="en">token or turn budget exhausted</span></td></tr>
+<tr><td>9</td><td>sub_req</td><td><span class="zh">模型要派子 agent</span><span class="en">model wants to delegate to a subagent</span></td></tr>
+<tr><td>10</td><td>sub_done</td><td><span class="zh">有一个子 agent 完成</span><span class="en">one subagent finished</span></td></tr>
+<tr><td>11</td><td>secret_req</td><td><span class="zh">模型需要 vault 里的密钥</span><span class="en">model needs a secret from the vault</span></td></tr>
+<tr><td>12</td><td>vault_ok</td><td><span class="zh">vault 允许</span><span class="en">vault grants it</span></td></tr>
+<tr><td>13</td><td>judge_ok</td><td><span class="zh">验证器接受最终产物</span><span class="en">verifier accepted the final output</span></td></tr>
+<tr><td>14,15</td><td>env1,0</td><td><span class="zh">环境：00 hosted · 01 own infra · 10 partner sandbox</span><span class="en">environment: 00 hosted · 01 own infra · 10 partner sandbox</span></td></tr>
+</tbody></table>
+<div>
+<table><thead><tr><th>out</th><th>name</th><th>meaning</th></tr></thead><tbody>
+<tr><td>0</td><td>call_model</td><td><span class="zh">再调一次模型（计入 turns）</span><span class="en">call the model again (counts a turn)</span></td></tr>
+<tr><td>1–3</td><td>run_fn / run_mcp / run_builtin</td><td><span class="zh">按类型执行工具</span><span class="en">run the tool, routed by type</span></td></tr>
+<tr><td>4</td><td>tool_search</td><td><span class="zh">先加载工具定义</span><span class="en">load tool definitions first</span></td></tr>
+<tr><td>5</td><td>tool_parallel</td><td><span class="zh">与 run_* 同置：并行批调用</span><span class="en">set alongside run_*: parallel batch call</span></td></tr>
+<tr><td>6</td><td>compact</td><td><span class="zh">压缩上下文</span><span class="en">compact the context</span></td></tr>
+<tr><td>7 / 8</td><td>spawn_sub / wait_sub</td><td><span class="zh">派子 agent / 已满 3 个则等待</span><span class="en">spawn a subagent / wait when 3 are running</span></td></tr>
+<tr><td>9</td><td>vault_grant</td><td><span class="zh">放行密钥</span><span class="en">release the secret</span></td></tr>
+<tr><td>10 / 11</td><td>finish / pay</td><td><span class="zh">结束；pay 仅当 judge_ok</span><span class="en">finish; pay only if judge_ok</span></td></tr>
+<tr><td>12</td><td>abort</td><td><span class="zh">预算耗尽、vault 拒绝或二次工具失败</span><span class="en">budget exhausted, vault refused, or a second tool failure</span></td></tr>
+<tr><td>13,14</td><td>env_sel1,0</td><td><span class="zh">锁存的环境选择</span><span class="en">latched environment choice</span></td></tr>
+</tbody></table>
+<table style="margin-top:20px"><thead><tr><th>state</th><th>name</th><th>meaning</th></tr></thead><tbody>
+<tr><td>0,1</td><td>phase1,0</td><td>00 MODEL · 01 TOOL · 10 SUB · 11 DONE</td></tr>
+<tr><td>2</td><td>err</td><td><span class="zh">本轮已用掉一次工具重试</span><span class="en">the one tool retry has been used</span></td></tr>
+<tr><td>3,4</td><td>subcnt1,0</td><td><span class="zh">运行中的子 agent 数，上限 3</span><span class="en">subagents running, max 3</span></td></tr>
+<tr><td>5–7</td><td>turns2..0</td><td><span class="zh">call_model 次数，到 7 即 abort</span><span class="en">call_model count; abort at 7</span></td></tr>
+<tr><td>8,9</td><td>envl1,0</td><td><span class="zh">首拍锁存的 env</span><span class="en">env latched on the first tick</span></td></tr>
+</tbody></table>
+</div>
+</div>
+
+<h3 class="zh">转移规则（优先级自上而下）</h3><h3 class="en">Transition rules (priority top to bottom)</h3>
+<ul class="rules">
+<li><b>MODEL</b><span class="zh">budget_low 或 turns=7 → abort, DONE　|　ctx_high → compact　|　model_done → finish (+pay 若 judge_ok), DONE　|　secret_req → vault_ok ? vault_grant+call_model : abort　|　sub_req → subcnt&lt;3 ? spawn_sub+call_model : wait_sub, SUB　|　model_tool → tool_known ? run_&lt;type&gt;, TOOL : tool_search　|　否则 call_model</span><span class="en">budget_low or turns=7 → abort, DONE　|　ctx_high → compact　|　model_done → finish (+pay if judge_ok), DONE　|　secret_req → vault_ok ? vault_grant+call_model : abort　|　sub_req → subcnt&lt;3 ? spawn_sub+call_model : wait_sub, SUB　|　model_tool → tool_known ? run_&lt;type&gt;, TOOL : tool_search　|　else call_model</span></li>
+<li><b>TOOL</b><span class="zh">tool_ok → call_model, MODEL, err=0　|　!err → run_&lt;type&gt; 重试, err=1　|　否则 abort, DONE</span><span class="en">tool_ok → call_model, MODEL, err=0　|　!err → retry run_&lt;type&gt;, err=1　|　else abort, DONE</span></li>
+<li><b>SUB</b><span class="zh">sub_done → call_model, MODEL　|　否则 wait_sub</span><span class="en">sub_done → call_model, MODEL　|　else wait_sub</span></li>
+<li><b>DONE</b><span class="zh">所有输出为 0，忽略一切输入</span><span class="en">all outputs 0; every input ignored</span></li>
+<li><b>counters</b><span class="zh">subcnt 在 spawn 时 +1、sub_done 时 −1（同拍可抵消）；turns 在 call_model 时 +1，饱和于 7；env 只在会话未开始（MODEL 且 turns=0）时从输入锁存</span><span class="en">subcnt +1 on spawn, −1 on sub_done (both in one tick cancel out); turns +1 on call_model, saturating at 7; env is latched from the inputs only before the session starts (MODEL and turns=0)</span></li>
+</ul>
+
+<h2 class="zh">给另一个 Claude：怎么驱动它</h2><h2 class="en">For another Claude: how to drive it</h2>
+<div class="prose">
+<p class="zh">把你的 harness 循环改成"观测 → 问电路 → 执行动作"。你不需要理解规则，只需要正确填 16 个观测位并执行返回的动作位。电路在链上，也可以在本地用同一份字节跑；两者必须一致，否则就是你的实现错了。</p>
+<p class="en">Turn your harness loop into "observe → ask the circuit → execute the actions". You do not need to understand the rules; fill the 16 observation bits correctly and carry out the action bits that come back. The circuit lives on chain and can also be run locally from the same bytes; the two must agree, otherwise your implementation is wrong.</p>
+</div>
+<pre><code># 1. local evaluation / 本地求值 (bit-identical to on-chain step())
+gates = decode(nl_bytes)            # op 0x00 = NAND(a,b) 两个 3 字节 wire id；op 0x01 = LATCH(d)
+wires = [0, 1] + inputs16           # wire 0/1 常量，2..17 输入，之后按 gate 顺序
+for g in gates:
+    wires.append(1 - (wires[g[1]] & wires[g[2]]) if g[0]==0 else state[next_latch])
+new_state = [wires[g[1]] for g in gates if g[0]==1]
+actions   = wires[-15:]
+
+# 2. on-chain evaluation / 链上求值 (BSC, CPU 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38)
+step(uint256 circuitId=283, bytes state, bytes inputs) -> (bytes newState, bytes outputs)
+# state 2 bytes (10 bit), inputs 2 bytes (16 bit), outputs 2 bytes (15 bit); pack: bit i -> byte i//8, bit i%8
+# note: circuits with LATCH revert on eval(): "has latch: use step"  / 带 LATCH 的电路必须用 step()
+
+# 3. one real on-chain vector from the post-burn check / 一条真实链上向量
+state=0x8903 inputs=0x2ae5  ->  newState=0x5003 outputs=0x0160</code></pre>
+<div class="prose">
+<p class="zh">验证它、复现它或在它之上再建一层，所需文件都在仓库 <code>circuits/_scratch/agent_api_netlist/v2/</code>：<code>spec.py</code> 是独立于 Verilog 的参考语义；<code>top.v</code> 由 Cursor 上的 Grok 4.6 手写；<code>compress.py</code> 做 ABC 压缩、精简封装和 2^26 穷举；<code>burn_agent_v2.py</code> 是钱包桥烧录与链上复核脚本。</p>
+<p class="en">Everything needed to verify it, reproduce it or build on top of it is in the repo under <code>circuits/_scratch/agent_api_netlist/v2/</code>: <code>spec.py</code> is the reference semantics, independent of the Verilog; <code>top.v</code> was hand-written by Grok 4.6 in Cursor; <code>compress.py</code> does the ABC compression, the lean wrap and the exhaustive 2^26 check; <code>burn_agent_v2.py</code> is the wallet-bridge burn and on-chain verification script.</p>
+</div>
+
+<h2 class="zh">为什么要把一个 API 烧成电路</h2><h2 class="en">Why burn an API into a circuit</h2>
+<div class="prose">
+<p class="zh">API 是一家公司的办事流程，写在它自己的服务器里，想改就改，你只能信它今天说的。烧成电路，就是把这套流程刻在一块公开的石碑上：每条规则都是几个开关拼出来的，谁都能拿着石碑自己走一遍，看某次执行是不是照规矩来的。</p>
+<p class="zh">模型是办事员，电路是流程。办事员可以换，聪明或笨都行，但只能按石碑上的流程动：该叫工具就叫工具，失败只准重试一次，帮手最多三个，办得对才付钱。执行仍在链下，规则和判定在链上。这是"验证 agent 系统里除模型以外的一切"的最便宜的做法。</p>
+<p class="zh">#283 是第一块。同一方法适用于 A2A 的任务生命周期、网关结算、以及任何能写成有限状态机的协议。</p>
+<p class="en">An API is a company's office procedure, written in its own servers, changed whenever it likes; you can only trust what it says today. Burning it into a circuit carves that procedure into a public stone tablet: every rule is a handful of switches, and anyone can walk the tablet themselves to check whether a given run followed the rules.</p>
+<p class="en">The model is the clerk; the circuit is the procedure. The clerk can be swapped, clever or dull, but can only move as the tablet allows: call a tool when told, retry a failure once, at most three helpers, get paid only when the work checks out. Execution stays off chain; the rules and the judgment live on chain. It is the cheapest way to verify everything in an agent system except the model.</p>
+<p class="en">#283 is the first tablet. The same method applies to the A2A task lifecycle, gateway settlement, and any protocol that can be written as a finite state machine.</p>
+</div>
+</div>
+
+<script>
+(function(){
+let lang='zh';
+try{ lang=localStorage.getItem('c283lang') || ((navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'); }catch(e){ lang=(navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'; }
+function setLang(l){ lang=l; document.documentElement.setAttribute('data-lang',l); document.getElementById('langZh').classList.toggle('on',l==='zh'); document.getElementById('langEn').classList.toggle('on',l==='en'); try{localStorage.setItem('c283lang',l);}catch(e){} if(typeof renderExplain==='function') renderExplain(); }
+document.getElementById('langZh').onclick=()=>setLang('zh'); document.getElementById('langEn').onclick=()=>setLang('en');
+const T={
+ zh:{none:'尚未送入任何一拍。', reset:'已复位：MODEL 相位，寄存器全 0。', pre:'已预先重放示例会话（13 拍）。按 Reset 清空后自己拨位试。',
+     step:(n,ph,hi,acts,nx)=>`第 ${n} 拍：在 ${ph} 相位收到 [${hi}]，电路输出 [${acts}]，进入 ${nx}。`, sample:(k,note)=>`示例第 ${k} 拍 · ${note.zh}`},
+ en:{none:'No tick fed yet.', reset:'Reset: MODEL phase, register all zero.', pre:'The 13-tick sample session has been replayed. Press Reset to clear and try your own bits.',
+     step:(n,ph,hi,acts,nx)=>`Tick ${n}: in phase ${ph} with [${hi}], the circuit output [${acts}] and moved to ${nx}.`, sample:(k,note)=>`Sample tick ${k} · ${note.en}`}};
+let lastExplain=null; function renderExplain(){ if(lastExplain) document.getElementById('explain').textContent=lastExplain(T[lang]); }
+const NL_HEX = "0x010000920100008d0100007a01000071010000760100005e0100006101000067010000b2010000b3000000140000140000000800000800000017000017000000180000180000001900001900000012000012000000130000130000000a00000a00000009000009000000020000020000000d00000d0000000b00000b0000001500001500000016000016000000030000030000000e00000e0000000c00000c00000006000006000000040000040000000500000500000021000022000000300000300000001700001800000032000032000000190000330000002300003400000035000035000000310000360000003700003700000024000038000000390000390000002500003a0000003b00003b0000002600003c0000003d00003d0000000b00003e0000003f00003f000000150000160000004100004100000040000041000000430000430000000d00003c000000450000450000000e0000460000002700003e000000480000480000002a000049000000120000220000004b00004b0000000c00004c000000210000130000004e00004e0000000800004f0000004d0000500000005100005100000047000052000000530000530000004a00005400000055000055000000430000560000005700005700000019000057000000590000590000003400005a0000005b00005b0000001800005c0000001e00005d0000001f0000590000005d00005f000000600000600000000200003a000000620000620000000f000063000000200000580000005b00006500000066000066000000280000290000000c00006800000069000069000000440000690000002800006b0000004300006a0000001500006d0000002900006e0000006c00006f000000700000700000006b00006d000000720000720000002900007200000016000073000000740000750000001d00004f000000770000770000001400004e000000770000790000002b00004600000031000035000000140000780000007c00007d0000007e00007e0000007b00007f000000800000800000001c00007800000003000049000000830000830000000600008400000082000085000000860000860000001200001300000062000088000000890000890000008100008a0000008b00008b0000008700008c000000400000420000002c00004c0000008e00008f000000900000900000008c00009100000007000086000000040000860000002e00008600000095000095000000050000960000002f0000960000002d0000840000001e0000200000009a00009a0000003100009b0000009c00009c0000001f00009d0000009e00009e0000001100009f0000001b00009e000000090000380000001000009f0000001a00009e000000430000560000009800009800000097000097000000940000940000009900009900000093000093000000a20000a2000000430000430000008e00008f0000004700004700000062000062000000640000640000007b00007f000000a30000a4000000a00000a1";
+const IN = ["model_done","model_tool","tool_type1","tool_type0","tool_known","tool_batch","tool_ok","ctx_high","budget_low","sub_req","sub_done","secret_req","vault_ok","judge_ok","env1","env0"];
+const OUT = ["call_model","run_fn","run_mcp","run_builtin","tool_search","tool_parallel","compact","spawn_sub","wait_sub","vault_grant","finish","pay","abort","env_sel1","env_sel0"];
+const GROUPS = [["model",[0,1,7,0]],["tool",[2,3,4,5,6]],["subagent",[9,10]],["budget / vault / judge",[8,11,12,13]],["env (latched on first step)",[14,15]]];
+const N_IN=16,N_OUT=15;
+// decode netlist
+const bytes = Uint8Array.from(NL_HEX.replace(/^0x/,'').match(/../g).map(h=>parseInt(h,16)));
+const gates=[]; for(let i=0;i<bytes.length;){const op=bytes[i]; const n=op===0?2:1; const a=[];
+  for(let k=0;k<n;k++){const o=i+1+3*k; a.push((bytes[o]<<16)|(bytes[o+1]<<8)|bytes[o+2]);} gates.push([op,...a]); i+=1+3*n;}
+const N_ST = gates.filter(g=>g[0]===1).length;
+function step(state, inputs){
+  const w=[0,1,...inputs]; let li=0;
+  for(const g of gates){ if(g[0]===0) w.push(1-(w[g[1]]&w[g[2]])); else w.push(state[li++]); }
+  const ns=[]; for(const g of gates) if(g[0]===1) ns.push(w[g[1]]);
+  return [ns, w.slice(-N_OUT)];
+}
+// ui state
+let inputs = new Array(N_IN).fill(0), state = new Array(N_ST).fill(0), n=0;
+const $=id=>document.getElementById(id);
+const inputsEl=$('inputs'), outEl=$('outputs'), reg=$('reg'), logBody=$('logBody');
+// build inputs
+const seen=new Set();
+for(const [label,idx] of GROUPS){ const g=document.createElement('div'); g.className='group';
+  g.innerHTML=`<div class="g">${label}</div>`; const bits=document.createElement('div'); bits.className='bits';
+  for(const i of idx){ if(seen.has(i)) continue; seen.add(i); const b=document.createElement('button'); b.type='button'; b.className='bit'; b.id='in_'+i; b.textContent=IN[i]; b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{inputs[i]^=1; b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));}; bits.appendChild(b);} g.appendChild(bits); inputsEl.appendChild(g);}
+for(let i=0;i<N_OUT;i++){const b=document.createElement('span'); b.className='bit out'; b.id='out_'+i; b.textContent=OUT[i]; outEl.appendChild(b);}
+function phaseName(s){return ["MODEL","TOOL","SUB","DONE"][s[0]*2+s[1]];}
+function hex(bits){let v=0; bits.forEach((b,i)=>v|=b<<i); return v.toString(16).padStart(Math.ceil(bits.length/8)*2,'0');}
+function render(out){
+  const ph=phaseName(state); const pe=$('phase'); pe.textContent=ph; pe.className='phase '+ph;
+  reg.innerHTML=[["phase",ph],["err (retry used)",state[2]],["subagents running",state[3]*2+state[4]+" / 3"],["turns",state[5]*4+state[6]*2+state[7]+" / 7"],["env latched",["hosted","own infra","partner sandbox","(11)"][state[8]*2+state[9]]]]
+    .map(([k,v])=>`<div class="r"><b>${k}</b><span>${v}</span></div>`).join('');
+  $('latch').textContent='LATCH bits: '+state.join('')+'  (0x'+hex(state)+')';
+  for(let i=0;i<N_OUT;i++) $('out_'+i).classList.toggle('on',!!(out&&out[i]));
+}
+function setInputs(obj){inputs=new Array(N_IN).fill(0); for(const k in obj) inputs[IN.indexOf(k)]=obj[k]; for(let i=0;i<N_IN;i++){const b=$('in_'+i); b.classList.toggle('on',!!inputs[i]); b.setAttribute('aria-pressed',String(!!inputs[i]));}}
+function doStep(note){
+  const ph=phaseName(state); const [ns,out]=step(state,inputs);
+  const hi=IN.filter((_,i)=>inputs[i]).join(', ')||'—'; const acts=OUT.filter((_,i)=>out[i]).join(', ')||'—';
+  const tr=document.createElement('tr'); tr.innerHTML=`<td>${n}</td><td>${ph}</td><td class="mono">${hi}</td><td class="mono">${acts}</td><td class="mono">${hex(state)} → ${hex(ns)}</td>`; logBody.appendChild(tr);
+  state=ns; n++; render(out);
+  const nx=phaseName(state); lastExplain=note||(t=>t.step(n,ph,hi,acts,nx)); renderExplain();
+}
+const P={env1:1,env0:0};
+const N=(zh,en)=>({zh,en});
+const SAMPLE=[
+ [N("开始（partner sandbox）→ tool search","start (partner sandbox) → tool search"),{...P,model_tool:1}],
+ [N("MCP 工具并行批调用","mcp tool batch"),{...P,model_tool:1,tool_known:1,tool_type0:1,tool_batch:1}],
+ [N("工具失败一次","tool fails once"),{...P,tool_ok:0,tool_type0:1,tool_batch:1}],
+ [N("重试成功","retry ok"),{...P,tool_ok:1}],
+ [N("密钥请求获批","secret request granted"),{...P,secret_req:1,vault_ok:1}],
+ [N("派子 agent 1/3","spawn sub 1/3"),{...P,sub_req:1}],[N("派子 agent 2/3","spawn sub 2/3"),{...P,sub_req:1}],[N("派子 agent 3/3","spawn sub 3/3"),{...P,sub_req:1}],
+ [N("第 4 个请求排队","4th request waits"),{...P,sub_req:1}],
+ [N("一个完成，继续","one finishes / continues"),{...P,sub_done:1}],
+ [N("压缩上下文","compact"),{...P,ctx_high:1}],
+ [N("模型完成且 judge 通过 → finish, pay","model done + judge ok → finish, pay"),{...P,model_done:1,judge_ok:1}],
+ [N("DONE 忽略后续输入","DONE ignores further input"),{...P,model_done:1,judge_ok:1,sub_req:1}],
+];
+function reset(){state=new Array(N_ST).fill(0); n=0; logBody.innerHTML=''; setInputs({}); render(null); lastExplain=t=>t.reset; renderExplain();}
+let playing=false;
+function play(){ if(playing) return; playing=true; reset(); let k=0;
+  const tick=()=>{ if(k>=SAMPLE.length){playing=false; return;} const [note,obj]=SAMPLE[k++]; setInputs(obj); const kk=k; doStep(t=>t.sample(kk,note)); setTimeout(tick, matchMedia('(prefers-reduced-motion: reduce)').matches?0:650); };
+  tick(); }
+$('btnStep').onclick=()=>doStep(); $('btnReset').onclick=reset; $('btnPlay').onclick=play;
+// resting state: show the sample session already played so the first frame is informative
+setLang(lang); reset(); SAMPLE.forEach(([note,obj],i)=>{ setInputs(obj); doStep(t=>t.sample(i+1,note)); }); setInputs({}); lastExplain=t=>t.pre; renderExplain();
+})();
+</script>
+
+</body>
+</html>
