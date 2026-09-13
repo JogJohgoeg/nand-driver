@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T17:21:05.709587Z",
+  "updated": "2026-09-13T17:46:55.787501Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -802,6 +802,16 @@
       "stateless/environment_ram_results.json",
       "stateless/environment_game_results.json"
     ],
-    "verifierRuntimeSHA256": "3167f7268401035d881d36bd2bed4e63a64e1d0830a2fa71308fdf154c7d04b4"
+    "verifierRuntimeSHA256": "3167f7268401035d881d36bd2bed4e63a64e1d0830a2fa71308fdf154c7d04b4",
+    "hardware_validation": {
+      "status": "measured",
+      "scope": "Separate authenticated RAM hardware environment microstep and env-ram-state-v1 hash. Caller holds all witness/context inputs stable until done; no MMIO/input/syscon, Hazard3 integration, physical SRAM, attestation or new PPA claim.",
+      "witnesses": 5197,
+      "accepted": 5187,
+      "rejected": 10,
+      "maximumClocksPerWitness": 2953,
+      "frequencyAreaPower": "unmeasured",
+      "evidence": "../tapeout_asic/referee/environment_rtl_results.json"
+    }
   }
 }
