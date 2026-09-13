@@ -107,7 +107,7 @@ footer a,p a{color:var(--accent)}
 <script id="gas-model" type="application/json">
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T10:57:12.023265+00:00",
+  "updated": "2026-09-13T12:44:31.612461Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -759,7 +759,7 @@ footer a,p a{color:var(--accent)}
       "protocolTotalGas": 248580,
       "calldataFloorApplied": false
     },
-    "next_gate": "Challenge manager, authenticated model-bank transitions, MMIO profile and independent security/conformance review; not deployed.",
+    "next_gate": "Full-job initialization/terminal policy, production authorization/economics, DA/multiple challengers, MMIO and independent review; bank and tick local prototypes are separate measured entries.",
     "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md",
     "suite_protocol_gas": {
       "status": "model",
@@ -821,8 +821,70 @@ footer a,p a{color:var(--accent)}
         6619818,
         7041983
       ],
-      "scope": "setup + 35 measured-range rounds + 100\u2013350k final resolution; excludes deployment/bonds/job registry/DA"
+      "scope": "setup + 35 measured-range rounds + 100–350k final resolution; excludes deployment/bonds/job registry/DA"
     }
+  },
+  "authenticated_bank_game": {
+    "status": "measured",
+    "scope": "Every one of the 14 actual layer0 two-token bank boundaries independently replayed through the local Solidity verifier; each pre/post CPU/RAM matches the original coarse trace. Each run reaches its selected boundary using host replacements for earlier banks; this is not a continuous full-layer EVM run or full42-layer job authorization.",
+    "events": 14,
+    "page_transitions": 107534,
+    "all_cpu48_ram_endpoints_exact": true,
+    "bank_subgame_rounds": 13,
+    "subgame_total_gas_range": [
+      2276364,
+      2287018
+    ],
+    "resolve_gas_range": [
+      191233,
+      202043
+    ],
+    "evidence": "stateless/bank_all_events.json",
+    "network_transactions": 0,
+    "global_model_root": {
+      "status": "measured",
+      "scope": "All 42-layer + vocabulary-head linear32 projection/scale and norm cache pages; SHA256 validated against pinned manifest. BF16 embeddings excluded; initial embedding/job policy still external. Nine actual layer0 bank witnesses rechecked against this global root.",
+      "root": "9e151edb6e1df329175cb1103a6830e01e1faecbbccd9133bf0a098371bfc4bd",
+      "pages": 1373480,
+      "bytes": 1406443520,
+      "bank_witnesses": 9,
+      "evidence": "../tapeout_asic/minicpm/global_bank_root.json"
+    },
+    "pinned_segment": {
+      "status": "measured",
+      "scope": "Local immutable requester-role configuration for a real first-scale-page segment; constructor emulated in local VM, then open/join/resolve. No deployment/network transaction or production authorization.",
+      "open_join_resolve_gas": 510432,
+      "negative_cases": 13,
+      "evidence": "stateless/pinned_game_results.json"
+    },
+    "bond_prototype": {
+      "status": "measured",
+      "scope": "Local fixed-bond bank game, requester-pinned real scale-page segment; virtual wei only. Constructor emulation, accounting, all timeout payouts, both-invalid policy and callback checks. Not a production economic-security claim.",
+      "main_test_flow_gas": 865050,
+      "cost_limit": "Includes extra adversarial deposits/withdrawals; not minimal happy path; constructor excluded.",
+      "virtual_bond_wei": 1000,
+      "real_funds": 0,
+      "evidence": "stateless/bonded_game_results.json"
+    },
+    "layer_output": {
+      "status": "measured",
+      "scope": "Real initial/terminal state and page witnesses in synthetic sparse traces.\nTests admission and output extraction, not a full layer dispute or EVM replay.\n",
+      "expanded_transitions": 849045512,
+      "output_acceptance_gas": 906240,
+      "negative_cases": 17,
+      "evidence": "stateless/layer_game_results.json",
+      "full_layer_dispute_executed": false
+    }
+  },
+  "tick_refinement_game": {
+    "status": "measured",
+    "scope": "Actual 1024-instruction CSR/MIP guest, correct tick-phase trace versus wrong per-instruction sampling trace; local game only, no job registry/funds/network transactions",
+    "instructions": 1024,
+    "rounds": 10,
+    "total_gas": 1797373,
+    "resolve_gas": 135620,
+    "evidence": "stateless/tick_game_results.json",
+    "hardware_integrated": false
   }
 }
 </script>
@@ -917,6 +979,6 @@ footer a,p a{color:var(--accent)}
 <p>参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://jogjohgoeg.github.io/nand-driver/">21 门驾驶车</a>（#279/#280 的公开演示）。</p>
 
 <footer>
-  <div>版本 2026-09-13 r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+  <div>版本 2026-09-13 r9（新增 authenticated_bank_game 实测：MiniCPM 第 0 层两 token 的 14 个真实 bank 边界各自经本地 Solidity 验证器重放，107,534 页转换，前后 CPU48/RAM 端点全部精确；13 轮子博弈 2.28M–2.29M gas，含全局模型根、钉死段、虚拟保证金原型、层输出提取 906,240 gas；新增 tick_refinement_game 实测：1,024 指令 CSR/MIP 客体 10 轮 1,797,373 gas；均为本地博弈，无链上交易，硬件未集成）· r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
 </footer>
 </div>

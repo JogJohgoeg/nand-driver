@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T10:57:12.023265+00:00",
+  "updated": "2026-09-13T12:44:31.612461Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -652,7 +652,7 @@
       "protocolTotalGas": 248580,
       "calldataFloorApplied": false
     },
-    "next_gate": "Challenge manager, authenticated model-bank transitions, MMIO profile and independent security/conformance review; not deployed.",
+    "next_gate": "Full-job initialization/terminal policy, production authorization/economics, DA/multiple challengers, MMIO and independent review; bank and tick local prototypes are separate measured entries.",
     "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md",
     "suite_protocol_gas": {
       "status": "model",
@@ -714,7 +714,69 @@
         6619818,
         7041983
       ],
-      "scope": "setup + 35 measured-range rounds + 100\u2013350k final resolution; excludes deployment/bonds/job registry/DA"
+      "scope": "setup + 35 measured-range rounds + 100–350k final resolution; excludes deployment/bonds/job registry/DA"
     }
+  },
+  "authenticated_bank_game": {
+    "status": "measured",
+    "scope": "Every one of the 14 actual layer0 two-token bank boundaries independently replayed through the local Solidity verifier; each pre/post CPU/RAM matches the original coarse trace. Each run reaches its selected boundary using host replacements for earlier banks; this is not a continuous full-layer EVM run or full42-layer job authorization.",
+    "events": 14,
+    "page_transitions": 107534,
+    "all_cpu48_ram_endpoints_exact": true,
+    "bank_subgame_rounds": 13,
+    "subgame_total_gas_range": [
+      2276364,
+      2287018
+    ],
+    "resolve_gas_range": [
+      191233,
+      202043
+    ],
+    "evidence": "stateless/bank_all_events.json",
+    "network_transactions": 0,
+    "global_model_root": {
+      "status": "measured",
+      "scope": "All 42-layer + vocabulary-head linear32 projection/scale and norm cache pages; SHA256 validated against pinned manifest. BF16 embeddings excluded; initial embedding/job policy still external. Nine actual layer0 bank witnesses rechecked against this global root.",
+      "root": "9e151edb6e1df329175cb1103a6830e01e1faecbbccd9133bf0a098371bfc4bd",
+      "pages": 1373480,
+      "bytes": 1406443520,
+      "bank_witnesses": 9,
+      "evidence": "../tapeout_asic/minicpm/global_bank_root.json"
+    },
+    "pinned_segment": {
+      "status": "measured",
+      "scope": "Local immutable requester-role configuration for a real first-scale-page segment; constructor emulated in local VM, then open/join/resolve. No deployment/network transaction or production authorization.",
+      "open_join_resolve_gas": 510432,
+      "negative_cases": 13,
+      "evidence": "stateless/pinned_game_results.json"
+    },
+    "bond_prototype": {
+      "status": "measured",
+      "scope": "Local fixed-bond bank game, requester-pinned real scale-page segment; virtual wei only. Constructor emulation, accounting, all timeout payouts, both-invalid policy and callback checks. Not a production economic-security claim.",
+      "main_test_flow_gas": 865050,
+      "cost_limit": "Includes extra adversarial deposits/withdrawals; not minimal happy path; constructor excluded.",
+      "virtual_bond_wei": 1000,
+      "real_funds": 0,
+      "evidence": "stateless/bonded_game_results.json"
+    },
+    "layer_output": {
+      "status": "measured",
+      "scope": "Real initial/terminal state and page witnesses in synthetic sparse traces.\nTests admission and output extraction, not a full layer dispute or EVM replay.\n",
+      "expanded_transitions": 849045512,
+      "output_acceptance_gas": 906240,
+      "negative_cases": 17,
+      "evidence": "stateless/layer_game_results.json",
+      "full_layer_dispute_executed": false
+    }
+  },
+  "tick_refinement_game": {
+    "status": "measured",
+    "scope": "Actual 1024-instruction CSR/MIP guest, correct tick-phase trace versus wrong per-instruction sampling trace; local game only, no job registry/funds/network transactions",
+    "instructions": 1024,
+    "rounds": 10,
+    "total_gas": 1797373,
+    "resolve_gas": 135620,
+    "evidence": "stateless/tick_game_results.json",
+    "hardware_integrated": false
   }
 }
