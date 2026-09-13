@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T17:46:55.787501Z",
+  "updated": "2026-09-13T18:22:35Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -812,6 +812,41 @@
       "maximumClocksPerWitness": 2953,
       "frequencyAreaPower": "unmeasured",
       "evidence": "../tapeout_asic/referee/environment_rtl_results.json"
+    }
+  },
+  "mmio_refinement_game": {
+    "status": "measured",
+    "scope": "Dispute incorrect signed UART byte loading with authenticated fixed input. Local two-transition trace, one bisection round; no live input append, job authorization, payments or chain writes.",
+    "profile": "env-mmio-state-v1",
+    "statePreimageBytes": 448,
+    "fixedInputMaximumBytes": 31,
+    "savedDeployedEndpoints": 255,
+    "savedEndpointMicrosteps": 5572,
+    "freshBoundaryEndpoints": 4,
+    "freshBoundaryMicrosteps": 57,
+    "gameRounds": 1,
+    "gameMicrosteps": 2,
+    "resolveProtocolGas": 151685,
+    "totalProtocolGas": 587428,
+    "negativeGameTests": 10,
+    "verifierRuntimeBytes": 13673,
+    "verifierRuntimeSHA256": "37e317324c5dbbbe037ff9b78aa38f669fdaa5bcd226996842d7dee152e622ee",
+    "limits": "Separate fixed-input profile. No live input append, full Linux/model dispute, requester authorization, bonds/payments, DA policy, Hazard3/SRAM integration or deployment. Existing profiles remain unchanged.",
+    "evidence": [
+      "stateless/ENVIRONMENT.md",
+      "stateless/mmio_results.json",
+      "stateless/mmio_boundary_results.json",
+      "stateless/mmio_game_results.json"
+    ],
+    "hardware_validation": {
+      "status": "measured",
+      "scope": "Separate fixed-input MMIO hardware environment microstep and env-mmio-state-v1 hash. Caller holds all witness/context inputs stable until done; no live input append, Hazard3 integration, physical SRAM, attestation or new PPA claim.",
+      "witnesses": 5747,
+      "accepted": 5733,
+      "rejected": 14,
+      "maximumClocksPerWitness": 2979,
+      "frequencyAreaPower": "unmeasured",
+      "evidence": "../tapeout_asic/referee/mmio_rtl_results.json"
     }
   }
 }
