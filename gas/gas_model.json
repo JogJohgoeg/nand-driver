@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T12:44:31.612461Z",
+  "updated": "2026-09-13T16:51:46.196698Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -771,12 +771,36 @@
   },
   "tick_refinement_game": {
     "status": "measured",
-    "scope": "Actual 1024-instruction CSR/MIP guest, correct tick-phase trace versus wrong per-instruction sampling trace; local game only, no job registry/funds/network transactions",
+    "scope": "Actual 1024-instruction CSR/MIP guest, correct call-phase trace versus wrong per-instruction sampling trace; only two normal flip endpoints match deployed wrapper. Native-core IRQ/WFI/rollover checks do not establish arbitrary deployed ticks. Local game only, no job registry/funds/network transactions.",
     "instructions": 1024,
     "rounds": 10,
     "total_gas": 1797373,
     "resolve_gas": 135620,
     "evidence": "stateless/tick_game_results.json",
-    "hardware_integrated": false
+    "hardware_integrated": false,
+    "wrapper_limit": "tick-state-v1 omits external cycle history, wrapper idle +1024 cycles, persistent syscon status and UART/input transcript; requires a new environment profile. Existing measured CSR-game gas unchanged.",
+    "wrapper_probe_evidence": "../tapeout_asic/referee/wrapper_observations_checked.json"
+  },
+  "environment_refinement_game": {
+    "status": "measured",
+    "scope": "Dispute omitted wrapper idle advancement after an actual cross-page store. Local two-transition trace and one bisection round; no full tick/model game, job authorization, payments or MMIO.",
+    "profile": "env-ram-state-v1",
+    "savedDeployedEndpoints": 32,
+    "savedEndpointMicrosteps": 5147,
+    "freshRAMWriteEndpoints": 4,
+    "freshRAMWriteMicrosteps": 8,
+    "gameRounds": 1,
+    "gameMicrosteps": 2,
+    "resolveProtocolGas": 171366,
+    "totalProtocolGas": 602154,
+    "negativeGameTests": 8,
+    "verifierRuntimeBytes": 11716,
+    "limits": "RAM-only local prototype. No UART/input/syscon execution, full tick/model dispute, requester authorization, bonds/payments, DA policy, hardware integration or deployment. Existing tick-state-v1 measurements and format unchanged.",
+    "evidence": [
+      "stateless/ENVIRONMENT.md",
+      "stateless/environment_results.json",
+      "stateless/environment_ram_results.json",
+      "stateless/environment_game_results.json"
+    ]
   }
 }
