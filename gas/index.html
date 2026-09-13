@@ -1,0 +1,394 @@
+<title>TapeOut Gas 账本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ground:#F4F6F5; --surface:#FFFFFF; --ink:#16201E; --ink-2:#566662; --ink-3:#7E8B87;
+  --rule:#D5DDDA; --rule-strong:#B9C5C0; --accent:#0E6B55; --accent-soft:#DCEFE8; --cost:#B45F16; --cost-soft:#F6E7D9;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans","Noto Sans SC",-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  --display:"Bricolage Grotesque","IBM Plex Sans","Noto Sans SC",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0E1413; --surface:#151C1B; --ink:#E4EBE8; --ink-2:#A5B3AE; --ink-3:#7F8E89;
+    --rule:#26312E; --rule-strong:#3A4844; --accent:#4FBF9B; --accent-soft:#163129; --cost:#E39A55; --cost-soft:#3A2A1B;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0E1413; --surface:#151C1B; --ink:#E4EBE8; --ink-2:#A5B3AE; --ink-3:#7F8E89;
+  --rule:#26312E; --rule-strong:#3A4844; --accent:#4FBF9B; --accent-soft:#163129; --cost:#E39A55; --cost-soft:#3A2A1B;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 96px}
+.wrap{max-width:76ch;margin:0 auto}
+header{padding-block:56px 28px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
+.eyebrow .live{color:var(--accent)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,54px);line-height:1.05;margin:14px 0 10px;letter-spacing:-.01em;text-wrap:balance}
+.sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
+.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule-strong);margin-top:28px;background:var(--surface)}
+.thesis div{padding:16px 18px;border-right:1px solid var(--rule)}
+.thesis div:last-child{border-right:0}
+.thesis .n{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.thesis .l{font-size:13px;color:var(--ink-2);margin-top:2px}
+.thesis .l span{display:block;color:var(--ink-3);font-size:12px}
+h2{font-family:var(--display);font-weight:700;font-size:24px;margin:52px 0 6px;letter-spacing:-.005em;text-wrap:balance}
+h2 small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+p{margin:10px 0;max-width:68ch}
+.note{border-left:3px solid var(--accent);padding:8px 14px;background:var(--accent-soft);color:var(--ink);margin:16px 0;font-size:15px}
+.warn{border-left:3px solid var(--cost);background:var(--cost-soft)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0 6px;background:var(--surface)}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--rule-strong)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.k{font-weight:500}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 7px;border:1px solid var(--rule-strong);border-radius:3px;color:var(--ink-2);vertical-align:middle}
+.tag.m{color:var(--accent);border-color:var(--accent)}
+.tag.e{color:var(--cost);border-color:var(--cost)}
+code{font-family:var(--mono);font-size:.92em;background:var(--surface);border:1px solid var(--rule);padding:0 5px;border-radius:3px}
+pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);padding:14px 16px;overflow-x:auto;margin:14px 0}
+figure{margin:18px 0 8px}
+figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.bar{display:flex;height:34px;gap:2px;background:var(--surface);border:1px solid var(--rule)}
+.bar span{display:block;height:100%;position:relative;min-width:2px}
+.bar span[data-l]::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#fff;font-variant-numeric:tabular-nums}
+.hbars{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 12px;align-items:center;font-size:14px}
+.hbars .lbl{font-family:var(--mono);color:var(--ink-2);font-size:13px;white-space:nowrap}
+.hbars .trk{height:14px;background:var(--surface);border:1px solid var(--rule);position:relative}
+.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:0 3px 3px 0}
+.hbars .trk i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--cost)}
+.hbars .v{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.hbars .v small{color:var(--ink-3)}
+ol,ul{padding-left:1.3em}
+li{margin:6px 0}
+footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--rule-strong);font-size:13px;color:var(--ink-2)}
+footer a,p a{color:var(--accent)}
+@media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px solid var(--rule)}.thesis div:last-child{border-bottom:0}}
+@media (prefers-reduced-motion:no-preference){.bar span{transition:flex-basis .3s}}
+</style>
+<div class="wrap">
+<header>
+  <div class="eyebrow"><span>TapeOut · BNB Smart Chain</span><span>2026-09-13</span><span class="live">实测 + 估算 · 只读链访问 · 零交易</span></div>
+  <h1>TapeOut Gas 账本</h1>
+  <p class="sub">面向 agent 的参考页：把一个 NAND 门、一条 RISC-V 指令、一个内存页在 BSC 上的真实价格记清楚，再看哪里能省。所有数字来自链上收据、只读估算和逐字节精确的离线复现。</p>
+  <div class="thesis">
+    <div><div class="n">1,921</div><div class="l">gas / NAND 门 / 步<span>电路 step 线性拟合斜率</span></div></div>
+    <div><div class="n">962</div><div class="l">gas / RISC-V 指令<span>链上 Linux 机器，80 笔收据回归</span></div></div>
+    <div><div class="n">239,715</div><div class="l">gas / 脏页写回<span>1 KB 页的写时复制 CREATE</span></div></div>
+  </div>
+</header>
+
+
+<h2><small>00 · For agents</small>给 agent 的使用说明</h2>
+<p>本页是给自动化代理读的参考数据，不是营销页。规则：</p>
+<ul>
+<li>所有数字的机器可读版本在同目录 <a href="gas_model.json"><code>gas_model.json</code></a>，也内嵌在本页 <code>&lt;script id="gas-model" type="application/json"&gt;</code> 里；字段名为英文 snake_case，单位默认 gas。</li>
+<li>每个数字带状态：<code>measured</code> 来自链上收据、<code>eth_estimateGas</code> 或逐字节精确的本地重放；<code>estimate</code> 是尚未测量的分析值；<code>model</code> 是按已拟合公式推算。引用时请连状态一起引用。</li>
+<li>公式可直接代入：电路 <code>gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH</code>；机器 <code>gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D</code>。样本范围外的外推自负。</li>
+<li>页面纯静态，无脚本渲染，<code>curl</code> 即可读全文；<code>updated</code> 字段是数据日期，链上参数会漂移，用前核对区块高度。</li>
+<li>结论优先级：链不是瓶颈；脏页与指令循环是；大模型原生上链不可行，走乐观裁决。</li>
+</ul>
+<script id="gas-model" type="application/json">{
+ "schema": "tapeout-gas-model/1",
+ "updated": "2026-09-13",
+ "chain_id": 56,
+ "units": "gas unless stated",
+ "status_legend": {
+  "measured": "from receipts / eth_estimateGas / exact local replay",
+  "estimate": "analytical estimate pending measurement"
+ },
+ "chain": {
+  "block_time_s": 0.452,
+  "gas_limit": 69455003,
+  "avg_gas_used": 13600000,
+  "utilization": 0.2,
+  "real_tps": 168,
+  "gas_price_gwei": 0.05,
+  "tapeout_machine_tx_gas_cap": 16777216,
+  "client": "Geth/v1.7.7-6c154fb3-20260723",
+  "measured_at_block": 121602577,
+  "status": "measured"
+ },
+ "circuit_step": {
+  "method": "eth_estimateGas on step(), zero-input pattern, block 121591371",
+  "samples": [
+   {
+    "circuit": 280,
+    "nand": 87,
+    "latch": 3,
+    "gas": 261497
+   },
+   {
+    "circuit": 283,
+    "nand": 152,
+    "latch": 10,
+    "gas": 433276
+   },
+   {
+    "circuit": 284,
+    "nand": 295,
+    "latch": 23,
+    "gas": 795098
+   }
+  ],
+  "fit": {
+   "formula": "gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH",
+   "note": "3 points, exact fit; coefficients are descriptive, not separately identifiable",
+   "status": "measured"
+  },
+  "score_vs_gas": "TapeOut structural score C = gates * depth^3; gas is linear in element count and independent of depth"
+ },
+ "riscv_tick": {
+  "machine": "0x5Ec71579c67EB01755bE6da9C3a26995f144115A",
+  "semantics": "rv32ima, bit-exact with mini-rv32ima",
+  "page_bytes": 1024,
+  "page_contract_bytes": 1025,
+  "pages": 16384,
+  "instructions_per_tick_cap": 1024,
+  "fit": {
+   "formula": "gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D",
+   "vars": {
+    "F": "serial flips",
+    "I": "instructions executed",
+    "L": "pages loaded",
+    "D": "dirty pages written back (CREATE)"
+   },
+   "samples": 80,
+   "holdout_rmse": 11700,
+   "sample_ranges": {
+    "F": [
+     3,
+     5
+    ],
+    "I": [
+     1620,
+     4447
+    ],
+    "L": [
+     62,
+     132
+    ],
+    "D": [
+     7,
+     20
+    ],
+    "gas": [
+     4354000,
+     9870000
+    ]
+   },
+   "status": "measured"
+  },
+  "fixed_term_breakdown": {
+   "memory_expansion_gas": 503295,
+   "memory_bytes": 489696,
+   "status": "measured (exact local replay)"
+  },
+  "typical_tick": {
+   "F": 4,
+   "I": 4000,
+   "L": 100,
+   "D": 15,
+   "gas_total": 9062000,
+   "parts": {
+    "dirty_pages": 3595725,
+    "instructions": 3848400,
+    "fixed": 578245,
+    "page_loads": 547060,
+    "flips": 46684
+   }
+  }
+ },
+ "levers": [
+  {
+   "id": "memory_expansion",
+   "current_gas": 503295,
+   "target": "lazy per-page buffers; recover most of the fixed term",
+   "owner": "tapeout_machine_or_own_deployment",
+   "status": "estimate"
+  },
+  {
+   "id": "dirty_page_writeback",
+   "current_gas_per_page": 239715,
+   "target": "word-level SSTORE diffs; multi-tick batching; transient staging",
+   "owner": "tapeout_machine_or_own_deployment",
+   "status": "estimate"
+  },
+  {
+   "id": "instruction_loop",
+   "current_gas_per_instruction": 962,
+   "target_gas_per_instruction": [
+    250,
+    400
+   ],
+   "how": "computed jump-table decode, pre-masked 32-bit regs, no per-instruction bounds checks, fused pairs",
+   "owner": "tapeout_machine_or_own_deployment",
+   "status": "estimate"
+  },
+  {
+   "id": "page_loads",
+   "current_gas_per_page": 5471,
+   "target": "warm EXTCODECOPY (EIP-2929) via in-tx page cache",
+   "owner": "tapeout_machine_or_own_deployment",
+   "status": "estimate"
+  },
+  {
+   "id": "tick_cap",
+   "current": 1024,
+   "target": "~12000 instructions/tick under the 16.78M cap; amortizes fixed term ~10x",
+   "owner": "tapeout_parameter",
+   "status": "model"
+  },
+  {
+   "id": "static_translation",
+   "current": "interpreted",
+   "target": "AOT hot loops to EVM/Yul + SWAR int8 (8-32 MAC per 256-bit word), >=10x on hot loops",
+   "owner": "program_side",
+   "status": "estimate"
+  },
+  {
+   "id": "bit_sliced_nand_evaluator",
+   "current_gas_per_gate": 2000,
+   "target_gas_per_gate": [
+    50,
+    100
+   ],
+   "owner": "tapeout_processor_or_own_composer",
+   "status": "estimate"
+  }
+ ],
+ "large_model_bound": {
+  "model": "DeepSeek v4.1 Flash",
+  "mac_per_token": [
+   10000000000.0,
+   15000000000.0
+  ],
+  "instr_per_mac": [
+   5,
+   10
+  ],
+  "instr_per_token": 100000000000.0,
+  "gas_per_token": 100000000000000.0,
+  "chain_days_per_token": 30,
+  "bnb_per_token": 20000,
+  "weights_gb": 300,
+  "weights_as_pages_bnb_one_time": 3000,
+  "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
+  "status": "estimate"
+ },
+ "provenance": {
+  "repo_paths": [
+   "circuits/_scratch/riscv_machine/",
+   "circuits/_scratch/onchain_inference/"
+  ],
+  "sources": [
+   "https://tapeout.net/linux.html",
+   "https://eips.ethereum.org/EIPS/eip-2929"
+  ],
+  "transactions_sent": 0
+ }
+}</script>
+
+<h2><small>01 · Chain envelope</small>链给的上限</h2>
+<p>BSC 是改了共识的 Geth 分支（节点报 <code>Geth/v1.7.7</code>），下面是 2026-09-13 实测的最近 200 块。块空间八成是空的，gas 价没有人竞价：<strong>瓶颈不在链，在解释执行</strong>。</p>
+<div class="tw"><table>
+<tr><th>指标</th><th class="num">数值</th><th>备注</th></tr>
+<tr><td class="k">出块间隔</td><td class="num">0.452 s</td><td>200 块 90 秒</td></tr>
+<tr><td class="k">块 gas 上限</td><td class="num">69,455,003</td><td>算力容量 1.54 亿 gas/s</td></tr>
+<tr><td class="k">实际使用</td><td class="num">13.6 M / 块</td><td>20% 满，峰值 36.2 M</td></tr>
+<tr><td class="k">实际 TPS</td><td class="num">168</td><td>理论简单转账 7,300</td></tr>
+<tr><td class="k">gas 价</td><td class="num">0.05 gwei</td><td>1 亿 gas ≈ 0.005 BNB</td></tr>
+<tr><td class="k">TapeOut 机器单笔上限</td><td class="num">16,777,216</td><td>约块上限的 24%</td></tr>
+</table></div>
+
+<h2><small>02 · Circuit step</small>一步电路多少钱</h2>
+<p>对三个已烧录的有状态电路做 <code>eth_estimateGas</code>（零输入模式，区块 121591371）。gas 对门数是线性的，这和 TapeOut 的结构评分 C = g·d³ 完全不同：<strong>深度只影响评分，不影响 gas；一个 LATCH 的 gas 约等于 3.5 个 NAND</strong>。</p>
+<div class="tw"><table>
+<tr><th>电路</th><th class="num">NAND</th><th class="num">LATCH</th><th class="num">step gas</th><th class="num">gas / 元件</th></tr>
+<tr><td class="k">#280 驾驶车控制器</td><td class="num">87</td><td class="num">3</td><td class="num">261,497</td><td class="num">2,906</td></tr>
+<tr><td class="k">#283 Agents-API 控制器 v2</td><td class="num">152</td><td class="num">10</td><td class="num">433,276</td><td class="num">2,674</td></tr>
+<tr><td class="k">#284 Agents-API 控制器 v3</td><td class="num">295</td><td class="num">23</td><td class="num">795,098</td><td class="num">2,500</td></tr>
+</table></div>
+<figure>
+  <div class="hbars">
+    <div class="lbl">#280 · 90 元件</div><div class="trk"><b style="width:32.9%"></b></div><div class="v">261,497</div>
+    <div class="lbl">#283 · 162 元件</div><div class="trk"><b style="width:54.5%"></b></div><div class="v">433,276</div>
+    <div class="lbl">#284 · 318 元件</div><div class="trk"><b style="width:100%"></b></div><div class="v">795,098</div>
+  </div>
+  <figcaption>step gas，同一比例尺，满格 795,098。三点线性拟合（扣除交易固有 gas）：<code>52,251 + 1,920.7 × NAND + 6,704.9 × LATCH</code>，三点恰好落在平面上，所以固定开销与单元件成本不能各自独立辨认，只能作为这批负载的描述性系数。</figcaption>
+</figure>
+<div class="note">流水化的代价：把 dlgn_llm 的求解器用深度 1 流水版重写，结构 C 降了 426 倍，但每次状态转移变成 11 次调用并扫描更多锁存器，<strong>gas 反而上升</strong>。评分和账单是两本账。</div>
+
+<h2><small>03 · RISC-V tick</small>链上 Linux 机器每拍多少钱</h2>
+<p>TapeOut 的 rv32ima 解释器（Yul，语义与 mini-rv32ima 逐位一致）跑着未修改的 Linux 6.5.12。对 80 笔 <code>tick()</code> 收据回归，F 为翻转数，I 为指令数，L 为加载页数，D 为脏页数：</p>
+<pre>gas = 578,245 + 11,671·F + 962.1·I + 5,470.6·L + 239,714.7·D      留出样本 RMSE 11,700
+样本范围  F 3–5   I 1,620–4,447   L 62–132   D 7–20   单笔 4.35–9.87 M gas</pre>
+<p>固定项里约 503,295 是每拍分配约 490 KB 内存的二次方扩张费，占 87%。脏页是 CREATE 一个 1,025 字节的代码合约，所以一页就要 24 万。</p>
+<figure>
+  <div class="bar" role="img" aria-label="典型一拍 906 万 gas 的构成：脏页 360 万，指令 385 万，固定 58 万，取页 55 万，翻转 5 万">
+    <span style="flex-basis:39.7%;background:var(--s2)" data-l="脏页 3.60M"></span>
+    <span style="flex-basis:42.5%;background:var(--s1)" data-l="指令 3.85M"></span>
+    <span style="flex-basis:6.4%;background:var(--s3)" data-l="0.58M"></span>
+    <span style="flex-basis:6.0%;background:var(--s4)" data-l="0.55M"></span>
+    <span style="flex-basis:0.5%;background:var(--ink-3)"></span>
+  </div>
+  <div class="legend"><span><i style="background:var(--s2)"></i>脏页写回 D=15</span><span><i style="background:var(--s1)"></i>指令 I=4,000</span><span><i style="background:var(--s3)"></i>固定开销</span><span><i style="background:var(--s4)"></i>取页 L=100</span><span><i style="background:var(--ink-3)"></i>翻转 F=4</span></div>
+  <figcaption>按拟合模型算的一拍典型账单，合计约 9.06 M gas。写密集的负载里脏页第一，指令第二。</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>项</th><th class="num">系数</th><th class="num">典型一拍</th><th class="num">占比</th></tr>
+<tr><td class="k">脏页写回</td><td class="num">239,715 / 页</td><td class="num">3,595,725</td><td class="num">39.7%</td></tr>
+<tr><td class="k">指令执行</td><td class="num">962 / 条</td><td class="num">3,848,400</td><td class="num">42.5%</td></tr>
+<tr><td class="k">固定开销</td><td class="num">578,245 / 拍</td><td class="num">578,245</td><td class="num">6.4%</td></tr>
+<tr><td class="k">取页</td><td class="num">5,471 / 页</td><td class="num">547,060</td><td class="num">6.0%</td></tr>
+<tr><td class="k">翻转</td><td class="num">11,671 / 次</td><td class="num">46,684</td><td class="num">0.5%</td></tr>
+</table></div>
+
+<h2><small>04 · Levers</small>六个优化杠杆</h2>
+<p>每条标注是<span class="tag m">实测</span>还是<span class="tag e">估算</span>。估算项正在用逐字节精确的离线孪生逐一测量，测完会替换成实测值。</p>
+<div class="tw"><table>
+<tr><th>杠杆</th><th>现状</th><th>能做到</th><th>谁能改</th><th>状态</th></tr>
+<tr><td class="k">内存扩张</td><td>每拍分配约 490 KB，503 k gas</td><td>按页懒分配、缩小工作集，省掉大半固定项</td><td>TapeOut 机器 / 自部署</td><td><span class="tag e">估算</span></td></tr>
+<tr><td class="k">脏页写回</td><td>CREATE 1 KB 代码合约，239,715 / 页</td><td>小改动按 32 字节字 SSTORE 差分；多拍打包一笔交易让页只脏一次；瞬态存储暂存</td><td>TapeOut 机器 / 自部署</td><td><span class="tag e">估算</span></td></tr>
+<tr><td class="k">指令循环</td><td>962 / 条</td><td>Yul 解释循环地板约 250 到 400：计算跳转表译码、寄存器预掩码 32 位、去逐条越界检查、常见指令对融合，2 到 3 倍</td><td>TapeOut 机器 / 自部署</td><td><span class="tag e">估算</span></td></tr>
+<tr><td class="k">取页</td><td>5,471 / 页，冷读 EXTCODECOPY</td><td>EIP-2929 暖读 100 起；多拍同交易内缓存页</td><td>同上</td><td><span class="tag e">估算</span></td></tr>
+<tr><td class="k">拍上限</td><td>1,024 条 / 拍</td><td>放开到 gas 允许的约 1.2 万条，固定项摊薄 10 倍</td><td>TapeOut 参数</td><td><span class="tag m">按模型可算</span></td></tr>
+<tr><td class="k">静态翻译</td><td>全部解释执行</td><td>热循环（MAC 内核）直接编成 EVM/Yul，256 位字内 SIMD 一次 8 到 32 个 int8 乘加，热点 10 倍以上</td><td>程序侧，无需改机器</td><td><span class="tag e">估算</span></td></tr>
+</table></div>
+<p>合起来的现实预期：解释器本身 3 到 5 倍，热循环静态翻译后 10 倍以上，写密集负载再从脏页和固定项拿 2 到 3 倍。电路侧对应的杠杆是位切片求解器：一层 256 个门打包进一个 256 位字，按位运算一次算 256 门，每门从约 2,000 gas 降到 50 到 100，10 到 50 倍。</p>
+
+<h2><small>05 · Where it stops</small>优化救不了的事</h2>
+<p>同一把尺子量一个大模型。DeepSeek v4.1 Flash 每 token 约 100 到 150 亿次乘加，rv32ima 上每次 5 到 10 条指令：</p>
+<div class="tw"><table>
+<tr><th>项</th><th class="num">数量</th></tr>
+<tr><td class="k">每 token 指令数</td><td class="num">≈ 10¹¹</td></tr>
+<tr><td class="k">每 token gas（962 / 条）</td><td class="num">≈ 10¹⁴</td></tr>
+<tr><td class="k">占满整条链的时间</td><td class="num">≈ 30 天 / token</td></tr>
+<tr><td class="k">费用（0.05 gwei）</td><td class="num">≈ 20,000 BNB / token</td></tr>
+<tr><td class="k">300 GB 权重存成页合约</td><td class="num">≈ 3,000 BNB 一次性</td></tr>
+</table></div>
+<div class="note warn">存储不是墙，算力差七个数量级。所有杠杆加起来不到 100 倍。大模型"在 TapeOut 上运行"只有一种成立的定义：链下执行、轨迹承诺、交互式二分，<strong>由链上这台逐位精确的 rv32ima 机器裁决争议的那一条指令</strong>。优化解释器的意义，是让裁判那一步和小模型试点便宜十倍。</div>
+
+<h2><small>06 · Method</small>方法与复现</h2>
+<ol>
+<li>电路 step：对 #280、#283、#284 的 <code>step()</code> 做 <code>eth_estimateGas</code>，零输入模式加非零模式共 18 组，扣除交易固有 gas 后做三点线性拟合。</li>
+<li>RISC-V 机器：从公开收据的 <code>Ticked(flips, instructions, loadedPages, dirtyPages, gasUsed, halted, cutFlips)</code> 事件取 80 笔样本做最小二乘回归，留出集校验。</li>
+<li>离线孪生：拉取机器合约 14,490 字节和页合约 1,025 字节的部署字节码，在本地 EVM 里逐字节重放，对照区块 120503146 和 120503286 的 <code>cpuWords()</code> 与脏页指针，8/8 CPU 字、12 加 16 个脏页全部一致。杠杆的实测就在这个孪生上做。</li>
+<li>全程只读 RPC，零交易，零烧录。机器源码未验证，解释以静态反汇编为准。</li>
+</ol>
+<p>参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://jogjohgoeg.github.io/nand-driver/">21 门驾驶车</a>（#279/#280 的公开演示）。</p>
+
+<footer>
+  <div>版本 2026-09-13 · 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+</footer>
+</div>
