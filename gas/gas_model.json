@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T07:33:35.733289+00:00",
+  "updated": "2026-09-13T09:57:15.869802+00:00",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -17,7 +17,28 @@
     "tapeout_machine_tx_gas_cap": 16777216,
     "client": "Geth/v1.7.7-6c154fb3-20260723",
     "measured_at_block": 121602577,
-    "status": "measured"
+    "status": "measured",
+    "latest_native_cost_inputs": {
+      "updated": "2026-09-13T09:04:35.011389+00:00",
+      "block": 121618647,
+      "blockHash": "0x90c19921a10a77bbb5f37f7ad58d07747861b9cebaac53d0e7f48d4aaf93a176",
+      "gasPriceWei": 50000000,
+      "gasLimit": 70000000,
+      "blockTimestamp": 1789290273,
+      "secondsPerBlock1000": 0.452,
+      "BNB_USD": 717.825,
+      "priceSource": "https://api.coinbase.com/v2/prices/BNB-USD/spot",
+      "networkTransactions": 0,
+      "status": "measured",
+      "scope": "read-only dated snapshot; prior chain aggregate fields retain their earlier measurement block"
+    },
+    "transaction_gas_cap": {
+      "value": 16777216,
+      "status": "measured",
+      "source": "https://docs.bnbchain.org/announce/mendel-bsc/",
+      "scope": "protocol rule retrieved 2026-09-13; mainnet enabled 2026-04-28"
+    },
+    "tapeout_machine_tx_gas_cap_note": "Legacy key: this value is the BSC protocol transaction cap, not a decoded TapeOut-specific storage field."
   },
   "circuit_step": {
     "method": "eth_estimateGas on step(), zero-input pattern, block 121591371",
@@ -50,7 +71,7 @@
   },
   "riscv_tick": {
     "machine": "0x5Ec71579c67EB01755bE6da9C3a26995f144115A",
-    "semantics": "rv32ima, bit-exact with mini-rv32ima",
+    "semantics": "RV32IMA-like mini-rv32ima semantics; exact deployed runtime pinned. Bounded guest CPU/page parity measured; independent historical Linux-state adapter parity remains incomplete.",
     "page_bytes": 1024,
     "page_contract_bytes": 1025,
     "pages": 16384,
@@ -87,7 +108,8 @@
           9870000
         ]
       },
-      "status": "measured"
+      "status": "measured",
+      "intrinsic_gas": "Fit target was receipt gasUsed; intrinsic cost is already included in the fitted fixed term."
     },
     "fixed_term_breakdown": {
       "memory_expansion_gas": 503295,
@@ -107,6 +129,122 @@
         "page_loads": 547060,
         "flips": 46684
       }
+    },
+    "instructions_per_tick_cap_note": "1024 is per internal flip; tick(flips) can execute multiple flips. Aggregate call gas is constrained by BEP-652.",
+    "existing_call_batching": {
+      "status": "measured",
+      "scope": "unmodified deployed EVM, same actual row-scale MiniCPM full-layer Q-loop pre-state; changing tick(flips) only; calldata intrinsic transaction gas excluded by execute_bytecode, guest semantics checked against mini; execute_bytecode bypasses transaction validation: 32/64 flips are counterfactual and exceed BEP-652 cap",
+      "rows": [
+        {
+          "flips": 1,
+          "instructions": 1024,
+          "gas": 1554788,
+          "gasPerInstruction": 1518.34765625,
+          "seconds": 0.5016569589999997,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 1576288,
+          "transactionEnvelopeEligibleOnThisSnapshot": true,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        },
+        {
+          "flips": 3,
+          "instructions": 3072,
+          "gas": 3459332,
+          "gasPerInstruction": 1126.0846354166667,
+          "seconds": 1.464432,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 3480832,
+          "transactionEnvelopeEligibleOnThisSnapshot": true,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        },
+        {
+          "flips": 14,
+          "instructions": 14336,
+          "gas": 14203692,
+          "gasPerInstruction": 990.7709263392857,
+          "seconds": 4.698058958,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 14225192,
+          "transactionEnvelopeEligibleOnThisSnapshot": true,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        },
+        {
+          "flips": 16,
+          "instructions": 16384,
+          "gas": 16108438,
+          "gasPerInstruction": 983.1810302734375,
+          "seconds": 8.183757708,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 16129938,
+          "transactionEnvelopeEligibleOnThisSnapshot": true,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        },
+        {
+          "flips": 32,
+          "instructions": 32768,
+          "gas": 31662373,
+          "gasPerInstruction": 966.2589416503906,
+          "seconds": 16.517384125,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 31683873,
+          "transactionEnvelopeEligibleOnThisSnapshot": false,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        },
+        {
+          "flips": 64,
+          "instructions": 65536,
+          "gas": 62147269,
+          "gasPerInstruction": 948.2920684814453,
+          "seconds": 34.35098400000001,
+          "cpu48Exact": true,
+          "pagesExact": 2317,
+          "memoryBytes": 489696,
+          "status": "measured",
+          "transactionGasCap": 16777216,
+          "transactionIntrinsicEstimate": 21500,
+          "totalGasWithIntrinsicEstimate": 62168769,
+          "transactionEnvelopeEligibleOnThisSnapshot": false,
+          "gasCapSource": "https://docs.bnbchain.org/announce/mendel-bsc/"
+        }
+      ],
+      "fit": {
+        "fixedPerCall": 655433.5532136002,
+        "gasPerInstruction": 939.9837708271488,
+        "maxResidualGas": 205551.24432238936,
+        "status": "model; applies to this snapshot/loop only"
+      },
+      "baseline_instructions_per_call": 3072,
+      "measured_14_flip_gas_per_instruction_reduction": 0.1201630009162794,
+      "scope_limit": "Original MiniCPM MAC-loop pre-state only; local direct execution gas. 32/64 flips exceed transaction cap and are counterfactual. This is not an interpreter optimization measurement.",
+      "sources": [
+        "circuits/_scratch/tapeout_asic/minicpm/tick_batching.json",
+        "circuits/_scratch/tapeout_asic/minicpm/tick_batching14.json"
+      ]
     }
   },
   "levers": [
@@ -158,9 +296,11 @@
     {
       "id": "tick_cap",
       "current": 1024,
-      "target": "~12000 instructions/tick under the 16.78M cap; amortizes fixed term ~10x",
+      "target": "Change the per-flip instruction loop cap only after bounded gas/correctness measurements; existing tick(flips) already batches 1024-instruction flips.",
       "owner": "tapeout_parameter",
-      "status": "model"
+      "status": "estimate",
+      "measurement_pending": true,
+      "existing_call_batching_note": "Separate measured caller batching: 14 flips /14336 I costs14203692 execution gas on one MAC snapshot. No modified 8192-instruction inner loop is measured."
     },
     {
       "id": "static_translation",
@@ -197,16 +337,19 @@
     "weights_gb": 300,
     "weights_as_pages_bnb_one_time": 3000,
     "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
-    "status": "estimate"
+    "status": "estimate",
+    "role": "long-term DeepSeek appendix; superseded as headline by minicpm_bound"
   },
   "provenance": {
     "repo_paths": [
       "circuits/_scratch/riscv_machine/",
-      "circuits/_scratch/onchain_inference/"
+      "circuits/_scratch/onchain_inference/",
+      "circuits/_scratch/tapeout_asic/minicpm/"
     ],
     "sources": [
       "https://tapeout.net/linux.html",
-      "https://eips.ethereum.org/EIPS/eip-2929"
+      "https://eips.ethereum.org/EIPS/eip-2929",
+      "https://docs.bnbchain.org/announce/mendel-bsc/"
     ],
     "transactions_sent": 0
   },
@@ -269,5 +412,131 @@
     ],
     "evidence": "optimizations.md; optimization_partial_results.json",
     "parked_reason": "User redirected H to ASIC design before remaining levers were within30min of completion."
+  },
+  "reference_model": "MiniCPM5-2B",
+  "minicpm_bound": {
+    "model": "MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "status": "model",
+    "configuration": {
+      "status": "measured",
+      "scope": "pinned official config/tensor arithmetic",
+      "parameters": 2516756480,
+      "dense_MACs_per_token": 2249195520,
+      "hidden": 2048,
+      "intermediate": 6144,
+      "layers": 42,
+      "query_heads": 16,
+      "KV_heads": 2,
+      "head_dim": 128,
+      "vocabulary": 130560
+    },
+    "integer_execution": {
+      "status": "measured",
+      "scope": "pinned-mini host-orchestrated layer/head guests; group32 linearQ24 W4A8, fixed integer nonlinear/attention arithmetic, not full EVM replay",
+      "one_token_instruction_range": [
+        20104178571,
+        20104190023
+      ],
+      "one_token_mean_instructions": 20104183818,
+      "argmax_matches": 6,
+      "prompts": 6,
+      "all_integer_layer_head_checks_exact": true,
+      "exact_EVM_bounded_instructions": 12288,
+      "exact_EVM_bounded_ticks": 12,
+      "layer_trace_instructions": 848937978,
+      "layer_checkpoints": 103653,
+      "local_bisection_rounds": 30
+    },
+    "native_scenarios": [
+      {
+        "status": "model",
+        "instructions": 20104183818,
+        "instructionsPerTransaction": 3072,
+        "transactions": 6544331,
+        "dirtyPagesPerTransactionAssumed": 2,
+        "hotPagesPerTransactionAssumed": 3,
+        "transactionIntrinsic": "already included in receipt-fit fixed term",
+        "gasTerms": {
+          "fixed": 3784226816696.3057,
+          "flips": 229133025816.6344,
+          "instructions": 19342537914065.24,
+          "pageLoads": 114914126249.97879,
+          "dirtyPages": 3137544125903.827
+        },
+        "gas": 26608356008731.99,
+        "blocksAtFullCapacity": 380120,
+        "daysAtFullCapacity": 1.9885907407407406,
+        "BNB": 1330.4178004365995,
+        "USD": 955007.1575984021
+      },
+      {
+        "status": "model",
+        "instructions": 20104183818,
+        "instructionsPerTransaction": 14336,
+        "transactions": 1402357,
+        "dirtyPagesPerTransactionAssumed": 2,
+        "hotPagesPerTransactionAssumed": 3,
+        "transactionIntrinsic": "already included in receipt-fit fixed term",
+        "gasTerms": {
+          "fixed": 810905952951.0016,
+          "flips": 229133025816.6344,
+          "instructions": 19342537914065.24,
+          "pageLoads": 30525198479.8953,
+          "dirtyPages": 672331055347.0039
+        },
+        "gas": 21085433146659.773,
+        "blocksAtFullCapacity": 301221,
+        "daysAtFullCapacity": 1.5758320833333332,
+        "BNB": 1054.2716573329888,
+        "USD": 756782.5524250527
+      }
+    ],
+    "weights": {
+      "status": "model",
+      "dense_weight_and_scale_bytes": 1405747200,
+      "storage": {
+        "format": "linear32_executed_format",
+        "bytes": 1941217280,
+        "pages": 1895720,
+        "codeDepositCREATEFloorGas": 449285640000,
+        "estimateAssumesOnePagePerTransaction": true,
+        "status": "model",
+        "gas": 568145388280,
+        "blocksAtFullCapacity": 8117,
+        "daysAtFullCapacity": 0.04246393518518519,
+        "BNB": 28.407269414,
+        "USD": 20391.448167104554
+      }
+    },
+    "optimistic": {
+      "status": "estimate",
+      "scope": "design estimate; Solidity stateless step and model-bank input verifier not implemented/deployed",
+      "happy_gas": [
+        150000,
+        300000
+      ],
+      "full_dispute_gas": [
+        4430000,
+        8950000
+      ],
+      "instruction_bisection_rounds": 35
+    },
+    "hardware_baselines": {
+      "status": "measured",
+      "scope": "llama.cpp Q4_K_M benchmark, three32-token repetitions; not integer commitment throughput",
+      "m64_CPU_decode_tokens_per_s": 35.09719,
+      "m64_Vulkan_decode_tokens_per_s": 325.472112,
+      "m64_Vulkan_decode_stddev": 2.835777
+    },
+    "limits": [
+      "All native full-token gas is modeled, not an entire deployed-bytecode replay.",
+      "16MB resident VM needs authenticated model-bank inputs; their mapping/verification costs are not measured.",
+      "3072 is a historical batching assumption, not an instruction or transaction cap.",
+      "14-flip modeled calls average below the cap; no universal bound for page-heavy ticks is established. 16 flips fits BEP-652 transaction cap only on the measured MAC-loop snapshot; other instruction/page mixes need adaptive smaller batches. 32/64-flip local runs exceed the cap and are excluded from native scenarios.",
+      "Full contextual prefill counts are reported separately and must not be mistaken for a single cached decode token.",
+      "Cold storage formula uses one transaction per page; a batch uploader would amortize intrinsic gas."
+    ],
+    "evidence": "circuits/_scratch/tapeout_asic/minicpm/MILESTONE_2.md"
   }
 }
