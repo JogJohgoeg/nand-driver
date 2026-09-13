@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T16:51:46.196698Z",
+  "updated": "2026-09-13T17:21:05.709587Z",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -791,8 +791,8 @@
     "freshRAMWriteMicrosteps": 8,
     "gameRounds": 1,
     "gameMicrosteps": 2,
-    "resolveProtocolGas": 171366,
-    "totalProtocolGas": 602154,
+    "resolveProtocolGas": 171351,
+    "totalProtocolGas": 602139,
     "negativeGameTests": 8,
     "verifierRuntimeBytes": 11716,
     "limits": "RAM-only local prototype. No UART/input/syscon execution, full tick/model dispute, requester authorization, bonds/payments, DA policy, hardware integration or deployment. Existing tick-state-v1 measurements and format unchanged.",
@@ -801,6 +801,7 @@
       "stateless/environment_results.json",
       "stateless/environment_ram_results.json",
       "stateless/environment_game_results.json"
-    ]
+    ],
+    "verifierRuntimeSHA256": "3167f7268401035d881d36bd2bed4e63a64e1d0830a2fa71308fdf154c7d04b4"
   }
 }
