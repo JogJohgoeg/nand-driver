@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T10:39:04.534902+00:00",
+  "updated": "2026-09-13T10:41:40.060980+00:00",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -564,7 +564,10 @@
       "executionGas": 36376,
       "calldataIntrinsicGas": 44144,
       "totalGasWithIntrinsic": 80520,
-      "calldataBytes": 1988
+      "calldataBytes": 1988,
+      "calldataFloorGas": 78860,
+      "protocolTotalGas": 80520,
+      "calldataFloorApplied": false
     },
     "suite_total_gas": {
       "status": "measured",
@@ -584,10 +587,22 @@
       "executionGas": 151076,
       "calldataIntrinsicGas": 97504,
       "totalGasWithIntrinsic": 248580,
-      "calldataBytes": 5188
+      "calldataBytes": 5188,
+      "calldataFloorGas": 212260,
+      "protocolTotalGas": 248580,
+      "calldataFloorApplied": false
     },
     "next_gate": "Challenge manager, authenticated model-bank transitions, MMIO profile and independent security/conformance review; not deployed.",
-    "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md"
+    "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md",
+    "suite_protocol_gas": {
+      "status": "model",
+      "min": 41832,
+      "median": 79549,
+      "max": 234459,
+      "floor_cases": 84,
+      "scope": "local measured execution/calldata with BSC BEP-496 transaction-floor formula; not chain receipts"
+    },
+    "gas_accounting_source": "https://github.com/bnb-chain/bsc/blob/v1.7.7/core/state_transition.go"
   },
   "long_term_model_bound": {
     "model": "DeepSeek v4.1 Flash",
