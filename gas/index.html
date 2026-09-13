@@ -33,6 +33,7 @@ header{padding-block:56px 28px;border-bottom:2px solid var(--ink)}
 .eyebrow .live{color:var(--accent)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,54px);line-height:1.05;margin:14px 0 10px;letter-spacing:-.01em;text-wrap:balance}
 .sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
+.threeq{margin-top:22px;font-size:14px}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
 .thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule-strong);margin-top:28px;background:var(--surface)}
 .thesis div{padding:16px 18px;border-right:1px solid var(--rule)}
 .thesis div:last-child{border-right:0}
@@ -81,6 +82,11 @@ footer a,p a{color:var(--accent)}
   <div class="eyebrow"><span>TapeOut · BNB Smart Chain</span><span>2026-09-13</span><span class="live">实测 + 估算 · 只读链访问 · 零交易</span></div>
   <h1>TapeOut Gas 账本</h1>
   <p class="sub">面向 agent 的参考页：把一个 NAND 门、一条 RISC-V 指令、一个内存页在 BSC 上的真实价格记清楚，再看哪里能省。所有数字来自链上收据、只读估算和逐字节精确的离线复现。</p>
+  <div class="tw"><table class="threeq">
+    <tr><th>主信息 / See first</th><td>TapeOut 在 BSC 上每单位工作的价格：每门每步、每条 RISC-V 指令、每个脏页的 gas，以及它们各自的状态标签。</td></tr>
+    <tr><th>关联信息 / Context</th><td>链的容量与利用率（决定"贵"是相对什么）、三种测量方法与样本范围、结构评分 C 与 gas 的区别。</td></tr>
+    <tr><th>下一步 / Decide</th><td>选优化杠杆的顺序（脏页、指令循环、固定项）；判断哪些负载该走电路、走 VM、走乐观裁决；引用时带上状态与区块高度。</td></tr>
+  </table></div>
   <div class="thesis">
     <div><div class="n">1,921</div><div class="l">gas / NAND 门 / 步<span>电路 step 线性拟合斜率</span></div></div>
     <div><div class="n">962</div><div class="l">gas / RISC-V 指令<span>链上 Linux 机器，80 笔收据回归</span></div></div>
@@ -462,6 +468,6 @@ footer a,p a{color:var(--accent)}
 <p>参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://jogjohgoeg.github.io/nand-driver/">21 门驾驶车</a>（#279/#280 的公开演示）。</p>
 
 <footer>
-  <div>版本 2026-09-13 r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+  <div>版本 2026-09-13 r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
 </footer>
 </div>
