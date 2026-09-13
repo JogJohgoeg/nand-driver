@@ -368,14 +368,14 @@ footer a,p a{color:var(--accent)}
 <p>合起来的现实预期：解释器本身 3 到 5 倍，热循环静态翻译后 10 倍以上，写密集负载再从脏页和固定项拿 2 到 3 倍。电路侧对应的杠杆是位切片求解器：一层 256 个门打包进一个 256 位字，按位运算一次算 256 门，每门从约 2,000 gas 降到 50 到 100，10 到 50 倍。</p>
 
 <h2><small>05 · Where it stops</small>优化救不了的事</h2>
-<p>同一把尺子量一个大模型。DeepSeek v4.1 Flash 每 token 约 100 到 150 亿次乘加，rv32ima 上每次 5 到 10 条指令：</p>
+<p>同一把尺子量一个大模型。DeepSeek v4.1 Flash 按官方配置精算：每次 decode 的 MoE 矩阵乘加 99.1 亿次，触及路由专家权重 4.51 GB；rv32ima 上实测 FP4 对乘加 20 条指令：</p>
 <div class="tw"><table>
 <tr><th>项</th><th class="num">数量</th></tr>
-<tr><td class="k">每 token 指令数</td><td class="num">≈ 10¹¹</td></tr>
-<tr><td class="k">每 token gas（962 / 条）</td><td class="num">≈ 10¹⁴</td></tr>
-<tr><td class="k">占满整条链的时间</td><td class="num">≈ 30 天 / token</td></tr>
-<tr><td class="k">费用（0.05 gwei）</td><td class="num">≈ 20,000 BNB / token</td></tr>
-<tr><td class="k">300 GB 权重存成页合约</td><td class="num">≈ 3,000 BNB 一次性</td></tr>
+<tr><td class="k">每 token 指令数（16B MAC 代理，20 条/MAC）</td><td class="num">3.20 × 10¹¹</td></tr>
+<tr><td class="k">每 token gas</td><td class="num">3.985 × 10¹⁴</td></tr>
+<tr><td class="k">占满整条链的时间</td><td class="num">29.85 天 / token</td></tr>
+<tr><td class="k">费用（0.05 gwei）</td><td class="num">19,925 BNB ≈ $14.39M / token</td></tr>
+<tr><td class="k">510 GB 检查点存成页合约（4.98 亿页）</td><td class="num">1.386 × 10¹⁴ gas ≈ 6,932 BNB 一次性</td></tr>
 </table></div>
 <div class="note warn">存储不是墙，算力差七个数量级。所有杠杆加起来不到 100 倍。大模型"在 TapeOut 上运行"只有一种成立的定义：链下执行、轨迹承诺、交互式二分，<strong>由链上这台逐位精确的 rv32ima 机器裁决争议的那一条指令</strong>。优化解释器的意义，是让裁判那一步和小模型试点便宜十倍。</div>
 
@@ -389,6 +389,6 @@ footer a,p a{color:var(--accent)}
 <p>参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://jogjohgoeg.github.io/nand-driver/">21 门驾驶车</a>（#279/#280 的公开演示）。</p>
 
 <footer>
-  <div>版本 2026-09-13 · 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+  <div>版本 2026-09-13 r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
 </footer>
 </div>
