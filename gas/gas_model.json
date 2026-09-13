@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T09:57:15.869802+00:00",
+  "updated": "2026-09-13T10:39:04.534902+00:00",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -321,24 +321,24 @@
     }
   ],
   "large_model_bound": {
-    "model": "DeepSeek v4.1 Flash",
+    "model": "MiniCPM5-2B",
     "mac_per_token": [
-      10000000000.0,
-      15000000000.0
+      2249195520,
+      2249195520
     ],
     "instr_per_mac": [
-      5,
-      10
+      8.93838869908473,
+      8.93838869908473
     ],
-    "instr_per_token": 100000000000.0,
-    "gas_per_token": 100000000000000.0,
-    "chain_days_per_token": 30,
-    "bnb_per_token": 20000,
-    "weights_gb": 300,
-    "weights_as_pages_bnb_one_time": 3000,
-    "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
-    "status": "estimate",
-    "role": "long-term DeepSeek appendix; superseded as headline by minicpm_bound"
+    "instr_per_token": 20104183818,
+    "gas_per_token": 21085433146659.773,
+    "chain_days_per_token": 1.5758320833333332,
+    "bnb_per_token": 1054.2716573329888,
+    "weights_gb": 1.94121728,
+    "weights_as_pages_bnb_one_time": 28.407269414,
+    "conclusion": "Full integer reference and six fixed argmax matches measured; native gas remains an extrapolation. Prefer off-chain execution plus a bounded optimistic arbiter; challenge manager/model inputs still need implementation.",
+    "status": "model",
+    "scope": "one-token prefix, group32 linearQ24 W4A8,14flip modeled batches with adaptive gas bounds pending; raw dense MAC count excludes context attention; dated chain inputs in minicpm_bound"
   },
   "provenance": {
     "repo_paths": [
@@ -349,7 +349,9 @@
     "sources": [
       "https://tapeout.net/linux.html",
       "https://eips.ethereum.org/EIPS/eip-2929",
-      "https://docs.bnbchain.org/announce/mendel-bsc/"
+      "https://docs.bnbchain.org/announce/mendel-bsc/",
+      "https://github.com/Wren6991/Hazard3",
+      "https://keccak.team/keccak_specs_summary.html"
     ],
     "transactions_sent": 0
   },
@@ -446,7 +448,8 @@
       "exact_EVM_bounded_ticks": 12,
       "layer_trace_instructions": 848937978,
       "layer_checkpoints": 103653,
-      "local_bisection_rounds": 30
+      "local_bisection_rounds": 30,
+      "local_Solidity_actual_witness_total_gas": 80520
     },
     "native_scenarios": [
       {
@@ -511,16 +514,20 @@
     },
     "optimistic": {
       "status": "estimate",
-      "scope": "design estimate; Solidity stateless step and model-bank input verifier not implemented/deployed",
+      "scope": "design budgets; RAM-only local Solidity arbiter measured separately, challenge manager/model-input verifier not implemented",
       "happy_gas": [
         150000,
         300000
       ],
       "full_dispute_gas": [
-        4430000,
-        8950000
+        4450000,
+        9050000
       ],
-      "instruction_bisection_rounds": 35
+      "instruction_bisection_rounds": 35,
+      "arbiter_budget_gas": [
+        100000,
+        350000
+      ]
     },
     "hardware_baselines": {
       "status": "measured",
@@ -538,5 +545,68 @@
       "Cold storage formula uses one transaction per page; a batch uploader would amortize intrinsic gas."
     ],
     "evidence": "circuits/_scratch/tapeout_asic/minicpm/MILESTONE_2.md"
+  },
+  "stateless_arbiter": {
+    "status": "measured",
+    "scope": "local Solidity compiled runtime vs pinned mini, elapsed=0; RAM RV32IMA/CSR/traps/timer/WFI profile; MMIO rejected; no deployed contract/challenge manager",
+    "compiler": "0.8.24+commit.e11b9ed9.Darwin.appleclang",
+    "runtime_bytes": 8366,
+    "runtime_sha256": "8e71929b13ed04c9b6470c0a48f908b8219d4ca90e09f864a8e43cc843a6e93d",
+    "MLP_instructions": 1712,
+    "directed_ISA_cases": 246,
+    "suite_positive_cases": 1959,
+    "additional_dense_case": 1,
+    "negative_cases": 13,
+    "actual_MiniCPM_MUL": {
+      "status": "measured",
+      "scope": "actual disputed linear32 layer MUL, committed context and post-hash",
+      "postHashExact": true,
+      "executionGas": 36376,
+      "calldataIntrinsicGas": 44144,
+      "totalGasWithIntrinsic": 80520,
+      "calldataBytes": 1988
+    },
+    "suite_total_gas": {
+      "status": "measured",
+      "min": 41832,
+      "median": 79549,
+      "max": 234459
+    },
+    "dense_witness": {
+      "status": "measured",
+      "name": "dense_crosspage_AMO",
+      "pages": 3,
+      "dirtyPages": 2,
+      "cpu48Exact": true,
+      "memoryRootExact": true,
+      "stateHashExact": true,
+      "statusExact": true,
+      "executionGas": 151076,
+      "calldataIntrinsicGas": 97504,
+      "totalGasWithIntrinsic": 248580,
+      "calldataBytes": 5188
+    },
+    "next_gate": "Challenge manager, authenticated model-bank transitions, MMIO profile and independent security/conformance review; not deployed.",
+    "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md"
+  },
+  "long_term_model_bound": {
+    "model": "DeepSeek v4.1 Flash",
+    "mac_per_token": [
+      10000000000.0,
+      15000000000.0
+    ],
+    "instr_per_mac": [
+      5,
+      10
+    ],
+    "instr_per_token": 100000000000.0,
+    "gas_per_token": 100000000000000.0,
+    "chain_days_per_token": 30,
+    "bnb_per_token": 20000,
+    "weights_gb": 300,
+    "weights_as_pages_bnb_one_time": 3000,
+    "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
+    "status": "estimate",
+    "role": "long-term DeepSeek appendix; superseded as headline by minicpm_bound"
   }
 }
