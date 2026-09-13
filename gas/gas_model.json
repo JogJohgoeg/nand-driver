@@ -1,6 +1,6 @@
 {
   "schema": "tapeout-gas-model/1",
-  "updated": "2026-09-13T10:41:40.060980+00:00",
+  "updated": "2026-09-13T10:57:12.023265+00:00",
   "chain_id": 56,
   "units": "gas unless stated",
   "status_legend": {
@@ -513,21 +513,81 @@
       }
     },
     "optimistic": {
-      "status": "estimate",
-      "scope": "design budgets; RAM-only local Solidity arbiter measured separately, challenge manager/model-input verifier not implemented",
-      "happy_gas": [
-        150000,
-        300000
-      ],
-      "full_dispute_gas": [
-        4450000,
-        9050000
-      ],
-      "instruction_bisection_rounds": 35,
-      "arbiter_budget_gas": [
+      "status": "design estimate; local Solidity RAM-only arbiter measured separately; local single-game manager measured separately; production job/bonds and model-bank input verifier not implemented/deployed",
+      "arbiterBudgetGas": [
         100000,
         350000
-      ]
+      ],
+      "arbiterMeasuredTotalGas": [
+        41832,
+        248580
+      ],
+      "arbiterEvidence": "../../riscv_machine/stateless/results.json",
+      "happy": [
+        {
+          "gas": 150000,
+          "blocksAtFullCapacity": 1,
+          "daysAtFullCapacity": 5.231481481481481e-06,
+          "BNB": 7.5e-06,
+          "USD": 0.0053836875000000005
+        },
+        {
+          "gas": 300000,
+          "blocksAtFullCapacity": 1,
+          "daysAtFullCapacity": 5.231481481481481e-06,
+          "BNB": 1.5e-05,
+          "USD": 0.010767375000000001
+        }
+      ],
+      "rounds": 35,
+      "dispute": [
+        {
+          "gas": 4450000,
+          "blocksAtFullCapacity": 1,
+          "daysAtFullCapacity": 5.231481481481481e-06,
+          "BNB": 0.0002225,
+          "USD": 0.1597160625
+        },
+        {
+          "gas": 9050000,
+          "blocksAtFullCapacity": 1,
+          "daysAtFullCapacity": 5.231481481481481e-06,
+          "BNB": 0.0004525,
+          "USD": 0.3248158125
+        }
+      ],
+      "prototypeGame": {
+        "status": "model",
+        "scope": "synthetic sparse Merkle proof-depth gas fixtures with correct endpoint/midpoint authentication and interval update; not model execution, not a full MiniCPM trace; excludes deployment, bonds, job registry, DA",
+        "happy": {
+          "gas": 365941,
+          "blocksAtFullCapacity": 1,
+          "daysAtFullCapacity": 5.231481481481481e-06,
+          "BNB": 1.829705e-05,
+          "USD": 0.013134079916250001
+        },
+        "roundGas": [
+          172930,
+          177849
+        ],
+        "dispute": [
+          {
+            "gas": 6619818,
+            "blocksAtFullCapacity": 1,
+            "daysAtFullCapacity": 5.231481481481481e-06,
+            "BNB": 0.0003309909,
+            "USD": 0.23759354279250003
+          },
+          {
+            "gas": 7041983,
+            "blocksAtFullCapacity": 1,
+            "daysAtFullCapacity": 5.231481481481481e-06,
+            "BNB": 0.00035209915,
+            "USD": 0.25274557234875
+          }
+        ],
+        "evidence": "../../riscv_machine/stateless/deep_proofs.json"
+      }
     },
     "hardware_baselines": {
       "status": "measured",
@@ -623,5 +683,38 @@
     "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
     "status": "estimate",
     "role": "long-term DeepSeek appendix; superseded as headline by minicpm_bound"
+  },
+  "optimistic_game": {
+    "status": "measured",
+    "scope": "local stateful single-game prototype: existing1712-instruction MLP trace, two immutable Merkle roots, cumulative clocks, final call into bounded Solidity arbiter. No bonds/payments/job registry/deployment/network transactions.",
+    "evidence": "stateless/game_results.json",
+    "game_runtime_bytes": 4582,
+    "mlp_instructions": 1712,
+    "mlp_rounds": 11,
+    "mlp_total_gas": 1892451,
+    "mlp_round_gas": {
+      "min": 125588,
+      "median": 125726,
+      "max": 130675
+    },
+    "mlp_resolve_gas": 127663,
+    "depth35_fixture": {
+      "status": "measured",
+      "scope": "synthetic sparse Merkle proof-depth gas fixtures with correct endpoint/midpoint authentication and interval update; not model execution, not a full MiniCPM trace",
+      "no_challenger_gas": 365941,
+      "round_gas": [
+        172930,
+        177849
+      ],
+      "evidence": "stateless/deep_proofs.json"
+    },
+    "full35_round_dispute": {
+      "status": "model",
+      "gas": [
+        6619818,
+        7041983
+      ],
+      "scope": "setup + 35 measured-range rounds + 100\u2013350k final resolution; excludes deployment/bonds/job registry/DA"
+    }
   }
 }
