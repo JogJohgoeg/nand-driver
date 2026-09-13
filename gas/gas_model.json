@@ -1,200 +1,273 @@
 {
- "schema": "tapeout-gas-model/1",
- "updated": "2026-09-13",
- "chain_id": 56,
- "units": "gas unless stated",
- "status_legend": {
-  "measured": "from receipts / eth_estimateGas / exact local replay",
-  "estimate": "analytical estimate pending measurement"
- },
- "chain": {
-  "block_time_s": 0.452,
-  "gas_limit": 69455003,
-  "avg_gas_used": 13600000,
-  "utilization": 0.2,
-  "real_tps": 168,
-  "gas_price_gwei": 0.05,
-  "tapeout_machine_tx_gas_cap": 16777216,
-  "client": "Geth/v1.7.7-6c154fb3-20260723",
-  "measured_at_block": 121602577,
-  "status": "measured"
- },
- "circuit_step": {
-  "method": "eth_estimateGas on step(), zero-input pattern, block 121591371",
-  "samples": [
-   {
-    "circuit": 280,
-    "nand": 87,
-    "latch": 3,
-    "gas": 261497
-   },
-   {
-    "circuit": 283,
-    "nand": 152,
-    "latch": 10,
-    "gas": 433276
-   },
-   {
-    "circuit": 284,
-    "nand": 295,
-    "latch": 23,
-    "gas": 795098
-   }
+  "schema": "tapeout-gas-model/1",
+  "updated": "2026-09-13T07:33:35.733289+00:00",
+  "chain_id": 56,
+  "units": "gas unless stated",
+  "status_legend": {
+    "measured": "from receipts / eth_estimateGas / exact local replay",
+    "estimate": "analytical estimate pending measurement"
+  },
+  "chain": {
+    "block_time_s": 0.452,
+    "gas_limit": 69455003,
+    "avg_gas_used": 13600000,
+    "utilization": 0.2,
+    "real_tps": 168,
+    "gas_price_gwei": 0.05,
+    "tapeout_machine_tx_gas_cap": 16777216,
+    "client": "Geth/v1.7.7-6c154fb3-20260723",
+    "measured_at_block": 121602577,
+    "status": "measured"
+  },
+  "circuit_step": {
+    "method": "eth_estimateGas on step(), zero-input pattern, block 121591371",
+    "samples": [
+      {
+        "circuit": 280,
+        "nand": 87,
+        "latch": 3,
+        "gas": 261497
+      },
+      {
+        "circuit": 283,
+        "nand": 152,
+        "latch": 10,
+        "gas": 433276
+      },
+      {
+        "circuit": 284,
+        "nand": 295,
+        "latch": 23,
+        "gas": 795098
+      }
+    ],
+    "fit": {
+      "formula": "gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH",
+      "note": "3 points, exact fit; coefficients are descriptive, not separately identifiable",
+      "status": "measured"
+    },
+    "score_vs_gas": "TapeOut structural score C = gates * depth^3; gas is linear in element count and independent of depth"
+  },
+  "riscv_tick": {
+    "machine": "0x5Ec71579c67EB01755bE6da9C3a26995f144115A",
+    "semantics": "rv32ima, bit-exact with mini-rv32ima",
+    "page_bytes": 1024,
+    "page_contract_bytes": 1025,
+    "pages": 16384,
+    "instructions_per_tick_cap": 1024,
+    "fit": {
+      "formula": "gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D",
+      "vars": {
+        "F": "serial flips",
+        "I": "instructions executed",
+        "L": "pages loaded",
+        "D": "dirty pages written back (CREATE)"
+      },
+      "samples": 80,
+      "holdout_rmse": 11700,
+      "sample_ranges": {
+        "F": [
+          3,
+          5
+        ],
+        "I": [
+          1620,
+          4447
+        ],
+        "L": [
+          62,
+          132
+        ],
+        "D": [
+          7,
+          20
+        ],
+        "gas": [
+          4354000,
+          9870000
+        ]
+      },
+      "status": "measured"
+    },
+    "fixed_term_breakdown": {
+      "memory_expansion_gas": 503295,
+      "memory_bytes": 489696,
+      "status": "measured (exact local replay)"
+    },
+    "typical_tick": {
+      "F": 4,
+      "I": 4000,
+      "L": 100,
+      "D": 15,
+      "gas_total": 9062000,
+      "parts": {
+        "dirty_pages": 3595725,
+        "instructions": 3848400,
+        "fixed": 578245,
+        "page_loads": 547060,
+        "flips": 46684
+      }
+    }
+  },
+  "levers": [
+    {
+      "id": "memory_expansion",
+      "current_gas": 503295,
+      "target": "lazy per-page buffers; recover most of the fixed term",
+      "owner": "tapeout_machine_or_own_deployment",
+      "status": "measured",
+      "measured_scope": "Local MLP only; correctness2 CPU snapshots/5 page payloads. Full workload/ISA study incomplete.",
+      "measured_baseline_gas": 4157498,
+      "measured_optimized_gas": 3210968,
+      "measured_speedup": 1.2947802656395206,
+      "measurement_pending": false
+    },
+    {
+      "id": "dirty_page_writeback",
+      "current_gas_per_page": 239715,
+      "target": "word-level SSTORE diffs; multi-tick batching; transient staging",
+      "owner": "tapeout_machine_or_own_deployment",
+      "status": "estimate"
+    },
+    {
+      "id": "instruction_loop",
+      "current_gas_per_instruction": 962,
+      "target_gas_per_instruction": [
+        250,
+        400
+      ],
+      "how": "computed jump-table decode, pre-masked 32-bit regs, no per-instruction bounds checks, fused pairs",
+      "owner": "tapeout_machine_or_own_deployment",
+      "status": "estimate",
+      "measured_sublever": {
+        "status": "measured",
+        "name": "computed jump-table only",
+        "baseline_gas": 4157498,
+        "optimized_gas": 4117356,
+        "speedup": 1.009749460576156,
+        "scope": "MLP only; pre-masking/fusion not measured"
+      }
+    },
+    {
+      "id": "page_loads",
+      "current_gas_per_page": 5471,
+      "target": "warm EXTCODECOPY (EIP-2929) via in-tx page cache",
+      "owner": "tapeout_machine_or_own_deployment",
+      "status": "estimate"
+    },
+    {
+      "id": "tick_cap",
+      "current": 1024,
+      "target": "~12000 instructions/tick under the 16.78M cap; amortizes fixed term ~10x",
+      "owner": "tapeout_parameter",
+      "status": "model"
+    },
+    {
+      "id": "static_translation",
+      "current": "interpreted",
+      "target": "AOT hot loops to EVM/Yul + SWAR int8 (8-32 MAC per 256-bit word), >=10x on hot loops",
+      "owner": "program_side",
+      "status": "estimate"
+    },
+    {
+      "id": "bit_sliced_nand_evaluator",
+      "current_gas_per_gate": 2000,
+      "target_gas_per_gate": [
+        50,
+        100
+      ],
+      "owner": "tapeout_processor_or_own_composer",
+      "status": "estimate"
+    }
   ],
-  "fit": {
-   "formula": "gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH",
-   "note": "3 points, exact fit; coefficients are descriptive, not separately identifiable",
-   "status": "measured"
+  "large_model_bound": {
+    "model": "DeepSeek v4.1 Flash",
+    "mac_per_token": [
+      10000000000.0,
+      15000000000.0
+    ],
+    "instr_per_mac": [
+      5,
+      10
+    ],
+    "instr_per_token": 100000000000.0,
+    "gas_per_token": 100000000000000.0,
+    "chain_days_per_token": 30,
+    "bnb_per_token": 20000,
+    "weights_gb": 300,
+    "weights_as_pages_bnb_one_time": 3000,
+    "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
+    "status": "estimate"
   },
-  "score_vs_gas": "TapeOut structural score C = gates * depth^3; gas is linear in element count and independent of depth"
- },
- "riscv_tick": {
-  "machine": "0x5Ec71579c67EB01755bE6da9C3a26995f144115A",
-  "semantics": "rv32ima, bit-exact with mini-rv32ima",
-  "page_bytes": 1024,
-  "page_contract_bytes": 1025,
-  "pages": 16384,
-  "instructions_per_tick_cap": 1024,
-  "fit": {
-   "formula": "gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D",
-   "vars": {
-    "F": "serial flips",
-    "I": "instructions executed",
-    "L": "pages loaded",
-    "D": "dirty pages written back (CREATE)"
-   },
-   "samples": 80,
-   "holdout_rmse": 11700,
-   "sample_ranges": {
-    "F": [
-     3,
-     5
+  "provenance": {
+    "repo_paths": [
+      "circuits/_scratch/riscv_machine/",
+      "circuits/_scratch/onchain_inference/"
     ],
-    "I": [
-     1620,
-     4447
+    "sources": [
+      "https://tapeout.net/linux.html",
+      "https://eips.ethereum.org/EIPS/eip-2929"
     ],
-    "L": [
-     62,
-     132
-    ],
-    "D": [
-     7,
-     20
-    ],
-    "gas": [
-     4354000,
-     9870000
-    ]
-   },
-   "status": "measured"
+    "transactions_sent": 0
   },
-  "fixed_term_breakdown": {
-   "memory_expansion_gas": 503295,
-   "memory_bytes": 489696,
-   "status": "measured (exact local replay)"
-  },
-  "typical_tick": {
-   "F": 4,
-   "I": 4000,
-   "L": 100,
-   "D": 15,
-   "gas_total": 9062000,
-   "parts": {
-    "dirty_pages": 3595725,
-    "instructions": 3848400,
-    "fixed": 578245,
-    "page_loads": 547060,
-    "flips": 46684
-   }
+  "interpreter_optimization_partial": {
+    "status": "measured",
+    "scope": "Local MLP2x1024 instruction run only, exact cpuWords and5 touched page payloads; not sort-3 or all-ISA validation.",
+    "rows": [
+      {
+        "variant": "baseline",
+        "localGas": [
+          1915194,
+          2242304
+        ],
+        "totalLocalGas": 4157498,
+        "cpuWordsExact": true,
+        "allTouchedPagesExact": true,
+        "comparedPages": 5,
+        "maxMemoryBytes": 489696,
+        "speedup": 1.0
+      },
+      {
+        "variant": "lazy",
+        "localGas": [
+          1440949,
+          1770019
+        ],
+        "totalLocalGas": 3210968,
+        "cpuWordsExact": true,
+        "allTouchedPagesExact": true,
+        "comparedPages": 5,
+        "maxMemoryBytes": 100384,
+        "speedup": 1.2947802656395206
+      },
+      {
+        "variant": "jump",
+        "localGas": [
+          1907168,
+          2210188
+        ],
+        "totalLocalGas": 4117356,
+        "cpuWordsExact": true,
+        "allTouchedPagesExact": true,
+        "comparedPages": 5,
+        "maxMemoryBytes": 489696,
+        "speedup": 1.009749460576156
+      },
+      {
+        "variant": "combined",
+        "localGas": [
+          1432923,
+          1737903
+        ],
+        "totalLocalGas": 3170826,
+        "cpuWordsExact": true,
+        "allTouchedPagesExact": true,
+        "comparedPages": 5,
+        "maxMemoryBytes": 100384,
+        "speedup": 1.3111719154567296
+      }
+    ],
+    "evidence": "optimizations.md; optimization_partial_results.json",
+    "parked_reason": "User redirected H to ASIC design before remaining levers were within30min of completion."
   }
- },
- "levers": [
-  {
-   "id": "memory_expansion",
-   "current_gas": 503295,
-   "target": "lazy per-page buffers; recover most of the fixed term",
-   "owner": "tapeout_machine_or_own_deployment",
-   "status": "estimate"
-  },
-  {
-   "id": "dirty_page_writeback",
-   "current_gas_per_page": 239715,
-   "target": "word-level SSTORE diffs; multi-tick batching; transient staging",
-   "owner": "tapeout_machine_or_own_deployment",
-   "status": "estimate"
-  },
-  {
-   "id": "instruction_loop",
-   "current_gas_per_instruction": 962,
-   "target_gas_per_instruction": [
-    250,
-    400
-   ],
-   "how": "computed jump-table decode, pre-masked 32-bit regs, no per-instruction bounds checks, fused pairs",
-   "owner": "tapeout_machine_or_own_deployment",
-   "status": "estimate"
-  },
-  {
-   "id": "page_loads",
-   "current_gas_per_page": 5471,
-   "target": "warm EXTCODECOPY (EIP-2929) via in-tx page cache",
-   "owner": "tapeout_machine_or_own_deployment",
-   "status": "estimate"
-  },
-  {
-   "id": "tick_cap",
-   "current": 1024,
-   "target": "~12000 instructions/tick under the 16.78M cap; amortizes fixed term ~10x",
-   "owner": "tapeout_parameter",
-   "status": "model"
-  },
-  {
-   "id": "static_translation",
-   "current": "interpreted",
-   "target": "AOT hot loops to EVM/Yul + SWAR int8 (8-32 MAC per 256-bit word), >=10x on hot loops",
-   "owner": "program_side",
-   "status": "estimate"
-  },
-  {
-   "id": "bit_sliced_nand_evaluator",
-   "current_gas_per_gate": 2000,
-   "target_gas_per_gate": [
-    50,
-    100
-   ],
-   "owner": "tapeout_processor_or_own_composer",
-   "status": "estimate"
-  }
- ],
- "large_model_bound": {
-  "model": "DeepSeek v4.1 Flash",
-  "mac_per_token": [
-   10000000000.0,
-   15000000000.0
-  ],
-  "instr_per_mac": [
-   5,
-   10
-  ],
-  "instr_per_token": 100000000000.0,
-  "gas_per_token": 100000000000000.0,
-  "chain_days_per_token": 30,
-  "bnb_per_token": 20000,
-  "weights_gb": 300,
-  "weights_as_pages_bnb_one_time": 3000,
-  "conclusion": "native execution infeasible; use optimistic execution with on-chain rv32ima single-step arbitration; zkML as fallback",
-  "status": "estimate"
- },
- "provenance": {
-  "repo_paths": [
-   "circuits/_scratch/riscv_machine/",
-   "circuits/_scratch/onchain_inference/"
-  ],
-  "sources": [
-   "https://tapeout.net/linux.html",
-   "https://eips.ethereum.org/EIPS/eip-2929"
-  ],
-  "transactions_sent": 0
- }
 }
