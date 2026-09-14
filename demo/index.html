@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>一步模型 · 链上语言模型</title>
+<title>TapeoutLLM · 一步模型</title>
 <style>
 :root{--bg:#0f1115;--fg:#e6e6e6;--mut:#9aa0a6;--card:#171a21;--line:#2a2f3a;--acc:#4f8cff;--ok:#3ddc84;--warn:#f5a623}
 @media(prefers-color-scheme:light){:root{--bg:#fafafa;--fg:#111;--mut:#555;--card:#fff;--line:#ddd}}
@@ -14,8 +14,8 @@ textarea,input,select,button{font:inherit;color:var(--fg);background:var(--card)
 .me{align-self:flex-end;background:#2b3a55} .net{align-self:flex-start;background:#1f2a24;border:1px solid #2e4a3a} .meta{font-size:12px;color:var(--mut);align-self:flex-start;margin-top:-4px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0} code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 4px} .small{font-size:13px;color:var(--mut)} .hl{border-left:3px solid var(--ok);padding-left:10px} .warn{border-left:3px solid var(--warn);padding-left:10px}
 </style></head><body><main>
-<h1>一步模型 · 链上语言模型</h1>
-<div class="sub">One-step model: a purely combinational TapeOut netlist — 32 characters in, one <code>step()</code>, the next character out, zero latches. 网表在本页浏览器里逐门求值；链上数字来自本地部署的官方 TapeOut CPU 字节码实测（BSC 未发交易）。v2 · 2026-09-14 · 维护：Claude · 网表与实测：H</div>
+<h1>TapeoutLLM — 链上一步模型</h1>
+<div class="sub"><b>TapeoutLLM</b> is a one-step model: a purely combinational TapeOut netlist — 32 characters in, one <code>step()</code>, the next character out, zero latches. 网表在本页浏览器里逐门求值；链上数字来自本地部署的官方 TapeOut CPU 字节码实测（BSC 未发交易）。v2 · 2026-09-14 · 维护：Claude · 网表与实测：H</div>
 
 <div class="three">
 <div class="box hl"><h3>主信息（先看这个）</h3><b>一步可达性与门数无关。</b>61,646 NAND 的网表（held-out 下一字符 0.4985）在放宽区块上限的官方 TapeOut CPU 上一步执行成功——烧 183.2M gas、步 187.1M gas，各 2.7 个区块，交易收据实测。唯一挡住它上主网的是 BSC 68,444,479 的区块上限；这是链进化的问题，不是模型的。现役链上能一笔烧、一笔跑的最强版本：19,567 NAND，0.434（trigram 0.371），烧 57.0M、步 45.7M。</div>
@@ -26,7 +26,7 @@ textarea,input,select,button{font:inherit;color:var(--fg);background:var(--card)
 <div class="kpi"><div class="v">61,646</div><div class="l">NAND · 一步执行成功（2.7 个区块） <span class="tag">实测</span></div></div><div class="kpi"><div class="v">0.4985</div><div class="l">held-out top-1 · 61.6k 版 <span class="tag">实测</span></div></div><div class="kpi"><div class="v">19,567</div><div class="l">NAND · 一笔可烧可跑最强版 <span class="tag">实测</span></div></div><div class="kpi"><div class="v">0.434</div><div class="l">held-out top-1 · 19.6k 版（trigram 0.371） <span class="tag">实测</span></div></div><div class="kpi"><div class="v">0</div><div class="l">latch <span class="tag">实测</span></div></div><div class="kpi"><div class="v">2,293 / 2,923</div><div class="l">gas 每 NAND · 步 / 烧 <span class="tag">实测</span></div></div>
 </div>
 
-<h2>1 · 什么是一步模型</h2>
+<h2>1 · 什么是一步模型（TapeoutLLM 的形态）</h2>
 <div class="three">
 <div class="box"><h3>定义</h3>布尔函数 f: {0,1}<sup>nIn</sup> → {0,1}<sup>nOut</sup>，以官方 7 字节 NAND 记录给出，最后 nOut 条记录是输出。无状态、一步、可执行（记录数塞进一笔交易，或以本地放宽上限证明可达）、学来的（统计表、可微逻辑门网络或进化，不是手写）。</div>
 <div class="box"><h3>为什么是链上推理的理想形态</h3>门数计费 → 可以任意深；calldata 便宜 → 上下文可以很宽（192 位 ≈ 8 个门的价钱）；latch 每步 6,705 gas → 干脆没有；每步固定开销只付一次；区块上限定义了"足够多门"的现役边界，链进化会推高它。</div>
