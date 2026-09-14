@@ -43,13 +43,17 @@
       "nIn": 200,
       "nOut": 6,
       "stepGas": 11740160,
-      "burnGas": null,
+      "burnGas": 14915747,
       "top1": 0.3589,
       "sampled": true,
       "mainnetValid": true,
       "sampler": "v0.2 (no unigram-bucket fallback, low 3 bits split only for order >= 2)",
       "verified": "held-out 111508 x2 and 10000 random: 0 mismatches",
-      "note": "mainnet estimateGas pending (Claude); burnGas left empty on purpose"
+      "note": "mainnet tapeout gasUsed (cid 286, tx 0xf861f5b9...62a8); stepGas = 2,293/NAND slope",
+      "mainnetBurn": true,
+      "cid": 286,
+      "tx": "0xf861f5b98cd8df1ecbd2baac3c11b2bcf344a11d008f873bcf1ebd016ccb62a8",
+      "block": 121900375
     }
   },
   "note": "all four re-synthesised rungs measured on the local raised-cap CPU (official bytecode); v3 overwrote the file once and was merged back here",

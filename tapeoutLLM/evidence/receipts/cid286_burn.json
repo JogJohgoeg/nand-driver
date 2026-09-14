@@ -1,0 +1,18 @@
+{
+  "net": "netlist_resyn_cap_s4",
+  "cpu": "0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38",
+  "from": "0xc9059e0f59f40920e5bd24307eaa4defd81df145",
+  "tx": "0xf861f5b98cd8df1ecbd2baac3c11b2bcf344a11d008f873bcf1ebd016ccb62a8",
+  "status": "ok",
+  "gasUsed": 14915747,
+  "block": 121900375,
+  "cid": 286,
+  "circuitInfo": [
+    200,
+    6,
+    0,
+    5120
+  ],
+  "fee": 200000000000000,
+  "nNand": 5120
+}
