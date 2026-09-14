@@ -118,7 +118,7 @@ document.getElementById('send').onclick=async()=>{ const key=CHAIN.key, net=NETS
   const m=document.createElement('div'); m.className='meta'; m.textContent= chainErr
     ? L(`链上调用中断（${chainErr}），本条其余字符改为浏览器内求值`,`on-chain call interrupted (${chainErr}); the rest of this reply was evaluated in the browser`)
     : (onChain
-       ? L(`链上执行 ${Ln} 步 · cid 285 · 与浏览器求值一致 ${agree}/${Ln} · 节点往返 ${(chainMs/Ln).toFixed(0)} ms/步 · 若上链执行每步 ${net.step.toLocaleString()} gas`,`${Ln} on-chain steps · cid 285 · agrees with the in-browser evaluator ${agree}/${Ln} · node round-trip ${(chainMs/Ln).toFixed(0)} ms/step · ${net.step.toLocaleString()} gas per step if executed in a transaction`))
+       ? L(`链上执行 ${Ln} 步 · cid 285 · 与浏览器求值一致 ${agree}/${Ln} · 节点往返 ${(chainMs/Ln).toFixed(0)} ms/步 · 若上链执行每步 ${net.step.toLocaleString()} gas`,`${Ln} on-chain steps · cid 285 · agrees with the in-browser evaluator ${agree}/${Ln} · node round-trip ${(chainMs/Ln).toFixed(0)} ms/step · ${net.step.toLocaleString()} gas per step if executed in a transaction`)
        : L(`续写 ${Ln} 字符 · ${net.nNand.toLocaleString()} NAND/步 · 浏览器 ${dt.toFixed(0)} ms`,`${Ln} characters · ${net.nNand.toLocaleString()} NAND per step · browser ${dt.toFixed(0)} ms`)); chat.appendChild(m);
   chat.scrollTop=chat.scrollHeight; document.getElementById('msg').value=''; btn.disabled=false; };
 document.getElementById('msg').addEventListener('keydown',e=>{ if(e.key==='Enter')document.getElementById('send').click(); });
