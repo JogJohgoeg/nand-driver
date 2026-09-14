@@ -1,0 +1,62 @@
+{
+  "environment": "local PyEVM CPU (official bytecode), chain untouched",
+  "blockGasLimit": 68444479,
+  "rungs": {
+    "netlist_resyn_v3_resyn.json": {
+      "nNand": 64596,
+      "bytes": 452172,
+      "nIn": 192,
+      "nOut": 6,
+      "burnGas": 192286002,
+      "burnBlocks": 2.809,
+      "estimateGas": 206635722,
+      "stepGas": 203405030,
+      "stepBlocks": 2.972,
+      "mainnetValid": false
+    },
+    "netlist_resyn_g44_resyn.json": {
+      "nNand": 19567,
+      "burnGas": 56976135,
+      "burnBlocks": 0.832,
+      "stepGas": 45738885,
+      "stepBlocks": 0.668,
+      "mainnetValid": false
+    },
+    "netlist_resyn_s41_resyn.json": {
+      "nNand": 20073,
+      "burnGas": 58407619,
+      "burnBlocks": 0.853,
+      "stepGas": 46892415,
+      "stepBlocks": 0.685,
+      "mainnetValid": false
+    },
+    "netlist_resyn_v0_4k_resyn.json": {
+      "nNand": 1935,
+      "burnGas": 5722670,
+      "burnBlocks": 0.084,
+      "stepGas": 4458014,
+      "stepBlocks": 0.065,
+      "mainnetValid": true
+    },
+    "netlist_resyn_cap_s4.json": {
+      "nNand": 5120,
+      "nIn": 200,
+      "nOut": 6,
+      "stepGas": 11740160,
+      "burnGas": null,
+      "top1": 0.3589,
+      "sampled": true,
+      "mainnetValid": true,
+      "sampler": "v0.2 (no unigram-bucket fallback, low 3 bits split only for order >= 2)",
+      "verified": "held-out 111508 x2 and 10000 random: 0 mismatches",
+      "note": "mainnet estimateGas pending (Claude); burnGas left empty on purpose"
+    }
+  },
+  "note": "all four re-synthesised rungs measured on the local raised-cap CPU (official bytecode); v3 overwrote the file once and was merged back here",
+  "mainnetCap": {
+    "records": 5723,
+    "bytes": 40061,
+    "source": "claude mainnet bisection 2026-09-14",
+    "why": "SSTORE2 chunks, not EIP-170"
+  }
+}
