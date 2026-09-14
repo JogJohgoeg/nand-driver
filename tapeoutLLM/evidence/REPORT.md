@@ -1,5 +1,45 @@
 # One-step language model v0 — a combinational TapeOut netlist
 
+## Current state (2026-09-14, rounds 45-54) — mainnet, the record cap, and reachability
+
+**Primary information / 主信息:** TapeoutLLM is **on mainnet twice** on the user's own non-mining CPU
+0x6Fb4…5B38: **cid 285** = netlist_resyn_cap_s (5,069 NAND, sampled v0.1, tx 0x8609cfca…e1f4, gasUsed
+14,767,658) and **cid 286** = netlist_resyn_cap_s4 (5,120 NAND, sampled v0.2, tx 0xf861f5b9…62a8,
+gasUsed 14,915,747). The binding limit is a **per-tape-out record cap of 5,723 NAND (40,061 bytes)**,
+bisected with read-only estimateGas; larger netlists revert with SSTORE2_WRITE_FAILED. One-step
+reachability does not depend on gate count: v2 (61,646 NAND, top-1 0.4985) steps in 187.1M gas, v3
+(64,596, 0.5002) in 203.4M, and v4 (131,560, 0.5153) in 1,079.0M gas on the local raised-cap CPU.
+
+**Required context / 关联上下文:** receipts in burns/ and public/receipts/; ladder and gas in
+lm_burn_kit.json / LM_BURN_KIT.md; measured rungs (append-only) in measured_rungs.json. The 19.6k g44
+model (0.4338) exceeds the 40,061 B cap and splits into 4 circuits of 5,723/5,723/5,723/2,398 records
+(split_design.py, 0/2000 mismatches; container step ~45.1M gas, burn ~57.2M).
+
+**Next judgement / 下一步判断:** Claude republishes the demo (cid 286 default); the user decides a
+third tape-out; next H items are the container implementation/test and any further rungs.
+
+### Step-gas curve (super-linear above ~65k NAND)
+
+| nand | stepGas | burnGas | source |
+|---:|---:|---:|---|
+| 5,120 | 11,740,160 | 14,915,747 | cap_s4 cid 286 (step = slope, burn = mainnet gasUsed) |
+| 19,567 | 45,738,885 | 56,976,135 | g44 local receipt |
+| 61,646 | 187,052,755 | 183,216,875 | v2 local receipt |
+| 64,596 | 203,405,030 | 192,286,002 | v3 local receipt |
+| 131,560 | 1,078,950,193 | 406,775,110 | v4 local receipt |
+
+The 2,293/NAND step slope holds only below ~65k NAND (step/NAND: 2,293 at 5.1k, 2,337 at 19.6k, 3,034
+at 61.6k, 3,149 at 64.6k, 8,202 at 131.6k). Burn stays roughly flat at ~2,913-3,092/NAND.
+
+### Mainnet-capable ladder (<= 5,723 records)
+
+| netlist | NAND | top-1 | mainnet gas |
+|---|---:|---:|---:|
+| netlist_resyn_v0_4k_resyn.json | 1,935 | 0.3138 | 5,825,434 estimateGas |
+| netlist_resyn_cap_s.json (cid 285) | 5,069 | 0.3544 | 14,767,658 gasUsed |
+| netlist_resyn_cap_s4.json (cid 286) | 5,120 | 0.3589 | 14,915,747 gasUsed |
+| netlist_resyn_cap_g3.json | 5,583 | 0.3883 | 16,506,616 estimateGas |
+
 **Primary information / 主信息:** v0 exists as a purely combinational TapeOut netlist: **192 input
 bits = 32 characters × 6 bits, 6 output bits = the greedy next character, 0 latches,
 37,334 NAND**, and it predicts the next character of held-out TinyShakespeare with **exact top-1
