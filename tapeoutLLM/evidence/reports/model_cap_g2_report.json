@@ -1,0 +1,33 @@
+{
+  "model": "symbol-priority decision list (joint over the 64 symbols)",
+  "entries": 937,
+  "maxNgram": 4,
+  "sampleBits": 0,
+  "nIn": 192,
+  "sampling": "none (greedy argmax only)",
+  "minSupport": 8,
+  "fallbackSymbol": 0,
+  "maxEntries": 950,
+  "minPrecision": 0.22,
+  "entryLengths": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "heldOutBitAccuracy": 0.7387,
+  "heldOutExactTop1": 0.3902,
+  "discreteExactTop1": 0.3902,
+  "dlgnGates": 6068,
+  "bigramExactTop1": 0.2621,
+  "trigramExactTop1": 0.3707,
+  "corpus": "/Users/zhangzhuoning/GitHub/tapeout/circuits/_scratch/tapeout_asic/onestep_lm/data/tinyshakespeare.txt",
+  "corpusBytes": 1115394,
+  "trainWindows": 1003822,
+  "testWindows": 111508,
+  "discreteCheckWindows": 111508,
+  "unknownCharacterCounts": {
+    "&": 3,
+    "$": 1
+  }
+}
