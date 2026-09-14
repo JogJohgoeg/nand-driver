@@ -18,8 +18,8 @@ transaction; v1_29k and v0 stay documented boundaries, not candidates.
 | netlist_resyn_cap_s.json | 5069 | 200 | 0.3544 | 11,623,217 | 14,767,658 | yes | 35,620 B |
 | netlist_resyn_cap_s4.json | 5120 | 200 | 0.3589 | 11,740,160 | 14,915,747 | yes | 35,972 B |
 | netlist_resyn_netlist_v1_23k_resyn.json | 9043 | 200 | 0.38 | 20,735,599 | 26,432,689 | yes | 63,460 B |
-| netlist_resyn_g44_resyn.json | 19567 | 192 | 0.4154 | 45,738,885 | 56,976,135 | yes | 137,124 B |
-| netlist_resyn_s41_resyn.json | 20073 | 200 | 0.389 | 46,892,415 | 58,407,619 | yes | 140,644 B |
+| netlist_resyn_g44_resyn.json | 19567 | 192 | 0.4338 | 45,738,885 | 56,976,135 | yes | 137,124 B |
+| netlist_resyn_s41_resyn.json | 20073 | 200 | 0.4105 | 46,892,415 | 58,407,619 | yes | 140,644 B |
 | netlist_resyn_netlist_v0_resyn.json | 17905 | 192 | 0.4259 | 41,056,165 | 52,336,315 | yes | 125,476 B |
 
 ## How to burn, step and check

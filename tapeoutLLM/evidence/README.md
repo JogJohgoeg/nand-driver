@@ -12,8 +12,9 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `netlists/g44.json` | 274,128 |
 | `netlists/s41.json` | 281,195 |
 | `netlists/v2.json` | 863,218 |
-| `receipts/measured_rungs.json` | 1,974 |
-| `receipts/lm_burn_kit.json` | 7,280 |
+| `netlists/v4.json` | 1,842,012 |
+| `receipts/measured_rungs.json` | 3,287 |
+| `receipts/lm_burn_kit.json` | 7,281 |
 | `receipts/demo_selfcheck.json` | 10,510 |
 | `verify/verify_chain_char.py` | 3,126 |
 | `gates/cap_s_gates.v` | 373,372 |
@@ -27,8 +28,8 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `calldata/netlist_v1_23k.tapeout.txt` | 297,227 |
 | `ONESTEP.md` | 5,846 |
 | `SPEC.md` | 3,541 |
-| `REPORT.md` | 17,191 |
-| `LM_BURN_KIT.md` | 2,879 |
+| `REPORT.md` | 19,609 |
+| `LM_BURN_KIT.md` | 2,880 |
 | `alphabet.json` | 1,032 |
 | `reports/model_cap_g2_report.json` | 786 |
 | `reports/model_cap_g3_report.json` | 786 |
@@ -49,6 +50,7 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `reports/model_v1_29k_report.json` | 895 |
 | `reports/model_v2_report.json` | 790 |
 | `reports/model_v3_report.json` | 791 |
+| `reports/model_v4_report.json` | 792 |
 | `receipts/cid285_burn.json` | 400 |
 | `receipts/cid286_burn.json` | 401 |
 

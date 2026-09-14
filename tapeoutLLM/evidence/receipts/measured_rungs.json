@@ -54,6 +54,18 @@
       "cid": 286,
       "tx": "0xf861f5b98cd8df1ecbd2baac3c11b2bcf344a11d008f873bcf1ebd016ccb62a8",
       "block": 121900375
+    },
+    "netlist_resyn_v4.json": {
+      "nNand": 131560,
+      "bytes": 920920,
+      "nIn": 192,
+      "nOut": 6,
+      "burnGas": 406775110,
+      "burnBlocks": 5.943,
+      "estimateGas": 1096077633,
+      "stepGas": 1078950193,
+      "stepBlocks": 15.764,
+      "mainnetValid": false
     }
   },
   "note": "all four re-synthesised rungs measured on the local raised-cap CPU (official bytecode); v3 overwrote the file once and was merged back here",
@@ -62,5 +74,40 @@
     "bytes": 40061,
     "source": "claude mainnet bisection 2026-09-14",
     "why": "SSTORE2 chunks, not EIP-170"
+  },
+  "stepGasCurve": {
+    "note": "step gas per NAND grows 2,293 (5.1k) -> 2,337 (19.6k) -> 3,034 (61.6k) -> 3,149 (64.6k) -> 8,202 (131.6k): super-linear above ~65k NAND, so the 2,293/NAND slope holds only below ~65k. Burn stays roughly flat at ~2,913-3,092/NAND.",
+    "points": [
+      {
+        "nand": 5120,
+        "stepGas": 11740160,
+        "burnGas": 14915747,
+        "source": "cap_s4 cid 286; step = 2,293/NAND slope, burn = mainnet gasUsed"
+      },
+      {
+        "nand": 19567,
+        "stepGas": 45738885,
+        "burnGas": 56976135,
+        "source": "g44 local receipt"
+      },
+      {
+        "nand": 61646,
+        "stepGas": 187052755,
+        "burnGas": 183216875,
+        "source": "v2 local receipt"
+      },
+      {
+        "nand": 64596,
+        "stepGas": 203405030,
+        "burnGas": 192286002,
+        "source": "v3 local receipt"
+      },
+      {
+        "nand": 131560,
+        "stepGas": 1078950193,
+        "burnGas": 406775110,
+        "source": "v4 local receipt"
+      }
+    ]
   }
 }
