@@ -31,6 +31,8 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `REPORT.md` | 19,609 |
 | `LM_BURN_KIT.md` | 2,880 |
 | `alphabet.json` | 1,032 |
+| `SPLIT_DESIGN.md` | 2,682 |
+| `CONTEXT_USE.md` | 6,413 |
 | `reports/model_cap_g2_report.json` | 786 |
 | `reports/model_cap_g3_report.json` | 786 |
 | `reports/model_cap_g_report.json` | 787 |
@@ -42,6 +44,8 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `reports/model_g44_report.json` | 790 |
 | `reports/model_q_report.json` | 713 |
 | `reports/model_s41_report.json` | 900 |
+| `reports/model_skip2_report.json` | 476 |
+| `reports/model_skip_report.json` | 475 |
 | `reports/model_v0_23k_greedy_report.json` | 790 |
 | `reports/model_v0_3000_report.json` | 713 |
 | `reports/model_v0_4k_report.json` | 896 |
@@ -53,5 +57,17 @@ Links are relative: evidence/<path> - this directory is published as tapeoutLLM/
 | `reports/model_v4_report.json` | 792 |
 | `receipts/cid285_burn.json` | 400 |
 | `receipts/cid286_burn.json` | 401 |
+| `split/netlist_resyn_g44_slice0.json` | 101,050 |
+| `split/netlist_resyn_g44_slice1.json` | 114,188 |
+| `split/netlist_resyn_g44_slice2.json` | 92,772 |
+| `split/netlist_resyn_g44_slice3.json` | 70,880 |
+| `split/netlist_resyn_g44_slice4.json` | 61,098 |
+| `split/G44Container.sol` | 3,566 |
+| `split/container_wiring.hex` | 78,912 |
+| `split/emit_slices.py` | 3,614 |
+| `split/gen_container.py` | 4,669 |
+| `split/test_container.py` | 4,712 |
+| `split/container_test.json` | 300 |
+| `split/split_design.py` | 5,283 |
 
 ## how each group is produced
