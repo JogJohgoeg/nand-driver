@@ -40,9 +40,11 @@ A 54,147-NAND combinational netlist reads 6 MiniCPM tokens and emits the next on
   <table>
     <tr><td>门数 gates</td><td><b>54,147</b> NAND · 0 LATCH</td></tr>
     <tr><td>接口 interface</td><td>102 in（6 × 17 位 token id，最老在低位）/ 13 out（top-8192 码）</td></tr>
-    <tr><td>教师 teacher</td><td>MiniCPM5-2B BF16，argmax 蒸馏，1024-token 预热</td></tr>
-    <tr><td>一致率 agreement</td><td><b>0.23486</b> held-out（全局众数基线 <b>0.07124</b>）</td></tr>
-    <tr><td>天花板 ceiling</td><td>全表 0.339 / K=1M 截断 0.35186 · top-8192 覆盖 0.92225</td></tr>
+    <tr><td>蒸馏 distillation</td><td>MiniCPM5-2B BF16，argmax，1024-token 预热，16M 标注</td></tr>
+    <tr><td>一致率（近分布）</td><td><b>0.23486</b> · held-out 窗口在训练区之后 4M token（基线 0.07124）</td></tr>
+    <tr><td class="warn">一致率（远分布）</td><td class="warn"><b>0.10954</b> · held-out 窗口在训练区之后 84M token（基线 0.05825）。<b>这才是它面对新文本时的诚实数字</b>——网表是冻结的，它不会随语料更新。</td></tr>
+    <tr><td>教师 teacher</td><td>同两个窗口上 0.49393 / 0.49375 —— <b>教师几乎不掉</b>，所以掉的不是数据质量，是「背下来的表不泛化」</td></tr>
+    <tr><td>天花板 ceiling</td><td>全表 0.339 / K=1M 截断 0.35186（均为近分布）· top-8192 覆盖 0.92225</td></tr>
     <tr><td>每步 gas step</td><td>133,993,004（1.91 个块，建模）</td></tr>
     <tr><td>流片 tape-out</td><td class="warn"><b>尚未流片 not taped out</b> —— 12 片、实测 estimateGas 174,787,056、合计 0.011139 BNB</td></tr>
   </table>
@@ -54,7 +56,8 @@ A 54,147-NAND combinational netlist reads 6 MiniCPM tokens and emits the next on
 
   <h2 style="margin-top:20px">范围 Scope（说清它不做什么）</h2>
   <ul>
-    <li><b>它不是 MiniCPM5-2B。</b>它在 held-out 上和教师的 argmax 一致 <b>23.5%</b>；教师自己的下一 token 准确率是 48.8%。这是转写，不是等价。</li>
+    <li><b>它不是 MiniCPM5-2B。</b>近分布一致 <b>23.5%</b>，<b>远分布只有 11.0%</b>，而教师在两个窗口上都是 <b>49.4%</b>。这是转写，不是等价。</li>
+    <li><b>它背下来的东西不泛化。</b>同一个模型，测试窗口离训练区 4M token 时得 0.231，离 84M token 时得 0.110——掉了一半，而教师在这两个窗口上分毫不差（0.49393 / 0.49375）。教师的权重能迁移，一张记住的表不能。</li>
     <li><b>只看 6 个 token，无状态、无记忆。</b>更长的上下文买不起：门数随表项线性（约 6.7 NAND/项），5 个块/token 的预算只够约 15 万门。</li>
     <li><b>只有 8,192 个可能的输出</b>（教师 argmax 质量的 92.2%）；表外的目标它永远说不出来。</li>
     <li><b>不会聊天、不会调用工具。</b>它是一个下一 token 预测器，不是 agent。</li>
