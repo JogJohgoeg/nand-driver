@@ -48,6 +48,7 @@ A 54,147-NAND combinational netlist reads 6 MiniCPM tokens and emits the next on
     <tr><td>天花板 ceiling</td><td>全表 0.339 / K=1M 截断 0.35186（均为近分布）· top-8192 覆盖 0.92225</td></tr>
     <tr><td>每步 gas step</td><td>133,993,004（1.91 个块，建模）</td></tr>
     <tr><td>流片 tape-out</td><td class="warn"><b>尚未流片 not taped out</b> —— 12 片、实测 estimateGas 174,787,056、合计 0.011139 BNB</td></tr>
+    <tr><td class="warn">已知缺陷</td><td class="warn">这一版的查表<b>键</b>是用一个有缺陷的哈希算的：numpy 的 uint64 移位超过 63 位返回 0，导致第 5、6 个 token 完全没进键、第 4 个只进了 17 位中的 13 位。所以尽管页面确实把 102 位喂进网表，<b>深层的表实际上只区分约 3.76 个 token</b>（铁证：W=6/5/4 三层的不同键数是 11,573,526 / 11,573,527 / 11,573,528，彼此差不到 2）。下面那些一致率是这张网表<b>实测</b>的，所以数字本身没错；修正键后的版本在部署体裁上约 0.214、满表天花板 0.288，正在重造，届时替换本页。</td></tr>
   </table>
 
   <h2 style="margin-top:20px">链上对照 On-chain check</h2>
