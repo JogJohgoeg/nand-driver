@@ -1,0 +1,14 @@
+{
+  "shape": "skip-bigram table (last char AND char at offset o, o=1..31)",
+  "entries": 3400,
+  "minSupport": 5,
+  "minPrecision": 0.1,
+  "maxEntries": 3400,
+  "fallbackSymbol": 0,
+  "heldOutExactTop1": 0.1679,
+  "discreteExactTop1": 0.1679,
+  "dlgnGates": 17942,
+  "bitsRead": 12,
+  "positionsRead": "last char + every far offset present in the rule set",
+  "corpus": "/Users/zhangzhuoning/GitHub/tapeout/circuits/_scratch/tapeout_asic/onestep_lm/data/tinyshakespeare.txt"
+}
