@@ -1,0 +1,74 @@
+{
+  "default": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/default.svg",
+    "upstream_sha256": "91cd6ad5e03ba15b5f763cb7f0a7eef4f5e95c72c6e3192b9187c703ed9e7dd6"
+  },
+  "markdown": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/markdown.svg",
+    "upstream_sha256": "d6e4b4d8b4b32dcaf0defcb0858236326a17a50931dcd30926c8b047dadc0d6c"
+  },
+  "csv": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/csv.svg",
+    "upstream_sha256": "77adc99b60bfef400b7619484e8646b5b89fcf7f5a28c50563006327f7c4d0e6"
+  },
+  "json": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/json.svg",
+    "upstream_sha256": "24429711d8ac39d70e0fd3398b2137d82d2637786781c8ed10f3de0b81a0e547"
+  },
+  "javascript": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/javascript.svg",
+    "upstream_sha256": "dfac57ebdebfea573cd92b04178feee655452e24021a6b5ad4da84c3f5cf8615"
+  },
+  "typescript": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/typescript.svg",
+    "upstream_sha256": "af103ea54f8ac748c4c785a8074d0ba13c71df614669af4739575ceb000f191d"
+  },
+  "react": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/react.svg",
+    "upstream_sha256": "ef9d06d0487eac79e90d3c186fb73310231a331896482643ab33931c05073e5e"
+  },
+  "html": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/html.svg",
+    "upstream_sha256": "96c58a9a1dd9467412383caaf94d1f2afdceca7ea3a86c0da799219482e14709"
+  },
+  "css": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/css.svg",
+    "upstream_sha256": "710485c53da43d6ca2b24c653feb38e2fe8826437293c1db433e212e14c127fc"
+  },
+  "python": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/python.svg",
+    "upstream_sha256": "366e9a8b7ef95ec16d876e893703f8aa2150935a4798a6f8e4ed3838bd8be7a1"
+  },
+  "shell": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/shell.svg",
+    "upstream_sha256": "6451507061f339c16d7e04793bb2531245498dc1e2d8ede1c385337f1e847a2c"
+  },
+  "config": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/config.svg",
+    "upstream_sha256": "217cf6c3ccc4e8b4bfb852541c39346f02e0697079175ec7302bc22a30bd59ca"
+  },
+  "image": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/image.svg",
+    "upstream_sha256": "cc80f50862719e8873e28e7d02aa72f31fafe136b80edcdb2717a7d4e2200439"
+  },
+  "svg": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/svg.svg",
+    "upstream_sha256": "1008d60478d5ee5c8b9ce557c589ecce69da48c899a94760c52ef5ea0b5b7555"
+  },
+  "git": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/git.svg",
+    "upstream_sha256": "d489688dde724ee4ba28182ba21185ee9cd8524a6bab40bae72c82c5cafd9af1"
+  },
+  "pdf": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/pdf.svg",
+    "upstream_sha256": "c1f3f09b2283f797f5e977cca244eba8e6d1ec50b3e7944f8d75348efed4a3c8"
+  },
+  "zip": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/zip.svg",
+    "upstream_sha256": "ef76ed8cac7f1203def4fdd138037601d6b96272ac8b833ab91439ec582bd3ee"
+  },
+  "db": {
+    "source": "https://raw.githubusercontent.com/jesseweed/seti-ui/2d6c5e68b4ded73c92dac291845ee44e1182d511/icons/db.svg",
+    "upstream_sha256": "12d620a9c1d8da4207867a9c595d0acb267f59e6b4dca2500b3ac8de26dcd28c"
+  }
+}
