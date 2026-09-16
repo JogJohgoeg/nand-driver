@@ -6,10 +6,10 @@
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./modal-cat-v1.png" as="image" type="image/png" fetchpriority="high">
-  <meta name="description" content="Pi with impossible LLM as its brain: a 54,147-gate NAND netlist writes every token, in your browser.">
+  <meta name="description" content="Pi with impossible LLM as its brain: a 5,142,875-gate NAND netlist writes every token, in your browser.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Pi, entirely in your browser.">
-  <meta property="og:description" content="Pi whose brain is impossible LLM, a 54,147-gate NAND netlist evaluated on your CPU, plus a local shell.">
+  <meta property="og:description" content="Pi whose brain is impossible LLM v2, a 5,142,875-gate NAND netlist evaluated on your CPU, plus a local shell.">
   <meta property="og:url" content="https://townbox-minicpm5-2b-webgpu-pi.static.hf.space/">
   <meta property="og:image" content="https://huggingface.co/spaces/townbox/MiniCPM5-2B-WebGPU-Pi/resolve/main/social-thumbnail-v3.png">
   <meta property="og:image:width" content="3136">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="A coding agent running entirely in your browser, above the Pi terminal and its pixel cat mascot.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Pi, entirely in your browser.">
-  <meta name="twitter:description" content="Pi whose brain is impossible LLM, a 54,147-gate NAND netlist evaluated on your CPU, plus a local shell.">
+  <meta name="twitter:description" content="Pi whose brain is impossible LLM v2, a 5,142,875-gate NAND netlist evaluated on your CPU, plus a local shell.">
   <meta name="twitter:image" content="https://huggingface.co/spaces/townbox/MiniCPM5-2B-WebGPU-Pi/resolve/main/social-thumbnail-v3.png">
   <meta name="twitter:image:alt" content="A coding agent running entirely in your browser, above the Pi terminal and its pixel cat mascot.">
   <title>Pi · impossible LLM</title>
@@ -36,8 +36,8 @@
         <span class="sr-only" role="status" aria-live="polite"></span>
       </div>
       <div class="model-panel">
-        <div class="model-heading"><div><a class="header-model-source" href="../impossibleLLM/" aria-label="impossible LLM" title="impossible LLM: the netlist language model"><strong>impossible LLM</strong></a><span class="badge">54,147 NAND</span></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
-        <p id="load-status" class="sr-only" role="status">About 11 MB of netlist and tokenizer, loaded from this site. No GPU needed.</p>
+        <div class="model-heading"><div><a class="header-model-source" href="../impossibleLLM/" aria-label="impossible LLM" title="impossible LLM: the netlist language model"><strong>impossible LLM</strong></a><span class="badge">5.14M NAND</span></div><button id="load" class="primary" aria-describedby="load-status load-detail">Load model</button></div>
+        <p id="load-status" class="sr-only" role="status">About 38 MB of netlist and tokenizer, loaded from this site. No GPU needed.</p>
         <progress id="progress" hidden max="100" value="0" aria-label="Model download"></progress>
         <div id="load-detail" class="sr-only"></div>
       </div>
@@ -81,10 +81,10 @@
     <p id="model-description">Everything happens in your browser. Your prompts and files stay on this device.</p>
     <dl class="setup-runtime">
       <div><dt>Model</dt><dd class="setup-model"><a class="model-source" href="../impossibleLLM/" title="impossible LLM">impossible LLM</a></dd></div>
-      <div><dt>Inference</dt><dd>54,147 NAND gates on your CPU</dd></div>
+      <div><dt>Inference</dt><dd>5,142,875 NAND gates on your CPU</dd></div>
       <div><dt>Shell</dt><dd>Bash in the browser</dd></div>
     </dl>
-    <div class="setup-facts"><strong>About 11 MB, no weights</strong><span>Each token is one evaluation of the netlist, gate by gate.</span></div>
+    <div class="setup-facts"><strong>About 38 MB, no weights</strong><span>Each token is one evaluation of the netlist, gate by gate.</span></div>
     <p class="setup-label">Your message</p><div id="model-preview"></div>
     <p id="model-error" role="alert" hidden></p>
     <a id="model-open-tab" class="button" target="_blank" rel="noopener noreferrer" hidden>Open workspace in a new tab ↗</a>
@@ -124,26 +124,25 @@
 <div id="nt-badge" role="status" aria-live="polite" title="Open the scope note">
  <span id="nt-dot" aria-hidden="true"></span><span id="nt-text">NAND tool: checking netlist…</span>
 </div>
-<div id="nt-credit">A derivative of the <b>Pi browser workspace · MiniCPM5-2B</b> Space (<a href="https://huggingface.co/spaces/townbox/MiniCPM5-2B-WebGPU-Pi" target="_blank" rel="noopener">upstream by townbox</a>, Apache-2.0). Changed here: the model is replaced by <b><a href="../impossibleLLM/">impossible LLM</a></b>, a 54,147-gate NAND netlist transcribed from OpenBMB MiniCPM5-2B, and one tool is added: <b>nand_step</b>.<br> Agent Pi · Shell just-bash · Tokenizer MiniCPM5 (Transformers.js).</div>
+<div id="nt-credit">A derivative of the <b>Pi browser workspace · MiniCPM5-2B</b> Space (<a href="https://huggingface.co/spaces/townbox/MiniCPM5-2B-WebGPU-Pi" target="_blank" rel="noopener">upstream by townbox</a>, Apache-2.0). Changed here: the model is replaced by <b><a href="../impossibleLLM/">impossible LLM</a></b>, a 5,142,875-gate NAND netlist transcribed from OpenBMB MiniCPM5-2B, and one tool is added: <b>nand_step</b>.<br> Agent Pi · Shell just-bash · Tokenizer MiniCPM5 (Transformers.js).</div>
 <details id="nt-scope">
  <summary>The brain is a NAND netlist — what that means</summary>
  <h4>What answers you</h4>
  <ul>
-  <li>Every token of Pi's reply is produced by <b>one evaluation of a 54,147-gate NAND netlist</b> (0 latches, 102 inputs, 13 outputs), gate by gate on your CPU — the same netlist as the <a href="../impossibleLLM/">impossible LLM</a> page. There are no weights and no GPU; a 48-token reply takes a few milliseconds of gate evaluation.</li>
-  <li>The netlist sees the <b>last 6 MiniCPM5 tokens</b> (17 bits each) and returns a 13-bit code, which indexes one of <b>8,192</b> token ids. It is greedy and stateless.</li>
+  <li>Every token of Pi's reply is <b>one evaluation of the 5,142,875-gate NAND netlist</b> of <a href="../impossibleLLM/">impossible LLM v2</a> (0 latches, 106 inputs, 13 outputs), gate by gate on your CPU — about 10 ms per token. No weights, no GPU.</li>
+  <li>Inputs: the <b>last 6 MiniCPM5 tokens</b> (17 bits each) and <b>4 random bits</b>. Each table entry holds the teacher's three most frequent answers for that context; the random bits pick one in proportion. The output is a 13-bit code into <b>8,192</b> token ids.</li>
   <li>Because a 6-token window over the chat template would always see the same template tail, <b>the reply continues your last message</b>. Pi's thinking phase is skipped and a reply ends after 48 tokens.</li>
  </ul>
  <h4>What to expect</h4>
  <ul>
-  <li><b>It is not MiniCPM5-2B.</b> It agrees with the teacher's next token about <b>23%</b> near its training text and about <b>11%</b> far from it; the teacher itself is right about 49%.</li>
-  <li><b>It was transcribed from Wikipedia-style text</b>, so it writes that style (<code>@-@</code>, <code> , </code>, years and headings). Outside that distribution it falls back to the most common tokens and loops, e.g. “the 2008 , the 2008 …”. That is the model, not a page bug.</li>
+  <li><b>It is not MiniCPM5-2B.</b> It agrees with the teacher's most likely next token 22–31% of the time on held-out Wikipedia, web, chat and Chinese text (greedy); the teacher itself is right about 49%.</li>
+  <li><b>It does not get stuck any more</b> (v1 looped “the 2008 , the 2008 …” on every prompt): with sampling, 0 of 80 test prompts fall into a short loop. It still is not coherent and jumps between English, Chinese and code.</li>
   <li><b>It cannot call tools.</b> It never emits the tool-call markup, so the shell, the files and <code>nand_step</code> are only usable by you, not by the agent. The workspace still works from the Shell panel.</li>
  </ul>
  <h4>How this page was checked</h4>
  <ul>
-  <li>The in-browser gate evaluator matches an independent Python reference (<code>tapeout_asic/golden.py</code>) on 300/300 inputs.</li>
-  <li>Tokenization and bit packing match the offline pipeline on all 200 reference prompts, and 16-token continuations are identical to the impossible LLM page.</li>
-  <li>The netlist is <b>not on chain</b> — it was not burned — so, unlike <code>nand_step</code>, its tokens are not cross-checked against BNB Chain.</li>
+  <li>The netlist matches its table semantics on 5.5 million inputs with 0 mismatches (all 293,717 entries under all 16 random values, 200,000 random inputs, 800,000 held-out windows); the in-page JavaScript evaluator matches on 4,000 inputs.</li>
+  <li>The netlist is <b>not on chain</b> — it was not burned, and at about 170 blocks per step it could not run there — so, unlike <code>nand_step</code>, its tokens are not cross-checked against BNB Chain.</li>
  </ul>
  <h4>The nand_step tool (unchanged)</h4>
  <p>A 386-gate grid-navigation netlist, exhaustively self-checked on load (the chip in the corner) and cross-checked on every call against the same circuit burned as <b>cid 287</b> on BNB Chain with a read-only <code>eth_call</code>. With the netlist brain the agent no longer calls it (see above); the chip still self-checks on every load. Details in <code>NAND-TOOL.md</code>.</p>

@@ -1,9 +1,10 @@
 # Pi browser workspace - with impossible LLM as its brain, plus a NAND netlist tool
 
 **2026-09-16: the model is replaced.** MiniCPM5-2B no longer runs here. Every token of Pi's reply is one
-evaluation of the 54,147-gate NAND netlist of [impossible LLM](../impossibleLLM/) (0 latches, 102 inputs =
-last 6 MiniCPM5 tokens x 17 bits, 13 outputs = index into 8,192 token ids), gate by gate on the CPU. No
-weights are downloaded and no WebGPU is needed. Files:
+evaluation of the NAND netlist of [impossible LLM](../impossibleLLM/) - since v2 5,142,875 gates, 0 latches,
+106 inputs (last 6 MiniCPM5 tokens x 17 bits + 4 random bits that pick among the teacher's most frequent
+answers), 13 outputs = index into 8,192 token ids - gate by gate on the CPU (about 10 ms per token). No
+weights are downloaded and no WebGPU is needed. The netlist records are loaded from `../impossibleLLM/netlist.bin`. Files:
 
 - `brain/netlist-brain.js` - NEW. Loads `../impossibleLLM/{netlist.json,tokenizer.json,tokenizer_config.json,top8192.json}`,
   decodes the netlist, and exposes a `generate()` with the subset of the transformers.js contract the agent worker uses.
@@ -15,10 +16,11 @@ weights are downloaded and no WebGPU is needed. Files:
   check always reports ready (nothing to download).
 - `assets/index-DnXFGQ8z.js`, `index.html` - labels (NAND instead of WebGPU, impossible LLM instead of MiniCPM5-2B) and the scope note.
 
-Checked: gate evaluator = Python reference `tapeout_asic/golden.py` on 300/300 inputs; tokenization and packing =
-offline pipeline on 200/200 reference prompts; 16-token continuations identical to the impossible LLM page; real Chrome:
-loads without a download dialog, replies stream, 0 console errors. Limits: Wikipedia-style output, loops out of
-distribution, never emits tool calls (so the agent cannot use the shell or `nand_step`), not on chain.
+Checked (v2): netlist = table semantics on 5.5M inputs, 0 mismatches (C evaluator); the in-page JS evaluator = reference
+on 4,000 inputs; tokenization and packing = offline pipeline on 200/200 reference prompts; real Chrome: loads without a
+download dialog, replies stream, 0 console errors. Limits: incoherent and language-mixing output, never emits tool calls
+(so the agent cannot use the shell or `nand_step`), not on chain. v1 (54,147 gates, greedy) is archived at
+`../impossibleLLM/v1/`.
 
 ---
 

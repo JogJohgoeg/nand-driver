@@ -1,132 +1,148 @@
 <!doctype html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>impossible LLM · 把 MiniCPM5-2B 转写成一步模型</title>
+<title>impossible LLM v2</title>
+<meta name="description" content="一个 5,142,875 门的 NAND 网表语言模型：读最近 6 个 MiniCPM5 token 和 4 个随机位，输出下一个 token，在浏览器里逐门求值。">
 <style>
 :root{--bg:#0b0d10;--fg:#e8eaed;--dim:#98a2ad;--line:#232a33;--card:#12161b;--acc:#3ddc97;--warn:#f5a623}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;padding:24px 16px 48px}
 .wrap{max-width:1180px;margin:0 auto}h1{font-size:21px;margin:0 0 6px}h2{font-size:15px;margin:0 0 12px}
 .sub{color:var(--dim);margin:0 0 22px}
-.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
-textarea{width:100%;min-height:92px;background:#0e1216;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;resize:vertical}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:18px}@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+textarea{width:100%;min-height:84px;background:#0e1216;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;resize:vertical}
 button{background:#1b2229;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:inherit;cursor:pointer}
 button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.45;cursor:not-allowed}
-.out{background:#0e1216;border:1px solid var(--line);border-radius:8px;padding:12px;min-height:120px;white-space:pre-wrap;word-break:break-word}
+.out{background:#0e1216;border:1px solid var(--line);border-radius:8px;padding:12px;min-height:140px;white-space:pre-wrap;word-break:break-word}
 .gen{color:var(--acc)}.muted{color:var(--dim)}.warn{color:var(--warn)}
-table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
-td:first-child{color:var(--dim);white-space:nowrap;padding-right:14px}
+table{width:100%;border-collapse:collapse}td,th{padding:5px 6px 5px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{color:var(--dim);font-weight:500}td.k{color:var(--dim);white-space:nowrap;padding-right:12px}
+.num{font-variant-numeric:tabular-nums}
 code{background:#0e1216;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;word-break:break-all}
 ul{margin:8px 0 0;padding-left:18px}li{margin:6px 0}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+label{display:flex;gap:6px;align-items:center;color:var(--dim)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chips button{padding:4px 9px;font-size:12px}
+a{color:var(--acc)}
 </style></head><body><div class="wrap">
-<h1>impossible LLM — 把 MiniCPM5-2B 转写成一张 NAND 网表</h1>
-<p class="sub">一张 54,147 个 NAND 的组合网表，读 6 个 MiniCPM token、一次 <code>step()</code> 输出下一个 token。逐门求值在这一页的 Web Worker 里跑，没有后端、没有 API key。<br>
-A 54,147-NAND combinational netlist reads 6 MiniCPM tokens and emits the next one in a single <code>step()</code>, evaluated gate by gate in this page.</p>
+<h1>impossible LLM v2 — 5,142,875 个 NAND 门的语言模型</h1>
+<p class="sub">它读最近 6 个 MiniCPM5 token 和 4 个随机位，一次求值输出下一个 token；这一页在你的浏览器里逐门计算，没有后端。
+v2 相比 v1：<b>不再掉进 “the 2008 , the 2008” 这类死循环</b>（采样时 0%），在对话、网页、中文文本上的一致率分别是 v1 的 4.1、2.1、53 倍。
+它仍然写不出连贯的句子，也<b>没有上链</b>。</p>
 
 <div class="grid">
 <div class="card">
-  <h2>续写 Continuation</h2>
-  <div id="out" class="out"><span class="muted">加载分词器中… loading tokenizer (~2 MB gzipped)</span></div>
-  <div class="row"><textarea id="msg">The history of the Roman Empire</textarea></div>
+  <h2>续写</h2>
+  <div id="out" class="out"><span class="muted">正在加载网表（36 MB）和分词器（约 2 MB）…</span></div>
+  <div class="row"><textarea id="msg" aria-label="要续写的文字">I like cats because</textarea></div>
+  <div class="chips" id="chips"></div>
   <div class="row">
-    <button id="go" disabled>▶ 生成 16 个 token</button>
-    <span id="stat" class="muted"></span>
+    <button id="go" disabled>▶ 生成 48 个 token</button>
+    <label><input type="checkbox" id="greedy"> 贪心（随机位固定为 0）</label>
+    <span id="stat" class="muted num"></span>
   </div>
-  <p class="muted" style="margin-top:10px">建议试试 suggested：<code>The history of the Roman Empire</code> —— 点生成，看网表逐 token 写下去。</p>
+  <p class="muted" style="margin-top:10px">每个 token：取文本最后 6 个 token（102 位）+ 4 个随机位 → 5,142,875 个门 → 13 位编码 → token。随机位来自浏览器的 <code>crypto.getRandomValues</code>；勾选「贪心」后恒为 0，输出只由文本决定。</p>
 </div>
 
 <div class="card">
-  <h2>模型 Model</h2>
+  <h2>模型</h2>
   <table>
-    <tr><td>门数 gates</td><td><b>54,147</b> NAND · 0 LATCH</td></tr>
-    <tr><td>接口 interface</td><td>102 in（6 × 17 位 token id，最老在低位）/ 13 out（top-8192 码）</td></tr>
-    <tr><td>蒸馏 distillation</td><td>MiniCPM5-2B BF16，argmax，1024-token 预热，16M 标注</td></tr>
-    <tr><td>一致率（同体裁）</td><td><b>约 0.23</b> · 测试窗口与训练区同一语料体裁（基线约 0.07）</td></tr>
-    <tr><td class="warn">一致率（跨体裁）</td><td class="warn"><b>约 0.11</b> · 测试窗口落在语料另一段体裁上（基线约 0.06）。<b>这才是它面对陌生文本时的诚实数字。</b></td></tr>
-    <tr><td>教师 teacher</td><td>同两个窗口上都是 <b>约 0.49</b> —— <b>教师几乎不掉</b>，所以掉的不是数据质量，是「背下来的表不泛化」</td></tr>
-    <tr><td class="warn">测量精度</td><td class="warn">同体裁内多个不相交 20 万 token 窗口的散布约 <b>±0.01</b>；跨体裁比较必须说明体裁，否则散布看起来像 ±0.03（那是把两种体裁混在一起的假象）。小于 0.01 的差别不显著。</td></tr>
-    <tr><td>天花板 ceiling</td><td>全表 0.339 / K=1M 截断 0.35186（均为近分布）· top-8192 覆盖 0.92225</td></tr>
-    <tr><td>每步 gas step</td><td>133,993,004（1.91 个块，建模）</td></tr>
-    <tr><td>流片 tape-out</td><td class="warn"><b>尚未流片 not taped out</b> —— 12 片、实测 estimateGas 174,787,056、合计 0.011139 BNB</td></tr>
-    <tr><td class="warn">已知缺陷</td><td class="warn">这一版的查表<b>键</b>是用一个有缺陷的哈希算的：numpy 的 uint64 移位超过 63 位返回 0，导致第 5、6 个 token 完全没进键、第 4 个只进了 17 位中的 13 位。所以尽管页面确实把 102 位喂进网表，<b>深层的表实际上只区分约 3.76 个 token</b>（铁证：W=6/5/4 三层的不同键数是 11,573,526 / 11,573,527 / 11,573,528，彼此差不到 2）。下面那些一致率是这张网表<b>实测</b>的，所以数字本身没错；修正键后的版本在部署体裁上约 0.214、满表天花板 0.288，正在重造，届时替换本页。</td></tr>
+    <tr><td class="k">门数</td><td class="num"><b>5,142,875</b> NAND · 0 LATCH · 记录 36,000,125 字节</td></tr>
+    <tr><td class="k">接口</td><td>106 位输入：6 × 17 位 token id（最老在低位）+ 4 个随机位 · 13 位输出（在 8,192 个 token 里的序号）</td></tr>
+    <tr><td class="k">教师</td><td>MiniCPM5-2B BF16 的 argmax，每段先喂 1,024 个 token 上下文</td></tr>
+    <tr><td class="k">数据</td><td class="num">英文维基 1,000 万 · 网页 fineweb-edu 800 万 · 对话 smoltalk 800 万 · 中文维基 600 万 token；每个来源另留 20 万 token 做测试</td></tr>
+    <tr><td class="k">结构</td><td class="num">6 层回退查表：看最近 1…6 个 token 的表项 52,751 / 140,400 / 79,659 / 14,780 / 5,078 / 1,049 个，长的优先；都查不到时按 16 格分布输出</td></tr>
+    <tr><td class="k">采样</td><td>每个表项存教师在该上下文下最常给出的 3 个答案及比例；随机位按比例选（量化到 1/16）。随机位全 0 就是贪心</td></tr>
+    <tr><td class="k">选表项</td><td>只收比退回下一层能多猜对的上下文，门数按「每门多猜对几次」分配到各层</td></tr>
+    <tr><td class="k">浏览器耗时</td><td class="num">每个 token 约 10 ms（node 实测 9.6 ms）</td></tr>
+    <tr><td class="k warn">上链</td><td class="warn num">没有流片。按容器成本模型，一步约 116 亿 gas ≈ 170 个区块，实际上不可能上链执行（模型只在 5,300 门以内实测过，这里外推了约 1,000 倍）</td></tr>
   </table>
 
-  <h2 style="margin-top:20px">链上对照 On-chain check</h2>
-  <p class="muted">这一页<b>暂时没有</b>链上逐 token 对照——网表还没烧。已流片的 cid 285 / 286 / 287 有活的 <code>eth_call</code> 对照，见存档页
-  <a href="archive/onestep-index.html" style="color:var(--acc)">一步模型阶梯</a>和<a href="archive/ws/" style="color:var(--acc)">逐字续写演示</a>（两页已下线，保留为工程存档）。烧录后这一页会补上同样的一栏。</p>
+  <h2 style="margin-top:20px">与 v1 对比（同一批测试文本）</h2>
+  <table class="num">
+    <tr><th>和教师一致的比例</th><th>v1</th><th>v2 贪心</th><th>v2 采样</th></tr>
+    <tr><td class="k">英文维基</td><td>0.235</td><td><b>0.309</b></td><td>0.233</td></tr>
+    <tr><td class="k">对话</td><td>0.074</td><td><b>0.303</b></td><td>0.226</td></tr>
+    <tr><td class="k">网页</td><td>0.116</td><td><b>0.241</b></td><td>0.177</td></tr>
+    <tr><td class="k">中文维基</td><td>0.004</td><td><b>0.219</b></td><td>0.174</td></tr>
+    <tr><td class="k">MiniCPM5-2B 自身</td><td colspan="3">约 0.49（维基，v1 测得）</td></tr>
+  </table>
+  <table class="num" style="margin-top:10px">
+    <tr><th>80 条提示各续写 48 个 token</th><th>v1</th><th>v2 贪心</th><th>v2 采样</th></tr>
+    <tr><td class="k">卡进短循环的比例</td><td class="warn">100%</td><td>3.7%</td><td><b>0%</b></td></tr>
+    <tr><td class="k">平均不同 token 数</td><td>7.5</td><td>24.3</td><td><b>34.5</b></td></tr>
+  </table>
+  <p class="muted">「采样」一致率更低是预期的：采样按比例选答案，不总选最常见的那个；换来的是不重复。</p>
 
-  <h2 style="margin-top:20px">范围 Scope（说清它不做什么）</h2>
+  <h2 style="margin-top:20px">怎么验证的</h2>
   <ul>
-    <li><b>它不是 MiniCPM5-2B。</b>近分布一致 <b>23.5%</b>，<b>远分布只有 11.0%</b>，而教师在两个窗口上都是 <b>49.4%</b>。这是转写，不是等价。</li>
-    <li><b>它背下来的东西不泛化。</b>同一个模型在同体裁窗口上约 0.23、跨体裁窗口上约 0.11，而教师在两者上都是约 0.49，分毫不差。教师的权重能迁移，一张记住的表不能。</li>
-    <li><b>它不会「变旧」，但会遇到「不一样的文本」。</b>受控实验里，同一个模型在离训练区 16M 和 48M token 的窗口上得分相同，而在<b>反方向</b>同样距离的窗口上高得多——距离是对称的，得分不是。所以下降不是时间造成的老化，而是测试文本换了体裁：语料在某个位置有一道明显的成分分界（分界后每段的不同标签多 23%，落在最高频 token 上的质量少 19%），教师在分界两侧一样准，<b>变的是「能不能靠背」</b>（最高频 1,000 个键的命中率 0.67 → 0.50）。烧上去的网表不会因为时间流逝而退化，但会因为遇到另一种文本而掉一档。</li>
-    <li><b>训练数据选哪一段比多花门数更值钱。</b>同样的门数，用最近的 1,600 万 token 训练而不是最早的，一致率从约 0.11 提到约 0.17；而且最近区间的单层 unigram 就打赢了最早区间的完整六层级联。</li>
-    <li><b>只看 6 个 token，无状态、无记忆。</b>更长的上下文买不起：门数随表项线性（约 6.7 NAND/项），5 个块/token 的预算只够约 15 万门。</li>
-    <li><b>只有 8,192 个可能的输出</b>（教师 argmax 质量的 92.2%）；表外的目标它永远说不出来。</li>
-    <li><b>不会聊天、不会调用工具。</b>它是一个下一 token 预测器，不是 agent。</li>
-    <li><b>它会循环。</b>转写的是教师的 argmax，没有采样随机位，所以是确定性的——确定性的贪心续写必然进入循环（试试上面那句，几个 token 后就开始重复）。这是设计的直接后果，不是缺陷修不掉：加采样位要多花门数，而 v0.2 采样器制造过一个换行吸收态。</li>
-    <li>一致率之所以停在 0.23，不是门数不够，而是 <b>6 个 token 的上下文里没有足够信息</b>：在真正重复出现的上下文上，教师 argmax 的条件熵仍有 1.9–3.7 比特。</li>
+    <li>网表和查表语义逐位一致：全部 293,717 个表项 × 16 种随机位、20 万条随机输入、四个来源各约 20 万条测试窗口，<b>0 处不一致</b>（C 位并行求值器）。</li>
+    <li>上面的一致率是用网表本身的输出算的，和建表程序的数字逐位相同。</li>
+    <li>这一页用的 JavaScript 求值器在 4,000 条输入上与参考语义 0 处不一致；分词和打包与离线流程在 200 条参考提示上一致。</li>
   </ul>
 </div>
 </div>
 
+<div class="card" style="margin-top:18px">
+  <h2>它做不到什么</h2>
+  <ul>
+    <li><b>写不出连贯的话。</b>它只看最近 6 个 token，本质是一张教师答案的回退查表；句子常常在中文、英文、代码之间乱跳（四种语料混在一起训练的结果）。</li>
+    <li><b>采样只是不重复，不是更聪明。</b>任何「只看最近 6 个 token 的确定性网表」都终究会循环，v1 在 80 条提示上全部卡住；给表项换答案只会把环挪个位置（在只用维基的试验表上实测：改 60 处后 800 个起点仍全部被困），所以 v2 改用随机位。</li>
+    <li><b>偶尔出现 “�”。</b>汉字由几个字节 token 拼成，模型有时只输出了其中一部分就转去别的 token。</li>
+    <li><b>离教师还很远。</b>最好的来源也只有约 0.31，教师约 0.49。门数每翻一倍大约只多 0.014，再往上主要靠更多训练数据，而不是更多门。</li>
+    <li><b>不会调用工具、没有记忆、没有上链。</b></li>
+  </ul>
+  <p class="muted" style="margin-top:12px">相关页面：<a href="../nandtool/">Pi 工作台（大脑换成本网表）</a> · <a href="v1/">v1 存档（54,147 门）</a> ·
+  源码在 tapeout 仓库 <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code>（建表 <code>v2_build.py</code>、分块综合 <code>v2_chunk_synth.py</code>、验证 <code>v2_verify.py</code> + <code>nleval.c</code>）。</p>
+</div>
+</div>
+
 <script type="module">
-const $=id=>document.getElementById(id);
-const OUT=$('out'), STAT=$('stat'), GO=$('go'), MSG=$('msg');
-let cascade=null, worker=null, NET=null;
+const $ = id => document.getElementById(id);
+const OUT = $('out'), STAT = $('stat'), GO = $('go'), MSG = $('msg'), GREEDY = $('greedy');
+const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const SUGGEST = ['I like cats because', 'The album was released in', 'Hello, how are you?', 'def fibonacci(n):', '今天天气很好，我们', '中国的首都是'];
+for (const s of SUGGEST) {
+  const b = document.createElement('button'); b.textContent = s;
+  b.onclick = () => { MSG.value = s; if (!GO.disabled) GO.click(); };
+  $('chips').append(b);
+}
+let brain = null;
+const ids_so_far = [];
+// let the page paint between tokens; MessageChannel is not throttled like setTimeout in background tabs
+const yieldNow = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });
+try {
+  const [{ createBrain }, { PreTrainedTokenizer }] = await Promise.all([
+    import('../nandtool/brain/netlist-brain.js'),
+    import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1'),
+  ]);
+  brain = await createBrain({
+    base: new URL('./', location.href).href,
+    templateUrl: new URL('../nandtool/brain/chat_template.jinja', location.href).href,
+    makeTokenizer: (tj, tc) => new PreTrainedTokenizer(tj, tc),
+  });
+  OUT.innerHTML = '<span class="muted">就绪：' + brain.info.gates.toLocaleString() + ' 个门，' + brain.info.randomBits + ' 个随机位。点「生成」。</span>';
+  GO.disabled = false;
+} catch (err) {
+  OUT.innerHTML = '<span class="warn">加载失败：' + esc(String(err.message || err)) + '</span>';
+}
 
-const workerSrc=`
-let A=null,B=null,NIN=0,NOUT=0,BASE=0,N=0;
-onmessage=e=>{
-  if(e.data.init){
-    const h=e.data.init.hex; NIN=e.data.init.nIn; NOUT=e.data.init.nOut;
-    N=h.length/14; BASE=2+NIN; A=new Int32Array(N); B=new Int32Array(N);
-    for(let i=0;i<N;i++){const o=i*14;
-      if(h.substr(o,2)!=='00'){postMessage({error:'non-NAND record at '+i});return;}
-      A[i]=parseInt(h.substr(o+2,6),16); B[i]=parseInt(h.substr(o+8,6),16);}
-    postMessage({ready:true,n:N}); return;
-  }
-  const bytes=e.data.bytes; const w=new Uint8Array(BASE+N); w[1]=1;
-  for(let i=0;i<NIN;i++) w[2+i]=(bytes[i>>3]>>(i&7))&1;
-  for(let i=0;i<N;i++) w[BASE+i]=1-(w[A[i]]&w[B[i]]);
-  let code=0; for(let k=0;k<NOUT;k++) code|=w[BASE+N-NOUT+k]<<k;
-  postMessage({code});
-};`;
-
-function step(bytes){return new Promise(res=>{const h=e=>{if('code' in e.data){worker.removeEventListener('message',h);res(e.data.code);}};worker.addEventListener('message',h);worker.postMessage({bytes});});}
-
-(async()=>{
-  try{
-    NET=await (await fetch('./netlist.json')).json();
-    const hex=NET.nl_hex.startsWith('0x')?NET.nl_hex.slice(2):NET.nl_hex;
-    worker=new Worker(URL.createObjectURL(new Blob([workerSrc],{type:'application/javascript'})));
-    worker.onerror=ev=>{OUT.innerHTML='<span class="warn">worker 启动失败 worker failed: '+(ev.message||'unknown')+'</span>';};
-    const ready=new Promise((res,rej)=>{const h=e=>{if(e.data.ready){worker.removeEventListener('message',h);res(e.data);}else if(e.data.error){worker.removeEventListener('message',h);rej(new Error(e.data.error));}};worker.addEventListener('message',h);});
-    worker.postMessage({init:{hex,nIn:NET.nIn,nOut:NET.nOut}});
-    const r=await ready;
-    if(r.n!==NET.nNand) throw new Error('record count '+r.n+' != nNand '+NET.nNand);
-    OUT.innerHTML='<span class="muted">网表已载入 '+r.n.toLocaleString()+' 门，正在载入分词器…</span>';
-    cascade=await import('./cascade.js');
-    await cascade.encode('warmup');
-    OUT.innerHTML='<span class="muted">就绪。点「生成」。 Ready — press generate.</span>';
-    GO.disabled=false;
-  }catch(err){OUT.innerHTML='<span class="warn">加载失败 load failed: '+err.message+'</span>';}
-})();
-
-GO.onclick=async()=>{
-  GO.disabled=true; const t0=performance.now();
-  let text=MSG.value||'The history of the Roman Empire';
-  const gen=[]; OUT.textContent=text;
-  for(let i=0;i<16;i++){
-    const ids=await cascade.encode(text);
-    const code=await step(cascade.pack(ids));
-    const piece=await cascade.decode(code);
-    gen.push(piece); text+=piece;
-    OUT.innerHTML=MSG.value.replace(/</g,'&lt;')+'<span class="gen">'+gen.join('').replace(/</g,'&lt;')+'</span>';
-    STAT.textContent='第 '+(i+1)+'/16 个 token · '+NET.nNand.toLocaleString()+' NAND/步';
-  }
-  STAT.textContent='16 个 token · '+NET.nNand.toLocaleString()+' NAND/步 · 浏览器内 '+Math.round(performance.now()-t0)+' ms';
-  GO.disabled=false;
+GO.onclick = async () => {
+  GO.disabled = true;
+  const prompt = MSG.value || 'I like cats because';
+  const greedy = GREEDY.checked;
+  const t0 = performance.now();
+  let n = 0;
+  OUT.innerHTML = esc(prompt);
+  const ids = await brain.continueText(prompt, 48, async id => {
+    n++;
+    ids_so_far.push(id);
+    OUT.innerHTML = esc(prompt) + '<span class="gen">' + esc(brain.tokenizer.decode(ids_so_far, { skip_special_tokens: false })) + '</span>';
+    STAT.textContent = n + '/48 · ' + ((performance.now() - t0) / n).toFixed(1) + ' ms/token';
+    await yieldNow();
+  }, () => false, greedy);
+  ids_so_far.length = 0;
+  STAT.textContent = ids.length + ' 个 token · ' + ((performance.now() - t0) / Math.max(1, ids.length)).toFixed(1) + ' ms/token · ' + (greedy ? '贪心' : '采样');
+  GO.disabled = false;
 };
 </script>
 </div></body></html>
