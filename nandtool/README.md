@@ -1,4 +1,27 @@
-# Pi browser workspace - MiniCPM5-2B, plus a NAND netlist tool
+# Pi browser workspace - with impossible LLM as its brain, plus a NAND netlist tool
+
+**2026-09-16: the model is replaced.** MiniCPM5-2B no longer runs here. Every token of Pi's reply is one
+evaluation of the 54,147-gate NAND netlist of [impossible LLM](../impossibleLLM/) (0 latches, 102 inputs =
+last 6 MiniCPM5 tokens x 17 bits, 13 outputs = index into 8,192 token ids), gate by gate on the CPU. No
+weights are downloaded and no WebGPU is needed. Files:
+
+- `brain/netlist-brain.js` - NEW. Loads `../impossibleLLM/{netlist.json,tokenizer.json,tokenizer_config.json,top8192.json}`,
+  decodes the netlist, and exposes a `generate()` with the subset of the transformers.js contract the agent worker uses.
+  The reply continues the user's last message (a 6-token window over the chat template would always see the same tail),
+  skips the thinking phase, and stops after 48 tokens.
+- `brain/chat_template.jinja` - the MiniCPM5 chat template (sha256 48636aba..., same file as the upstream ONNX repo), used
+  only for the context-budget check.
+- `assets/agent.worker-CS8jL-AS.js` - the model loader and the `generate()` call now go to the netlist brain; the model-cache
+  check always reports ready (nothing to download).
+- `assets/index-DnXFGQ8z.js`, `index.html` - labels (NAND instead of WebGPU, impossible LLM instead of MiniCPM5-2B) and the scope note.
+
+Checked: gate evaluator = Python reference `tapeout_asic/golden.py` on 300/300 inputs; tokenization and packing =
+offline pipeline on 200/200 reference prompts; 16-token continuations identical to the impossible LLM page; real Chrome:
+loads without a download dialog, replies stream, 0 console errors. Limits: Wikipedia-style output, loops out of
+distribution, never emits tool calls (so the agent cannot use the shell or `nand_step`), not on chain.
+
+---
+
 
 This is a **derivative** of the HuggingFace Space **Pi browser workspace - MiniCPM5-2B** (MiniCPM5-2B-WebGPU-Pi). The upstream Space is reproduced unchanged; this build adds exactly one thing the Space cannot do: a tool the in-browser agent can call, whose implementation is a real 386-gate NAND netlist evaluated gate by gate in a Web Worker.
 
