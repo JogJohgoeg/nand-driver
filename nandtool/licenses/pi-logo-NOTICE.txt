@@ -1,0 +1,9 @@
+Pi logo: official Pi / Earendil mark, obtained 2026-09-14.
+Source and brand files: https://pi.dev/press-kit
+Primary logo: https://pi.dev/logo-auto.svg
+Favicon: https://pi.dev/favicon.svg
+
+The header and setup dialog preserve the official SVG paths, with a tighter
+viewBox and currentColor for sizing and the app's dark palette. The favicon
+is the unmodified official badge. Pi's name and logo identify the upstream
+project; this browser demo is an independent integration.

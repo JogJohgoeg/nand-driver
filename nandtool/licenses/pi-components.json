@@ -1,0 +1,13 @@
+{
+  "package": "@earendil-works/pi-coding-agent",
+  "version": "0.85.1",
+  "source": "https://github.com/earendil-works/pi/tree/v0.85.1/packages/coding-agent",
+  "files": {
+    "components/custom-editor.js": "000b0056f2bf645537537468bdd6f6ee0c82e4110f5417c1c70c2e8fefc04f29",
+    "components/user-message.js": "398a34b8a979daea5614be4cbbe6ff66e7eca97e9fd855508791dcddce994bc8",
+    "components/assistant-message.js": "edbd1e712234609d2ad1078edcf960e3b6f549669075f1c5d1a7a4481e2b3d19",
+    "components/markdown-transform.js": "31ad2245189328104a31bb9b12f58b0a12e4af9c7924775a242c9dcd526d2c1a",
+    "theme/light.json": "14c7172ba7e75eab6f509504de806af0f2d9ff817bfb45d9533bff15c7e6e657",
+    "theme/dark.json": "103a5aecb74a2dab5cc903c9741845ee6158658ce2ff6e5445948784116eaef8"
+  }
+}
