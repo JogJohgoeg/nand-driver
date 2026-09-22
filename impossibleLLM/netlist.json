@@ -9,7 +9,10 @@
  "outputOrder": "13-bit code = rank in top-8192 teacher-label table (v2 mixed corpus)",
  "randomBits": "4 uniform random bits; r = 0 is greedy",
  "gmCode": 0,
- "records": "netlist.bin",
+ "records": "netlist.nlz",
  "recordsSha256": "9ceca193c0db340eb8ba6974acbdd433fc96a3ef5ae239d5cea0da1576fd5544",
- "version": "impossible LLM v2 (2026-09-16)"
+ "version": "impossible LLM v2 (2026-09-16)",
+ "recordsFormat": "nlz1",
+ "tokenizer": "tokenizer.json.gz",
+ "tokenizerConfig": "tokenizer_config.json.gz"
 }
