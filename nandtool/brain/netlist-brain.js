@@ -64,6 +64,27 @@ export function decodeNetlist(net, records) {
   return { evaluate, gates: n, nIn, nOut };
 }
 
+// nlz1 (circuits/_scratch/hashport/nlz.py): per gate two LEB128 varints,
+// ((cur - max(a,b)) << 1 | (a > b)) and max(a,b) - min(a,b); cur = 2 + nIn + i.
+// Rebuilds the exact 7-byte records.
+export function nlz1Records(v, nIn) {
+  const out = [];
+  let rec = new Uint8Array(7 << 19), o = 0, cur = 2 + nIn, p = 0;
+  const next = () => { let x = 0, s = 0, b; do { b = v[p++]; x += (b & 127) * 2 ** s; s += 7; } while (b & 128); return x; };
+  while (p < v.length) {
+    const h = next(), hi = cur - Math.floor(h / 2), lo = hi - next();
+    const [a, b] = h & 1 ? [hi, lo] : [lo, hi];
+    if (o === rec.length) { out.push(rec); rec = new Uint8Array(rec.length); o = 0; }
+    rec[o] = 0; rec[o + 1] = a >> 16; rec[o + 2] = a >> 8; rec[o + 3] = a;
+    rec[o + 4] = b >> 16; rec[o + 5] = b >> 8; rec[o + 6] = b;
+    o += 7; cur++;
+  }
+  const all = new Uint8Array(out.length * rec.length + o);
+  out.forEach((c, i) => all.set(c, i * rec.length));
+  all.set(rec.subarray(0, o), out.length * rec.length);
+  return all;
+}
+
 // 102 context bits (6 x 17-bit ids, oldest first), then (v2) 4 random bits at 102..105.
 export function pack(ids, r = 0, nIn = 102) {
   const bytes = new Uint8Array((nIn + 7) >> 3);
@@ -91,18 +112,30 @@ const textOf = c => typeof c === 'string' ? c
   : (c ?? []).filter(p => p.type === 'text').map(p => p.text).join('\n');
 
 export async function createBrain({ base, templateUrl, makeTokenizer, fetchImpl = fetch }) {
+  // Files named *.gz / *.nlz are gzip (the on-chain copy stores them compressed).
   const get = async (url, kind) => {
     const r = await fetchImpl(url);
     if (!r.ok) throw new Error(`${url} HTTP ${r.status}`);
+    if (/\.(gz|nlz)$/.test(new URL(url).pathname)) {
+      const buf = await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+      return kind === 'bin' ? buf : kind === 'text' ? new TextDecoder().decode(buf) : JSON.parse(new TextDecoder().decode(buf));
+    }
     return kind === 'text' ? r.text() : kind === 'bin' ? r.arrayBuffer() : r.json();
   };
   const u = f => new URL(f, base).href;
-  const [net, tj, tc, top, template] = await Promise.all([
-    get(u('netlist.json')), get(u('tokenizer.json')), get(u('tokenizer_config.json')),
-    get(u('top8192.json')), get(templateUrl, 'text'),
+  const net = await get(u('netlist.json'));
+  const [tj, tc, top, template] = await Promise.all([
+    get(u(net.tokenizer ?? 'tokenizer.json')), get(u(net.tokenizerConfig ?? 'tokenizer_config.json')),
+    get(u(net.top ?? 'top8192.json')), get(templateUrl, 'text'),
   ]);
   const tokenizer = makeTokenizer(tj, { ...tc, chat_template: template });
-  const nl = decodeNetlist(net, net.nl_hex ? null : await get(u(net.records ?? 'netlist.bin'), 'bin'));
+  let records = net.nl_hex ? null : await get(u(net.records ?? 'netlist.bin'), 'bin');
+  if (records && net.recordsFormat === 'nlz1') records = nlz1Records(new Uint8Array(records), net.nIn);
+  if (records && net.recordsSha256) {
+    const sha = [...new Uint8Array(await crypto.subtle.digest('SHA-256', records))].map(b => b.toString(16).padStart(2, '0')).join('');
+    if (sha !== net.recordsSha256) throw new Error(`netlist records sha256 ${sha} != ${net.recordsSha256}`);
+  }
+  const nl = decodeNetlist(net, records);
   if (top.length !== 1 << nl.nOut) throw new Error(`top8192 has ${top.length} entries, want ${1 << nl.nOut}`);
   const pad = Number(tokenizer.pad_token_id ?? 1);
 

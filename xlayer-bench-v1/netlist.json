@@ -1,0 +1,30 @@
+{
+ "nIn": 22,
+ "nOut": 18,
+ "nLatch": 643,
+ "nNand": 4850059,
+ "nGates": 4850702,
+ "wrappedFrom": {
+  "nIn": 106,
+  "width": 17,
+  "span": 6,
+  "rand": 4,
+  "extra": 1
+ },
+ "records": "netlist_agent.bin.gz",
+ "recordsFormat": "raw",
+ "tokenizer": "tokenizer.json.gz",
+ "tokenizerConfig": "tokenizer_config.json.gz",
+ "outputMode": "escape18",
+ "nState": 643,
+ "toolReplayMaxTokens": 83,
+ "mergedFrom": {
+  "core": "v3_latch.bin",
+  "coreGates": 4840470,
+  "toolcall": "toolcall.json",
+  "toolcallGates": 10141,
+  "selectorGates": 91
+ },
+ "outputOrder": "bit17=1 时低 17 位是原始 token id；=0 时低 13 位是 top8192 索引",
+ "recordsSha256": "b9abf0197c399b60efa43cae874412823e1a77891c464ade12ffa3754858b98e"
+}
