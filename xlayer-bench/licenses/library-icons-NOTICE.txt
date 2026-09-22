@@ -1,0 +1,12 @@
+Library credits icons, obtained 2026-09-14.
+
+Hugging Face logo (unmodified):
+https://huggingface.co/front/assets/huggingface_logo-noborder.svg
+
+ONNX Runtime favicon (unmodified):
+https://onnxruntime.ai/favicon.ico
+
+Pi mark: official paths reused from the header; see pi-logo-NOTICE.txt.
+The terminal beside just-bash is an app-drawn generic shell icon.
+
+Names and marks identify the upstream projects used by this independent demo.

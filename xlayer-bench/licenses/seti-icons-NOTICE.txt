@@ -1,0 +1,6 @@
+Seti UI file icons by Jesse Weed and contributors, MIT license.
+Upstream: https://github.com/jesseweed/seti-ui
+Revision: 2d6c5e68b4ded73c92dac291845ee44e1182d511
+Used by VS Code’s built-in Seti file icon theme.
+Only 18 icons are included. SVG paths are preserved; viewBoxes are tightened for consistent 16px sizing. Colors use the Seti palette.
+The ZIP icon’s white knockout shapes are encoded as a luminance mask so its zipper remains visible when tinted.

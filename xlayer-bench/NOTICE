@@ -1,0 +1,4 @@
+Base model: OpenBMB MiniCPM5-2B, Apache-2.0. Independently converted and quantized.
+Agent: Pi, earendil-works. Virtual shell: just-bash, Vercel.
+Inference: Hugging Face Transformers.js and Microsoft ONNX Runtime.
+Bundled dependency licenses and notices are in licenses/.
