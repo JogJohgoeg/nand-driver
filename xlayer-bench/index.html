@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#18181e">
-  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#181818">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./modal-cat-v1.png" as="image" type="image/png" fetchpriority="high">
   <meta name="description" content="Pi with impossible LLM as its brain: a 4,850,059-NAND / 643-LATCH NAND netlist writes every token, in your browser.">
@@ -32,39 +32,37 @@
   </header>
 <section id="bench-intro" aria-labelledby="bench-title">
   <h1 id="bench-title">Pi 可换脑工作台</h1>
-  <p class="bench-lead">默认大脑的每个采样 token，由 <strong>485 万门 NAND/LATCH 网表在你浏览器里算出</strong>；网表可换成你自己的。</p>
-  <p>4,850,059 NAND + 643 LATCH · CPU 逐门求值，无需 GPU · 语言网表链下加载</p>
-  <p id="bench-limit"><strong>能力边界：</strong>自由问答尚不可靠。工具调用演示的是结构化协议与执行通路，<strong>不是理解用户意图；数值参数可能回放 0</strong>。</p>
-  <details id="english-tour"><summary>English · What am I looking at?</summary><p>Every sampled token of the default brain is evaluated through 4,850,059 NAND gates and 643 latches in your browser. Try a tiny memory circuit or the real tool-summary component without downloading files. The gate inspector shows measured evaluation time and state flips, not an animation. Free-form answers and semantic tool arguments are unreliable; numeric arguments can be zero. The language netlist is off-chain. The TapeOut identity below is explicitly pending until a real deployment is configured.</p></details>
-  <div class="bench-actions"><span id="bench-load-slot"></span><button id="brain-open" aria-controls="brain-picker" aria-expanded="false">换大脑 · URL / 本地文件</button><a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">做自己的大脑 ↗</a></div>
-  <section id="bench-loading" aria-label="大脑加载状态" aria-busy="false">
-    <p id="bench-stage" role="status" aria-live="polite">尚未加载 · 首次约 21 MB，下载后在本机解压、校验并准备分词器；慢网可能需要数十秒。</p>
-    <progress id="bench-progress" hidden aria-label="当前资源读取进度"></progress>
-    <p id="bench-bytes">只读取网表数据，不需要钱包。加载完成后再发送；刷新后可能重新读取，取决于浏览器缓存。</p>
-    <p id="bench-error" role="alert" tabindex="-1" hidden></p><button id="bench-retry" hidden>重新加载当前大脑</button>
-  </section>
-  <div id="brain-presets" class="bench-actions" aria-label="内置大脑 / Preset brains">
-    <span>不用选文件 / Try a brain:</span><button data-preset="recall">记忆电路 / Recall · 144</button>
-    <button data-preset="toolcall">工具摘要 / Tool summary · 10,141</button><button data-preset="default">默认 / Default · 4.85M</button>
-  </div>
-  <div class="bench-examples">
-    <label for="bench-example">先试工具调用</label>
-    <select id="bench-example">
-      <option>Please run the NAND navigation tool.</option>
-      <option>Use nand_step from (0,0) to (0,0).</option>
-      <option>Test nand_step once.</option>
-      <option>Call nand_step please.</option>
-      <option>Hello. Use nand_step to move from (5,5) to (0,0).</option>
-    </select><button id="bench-fill">填入示例</button>
-    <span>填入后按 Enter 发送；下方显示实际返回，可随时停止。</span>
-  </div>
-  <p id="bench-run-status" role="status">还没有本次执行结果。示例适用于默认大脑；换入位电路后请用「逐拍门级输入」。</p>
-  <details id="bench-result" hidden><summary>查看本次工具实际返回</summary><pre id="bench-tool-result"></pre></details>
-  <div id="bench-secondary">
-    <button id="workspace-toggle" aria-controls="workspace-panel" aria-expanded="true">展开 / 收起工作区文件与 Shell</button>
-    <p id="bench-deployment">X Layer · 处理器地址：待用户部署填写 · 流片电路号：待用户填写。这里不是部署证明。</p>
-  </div>
+  <p class="bench-lead">在浏览器里，观察可更换的门级大脑。</p>
+  <div class="bench-actions"><span id="bench-load-slot"></span><button id="bench-bit-run" class="primary" hidden>运行位电路</button></div>
+  <p id="bench-limit">问答不可靠 · 工具参数可能回放 0</p>
 </section>
+<details id="bench-secondary">
+  <summary>换脑与更多</summary>
+  <div id="brain-picker-slot"></div>
+  <details id="bench-examples-panel"><summary>工具示例</summary>
+    <div class="bench-examples">
+      <label for="bench-example">填入后按 Enter 发送</label>
+      <select id="bench-example">
+        <option>Please run the NAND navigation tool.</option>
+        <option>Use nand_step from (0,0) to (0,0).</option>
+        <option>Test nand_step once.</option>
+        <option>Call nand_step please.</option>
+        <option>Hello. Use nand_step to move from (5,5) to (0,0).</option>
+      </select><button id="bench-fill">填入示例</button>
+    </div>
+    <p id="bench-run-status" role="status">适用于默认大脑；只填入，不自动执行。</p>
+    <details id="bench-result" hidden><summary>本次工具返回</summary><pre id="bench-tool-result"></pre></details>
+  </details>
+  <details id="bench-loading" aria-label="大脑加载状态" aria-busy="false"><summary>加载详情</summary>
+    <p id="bench-stage" role="status">首次约21 MB，在本机解压、校验、准备分词器。</p>
+    <progress id="bench-progress" hidden aria-label="当前资源读取进度"></progress>
+    <p id="bench-bytes">只读网表，不需要钱包。刷新后的读取由浏览器缓存决定。</p>
+    <p id="bench-error" role="alert" tabindex="-1" hidden></p><button id="bench-retry" hidden>重新加载</button>
+  </details>
+  <p id="bench-deployment">X Layer · 待用户部署。这里不是部署证明。</p>
+  <details id="workspace-drawer"><summary id="workspace-toggle" aria-controls="workspace-panel" aria-expanded="false">工作区文件与 Shell</summary></details>
+  <details id="english-tour"><summary>English</summary><p>Swap NAND/LATCH brains and inspect measured state transitions. The default brain has 4,850,059 NAND gates and 643 latches; its netlist is off-chain and runs in your browser. Free-form answers and semantic tool arguments are unreliable; numeric arguments may replay zero. Tiny recall and tool-summary circuits are available in the brain picker. The tool summary captures and replays structure, not natural-language understanding. An unconfigured TapeOut identity is pending, not a deployment claim.</p></details>
+</details>
 
   <main>
     <section id="conversation-panel" class="conversation" aria-label="Agent conversation">

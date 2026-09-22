@@ -8,7 +8,8 @@ const TOOL_CAPTURE = [12,4945,2075,977,458,1584,923,39613,977,5163,7346,977,5163
 
 const panel = document.createElement('details');
 panel.id = 'brain-picker';
-panel.innerHTML = `<summary>换大脑 · 当前来源与逐拍验证</summary>
+panel.innerHTML = `<summary id="brain-open">换大脑</summary>
+<div id="brain-presets" aria-label="内置大脑 / Preset brains"><button data-preset="default">默认大脑</button><button data-preset="recall">记忆电路 · 144</button><button data-preset="toolcall">工具摘要 · 10,141</button></div>
 <p>这里换推理网表，不是导入工作区文本。<a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">做自己的大脑：格式与教程 ↗</a> · <a href="./brain/recall_latch.json" download>下载最小记忆电路</a></p>
 <p id="brain-current"></p>
 <p>只保存在本浏览器，不上传。校验通过后仍需确认重载；请先保存编辑内容并停止生成。坏文件不会替换原大脑。</p>
@@ -27,7 +28,7 @@ panel.innerHTML = `<summary>换大脑 · 当前来源与逐拍验证</summary>
 <p id="brain-demo-note"></p><label id="brain-frame-label" hidden>回看真实拍 / Inspect recorded tick <select id="brain-frame"></select></label>
 <button id="brain-inspect" hidden>查看本拍状态图 / Inspect state</button>
 <pre id="brain-output" tabindex="0">还没有逐拍结果。先选择电路，再运行输入序列。</pre></fieldset>`;
-(document.querySelector('#bench-intro') ?? document.querySelector('header')).after(panel);
+document.getElementById('brain-picker-slot').append(panel);
 window.dispatchEvent(new Event('bench-layout'));
 const $ = id => document.getElementById(id);
 let selection = await readSelection().catch(() => null), loaded, busy = false, frames = [];
@@ -36,24 +37,22 @@ $('brain-current').textContent = selection?.files ? `当前：本地网表 ${sel
 $('brain-status').textContent = '原大脑保持不变，直到新文件校验通过并确认切换。';
 panel.ontoggle = () => {
   $('brain-open')?.setAttribute('aria-expanded', String(panel.open));
-  window.dispatchEvent(new Event('bench-layout'));
 };
 if (selection?.preset === 'recall' || selection?.preset === 'toolcall') {
-  panel.open = true;
   $('brain-demo-note').textContent = selection.preset === 'recall'
     ? '按“从零状态运行”：14标记、9写入、15查询，应输出0/0/0/0/9。Run the memory sequence; inspect each real transition.'
     : '结构化fixture先捕获，再用本电路输出回馈90拍。不是自然语言理解；低17位为token ID、bit17为生成控制。Captured tool names/types, not natural-language comprehension.';
   $('brain-tool-demo').hidden = selection.preset !== 'toolcall';
   $('brain-run').hidden = selection.preset === 'toolcall';
-  $('brain-demo-note').scrollIntoView({block:'center'});
 }
 function progress(p) { const t = progressText(p); $('brain-status').textContent = `${t.stage} · ${t.bytes}`; }
 async function act(fn) {
   if (busy) return; busy = true;
-  const controls = [...panel.querySelectorAll('button,input,select'), ...document.querySelectorAll('[data-preset]')];
+  const controls = [...panel.querySelectorAll('button,input,select'), $('bench-bit-run')];
   controls.forEach(el => { el.disabled = true; });
   panel.setAttribute('aria-busy', 'true'); $('brain-status').dataset.error = 'false';
   try { await fn(); } catch (e) {
+    $('bench-secondary').open=panel.open=true;
     $('brain-status').dataset.error = 'true';
     $('brain-status').textContent = `未完成操作，原大脑未变。${e.message}。请按教程检查文件格式/配套文件，或重试网络；修正后可重新选择。`;
     $('brain-status').focus();
@@ -98,7 +97,7 @@ function result(trace) {
 function inspect(scroll) {
   const frame=frames[Number($('brain-frame').value)]; if(!frame)return;
   window.dispatchEvent(new CustomEvent('brain-tick',{detail:frame}));
-  if(scroll){const target=$('gate-observer');target.open=true;target.scrollIntoView({block:'center'});target.querySelector('summary').focus();}
+  if(scroll){const target=$('gate-observer');target.scrollIntoView({block:'center'});target.focus();}
 }
 $('brain-frame').onchange=()=>inspect(false);
 $('brain-inspect').onclick=()=>inspect(true);
@@ -137,3 +136,7 @@ $('brain-tool-demo').onclick=()=>act(async()=>{
   result(trace);
   $('brain-status').textContent='摘要机112拍完成；在回看选择器查看捕获与回放 / 112 real ticks recorded; inspect captured state and replay.';
 });
+$('bench-bit-run').onclick=()=>{
+  $('bench-secondary').open=false;
+  (selection?.preset==='toolcall'?$('brain-tool-demo'):$('brain-run')).click();
+};

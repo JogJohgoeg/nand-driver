@@ -1,22 +1,25 @@
 import { readIdentity, PLANNED_SUPPLY } from './bench-chain.js';
 import { readSelection } from './brain-source.js';
 const $ = id => document.getElementById(id);
-const observer = document.createElement('details');
-observer.id = 'gate-observer'; observer.open = true;
-observer.innerHTML = `<summary>门级观测 / Gate inspector <span id="gate-phase">— 尚未求值 / No samples yet</span></summary>
+const observer = document.createElement('section');
+observer.id = 'gate-observer'; observer.hidden = true;observer.tabIndex=-1;observer.setAttribute('aria-label','真实门级观测 / Measured gate state');
+observer.innerHTML = `<span id="gate-phase" class="sr-only">尚未求值 / No samples yet</span>
 <div id="gate-sample" hidden><dl class="gate-metrics">
-<div><dt>本拍元件 / Gates</dt><dd id="gate-count"></dd></div><div><dt>求值+采样 / ms</dt><dd id="gate-time"></dd></div>
-<div><dt>生成采样 / tokens/s</dt><dd id="gate-rate"></dd></div><div><dt>LATCH变化 / Flips</dt><dd id="gate-flips"></dd></div></dl>
+<div title="NAND + LATCH 元件总数"><dt>门</dt><dd id="gate-count"></dd></div><div title="求值与状态采样耗时"><dt>ms</dt><dd id="gate-time"></dd></div>
+<div title="本轮实际生成采样速率；不含预填充和JS包装token"><dt>tok/s</dt><dd id="gate-rate"></dd></div><div title="本拍翻转位数 / 全部LATCH"><dt>Δ</dt><dd id="gate-flips"></dd></div></dl>
 <canvas id="gate-state" width="512" height="88" role="img" aria-label="真实LATCH状态图；文本等价见下面的状态详情"></canvas>
-<p id="gate-legend"></p><details><summary>真实状态与输入 / Inspect exact bits</summary><pre id="gate-raw" tabindex="0"></pre></details></div>
-<p class="gate-note">真实测量，不模拟闪烁。生成逐拍；预填充每64拍采样。速率=本轮网表采样token/生成耗时，不含预填充和JS包装token；ms仅为求值+状态采样，不含差分统计/分词/渲染。<br>Measured, not animated. Rate: sampled tokens per generation second (prefill and wrapper tokens excluded). Prefill telemetry is sampled every 64 ticks.</p>`;
+<details id="gate-details"><summary>观测说明与真实数据</summary><p id="gate-legend"></p>
+<p class="gate-note">真实测量，不模拟闪烁。生成逐拍；预填充每64拍采样。速率=本轮网表采样token/生成耗时，不含预填充和JS包装token；ms仅为求值+状态采样，不含差分统计/分词/渲染。<br>Measured, not animated. Rate: sampled tokens per generation second (prefill and wrapper tokens excluded). Prefill telemetry is sampled every 64 ticks.</p>
+<pre id="gate-raw" tabindex="0"></pre></details></div>`;
 // Live computation is the relevant companion to chat; file editing stays in
 // the same DOM/state but becomes an optional workspace below the main task.
 const files = $('workspace-panel'), pane = document.createElement('aside');
 pane.className='workspace gate-pane';pane.setAttribute('aria-label','门级观测 / Gate inspector');pane.append(observer);
 files.replaceWith(pane);document.querySelector('main').after(files);
 $('column-resizer').setAttribute('aria-controls','conversation-panel gate-observer');
+let lastSample;
 function show(sample) {
+  lastSample=sample;observer.hidden=false;
   $('gate-sample').hidden = false;
   observer.dataset.phase = sample.phase;
   const phase = {prefill:'预填充采样 / Prefill sample',generation:'生成 / Generation',manual:'逐拍回看 / Recorded tick',stateless:'无状态求值 / Stateless'}[sample.phase];
@@ -27,16 +30,21 @@ function show(sample) {
   $('gate-time').textContent = sample.ms===0 ? '< clock resolution' : sample.ms.toFixed(3);
   $('gate-rate').textContent = sample.elapsedMs > 0 ? (sample.emitted*1000/sample.elapsedMs).toFixed(2) : '—';
   $('gate-flips').textContent = `${sample.changedBits} / ${sample.nLatch}`;
+  paint(sample);
+  $('gate-legend').textContent=`正文色=1，灰色=0，强调色=本拍翻转 / text color=1, gray=0, accent=changed · 显示 ${sample.after.length}/${sample.nLatch} bits · 输出 ${sample.output ?? sample.outputBits+' bits (see trace)'}${sample.outputId!=null?' · token ID '+sample.outputId:''}`;
+  $('gate-raw').textContent=JSON.stringify(sample,null,2);
+}
+function paint(sample) {
   const canvas=$('gate-state'), ctx=canvas.getContext('2d'), style=getComputedStyle(document.documentElement);
-  canvas.height=Math.max(8,Math.ceil(sample.after.length/64)*8);
+  const cols=Math.min(64,Math.max(1,sample.after.length)),cell=sample.after.length<=64?16:8;
+  canvas.width=cols*cell;canvas.height=Math.max(1,Math.ceil(sample.after.length/cols))*cell;
   ctx.clearRect(0,0,canvas.width,canvas.height);
   for (let i=0;i<sample.after.length;i++) {
     ctx.fillStyle=style.getPropertyValue(sample.before[i]!==sample.after[i]?'--accent':sample.after[i]==='1'?'--text':'--line').trim();
-    ctx.fillRect(i%64*8,Math.floor(i/64)*8,6,6);
+    ctx.fillRect(i%cols*cell,Math.floor(i/cols)*cell,cell-2,cell-2);
   }
-  $('gate-legend').textContent=`亮色=1，灰色=0，强调色=本拍翻转 / on, off, changed · 显示 ${sample.after.length}/${sample.nLatch} bits · 输出 ${sample.output ?? sample.outputBits+' bits (see trace)'}${sample.outputId!=null?' · token ID '+sample.outputId:''}`;
-  $('gate-raw').textContent=JSON.stringify(sample,null,2);
 }
+window.addEventListener('bench-theme',()=>{if(lastSample)paint(lastSample);});
 window.addEventListener('brain-tick',e=>show(e.detail));
 window.addEventListener('brain-idle',()=>{
   if (!$('gate-sample').hidden) $('gate-phase').textContent=$('gate-phase').dataset.label+' · 已停/保留实测 / Last sample';
@@ -51,14 +59,17 @@ readSelection().then(s=>{
   document.querySelector('.badge').textContent=`${s.info.nNand.toLocaleString('en-US')} NAND + ${s.info.nLatch} LATCH`;
   document.querySelector('.header-model-source strong').textContent=s.preset==='recall'?'Recall latch':s.preset==='toolcall'?'Tool summary':'自定义大脑 / Custom';
   if (s.info.mode==='bits') {
+    document.body.dataset.brain='bits';$('bench-bit-run').hidden=false;
+    $('bench-limit').textContent='位电路按位求值 · 不理解自然语言';
+    $('bench-bit-run').textContent=s.preset==='recall'?'运行记忆电路':s.preset==='toolcall'?'运行工具摘要':'运行位电路';
     $('bench-stage').textContent='当前是位电路，不是聊天模型。展开换脑面板运行逐拍演示 / Bit circuit: open the brain panel to run a demo.';
     $('load').hidden=true;
     document.querySelector('.bench-examples').hidden=true;
   }
 }).catch(()=>{}); // Storage failure is reported by the picker when switching.
 
-const identity = document.createElement('section'); identity.id='chain-identity';
-identity.innerHTML=`<h2>链上身份 / TapeOut identity</h2><p id="chain-status" role="status">待部署 / Pending deployment · 未发出X Layer RPC</p>
+const identity = document.createElement('details'); identity.id='chain-identity';
+identity.innerHTML=`<summary>链上身份</summary><p id="chain-status" role="status">待部署 / Pending deployment · 未发出X Layer RPC</p>
 <dl class="chain-fields"><dt>网络 / Chain</dt><dd>X Layer · 196</dd><dt>处理器 / Processor</dt><dd id="chain-processor">— 待用户部署</dd>
 <dt>流片电路 / Circuit ID</dt><dd id="chain-circuit">— 待用户填写</dd><dt>规划共池 / Planned cap</dt><dd>${PLANNED_SUPPLY.toLocaleString('en-US')} · NAND/LATCH不分配额</dd>
 <dt>链上上限 / On-chain cap</dt><dd id="chain-cap">— 未读取 / Not read</dd><dt>累计已铸 / Cumulative minted</dt><dd id="chain-minted">— 待部署，不读链 / Not deployed; no RPC</dd></dl>

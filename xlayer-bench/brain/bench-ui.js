@@ -2,15 +2,37 @@ import { progressText } from './brain-source.js';
 import './bench-lab.js';
 const $ = id => document.getElementById(id);
 $('bench-load-slot').append($('load'));
-document.querySelector('main').after($('bench-secondary'));
-// Fit the desktop terminal below the actual intro, including text wrapping.
-function fitTerminal() {
-  document.documentElement.style.setProperty('--bench-top', `${document.querySelector('main').getBoundingClientRect().top + scrollY}px`);
+const more=$('bench-secondary');
+$('bench-intro').after(more);
+$('workspace-drawer').append($('workspace-panel'));
+$('workspace-panel').querySelector('details.terminal').open=false;
+more.append($('nt-scope'));
+$('nt-scope').querySelector('summary').textContent='范围、证据与署名';
+$('nt-scope').append(document.querySelector('.terminal-panel>footer'),document.querySelector('.setup-credits'));
+const licenses=document.createElement('p');
+licenses.innerHTML='<a href="./NOTICE" target="_blank" rel="noopener">NOTICE</a> · <a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">制作大脑与依赖说明</a>';
+$('nt-scope').append(licenses);
+let palette;
+function colors() {
+  const style=getComputedStyle(document.documentElement);
+  palette=Object.fromEntries(['background','text','muted','accent','line','selected'].map(k=>[k,style.getPropertyValue('--'+k).trim()]));
 }
-const resize = new ResizeObserver(fitTerminal);
-resize.observe($('bench-intro'));
-resize.observe(document.querySelector('header'));
-window.addEventListener('bench-layout',fitTerminal);
+colors();
+// Adapt only presentation tokens in the pinned terminal, not its text/data.
+export function benchColor(kind,background=false) {
+  if(background)return kind==='accent'?palette.accent:kind==='selectedBg'?palette.selected:palette.background;
+  if(kind==='userMessageBg')return palette.background;
+  if(/accent|link$|success|error|warning/i.test(kind))return palette.accent;
+  return /muted|dim|border|thinking|quote|toolOutput/i.test(kind)?palette.muted:palette.text;
+}
+export function benchTerminalTheme() {
+  return {background:palette.background,foreground:palette.text,cursor:palette.accent,cursorAccent:palette.background,
+    selectionBackground:palette.selected,selectionForeground:palette.text,
+    ...Object.fromEntries(['black','red','green','yellow','blue','magenta','cyan','white','brightBlack','brightRed','brightGreen','brightYellow','brightBlue','brightMagenta','brightCyan','brightWhite'].map(k=>[k,/black/i.test(k)?palette.muted:palette.text]))};
+}
+function theme() {colors();window.browserPi?.terminal.refreshTheme();window.dispatchEvent(new Event('bench-theme'));}
+window.addEventListener('bench-ready',theme);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme);
 let ready = false;
 
 function errorText(message) {
@@ -27,6 +49,7 @@ export function onBenchEvent(e) {
   }
   if (e.type === 'brain_progress') {
     $('bench-stage').textContent = progressText(e).stage;
+    $('load').textContent=({manifest:'读清单…',records:'读取网表…',verify:'校验网表…',tokenizer:'准备分词器…'})[e.phase] ?? '加载中…';
     $('bench-bytes').textContent = progressText(e).bytes;
     const bar = $('bench-progress'); bar.hidden = false;
     if (e.fileTotal > 0) { bar.max = e.fileTotal; bar.value = e.fileBytes; }
@@ -34,6 +57,7 @@ export function onBenchEvent(e) {
   }
   if (e.type === 'loaded') {
     ready = true;
+    document.body.dataset.brain='ready';
     $('bench-stage').textContent = '大脑已就绪 · 网表采样 token 在本浏览器逐门计算';
     $('bench-loading').setAttribute('aria-busy', 'false');
     $('bench-progress').hidden = $('bench-error').hidden = $('bench-retry').hidden = true;
@@ -53,6 +77,8 @@ export function onBenchEvent(e) {
     $('bench-error').hidden = false;
     $('bench-loading').setAttribute('aria-busy', 'false');
     $('bench-retry').hidden = ready;
+    more.open=$('bench-loading').open=true;
+    $('bench-error').focus();
   }
   if (e.type === 'agent_event' && e.event.type === 'tool_execution_end') {
     const t = e.event;
@@ -62,10 +88,6 @@ export function onBenchEvent(e) {
   }
 }
 $('bench-retry').onclick = () => $('load').click();
-$('brain-open').onclick = () => {
-  const panel = $('brain-picker'); panel.open = true;
-  panel.scrollIntoView({block:'start'}); panel.querySelector('summary').focus();
-};
 $('bench-fill').onclick = async () => {
   const pi = window.browserPi;
   if (!pi) return;
@@ -73,6 +95,7 @@ $('bench-fill').onclick = async () => {
   if (pi.busy) { $('bench-run-status').textContent = '当前正在运行，请先停止或等待结束，再填入示例。'; return; }
   if (pi.terminal.text.trim() && !confirm('输入区已有草稿。用所选示例替换？不会发送消息。')) return;
   pi.terminal.setDraft($('bench-example').value);
+  more.open=false;
   $('conversation-panel').scrollIntoView({block:'start'});
   $('bench-run-status').textContent = '示例已填入终端，按 Enter 发送。不会自动执行，也不会替换真实返回。';
 };
@@ -81,10 +104,6 @@ $('new-chat').addEventListener('click', () => {
   $('bench-result').hidden = true;
   $('bench-run-status').textContent = '新对话 · 选择示例后按 Enter，等待本次实际结果。';
 });
-function workspace(open, scroll = false) {
-  $('workspace-panel').hidden = !open;
-  $('workspace-toggle').setAttribute('aria-expanded', String(open));
-  if(open&&scroll)$('workspace-panel').scrollIntoView({block:'start'});
-}
-workspace(false);
-$('workspace-toggle').onclick = () => workspace($('workspace-toggle').getAttribute('aria-expanded') !== 'true',true);
+$('workspace-drawer').addEventListener('toggle',()=>{
+  $('workspace-toggle').setAttribute('aria-expanded',String($('workspace-drawer').open));
+});
