@@ -1,5 +1,5 @@
 {
-  "defaultBrain": "/xlayer-bench-v1/netlist.json",
+  "defaultBrain": "../xlayer-bench-v1/netlist.json",
   "files": [
     {
       "path": "LICENSE",
@@ -105,8 +105,8 @@
     },
     {
       "path": "brain/brain-config.js",
-      "bytes": 97,
-      "sha256": "727f03a3267f2201114b89a84d3ad663bfba7025f2330461fbdf770064213dc2",
+      "bytes": 115,
+      "sha256": "a395dc0fddf38cc8b5d86884c57738489ea1d1c80e1db3e6a6ee9516f67a44c7",
       "chunks": 1
     },
     {
@@ -386,7 +386,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8323757,
+  "totalBytes": 8323775,
   "chunks": 397,
   "fileCap": 8400000
 }
