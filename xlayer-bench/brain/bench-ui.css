@@ -1,0 +1,54 @@
+/* Existing workspace tokens; no new font/color scale or external UI dependency. */
+header{height:auto;min-height:var(--header-height);grid-template-rows:auto;grid-template-areas:none;grid-template-columns:auto 1fr auto;overflow:visible}
+header .brand,header .runtime-meter,header .model-panel{grid-area:auto}
+header .runtime-meter{display:none} /* One rate, one definition: the gate inspector. */
+#bench-intro,#brain-picker,#nt-scope,#bench-secondary{max-width:var(--content-width);margin:var(--surface-inset) auto;padding:var(--surface-inset) calc(2 * var(--content-gutter));line-height:1.6}
+#bench-intro h1{margin:0 0 var(--surface-inset)}
+#bench-intro p{margin:var(--surface-inset) 0;max-width:100ch}
+#bench-limit{border-left:3px solid var(--accent);padding-left:var(--surface-inset)}
+.bench-actions,.bench-examples{display:flex;align-items:center;flex-wrap:wrap;gap:var(--surface-inset);margin:var(--surface-inset) 0}
+#bench-intro button,#brain-picker button,#brain-picker summary,#bench-intro a{min-height:40px}
+#bench-intro a,#brain-picker a,#nt-scope a{color:var(--accent);text-underline-offset:3px}
+#bench-intro a{display:inline-flex;align-items:center}
+#bench-intro #load{height:auto;min-height:40px;white-space:normal}
+#bench-intro #load:not(:disabled){background:var(--accent);color:var(--background)}
+#bench-loading{padding:var(--surface-inset);background:var(--panel);border-radius:var(--radius-small)}
+#bench-progress{width:100%;height:8px;accent-color:var(--accent)}
+#bench-bytes,#bench-run-status,#bench-deployment{color:var(--muted);overflow-wrap:anywhere}
+#bench-error,#brain-status[data-error=true]{border-left:3px solid var(--accent);padding-left:var(--surface-inset)}
+#bench-example{max-width:100%;min-width:0;padding:var(--surface-inset);background:var(--control);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-small)}
+main{height:calc(100dvh - var(--bench-top,480px));min-height:360px}
+#brain-picker{background:var(--surface);border-block:1px solid var(--line)}
+#brain-picker summary{cursor:pointer;padding-block:var(--surface-inset)}
+#brain-picker label{display:block;margin-block:var(--surface-inset)}
+#brain-picker input{display:block;width:min(100%,48em);max-width:100%;padding:var(--surface-inset);background:var(--control);border:1px solid var(--line);border-radius:var(--radius-small)}
+#brain-picker fieldset{min-width:0;margin-block:var(--surface-inset);border:1px solid var(--line)}
+#brain-picker p,#brain-picker legend{overflow-wrap:anywhere}
+#brain-output,#bench-tool-result{white-space:pre-wrap;overflow-wrap:anywhere;max-height:18em;overflow:auto}
+#nt-scope{position:static;max-height:none;background:var(--surface);border-radius:var(--radius-small)}
+#nt-badge,#nt-credit{position:static;max-width:100%;margin-block:var(--surface-inset);overflow-wrap:anywhere}
+#nt-scope summary{cursor:pointer;min-height:40px;padding-block:var(--surface-inset)}
+#gate-observer{padding:var(--surface-inset);border:1px solid var(--line);border-radius:var(--radius-small);overflow:auto;min-height:0}
+.gate-pane{padding:var(--surface-inset)}
+#workspace-panel{min-height:520px;max-width:var(--content-width);margin:var(--content-gutter) auto;width:calc(100% - 2 * var(--content-gutter))}
+#gate-observer summary{cursor:pointer}#gate-observer p{margin:4px 0}
+.gate-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--surface-inset);margin:var(--surface-inset) 0}
+.gate-metrics dd{margin:0;color:var(--accent)}.gate-note,#gate-legend{color:var(--muted)}
+#gate-state{display:block;max-width:100%;image-rendering:pixelated}
+#gate-raw{max-height:14em;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+#chain-identity{padding-block:var(--surface-inset);max-width:100ch;overflow-wrap:anywhere}
+.chain-fields{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:var(--surface-inset)}.chain-fields dd{margin:0}
+#chain-identity summary,#english-tour summary{cursor:pointer;min-height:32px}
+#chain-identity a{color:var(--accent)}#tapeout-guide li{margin-block:var(--surface-inset)}
+#brain-frame{max-width:100%;background:var(--control);color:var(--text);min-height:40px}
+:is(a,button,summary,select,input,textarea):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (width<=850px){
+  header{grid-template-columns:1fr auto}.model-panel{grid-column:1/-1}
+  main{height:auto;min-height:0}.conversation{height:70dvh;min-height:420px}
+  #bench-intro,#brain-picker,#nt-scope,#bench-secondary{padding-inline:var(--content-gutter)}
+  #bench-example{width:100%}.bench-examples>span{width:100%}
+  #brain-picker button{white-space:normal;margin-block:4px}
+  .gate-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.chain-fields{grid-template-columns:1fr}
+  .gate-pane{min-height:0;max-height:none}#gate-observer{max-height:75vh}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
