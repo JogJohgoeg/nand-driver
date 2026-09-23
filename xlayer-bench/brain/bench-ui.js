@@ -1,6 +1,7 @@
 import { progressText, readSelection } from './brain-source.js';
 import { DEFAULT_BRAIN_URL } from './brain-config.js';
 import './bench-lab.js';
+import { benchConfirm } from './bench-dialog.js';
 const $ = id => document.getElementById(id);
 $('bench-load-slot').append($('load'));
 const more=$('bench-secondary');
@@ -51,12 +52,20 @@ $('inspector-close').onclick=()=>inspector(false);
 if(matchMedia('(max-width: 760px)').matches)inspector(false);
 for(const name of ['chat','tools'])$('tab-'+name).onclick=()=>view(name);
 $('side-session').onclick=()=>{view('chat');if(matchMedia('(max-width: 760px)').matches)sidebar(false);};
-$('brain-add').onclick=$('side-current').onclick=()=>{more.open=$('brain-picker').open=true;$('brain-open').focus();};
+const brainDialog=$('brain-dialog');
+function openBrains(){
+  if(matchMedia('(max-width: 760px)').matches&&document.body.classList.contains('sidebar-open'))sidebar(false);
+  $('brain-picker').open=true;
+  if(!brainDialog.open)brainDialog.showModal();
+}
+$('brain-dialog-close').onclick=()=>brainDialog.close();
+brainDialog.addEventListener('click',e=>{if(e.target===brainDialog)brainDialog.close();});
+$('brain-add').onclick=$('side-current').onclick=openBrains;
 $('tab-new').onclick=()=>{$('new-chat').click();view('chat');};
 $('tab-command').onclick=()=>{view('tools');$('workspace-drawer').open=true;$('workspace-panel').querySelector('details.terminal').open=true;$('command').focus();};
 for(const button of document.querySelectorAll('[data-brain-preset]'))button.onclick=()=>{
   const preset=button.dataset.brainPreset;
-  more.open=$('brain-picker').open=true;
+  openBrains();
   document.querySelector(`[data-preset="${preset}"]`).click();
 };
 $('sidebar-search').oninput=e=>{
@@ -85,7 +94,7 @@ readSelection().then(source=>{
     netlistDetails();
   }
 }).catch(()=>{});
-$('session-time').textContent=`当前标签 · ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
+$('session-time').textContent=`开始于 ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
 async function netlistDetails() {
   try {
     const source=await readSelection();
@@ -93,6 +102,7 @@ async function netlistDetails() {
     const file=source?.files?.find(f=>f.name===(source.manifest??'netlist.json'));
     const net=file?JSON.parse(await file.text()):await fetch(url,{credentials:'omit'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json();});
     const gates=Number(net.nGates??(net.nNand!=null&&net.nLatch!=null?net.nNand+net.nLatch:NaN));
+    document.querySelector('.netlist-fields').hidden=$('detail-note').hidden=false;$('detail-empty').hidden=true;
     $('detail-gates').textContent=Number.isSafeInteger(gates)?gates.toLocaleString('en-US'):'— 未声明';
     $('detail-latches').textContent=Number.isSafeInteger(net.nLatch)?net.nLatch.toLocaleString('en-US'):'— 未声明';
     $('detail-tokenizer').textContent=typeof net.tokenizer==='string'?net.tokenizer:net.tokenizer?.type??'— 未声明';
@@ -154,7 +164,8 @@ export function onBenchEvent(e) {
   }
   if (e.type === 'brain_progress') {
     $('bench-stage').textContent = progressText(e).stage;
-    $('load').textContent=({manifest:'读清单…',records:'读取网表…',verify:'校验网表…',tokenizer:'准备分词器…'})[e.phase] ?? '加载中…';
+    const pct=e.phase==='records'&&e.fileTotal>0?` ${Math.min(99,Math.floor(e.fileBytes*100/e.fileTotal))}%`:'';
+    $('load').textContent=(({manifest:'读清单…',records:'读取网表…',verify:'校验网表…',tokenizer:'准备分词器…'})[e.phase] ?? '加载中…')+pct;
     $('bench-bytes').textContent = progressText(e).bytes;
     const bar = $('bench-progress'); bar.hidden = false;
     if (e.fileTotal > 0) { bar.max = e.fileTotal; bar.value = e.fileBytes; }
@@ -193,6 +204,11 @@ export function onBenchEvent(e) {
     if(matchMedia('(max-width: 760px)').matches)sidebar(false);
     $('bench-error').focus();
   }
+  if (e.type === 'bench_tool_guard') {
+    const why=e.repeat?'连续两次调用了完全相同的工具':`工具调用已达 ${e.rounds} 轮上限`;
+    const msg=`已自动停止：${why}。这颗大脑还不会在工具返回后自己作答，结果见上方。`;
+    import('./bench-i18n.js').then(m=>m.t(msg),()=>msg).then(text=>window.browserPi?.terminal.notice?.(text));
+  }
   if (e.type === 'agent_event' && e.event.type === 'tool_execution_end') {
     const t = e.event;
     $('bench-run-status').textContent = `实际执行：${t.toolName} ${t.isError ? '未成功，请查看返回原因' : '已返回'}。这不等于理解了自然语言参数。`;
@@ -201,23 +217,25 @@ export function onBenchEvent(e) {
   }
 }
 $('bench-retry').onclick = () => $('load').click();
-$('bench-fill').onclick = async () => {
+async function fillExample(text) {
   const pi = window.browserPi;
   if (!pi) return;
   await pi.ready;
   if (pi.busy) { $('bench-run-status').textContent = '当前正在运行，请先停止或等待结束，再填入示例。'; return; }
-  if (pi.terminal.text.trim() && !confirm('输入区已有草稿。用所选示例替换？不会发送消息。')) return;
-  pi.terminal.setDraft($('bench-example').value);
+  if (pi.terminal.text.trim() && pi.terminal.text.trim() !== text && !await benchConfirm('输入区已有草稿，用这个示例替换吗？不会发送消息。', '替换')) return;
+  pi.terminal.setDraft(text);
   more.open=false;
   view('chat');
   $('conversation-panel').scrollIntoView({block:'start'});
   $('bench-run-status').textContent = '示例已填入终端，按 Enter 发送。不会自动执行，也不会替换真实返回。';
-};
+}
+$('bench-fill').onclick = () => fillExample($('bench-example').value);
+for (const chip of document.querySelectorAll('[data-example]')) chip.onclick = () => fillExample(chip.textContent);
 $('new-chat').addEventListener('click', () => {
   if (window.browserPi?.busy) return;
   $('bench-result').hidden = true;
   $('bench-run-status').textContent = '新对话 · 选择示例后按 Enter，等待本次实际结果。';
-  $('session-time').textContent=`当前标签 · ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
+  $('session-time').textContent=`开始于 ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
 });
 $('workspace-drawer').addEventListener('toggle',()=>{
   $('workspace-toggle').setAttribute('aria-expanded',String($('workspace-drawer').open));

@@ -2,19 +2,19 @@ import { readIdentity, PLANNED_SUPPLY } from './bench-chain.js';
 import { readSelection } from './brain-source.js';
 const $ = id => document.getElementById(id);
 const observer = document.createElement('section');
-observer.id = 'gate-observer'; observer.hidden = true;observer.tabIndex=-1;observer.setAttribute('aria-label','真实门级观测 / Measured gate state');
-observer.innerHTML = `<span id="gate-phase" class="sr-only">尚未求值 / No samples yet</span>
+observer.id = 'gate-observer'; observer.hidden = true;observer.tabIndex=-1;observer.setAttribute('aria-label','真实门级观测');
+observer.innerHTML = `<span id="gate-phase" class="sr-only">尚未求值</span>
 <div id="gate-sample" hidden><dl class="gate-metrics">
 <div title="NAND + LATCH 元件总数"><dt>门</dt><dd id="gate-count"></dd></div><div title="求值与状态采样耗时"><dt>ms</dt><dd id="gate-time"></dd></div>
 <div title="本轮实际生成采样速率；不含预填充和JS包装token"><dt>tok/s</dt><dd id="gate-rate"></dd></div><div title="本拍翻转位数 / 全部LATCH"><dt>Δ</dt><dd id="gate-flips"></dd></div></dl>
 <canvas id="gate-state" width="512" height="88" role="img" aria-label="真实LATCH状态图；文本等价见下面的状态详情"></canvas>
 <details id="gate-details"><summary>观测说明与真实数据</summary><p id="gate-legend"></p>
-<p class="gate-note">真实测量，不模拟闪烁。生成逐拍；预填充每64拍采样。速率=本轮网表采样token/生成耗时，不含预填充和JS包装token；ms仅为求值+状态采样，不含差分统计/分词/渲染。<br>Measured, not animated. Rate: sampled tokens per generation second (prefill and wrapper tokens excluded). Prefill telemetry is sampled every 64 ticks.</p>
+<p class="gate-note">真实测量，不模拟闪烁。生成逐拍；预填充每64拍采样。速率=本轮网表采样token/生成耗时，不含预填充和JS包装token；ms仅为求值+状态采样，不含差分统计/分词/渲染。</p>
 <pre id="gate-raw" tabindex="0"></pre></details></div>`;
 // Live computation is the relevant companion to chat; file editing stays in
 // the same DOM/state but becomes an optional workspace below the main task.
 const files = $('workspace-panel'), pane = document.createElement('aside');
-pane.className='workspace gate-pane';pane.setAttribute('aria-label','门级观测 / Gate inspector');pane.append(observer);
+pane.className='workspace gate-pane';pane.setAttribute('aria-label','门级观测');pane.append(observer);
 files.replaceWith(pane);document.querySelector('main').after(files);
 $('column-resizer').setAttribute('aria-controls','conversation-panel gate-observer');
 let lastSample;
@@ -22,7 +22,7 @@ function show(sample) {
   lastSample=sample;observer.hidden=false;
   $('gate-sample').hidden = false;
   observer.dataset.phase = sample.phase;
-  const phase = {prefill:'预填充采样 / Prefill sample',generation:'生成 / Generation',manual:'逐拍回看 / Recorded tick',stateless:'无状态求值 / Stateless'}[sample.phase];
+  const phase = {prefill:'预填充采样',generation:'生成',manual:'逐拍回看',stateless:'无状态求值'}[sample.phase];
   $('gate-phase').textContent = `— ${phase} #${sample.tick ?? '—'}${sample.total ? '/'+sample.total : ''}${sample.eos?' · EOS':''}`;
   $('gate-phase').dataset.label=$('gate-phase').textContent;
   $('gate-count').textContent = sample.gates.toLocaleString('en-US');
@@ -31,7 +31,7 @@ function show(sample) {
   $('gate-rate').textContent = sample.elapsedMs > 0 ? (sample.emitted*1000/sample.elapsedMs).toFixed(2) : '—';
   $('gate-flips').textContent = `${sample.changedBits} / ${sample.nLatch}`;
   paint(sample);
-  $('gate-legend').textContent=`正文色=1，灰色=0，强调色=本拍翻转 / text color=1, gray=0, accent=changed · 显示 ${sample.after.length}/${sample.nLatch} bits · 输出 ${sample.output ?? sample.outputBits+' bits (see trace)'}${sample.outputId!=null?' · token ID '+sample.outputId:''}`;
+  $('gate-legend').textContent=`正文色=1，灰色=0，强调色=本拍翻转 · 显示 ${sample.after.length}/${sample.nLatch} bits · 输出 ${sample.output ?? sample.outputBits+' bits (see trace)'}${sample.outputId!=null?' · token ID '+sample.outputId:''}`;
   $('gate-raw').textContent=JSON.stringify(sample,null,2);
 }
 function paint(sample) {
@@ -47,24 +47,25 @@ function paint(sample) {
 window.addEventListener('bench-theme',()=>{if(lastSample)paint(lastSample);});
 window.addEventListener('brain-tick',e=>show(e.detail));
 window.addEventListener('brain-idle',()=>{
-  if (!$('gate-sample').hidden) $('gate-phase').textContent=$('gate-phase').dataset.label+' · 已停/保留实测 / Last sample';
+  if (!$('gate-sample').hidden) $('gate-phase').textContent=$('gate-phase').dataset.label+' · 已停，保留最后一次实测';
 });
 readSelection().then(s=>{
   if (!s) return;
   if (!s.info) {
-    document.querySelector('.badge').textContent='尺寸待加载 / Not loaded';
-    document.querySelector('.header-model-source strong').textContent='自定义大脑 / Custom';
+    document.querySelector('.badge').textContent='尺寸待加载';
+    document.querySelector('.header-model-source strong').textContent='自定义大脑';
     return;
   }
   document.querySelector('.badge').textContent=`${s.info.nNand.toLocaleString('en-US')} NAND + ${s.info.nLatch} LATCH`;
-  document.querySelector('.header-model-source strong').textContent=s.preset==='recall'?'Recall latch':s.preset==='toolcall'?'Tool summary':'自定义大脑 / Custom';
+  document.querySelector('.header-model-source strong').textContent=s.preset==='recall'?'Recall latch':s.preset==='toolcall'?'Tool summary':'自定义大脑';
   if (s.info.mode==='bits') {
     document.body.dataset.brain='bits';$('bench-bit-run').hidden=false;
     $('bench-limit').textContent='位电路按位求值 · 不理解自然语言';
+    document.querySelector('.bench-lead').textContent=s.preset==='recall'?'当前大脑是记忆电路：138 NAND + 6 LATCH 的逐拍位电路。':s.preset==='toolcall'?'当前大脑是工具摘要机：9,583 NAND + 558 LATCH 的逐拍位电路，也是本次准备流片的组件。':'当前大脑是自定义的逐拍位电路。';
     $('bench-bit-run').textContent=s.preset==='recall'?'运行记忆电路':s.preset==='toolcall'?'运行工具摘要':'运行位电路';
-    $('bench-stage').textContent='当前是位电路，不是聊天模型。展开换脑面板运行逐拍演示 / Bit circuit: open the brain panel to run a demo.';
+    $('bench-stage').textContent='当前是位电路，不是聊天模型。打开换大脑面板运行逐拍演示。';
     $('load').hidden=true;
-    document.querySelector('.bench-examples').hidden=true;
+    document.querySelector('.bench-examples').hidden=true;$('bench-try').hidden=true;
   }
 }).catch(()=>{}); // Storage failure is reported by the picker when switching.
 

@@ -27,8 +27,8 @@
     },
     {
       "path": "assets/agent.worker-CS8jL-AS.js",
-      "bytes": 2101912,
-      "sha256": "cc10f4cdaf8534f2755ca8fa5f5b6f499b0b83d1a6f0101d6056d2676819249d",
+      "bytes": 2102105,
+      "sha256": "491e14b96cee443997cadccaec5d0906729e6914dc846e72a3b0bdbc888d9b35",
       "chunks": 88
     },
     {
@@ -51,8 +51,8 @@
     },
     {
       "path": "assets/index-DnXFGQ8z.js",
-      "bytes": 763754,
-      "sha256": "289cb443c2f8f6f75e3496d654d1a17a4ae2630686e647476eb7056587a9e4ff",
+      "bytes": 763777,
+      "sha256": "02aa45ce50690588a7b13030f8a797f310e7d5010c7ebfe64f0deb43ec093433",
       "chunks": 32
     },
     {
@@ -86,21 +86,33 @@
       "chunks": 1
     },
     {
+      "path": "brain/bench-dialog.js",
+      "bytes": 921,
+      "sha256": "042966053771e60572d8de5b49d48ab11af1d1965d271187ae5d4c10dd4dda58",
+      "chunks": 1
+    },
+    {
+      "path": "brain/bench-i18n.js",
+      "bytes": 32614,
+      "sha256": "7730501b215c1b58d861bdb9710c96224504efa39819c18fb2c45806720acd1a",
+      "chunks": 2
+    },
+    {
       "path": "brain/bench-lab.js",
-      "bytes": 9565,
-      "sha256": "9d90c97020636a2b828deb12f82ca0d12c328b9cc32da577d599a505ffc8bea3",
+      "bytes": 9543,
+      "sha256": "1c683233c04cc2c2a7af38e1b886aa98f2599b83696a228dd45052c2b8e62950",
       "chunks": 1
     },
     {
       "path": "brain/bench-ui.css",
-      "bytes": 13244,
-      "sha256": "889d9b09ddf9d0593814719f7e88e8af774c6a584dab649e7286140deb350afd",
+      "bytes": 15056,
+      "sha256": "5f96159af7b5932031f50acf3af144fd18430dcfc4c97e65ab74acf5a5162cfb",
       "chunks": 1
     },
     {
       "path": "brain/bench-ui.js",
-      "bytes": 13448,
-      "sha256": "9399859c9ad6e80566ffedf8fcc1acd52c64d06d46f8e6bf23855ee525cf2d1b",
+      "bytes": 14641,
+      "sha256": "ae4bdbc772f865ecd557a322e6f8be7507cd3043860d327e316152ceaedd2978",
       "chunks": 1
     },
     {
@@ -111,8 +123,8 @@
     },
     {
       "path": "brain/brain-picker.js",
-      "bytes": 10013,
-      "sha256": "ee16dca8f357795cc2def1c54b587fcb0f3e2e92c124219e9847c62be805c3e9",
+      "bytes": 10078,
+      "sha256": "73d673a510c963a9aedbaea654d41c95103d1c5a88f9bb5ddca2c2873b85b57d",
       "chunks": 1
     },
     {
@@ -267,8 +279,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 18669,
-      "sha256": "a7c6ee028581d2c0953a0d368107ec572928852c7cfc6a3b69a854e9ba43df91",
+      "bytes": 19332,
+      "sha256": "fe80df254548724a88deb89d3d4d754e1f473f0c068c8c2bdfe4b2a516faa9c6",
       "chunks": 1
     },
     {
@@ -386,7 +398,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8344081,
-  "chunks": 397,
+  "totalBytes": 8381543,
+  "chunks": 400,
   "fileCap": 8400000
 }
