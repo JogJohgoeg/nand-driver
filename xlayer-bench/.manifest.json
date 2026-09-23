@@ -51,8 +51,8 @@
     },
     {
       "path": "assets/index-DnXFGQ8z.js",
-      "bytes": 763723,
-      "sha256": "0bd0e1af67b21682d0d5b08df108d69a5452e6c7def2353b19c47564b3156323",
+      "bytes": 763754,
+      "sha256": "289cb443c2f8f6f75e3496d654d1a17a4ae2630686e647476eb7056587a9e4ff",
       "chunks": 32
     },
     {
@@ -87,20 +87,20 @@
     },
     {
       "path": "brain/bench-lab.js",
-      "bytes": 10582,
-      "sha256": "abcf2c2e1e0210bf4b0b39eb0512efa03a15ef1ff27a916a70f446aeb593a159",
+      "bytes": 9565,
+      "sha256": "9d90c97020636a2b828deb12f82ca0d12c328b9cc32da577d599a505ffc8bea3",
       "chunks": 1
     },
     {
       "path": "brain/bench-ui.css",
-      "bytes": 7088,
-      "sha256": "bb4a8b54f60df4acc074593c3aeb5b22626d20e36b3d91b3107ee70bef8c127b",
+      "bytes": 13244,
+      "sha256": "889d9b09ddf9d0593814719f7e88e8af774c6a584dab649e7286140deb350afd",
       "chunks": 1
     },
     {
       "path": "brain/bench-ui.js",
-      "bytes": 6202,
-      "sha256": "a2a7ed1436e0ea87cf1efede33e9d7db82172c0fc2f234a13cff82a59d4748fe",
+      "bytes": 13448,
+      "sha256": "9399859c9ad6e80566ffedf8fcc1acd52c64d06d46f8e6bf23855ee525cf2d1b",
       "chunks": 1
     },
     {
@@ -111,8 +111,8 @@
     },
     {
       "path": "brain/brain-picker.js",
-      "bytes": 9786,
-      "sha256": "4febf9302384838cc9f2aa7a1a342fb6cc40c3ca8c072232f2aa02915ea66b32",
+      "bytes": 10013,
+      "sha256": "ee16dca8f357795cc2def1c54b587fcb0f3e2e92c124219e9847c62be805c3e9",
       "chunks": 1
     },
     {
@@ -267,8 +267,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 14731,
-      "sha256": "163f48fe65eba14114515bea6b92e882d13f4502002306a9fdbeb8af6b8ca338",
+      "bytes": 18669,
+      "sha256": "a7c6ee028581d2c0953a0d368107ec572928852c7cfc6a3b69a854e9ba43df91",
       "chunks": 1
     },
     {
@@ -386,7 +386,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8327500,
+  "totalBytes": 8344081,
   "chunks": 397,
   "fileCap": 8400000
 }

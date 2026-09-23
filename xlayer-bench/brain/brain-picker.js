@@ -97,7 +97,12 @@ function result(trace) {
 function inspect(scroll) {
   const frame=frames[Number($('brain-frame').value)]; if(!frame)return;
   window.dispatchEvent(new CustomEvent('brain-tick',{detail:frame}));
-  if(scroll){const target=$('gate-observer');target.scrollIntoView({block:'center'});target.focus();}
+  if(scroll){
+    if(matchMedia('(max-width: 760px)').matches&&document.body.classList.contains('sidebar-open'))$('sidebar-close').click();
+    if($('bench-inspector').hidden)$('panel-toggle').click();
+    $('gate-panel').open=true;
+    const target=$('gate-observer');target.scrollIntoView({block:'center'});target.focus();
+  }
 }
 $('brain-frame').onchange=()=>inspect(false);
 $('brain-inspect').onclick=()=>inspect(true);
