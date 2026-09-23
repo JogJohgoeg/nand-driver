@@ -151,3 +151,28 @@ body[data-brain=ready] #bench-intro,body[data-brain=bits] #bench-intro{min-heigh
   #chat-view .conversation{height:min(54svh,500px);min-height:300px}
   #bench-limit{white-space:normal}
 }
+/* Language switch, first-screen examples, in-page dialogs. */
+#bench-tabs #lang-toggle{display:inline-flex;gap:2px;align-items:center;border-bottom:0;border-radius:4px;font-size:12px}
+#lang-toggle span{padding:1px 5px;border-radius:3px;color:var(--muted)}
+#lang-toggle span.on{background:var(--selected);color:var(--text)}
+.bench-lead{margin-bottom:8px}
+.bench-sub{font-size:13px;color:var(--muted);margin:0 0 24px}
+#bench-limit{white-space:normal}
+#bench-try{margin-top:20px;font-size:13px;color:var(--muted)}
+#bench-try p{margin:0 0 8px}
+.try-chips{display:flex;flex-wrap:wrap;gap:8px}
+.try-chips button{min-height:34px;padding:5px 12px;border-radius:999px;font-size:13px;text-align:left}
+#bench-try .try-hint{margin:8px 0 0;font-size:12px}
+body:not([data-brain=ready]) #bench-try .try-hint::after{content:""}
+.brain-tree .row-time:empty{display:none}
+dialog{background:var(--background);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:20px;max-width:min(560px,calc(100vw - 32px));box-sizing:border-box}
+dialog::backdrop{background:rgb(0 0 0 / .45)}
+#bench-dialog p{margin:0 0 20px;line-height:1.6}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px}
+#bench-dialog .primary{background:var(--accent);color:var(--background);border-color:transparent}
+#brain-dialog{width:min(640px,calc(100vw - 32px));max-height:calc(100svh - 48px);overflow:auto;padding:0 20px 16px}
+#brain-dialog .dialog-heading{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:var(--background);padding:14px 0 8px;z-index:1}
+#brain-dialog .dialog-heading button{min-height:32px;border:0;padding:4px 10px}
+#brain-dialog #brain-open{display:none}
+#brain-dialog #brain-picker{border-top:0;padding-top:0}
+#brain-dialog p{color:var(--muted);overflow-wrap:anywhere}

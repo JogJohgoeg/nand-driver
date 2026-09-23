@@ -7,7 +7,7 @@
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="preload" href="./modal-cat-v1.png" as="image" type="image/png" fetchpriority="high">
   <meta name="description" content="Pi with impossible LLM as its brain: a 4,850,059-NAND / 643-LATCH NAND netlist writes every token, in your browser.">
-  <title>Pi 可换脑工作台 · NAND/LATCH in your browser</title>
+  <title>Pi 可换脑工作台 · 浏览器里的 NAND/LATCH 大脑</title>
   <script type="module" crossorigin src="./assets/index-DnXFGQ8z.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CLisF1Ml.css">
 <link rel="stylesheet" href="./brain/bench-ui.css">
@@ -36,43 +36,47 @@
   <label class="sidebar-search"><span class="sr-only">搜索大脑与会话</span><input id="sidebar-search" type="search" placeholder="搜索大脑或会话"></label>
   <div class="tree-heading brain-heading"><span>大脑</span><button id="brain-add" type="button" aria-label="换入网表" title="换入网表">＋</button></div>
   <div class="brain-tree" aria-label="可选大脑">
-    <button type="button" data-brain-preset="default" data-search="默认大脑"><span class="status-dot" id="dot-default" aria-hidden="true"></span><span>默认大脑<small>语言网表 · 链下</small></span><time class="row-time" title="本次加载时间">—</time></button>
-    <button type="button" data-brain-preset="recall" data-search="记忆电路 recall"><span class="status-dot" id="dot-recall" aria-hidden="true"></span><span>记忆电路<small>144 元件 · 6 LATCH</small></span><time class="row-time" title="本次选择时间">—</time></button>
-    <button type="button" data-brain-preset="toolcall" data-search="工具摘要 tool"><span class="status-dot" id="dot-toolcall" aria-hidden="true"></span><span>工具摘要<small>10,141 元件 · 558 LATCH</small></span><time class="row-time" title="本次选择时间">—</time></button>
-    <button id="side-current" type="button" data-search="当前网表 自定义" hidden><span class="status-dot" aria-hidden="true"></span><span>当前网表<small id="side-source">本地或 URL</small></span><time class="row-time" title="本次选择时间">—</time></button>
+    <button type="button" data-brain-preset="default" data-search="默认大脑"><span class="status-dot" id="dot-default" aria-hidden="true"></span><span>默认大脑<small>语言网表 · 链下</small></span><time class="row-time" title="本次加载时间"></time></button>
+    <button type="button" data-brain-preset="recall" data-search="记忆电路 recall"><span class="status-dot" id="dot-recall" aria-hidden="true"></span><span>记忆电路<small>144 元件 · 6 LATCH</small></span><time class="row-time" title="本次选择时间"></time></button>
+    <button type="button" data-brain-preset="toolcall" data-search="工具摘要 tool"><span class="status-dot" id="dot-toolcall" aria-hidden="true"></span><span>工具摘要<small>10,141 元件 · 558 LATCH</small></span><time class="row-time" title="本次选择时间"></time></button>
+    <button id="side-current" type="button" data-search="当前网表 自定义" hidden><span class="status-dot" aria-hidden="true"></span><span>当前网表<small id="side-source">本地或 URL</small></span><time class="row-time" title="本次选择时间"></time></button>
   </div>
   <div class="tree-heading">会话</div>
-  <button id="side-session" type="button" data-search="当前会话 对话"><span class="status-dot active"></span><span>当前对话<small id="session-time">当前标签 · 未打开历史</small></span></button>
+  <button id="side-session" type="button" data-search="当前会话 对话"><span class="status-dot active"></span><span>当前对话<small id="session-time"></small></span></button>
 </aside>
 <section id="bench-center" aria-label="工作台主区">
   <nav id="bench-tabs" aria-label="打开的视图"><button id="sidebar-toggle" type="button" aria-label="打开导航" aria-controls="bench-sidebar" aria-expanded="false">☰</button>
     <button id="tab-chat" type="button" aria-pressed="true">对话</button><button id="tab-tools" type="button" aria-pressed="false">工具</button>
     <span class="tab-spacer"></span><button id="tab-new" type="button" aria-label="新对话">＋</button>
-    <button id="tab-command" type="button">命令</button><button id="panel-toggle" type="button" aria-controls="bench-inspector" aria-expanded="true" aria-label="切换信息面板">▣</button>
+    <button id="tab-command" type="button">Shell</button><button id="lang-toggle" type="button" aria-label="切换为英文" aria-pressed="false" data-no-i18n><span data-lang="zh" class="on">中</span><span data-lang="en">EN</span></button><button id="panel-toggle" type="button" aria-controls="bench-inspector" aria-expanded="true" aria-label="切换信息面板">▣</button>
   </nav>
   <div id="chat-view">
 <section id="bench-intro" aria-labelledby="bench-title">
   <h1 id="bench-title">Pi 可换脑工作台</h1>
-  <p class="bench-lead">在浏览器里，观察可更换的门级大脑。</p>
+  <p class="bench-lead">一颗 4,850,702 个晶体管的门级语言大脑（4,850,059 NAND + 643 LATCH），在你的浏览器里逐门运行。</p>
+  <p class="bench-sub">晶体管池规划发行在 X Layer 上的 TapeOut 处理器（待部署）；你也可以换上自己设计的网表。</p>
   <div class="bench-actions"><span id="bench-load-slot"></span><button id="bench-bit-run" class="primary" hidden>运行位电路</button></div>
   <p id="bench-limit">自由问答仍不可靠，工具参数也可能不准确。</p>
+  <div id="bench-try"><p>试试这些（默认大脑能跑通的工具调用）：</p>
+    <div class="try-chips"><button type="button" data-example>Please run the NAND navigation tool.</button><button type="button" data-example>Use nand_step from (0,0) to (0,0).</button><button type="button" data-example>Hello. Use nand_step to move from (5,5) to (0,0).</button></div>
+    <p class="try-hint">点一下填入输入框，再按 Enter 发送。</p></div>
 </section>
   </div>
   <div id="tool-view" hidden><h2>工具与工作区</h2><p>示例只填入真实终端，不自动执行。</p></div>
 </section>
 <aside id="bench-inspector" aria-label="网表及链上信息">
   <div class="inspector-heading"><strong>当前网表</strong><button id="inspector-close" type="button" aria-label="关闭信息面板">×</button></div>
-  <dl class="netlist-fields">
+  <p id="detail-empty" class="field-note">加载大脑后显示网表信息。</p>
+  <dl class="netlist-fields" hidden>
     <dt>元件</dt><dd id="detail-gates">— 待加载</dd><dt>LATCH</dt><dd id="detail-latches">— 待加载</dd>
     <dt>Tokenizer</dt><dd id="detail-tokenizer">— 待加载</dd><dt>来源</dt><dd id="detail-source">— 待加载</dd>
     <dt>records SHA-256</dt><dd id="detail-sha">— 待加载</dd>
-  </dl><p class="field-note">来自当前清单；就绪后运行时校验。不是链上证明。</p>
+  </dl><p class="field-note" id="detail-note" hidden>来自当前清单；就绪后运行时校验。不是链上证明。</p>
 </aside>
 <footer id="bench-statusbar" aria-label="运行状态"><span id="status-brain">○ 大脑未加载</span><span id="status-gates">— 元件</span><span id="status-flips">Δ —</span><span id="status-rate">— tok/s</span><span id="status-chain">X Layer · 未读链</span></footer>
 </div><button id="sidebar-backdrop" type="button" hidden aria-label="关闭导航"></button>
 <details id="bench-secondary">
   <summary>更多</summary>
-  <div id="brain-picker-slot"></div>
   <details id="bench-examples-panel"><summary>工具示例</summary>
     <div class="bench-examples">
       <label for="bench-example">填入后按 Enter 发送</label>
@@ -88,15 +92,18 @@
     <details id="bench-result" hidden><summary>本次工具返回</summary><pre id="bench-tool-result"></pre></details>
   </details>
   <details id="bench-loading" aria-label="大脑加载状态" aria-busy="false"><summary>加载详情</summary>
-    <p id="bench-stage" role="status">首次约21 MB，在本机解压、校验、准备分词器。</p>
+    <p id="bench-stage" role="status">首次约 21 MB，在本机解压、校验、准备分词器。</p>
     <progress id="bench-progress" hidden aria-label="当前资源读取进度"></progress>
     <p id="bench-bytes">只读网表，不需要钱包。刷新后的读取由浏览器缓存决定。</p>
     <p id="bench-error" role="alert" tabindex="-1" hidden></p><button id="bench-retry" hidden>重新加载</button>
   </details>
   <p id="bench-deployment">X Layer · 待用户部署。这里不是部署证明。</p>
   <details id="workspace-drawer"><summary id="workspace-toggle" aria-controls="workspace-panel" aria-expanded="false">工作区文件与 Shell</summary></details>
-  <details id="english-tour"><summary>English</summary><p>Swap NAND/LATCH brains and inspect measured state transitions. The default brain has 4,850,059 NAND gates and 643 latches; its netlist is off-chain and runs in your browser. Free-form answers and semantic tool arguments are unreliable; numeric arguments may replay zero. Tiny recall and tool-summary circuits are available in the brain picker. The tool summary captures and replays structure, not natural-language understanding. An unconfigured TapeOut identity is pending, not a deployment claim.</p></details>
 </details>
+<dialog id="brain-dialog" aria-labelledby="brain-dialog-title">
+  <div class="dialog-heading"><strong id="brain-dialog-title">换大脑</strong><button id="brain-dialog-close" type="button" aria-label="关闭">×</button></div>
+  <div id="brain-picker-slot"></div>
+</dialog>
 
   <main>
     <section id="conversation-panel" class="conversation" aria-label="Agent conversation">
@@ -189,5 +196,6 @@
 })();
 </script>
 <script type="module" src="./brain/brain-picker.js"></script>
+<script type="module" src="./brain/bench-i18n.js"></script>
 </body>
 </html>
