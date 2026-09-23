@@ -30,14 +30,48 @@
         <div id="load-detail" class="sr-only"></div>
       </div>
   </header>
+<div id="bench-shell">
+<aside id="bench-sidebar" aria-label="大脑与会话导航">
+  <div class="sidebar-heading"><strong>Pi 工作台</strong><button id="sidebar-close" type="button" aria-label="关闭导航">×</button></div>
+  <label class="sidebar-search"><span class="sr-only">搜索大脑与会话</span><input id="sidebar-search" type="search" placeholder="搜索大脑或会话"></label>
+  <div class="tree-heading brain-heading"><span>大脑</span><button id="brain-add" type="button" aria-label="换入网表" title="换入网表">＋</button></div>
+  <div class="brain-tree" aria-label="可选大脑">
+    <button type="button" data-brain-preset="default" data-search="默认大脑"><span class="status-dot" id="dot-default" aria-hidden="true"></span><span>默认大脑<small>语言网表 · 链下</small></span><time class="row-time" title="本次加载时间">—</time></button>
+    <button type="button" data-brain-preset="recall" data-search="记忆电路 recall"><span class="status-dot" id="dot-recall" aria-hidden="true"></span><span>记忆电路<small>144 元件 · 6 LATCH</small></span><time class="row-time" title="本次选择时间">—</time></button>
+    <button type="button" data-brain-preset="toolcall" data-search="工具摘要 tool"><span class="status-dot" id="dot-toolcall" aria-hidden="true"></span><span>工具摘要<small>10,141 元件 · 558 LATCH</small></span><time class="row-time" title="本次选择时间">—</time></button>
+    <button id="side-current" type="button" data-search="当前网表 自定义" hidden><span class="status-dot" aria-hidden="true"></span><span>当前网表<small id="side-source">本地或 URL</small></span><time class="row-time" title="本次选择时间">—</time></button>
+  </div>
+  <div class="tree-heading">会话</div>
+  <button id="side-session" type="button" data-search="当前会话 对话"><span class="status-dot active"></span><span>当前对话<small id="session-time">当前标签 · 未打开历史</small></span></button>
+</aside>
+<section id="bench-center" aria-label="工作台主区">
+  <nav id="bench-tabs" aria-label="打开的视图"><button id="sidebar-toggle" type="button" aria-label="打开导航" aria-controls="bench-sidebar" aria-expanded="false">☰</button>
+    <button id="tab-chat" type="button" aria-pressed="true">对话</button><button id="tab-tools" type="button" aria-pressed="false">工具</button>
+    <span class="tab-spacer"></span><button id="tab-new" type="button" aria-label="新对话">＋</button>
+    <button id="tab-command" type="button">命令</button><button id="panel-toggle" type="button" aria-controls="bench-inspector" aria-expanded="true" aria-label="切换信息面板">▣</button>
+  </nav>
+  <div id="chat-view">
 <section id="bench-intro" aria-labelledby="bench-title">
   <h1 id="bench-title">Pi 可换脑工作台</h1>
   <p class="bench-lead">在浏览器里，观察可更换的门级大脑。</p>
   <div class="bench-actions"><span id="bench-load-slot"></span><button id="bench-bit-run" class="primary" hidden>运行位电路</button></div>
-  <p id="bench-limit">问答不可靠 · 工具参数可能回放 0</p>
+  <p id="bench-limit">自由问答仍不可靠，工具参数也可能不准确。</p>
 </section>
+  </div>
+  <div id="tool-view" hidden><h2>工具与工作区</h2><p>示例只填入真实终端，不自动执行。</p></div>
+</section>
+<aside id="bench-inspector" aria-label="网表及链上信息">
+  <div class="inspector-heading"><strong>当前网表</strong><button id="inspector-close" type="button" aria-label="关闭信息面板">×</button></div>
+  <dl class="netlist-fields">
+    <dt>元件</dt><dd id="detail-gates">— 待加载</dd><dt>LATCH</dt><dd id="detail-latches">— 待加载</dd>
+    <dt>Tokenizer</dt><dd id="detail-tokenizer">— 待加载</dd><dt>来源</dt><dd id="detail-source">— 待加载</dd>
+    <dt>records SHA-256</dt><dd id="detail-sha">— 待加载</dd>
+  </dl><p class="field-note">来自当前清单；就绪后运行时校验。不是链上证明。</p>
+</aside>
+<footer id="bench-statusbar" aria-label="运行状态"><span id="status-brain">○ 大脑未加载</span><span id="status-gates">— 元件</span><span id="status-flips">Δ —</span><span id="status-rate">— tok/s</span><span id="status-chain">X Layer · 未读链</span></footer>
+</div><button id="sidebar-backdrop" type="button" hidden aria-label="关闭导航"></button>
 <details id="bench-secondary">
-  <summary>换脑与更多</summary>
+  <summary>更多</summary>
   <div id="brain-picker-slot"></div>
   <details id="bench-examples-panel"><summary>工具示例</summary>
     <div class="bench-examples">

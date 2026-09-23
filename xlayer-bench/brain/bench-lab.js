@@ -69,40 +69,40 @@ readSelection().then(s=>{
 }).catch(()=>{}); // Storage failure is reported by the picker when switching.
 
 const identity = document.createElement('details'); identity.id='chain-identity';
-identity.innerHTML=`<summary>链上身份</summary><p id="chain-status" role="status">待部署 / Pending deployment · 未发出X Layer RPC</p>
-<dl class="chain-fields"><dt>网络 / Chain</dt><dd>X Layer · 196</dd><dt>处理器 / Processor</dt><dd id="chain-processor">— 待用户部署</dd>
-<dt>流片电路 / Circuit ID</dt><dd id="chain-circuit">— 待用户填写</dd><dt>规划共池 / Planned cap</dt><dd>${PLANNED_SUPPLY.toLocaleString('en-US')} · NAND/LATCH不分配额</dd>
-<dt>链上上限 / On-chain cap</dt><dd id="chain-cap">— 未读取 / Not read</dd><dt>累计已铸 / Cumulative minted</dt><dd id="chain-minted">— 待部署，不读链 / Not deployed; no RPC</dd></dl>
-<button id="chain-read" disabled>只读刷新 / Read snapshot</button><p>仅eth_call等只读方法，不连接钱包、不签名。读数固定在同一区块；合约可升级，快照不是审计。<br>No wallet or transactions. Planned supply is not a claim about minted supply.</p>
-<details id="tapeout-guide"><summary>把你的大脑流片到这颗处理器 / Tape out your own brain</summary>
-<ol><li>先用「换大脑」验证格式、逐拍状态和功能；任意网表不等于会聊天。<br>Validate the netlist and test its behavior locally first.</li>
-<li>准备NAND/LATCH变长字节、nIn/nOut、SHA-256及独立对拍结果；工具摘要机示例与本次准备流片的组件字节一致。<br>Export records, dimensions, SHA-256 and an independent reference test.</li>
-<li>等待真实处理器部署，核对链196、地址、价格、剩余共池与自己余额；只按需铸造。我们本次摘要机需要10,141个，不自铸满、不刷量。<br>Verify the deployed processor and mint only the shortfall, not the whole pool.</li>
-<li>由你用兼容的TapeOut工具针对这个<strong>已有处理器</strong>执行staticCall与estimateGas。本站不是第三方通用流片签名器，不要用创建处理器向导冒充此入口。<br>Preflight against this existing processor with a compatible TapeOut tool; this workbench does not sign.</li>
-<li>费用、余额、权限、gas与区块上限确认后，由你在钱包中签名；真实circuit ID只从回执取。大脑分段必须单独设计验证，不能把“60多笔”量级粗估当成方案。<br>You sign only after preflight. Partitioning requires separate validation.</li>
-<li>公布真实回执与字节哈希，独立只读复验；工作台语言脑仍默认链下运行。<br>Publish actual receipts and verify the bytes. Browser inference remains off-chain.</li></ol>
-<p><a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">制作与格式 / Brain format</a> · <a href="./brain/toolcall_demo.json" download>下载摘要机网表 / Download tool circuit</a></p></details>
-<details><summary>部署配置说明 / Publisher configuration</summary><p>只改 brain/bench-deployment.json 的真实processor和circuitId后重建。已配置核验过的 supplyCap()=0x8f770ad0、minted()=0x4f02c420；后者为NAND/LATCH合计累计铸造，不是余额或烧毁后现存量。未部署不请求，读失败不伪造0。<br>Verified getters are preconfigured. Set the actual processor and circuit ID; no RPC before deployment, no fabricated zero on failure.</p></details>`;
+identity.innerHTML=`<summary>链上身份</summary><p id="chain-status" role="status">待部署，未发出 X Layer RPC</p>
+<dl class="chain-fields"><dt>网络</dt><dd>X Layer · 196</dd><dt>处理器</dt><dd id="chain-processor">— 待用户部署</dd>
+<dt>电路编号</dt><dd id="chain-circuit">— 待用户填写</dd><dt>规划共池</dt><dd>${PLANNED_SUPPLY.toLocaleString('en-US')} · NAND/LATCH 不分配额</dd>
+<dt>链上上限</dt><dd id="chain-cap">— 未读取</dd><dt>累计已铸</dt><dd id="chain-minted">— 待部署，未读链</dd></dl>
+<button id="chain-read" disabled>只读刷新</button><p>仅用 eth_call 等只读方法，不连接钱包、不签名。读数固定在同一区块；合约可升级，快照不是审计。规划共池不代表已经铸造。</p>
+<details id="tapeout-guide"><summary>把你的大脑流片到这颗处理器</summary>
+<ol><li>先用「换大脑」验证格式、逐拍状态和功能；任意网表不等于会聊天。</li>
+<li>准备 NAND/LATCH 变长字节、nIn/nOut、SHA-256 及独立对拍结果；工具摘要机示例与本次准备流片的组件字节一致。</li>
+<li>等待真实处理器部署，核对链 196、地址、价格、剩余共池与自己余额；只按需铸造。我们本次摘要机需要 10,141 个，不自铸满、不刷量。</li>
+<li>由你用兼容的 TapeOut 工具针对这个<strong>已有处理器</strong>执行 staticCall 与 estimateGas。本站不是第三方通用流片签名器，不要用创建处理器向导冒充此入口。</li>
+<li>费用、余额、权限、gas 与区块上限确认后，由你在钱包中签名；真实电路编号只从回执取。大脑分段必须单独设计验证，不能把“60多笔”量级粗估当成方案。</li>
+<li>公布真实回执与字节哈希，独立只读复验；工作台语言脑仍默认链下运行。</li></ol>
+<p><a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">制作大脑与格式</a> · <a href="./brain/toolcall_demo.json" download>下载摘要机网表</a></p></details>
+<details><summary>部署配置说明</summary><p>只改 brain/bench-deployment.json 的真实 processor 和 circuitId 后重建。已配置核验过的 supplyCap()=0x8f770ad0、minted()=0x4f02c420；后者为 NAND/LATCH 合计累计铸造，不是余额或烧毁后现存量。未部署不请求，读失败不伪造 0。</p></details>`;
 $('bench-deployment').replaceWith(identity);
 let deployment;
 fetch(new URL('./bench-deployment.json',import.meta.url)).then(r=>{if(!r.ok)throw Error(r.status);return r.json();}).then(d=>{
   deployment=d;
   if(d.processor==null&&d.circuitId==null) return;
   $('chain-processor').textContent=d.processor ?? '—';$('chain-circuit').textContent=d.circuitId ?? '—';
-  $('chain-minted').textContent='— 待读取minted() / Not read yet';
-  $('chain-status').textContent='用户提供的身份，尚未读链核验 / Configured, not yet verified';$('chain-read').disabled=false;
-}).catch(()=>{$('chain-status').textContent='配置读取失败，未发送RPC / Config unavailable; no RPC sent';});
+  $('chain-minted').textContent='— 待读取 minted()';
+  $('chain-status').textContent='用户提供的身份，尚未读链核验';$('chain-read').disabled=false;
+}).catch(()=>{$('chain-status').textContent='配置读取失败，未发送 RPC';});
 $('chain-read').onclick=async()=>{
   $('chain-read').disabled=true;
-  $('chain-cap').textContent=$('chain-minted').textContent='— 读取中 / Reading';
+  $('chain-cap').textContent=$('chain-minted').textContent='— 读取中';
   try {
     const r=await readIdentity(deployment);
     if(r.status==='pending')return;
-    $('chain-cap').textContent=r.cap+(r.matchesPlan?' · 与规划一致 / matches plan':' · 与规划不符 / MISMATCH');
-    $('chain-minted').textContent=r.minted ?? '— minted()读取失败 / Read failed';
-    $('chain-status').textContent=`RPC block ${r.block} · ${r.queriedAt} · ${r.dimensions ? 'circuit '+r.dimensions.join('/')+' (in/out/latch/records)' : '电路号待填写 / Circuit ID pending'}${r.mintedError?' · '+r.mintedError:''}`;
+    $('chain-cap').textContent=r.cap+(r.matchesPlan?' · 与规划一致':' · 与规划不符');
+    $('chain-minted').textContent=r.minted ?? '— minted() 读取失败';
+    $('chain-status').textContent=`RPC 区块 ${r.block} · ${r.queriedAt} · ${r.dimensions ? '电路尺寸 '+r.dimensions.join('/')+'（入/出/锁存/记录）' : '电路号待填写'}${r.mintedError?' · 累计已铸读取失败':''}`;
   } catch(e) {
-    $('chain-status').textContent='读取失败 / Read failed: '+e.message;
-    $('chain-cap').textContent=$('chain-minted').textContent='— 未核验 / Not verified';
+    $('chain-status').textContent='读取失败，请检查 RPC 与部署配置';
+    $('chain-cap').textContent=$('chain-minted').textContent='— 未核验';
   } finally {$('chain-read').disabled=false;}
 };

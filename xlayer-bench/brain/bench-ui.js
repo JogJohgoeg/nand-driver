@@ -1,17 +1,121 @@
-import { progressText } from './brain-source.js';
+import { progressText, readSelection } from './brain-source.js';
+import { DEFAULT_BRAIN_URL } from './brain-config.js';
 import './bench-lab.js';
 const $ = id => document.getElementById(id);
 $('bench-load-slot').append($('load'));
 const more=$('bench-secondary');
-$('bench-intro').after(more);
+$('bench-sidebar').append(more);
+$('chat-view').append(document.querySelector('main'));
+$('tool-view').append($('bench-examples-panel'),$('workspace-drawer'));
+$('chat-view').append($('bench-loading'));
 $('workspace-drawer').append($('workspace-panel'));
 $('workspace-panel').querySelector('details.terminal').open=false;
 more.append($('nt-scope'));
 $('nt-scope').querySelector('summary').textContent='范围、证据与署名';
+$('bench-inspector').append($('chain-identity'));
+$('chain-identity').open=true;
+const gatePanel=document.createElement('details');gatePanel.id='gate-panel';
+gatePanel.innerHTML='<summary>门级状态</summary>';
+gatePanel.append(document.querySelector('.gate-pane'));
+$('chain-identity').before(gatePanel);
 $('nt-scope').append(document.querySelector('.terminal-panel>footer'),document.querySelector('.setup-credits'));
 const licenses=document.createElement('p');
 licenses.innerHTML='<a href="./NOTICE" target="_blank" rel="noopener">NOTICE</a> · <a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">制作大脑与依赖说明</a>';
 $('nt-scope').append(licenses);
+function sidebar(open) {
+  document.body.classList.toggle('sidebar-open',open);
+  $('sidebar-toggle').setAttribute('aria-expanded',String(open));
+  $('sidebar-backdrop').hidden=!open;
+  $('bench-sidebar').inert=matchMedia('(max-width: 760px)').matches&&!open;
+  if(open)$('sidebar-search').focus();
+  else $('sidebar-toggle').focus();
+}
+function inspector(open) {
+  $('bench-inspector').hidden=!open;
+  $('panel-toggle').setAttribute('aria-expanded',String(open));
+}
+function view(name) {
+  $('chat-view').hidden=name!=='chat';$('tool-view').hidden=name!=='tools';
+  for(const kind of ['chat','tools'])$('tab-'+kind).setAttribute('aria-pressed',String(name===kind));
+  if(name==='chat')window.dispatchEvent(new Event('resize'));
+}
+$('sidebar-toggle').onclick=()=>sidebar(!document.body.classList.contains('sidebar-open'));
+$('sidebar-close').onclick=$('sidebar-backdrop').onclick=()=>sidebar(false);
+matchMedia('(max-width: 760px)').addEventListener('change',e=>{
+  if(e.matches)sidebar(false);else {$('bench-sidebar').inert=false;$('sidebar-backdrop').hidden=true;document.body.classList.remove('sidebar-open');}
+});
+if(matchMedia('(max-width: 760px)').matches)$('bench-sidebar').inert=true;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('sidebar-open'))sidebar(false);});
+$('panel-toggle').onclick=()=>inspector($('bench-inspector').hidden);
+$('inspector-close').onclick=()=>inspector(false);
+if(matchMedia('(max-width: 760px)').matches)inspector(false);
+for(const name of ['chat','tools'])$('tab-'+name).onclick=()=>view(name);
+$('side-session').onclick=()=>{view('chat');if(matchMedia('(max-width: 760px)').matches)sidebar(false);};
+$('brain-add').onclick=$('side-current').onclick=()=>{more.open=$('brain-picker').open=true;$('brain-open').focus();};
+$('tab-new').onclick=()=>{$('new-chat').click();view('chat');};
+$('tab-command').onclick=()=>{view('tools');$('workspace-drawer').open=true;$('workspace-panel').querySelector('details.terminal').open=true;$('command').focus();};
+for(const button of document.querySelectorAll('[data-brain-preset]'))button.onclick=()=>{
+  const preset=button.dataset.brainPreset;
+  more.open=$('brain-picker').open=true;
+  document.querySelector(`[data-preset="${preset}"]`).click();
+};
+$('sidebar-search').oninput=e=>{
+  const query=e.target.value.trim().toLocaleLowerCase();
+  for(const item of document.querySelectorAll('[data-search]'))item.hidden=!item.dataset.search.toLocaleLowerCase().includes(query);
+};
+function selectedBrain(source) {
+  const key=source?.preset ?? (source?'custom':'default');
+  for(const preset of ['default','recall','toolcall']){
+    const row=document.querySelector(`[data-brain-preset="${preset}"]`);
+    row.classList.toggle('selected',preset===key);
+    row.querySelector('.status-dot').classList.toggle('active',preset===key&&(source?.info?.mode==='bits'||ready));
+    if(preset===key&&(source?.info?.mode==='bits'||ready))row.querySelector('time').textContent=new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date());
+  }
+  $('side-current').hidden=key!=='custom';
+  if(key==='custom'){
+    $('side-current').querySelector('.status-dot').classList.toggle('active',source?.info?.mode==='bits'||ready);
+    if(source?.info?.mode==='bits'||ready)$('side-current').querySelector('time').textContent=new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date());
+    $('side-source').textContent=source.files?`本地 · ${source.manifest??'netlist.json'}`:source.url;
+  }
+}
+readSelection().then(source=>{
+  selectedBrain(source);
+  if(source?.info?.mode==='bits'){
+    $('status-brain').textContent='● 位电路已选';
+    netlistDetails();
+  }
+}).catch(()=>{});
+$('session-time').textContent=`当前标签 · ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
+async function netlistDetails() {
+  try {
+    const source=await readSelection();
+    const url=source?.url ?? DEFAULT_BRAIN_URL;
+    const file=source?.files?.find(f=>f.name===(source.manifest??'netlist.json'));
+    const net=file?JSON.parse(await file.text()):await fetch(url,{credentials:'omit'}).then(r=>{if(!r.ok)throw Error(`HTTP ${r.status}`);return r.json();});
+    const gates=Number(net.nGates??(net.nNand!=null&&net.nLatch!=null?net.nNand+net.nLatch:NaN));
+    $('detail-gates').textContent=Number.isSafeInteger(gates)?gates.toLocaleString('en-US'):'— 未声明';
+    $('detail-latches').textContent=Number.isSafeInteger(net.nLatch)?net.nLatch.toLocaleString('en-US'):'— 未声明';
+    $('detail-tokenizer').textContent=typeof net.tokenizer==='string'?net.tokenizer:net.tokenizer?.type??'— 未声明';
+    $('detail-source').textContent=file?`本地 · ${file.name}`:url;
+    $('detail-sha').textContent=net.recordsSha256??'— 清单未声明';
+    $('status-gates').textContent=Number.isSafeInteger(gates)?`${gates.toLocaleString('en-US')} 元件`:'— 元件';
+  } catch(e) {$('detail-source').textContent=`无法读取清单：${e.message}`;}
+}
+const chainStatus=()=>{
+  const status=$('chain-status').textContent;
+  $('status-chain').textContent=status.startsWith('RPC 区块')?'X Layer · 只读已核验':
+    status.includes('读取失败')?'X Layer · 读取失败':
+    $('chain-read').disabled?'X Layer · 未部署 / 无 RPC':'X Layer · 已配置，未核验';
+};
+new MutationObserver(chainStatus).observe($('chain-status'),{childList:true,characterData:true,subtree:true});
+chainStatus();
+window.addEventListener('brain-tick',e=>{
+  const s=e.detail;
+  $('status-gates').textContent=`${s.gates.toLocaleString('en-US')} 元件`;
+  $('status-flips').textContent=`Δ ${s.changedBits}/${s.nLatch}`;
+  if(s.phase==='generation'&&s.elapsedMs>0)$('status-rate').textContent=`${(s.emitted*1000/s.elapsedMs).toFixed(2)} tok/s`;
+  else if(s.phase==='manual'||s.phase==='stateless')$('status-rate').textContent='— tok/s';
+});
 let palette;
 function colors() {
   const style=getComputedStyle(document.documentElement);
@@ -43,6 +147,7 @@ function errorText(message) {
 export function onBenchEvent(e) {
   if (e.type === 'brain_tick') window.dispatchEvent(new CustomEvent('brain-tick',{detail:e}));
   if (e.type === 'busy' && e.action === 'load') {
+    $('status-brain').textContent='◌ 正在加载大脑';
     $('bench-loading').setAttribute('aria-busy', 'true');
     $('bench-stage').textContent = '开始读取当前大脑 · 清单 → 网表下载/解压 → 校验 → 分词器';
     $('bench-error').hidden = $('bench-retry').hidden = true;
@@ -57,6 +162,11 @@ export function onBenchEvent(e) {
   }
   if (e.type === 'loaded') {
     ready = true;
+    const active=document.querySelector('.brain-tree .selected:not([hidden])')??$('side-current');
+    active.querySelector('.status-dot').classList.add('active');
+    active.querySelector('time').textContent=new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date());
+    $('status-brain').textContent='● 大脑已就绪';
+    netlistDetails();
     document.body.dataset.brain='ready';
     $('bench-stage').textContent = '大脑已就绪 · 网表采样 token 在本浏览器逐门计算';
     $('bench-loading').setAttribute('aria-busy', 'false');
@@ -73,11 +183,14 @@ export function onBenchEvent(e) {
     }
   }
   if (e.error && e.errorName !== 'AbortError') {
+    $('status-brain').textContent=ready?'● 已就绪 · 本次操作失败':'○ 加载失败';
     $('bench-error').textContent = errorText(e.error) + '\n原因：' + e.error;
     $('bench-error').hidden = false;
     $('bench-loading').setAttribute('aria-busy', 'false');
     $('bench-retry').hidden = ready;
     more.open=$('bench-loading').open=true;
+    view('chat');
+    if(matchMedia('(max-width: 760px)').matches)sidebar(false);
     $('bench-error').focus();
   }
   if (e.type === 'agent_event' && e.event.type === 'tool_execution_end') {
@@ -96,6 +209,7 @@ $('bench-fill').onclick = async () => {
   if (pi.terminal.text.trim() && !confirm('输入区已有草稿。用所选示例替换？不会发送消息。')) return;
   pi.terminal.setDraft($('bench-example').value);
   more.open=false;
+  view('chat');
   $('conversation-panel').scrollIntoView({block:'start'});
   $('bench-run-status').textContent = '示例已填入终端，按 Enter 发送。不会自动执行，也不会替换真实返回。';
 };
@@ -103,6 +217,7 @@ $('new-chat').addEventListener('click', () => {
   if (window.browserPi?.busy) return;
   $('bench-result').hidden = true;
   $('bench-run-status').textContent = '新对话 · 选择示例后按 Enter，等待本次实际结果。';
+  $('session-time').textContent=`当前标签 · ${new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(new Date())}`;
 });
 $('workspace-drawer').addEventListener('toggle',()=>{
   $('workspace-toggle').setAttribute('aria-expanded',String($('workspace-drawer').open));
