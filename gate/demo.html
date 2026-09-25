@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>门电路 BitCPM4 对话</title>
+<style>
+:root { --bg: #fff; --fg: #1a1a1a; --mute: #666; --ok: #0a7d32; --bad: #b3261e; --warn: #8a5a00; --line: #ddd; --tool: #0b57d0; --box: #f6f6f6; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --mute: #999; --ok: #5bd17f; --bad: #ff8a80; --warn: #e0b060; --line: #333; --tool: #8ab4f8; --box: #1c1c1c; } }
+body { background: var(--bg); color: var(--fg); font: 14px/1.55 system-ui, sans-serif; margin: 0 auto; padding: 16px; max-width: 860px; }
+h1 { font-size: 18px; margin: 0 0 6px; } .mute { color: var(--mute); } .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); } .tool { color: var(--tool); }
+textarea { width: 100%; box-sizing: border-box; font: 13px/1.4 ui-monospace, monospace; background: var(--box); color: var(--fg); border: 1px solid var(--line); padding: 6px; border-radius: 4px; }
+button { font: inherit; padding: 4px 14px; margin-right: 6px; } #out { background: var(--box); padding: 10px; min-height: 2.5em; white-space: pre-wrap; border-radius: 4px; }
+.stage { border-top: 1px solid var(--line); padding: 8px 0; } table { border-collapse: collapse; font-size: 13px; } td { padding: 2px 8px 2px 0; vertical-align: top; }
+details summary { cursor: pointer; }
+</style></head>
+<body>
+<h1>门电路版 BitCPM4-1B</h1>
+<div class="mute">整个语言模型被现场生成为 NAND / LATCH 门电路网表，在你的显卡上用 WebGPU 逐位执行；每个 token 约需 1.4 万亿次 NAND。
+单元库是预综合的固定资产；「按权重选单元与连线」由本页在浏览器里现场生成。文字 ↔ 编号由原 tokenizer 在页面里完成（宿主 I/O，不参与计算）。
+带工具定义时，工具调用由门内的 K6 摘要机生成（工具不会被执行）。首次打开需下载约 750 MB 并生成电路（几分钟）；之后从本机缓存启动。</div>
+<div class="stage"><b>设备与准备</b>：<span id="st">检查中…</span><div id="pre"></div></div>
+<div class="stage">
+  <label class="mute">你的消息</label><textarea id="msg" rows="3">What is the capital of France?</textarea>
+  <details><summary class="mute">工具定义（可选，JSON 数组，OpenAI function 格式）</summary><textarea id="tools" rows="6" placeholder='[{"type":"function","function":{"name":"read_file","description":"…","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}]'></textarea></details>
+  <p><button id="go" disabled>生成</button><button id="stop" disabled>停止</button><button id="long" hidden>改用长回答模式重来</button> <span id="info" class="mute"></span></p>
+  <div id="out"></div><div id="call"></div>
+</div>
+<script type="module">
+import { createGateBrain } from './gate-brain.mjs';
+const q = new URLSearchParams(location.search), $ = id => document.getElementById(id), esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+const stageName = { cache: '检查本机缓存', download: '下载并校验权重', generate: '现场生成电路', upload: '从缓存上传', prompt: '读入提示' };
+const brain = createGateBrain({ weightsBase: q.get('w') || undefined, C: +(q.get('C') || 128), onEvent: e => {
+  if (e.type === 'precheck') $('pre').innerHTML = '<table>' + e.rows.map(r => `<tr><td class="${r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad'}">${r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗'}</td><td>${r.what}</td><td>${r.detail}</td></tr>`).join('') + '</table>';
+  else if (e.type === 'progress' && e.stage !== 'prompt') $('st').textContent = stageName[e.stage] + (e.total ? `：${e.stage === 'download' ? (e.done / 1e6).toFixed(0) + ' / ' + (e.total / 1e6).toFixed(0) + ' MB' : e.done + ' / ' + e.total}` : e.unit ? `：${e.unit}` : e.tag ? `：${e.tag}` : '');
+  else if (e.type === 'progress') $('info').textContent = `读入提示：${e.done} / ${e.total}`;
+  else if (e.type === 'ready') { $('st').innerHTML = `<span class="ok">就绪</span>（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`; $('go').disabled = false; }
+  else if (e.type === 'warning') $('st').innerHTML += ` <span class="warn">${esc(e.message)}</span>`;
+  else if (e.type === 'error') $('st').innerHTML = `<span class="bad">${esc(e.message)}</span>`;
+  else if (e.type === 'capacity') { $('info').innerHTML = `<span class="warn">${esc(e.message)}</span>`; $('long').hidden = !e.canSwitchLong; }
+} });
+let ctrl = null;
+async function run() {
+  let tools = null; const tt = $('tools').value.trim();
+  if (tt) { try { tools = JSON.parse(tt); } catch (err) { $('info').innerHTML = `<span class="bad">工具定义不是合法 JSON：${esc(err.message)}</span>`; return; } }
+  $('out').textContent = ''; $('call').innerHTML = ''; $('go').disabled = true; $('stop').disabled = false; $('long').hidden = true; ctrl = new AbortController();
+  try {
+    const r = await brain.ask([{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: $('msg').value }], tools,
+      { signal: ctrl.signal, onToken: t => { $('out').innerHTML = t.tool ? `<span class="tool">${esc(t.text)}</span>` : esc(t.text.replace(/<\|im_end\|>$/, '')); } });
+    $('info').innerHTML = `结束：${({ eos: '模型结束', max_tokens: '达到 256 个 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' })[r.stop]}；`
+      + `首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}` + ($('info').innerHTML.includes('容量') ? '<br>' + $('info').innerHTML : '');
+    if (r.toolCall) $('call').innerHTML = `<div class="tool">工具调用（门内 K6 生成，未执行）：<pre>${esc(JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1))}</pre></div>`;
+  } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; }
+  $('go').disabled = false; $('stop').disabled = true;
+}
+$('go').onclick = run; $('stop').onclick = () => ctrl?.abort();
+$('long').onclick = async () => { $('long').hidden = true; $('go').disabled = true; try { await brain.switchToLong(); await run(); } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; } };
+brain.ready.catch(() => { });
+</script></body></html>

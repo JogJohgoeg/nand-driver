@@ -11,6 +11,7 @@ const panel = document.createElement('details');
 panel.id = 'brain-picker';
 panel.innerHTML = `<summary id="brain-open">换大脑</summary>
 <div id="brain-presets" aria-label="内置大脑"><button data-preset="default">默认大脑</button><button data-preset="recall">记忆电路 · 144</button><button data-preset="toolcall">工具摘要 · 10,141</button></div>
+<p id="brain-gate"><a href="https://nand.aihashrate.stream/gate/" target="_blank" rel="noopener">门电路大脑 · BitCPM4-1B：整个 10 亿参数模型编译成 NAND/LATCH，在显卡上逐位执行 ↗</a></p>
 <p>这里换推理网表，不是导入工作区文本。<a href="./brain/MAKE_A_BRAIN.md" target="_blank" rel="noopener">做自己的大脑：格式与教程 ↗</a> · <a href="./brain/recall_latch.json" download>下载最小记忆电路</a></p>
 <p id="brain-current"></p>
 <p>只保存在本浏览器，不上传。校验通过后仍需确认重载；请先保存编辑内容并停止生成。坏文件不会替换原大脑。</p>

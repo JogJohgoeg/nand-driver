@@ -1,0 +1,20 @@
+门电路版 BitCPM4-1B 生产包 — NOTICE
+
+1. 模型权重与 tokenizer
+   BitCPM4-1B by OpenBMB
+   https://huggingface.co/openbmb/BitCPM4-1B
+   revision 70d989c4972efa636e8a2211975515d188e000b0
+   License: Apache License 2.0（全文见 Apache-2.0.txt；该 revision 的模型卡原文见 BitCPM4-1B-README.md，其 front matter 写明 license: apache-2.0）。
+   权重包内的权重编码（三值 group32 codec、norm、embedding、int8 head 与行 scale）由上述权重转换而来；
+   tokenizer.json 与上述仓库同源，SHA-256 adf7208af154a5ca065d2eda4e5419e02aac58c2c00627874748b75ec6769094，
+   本包按其原文件语义在浏览器里实现编码与解码（tok/tokenizer.mjs），未修改 tokenizer.json。
+   修改说明（Apache-2.0 第 4 条）：权重被转换为门电路网表所需的编码并按门级语义逐位执行；数值语义冻结为本项目 RefB 参照（与原 PyTorch 实现的浮点结果不保证逐位相同）。
+
+2. 门电路模板（单元库）
+   NAND 模板网表（R60 / R61 数值模板、R63 C512 容量模板、R65 控制器）、K6 工具摘要机与合并选择器（R64）由本项目 udab 流程综合生成；
+   K6 与选择器由 gatesim 机械转换为本执行器的模板约定（不改任何门），胶合 A″（k6_glue3）由 gatesim 编写。
+
+3. 本包代码（index.html、gate-brain.mjs、exec/、core/、gen_ir/、tok/、demo.html）与门电路模板
+   由本项目编写（gatesim / udab / 监督者）。项目所有者指定以 Apache License 2.0 发布（全文见 Apache-2.0.txt；本站根目录 LICENSE 同文）。
+
+4. 第三方 JavaScript 依赖：无。

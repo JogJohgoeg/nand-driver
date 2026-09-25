@@ -1,3 +1,7 @@
 /xlayer-bench-v1/*
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=31536000, immutable
+
+/gate-weights/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=31536000, immutable

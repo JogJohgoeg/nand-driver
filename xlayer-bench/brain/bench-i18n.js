@@ -126,7 +126,7 @@ const PAIRS = [
   ['准备分词器与映射', 'Preparing tokenizer and mapping'], ['准备大脑', 'Preparing brain'], ['累计读取 ', 'Read '], ['本文件 ', 'this file '],
   ['总量未知', 'total unknown'], ['（读取量含压缩数据，不是解压后的网表大小）', ' (counts compressed bytes, not the unpacked netlist size)'],
   // Brain switcher
-  ['换大脑', 'Switch brain'], ['内置大脑', 'Built-in brains'], ['记忆电路 · 144', 'Recall circuit · 144'], ['工具摘要 · 10,141', 'Tool summarizer · 10,141'],
+  ['换大脑', 'Switch brain'], ['门电路大脑 · BitCPM4-1B：整个 10 亿参数模型编译成 NAND/LATCH，在显卡上逐位执行 ↗', 'Gate brain · BitCPM4-1B: the whole 1B-parameter model compiled to NAND/LATCH, executed bit by bit on your GPU ↗'], ['内置大脑', 'Built-in brains'], ['记忆电路 · 144', 'Recall circuit · 144'], ['工具摘要 · 10,141', 'Tool summarizer · 10,141'],
   ['这里换推理网表，不是导入工作区文本。', 'This swaps the inference netlist; it does not import workspace text. '],
   ['做自己的大脑：格式与教程 ↗', 'Build your own brain: format and tutorial ↗'], ['下载最小记忆电路', 'Download the minimal recall circuit'],
   ['只保存在本浏览器，不上传。校验通过后仍需确认重载；请先保存编辑内容并停止生成。坏文件不会替换原大脑。',
