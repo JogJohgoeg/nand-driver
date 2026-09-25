@@ -2,6 +2,7 @@
 // R9：容量参数 C（128 / 512）。C=512 逐行照 R63 layer.py（LAYER-DELTA.patch）：KV 512 槽、10 位计数、eq10、C512 控制模板（IR 中名 control_c512）、
 // RoPE 9 位地址 = 4 页 rope_rom0..3 + mux32 页选择、qk/softmax/av 长度 512。C=128 与 R7/R8 逐字节相同。
 import { Row, Bits, literal, join, unbf, signed8, range, tile, repeat, cat, map, f32bits } from './bits.mjs';
+const ESC_K = 4, ESC_CELL = 'racc4';   // 例外串行链每步几个（cells/racc.py；racc8 实测更慢）
 const PROJ = ['self_attn.q_proj', 'self_attn.k_proj', 'self_attn.v_proj', 'self_attn.o_proj', 'mlp.gate_proj', 'mlp.up_proj', 'mlp.down_proj'];
 export const LAYER_NIN = 1536 * 16 + 2, KV_COUNT = 2 * 128 * 8 * 64, LAYER_NST = KV_COUNT * 16 + 10;
 export const layerDims = (C = 128) => { const kv = 2 * C * 8 * 64, cb = C === 512 ? 10 : 8; return { kv, cb, nst: kv * 16 + cb + 2 }; };
@@ -77,6 +78,13 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     const lutQ = join([0, 1, 2, 3].map(i => q.cols(map(range(0, NL), l => Math.floor(l / 81) * 4 + i))));
     const lutC = []; for (let i = 0; i < 4; i++) for (let b = 0; b < 2; b++) { const a = new Uint8Array(NL); for (let l = 0; l < NL; l++) a[l] = (Math.floor((l % 81) / P3[i]) % 3 >> b) & 1; lutC.push(new Row('L', NL, { a })); }
     const lut = e.op('tern4', lutQ, new Bits(lutC, NL));
+    // 例外乘积与累加值无关：全部例外一次 escmul 宽调用算出 X（24 位），串行链上只剩 racc4（加法 + RNE24），见 cells/racc.py
+    const escAll = []; for (const S of parts) for (let t = 0; t < S.P.exc_index.length; t++) { const idx = S.P.exc_index[t], b = S.P.exc_bits[t], r = Math.floor(idx / k);
+      escAll.push({ S, t, r, col: idx % k, m: b & 127, sh: S.shOf(r, b), neg: b >> 15 }); }
+    const laneOf = new Map(); escAll.forEach((z, i) => laneOf.set(z.S.key + ':' + z.t, i));
+    e.set_scope(specs[0][1] + '.escape');
+    const Xall = escAll.length ? e.op('escmul', q.cols(escAll.map(z => z.col)), literal(escAll.map(z => z.m), 7), literal(escAll.map(z => z.sh), 3), literal(escAll.map(z => z.neg), 1)) : null;
+    e.set_scope(specs[0][1]);
     let accum = literal(zeros(N), 32);
     for (let g = 0; g < G; g++) {
       const sel = []; for (let j = 0; j < 8; j++) { const idx = new Int32Array(N);
@@ -86,20 +94,17 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
       const mm = new Float64Array(N), sh = new Float64Array(N);
       for (const S of parts) for (let r = 0; r < S.n; r++) { const b = S.P.scale[r * G + g]; mm[S.base + r] = b & 127; sh[S.base + r] = S.shOf(r, b); }
       accum = e.op('facc', accum, d16, literal(mm, 7), literal(sh, 3));   // ≡ add(accum, scale_exact(d, s))
-      // 本组例外（≡ 逐个 add(accum, mul(i2f(q), exc))，按原序）：同一行的例外按原序每 4 个一段，一次 facce4（4 个 facce 原样串接，
-      // cells/facce4.py）；不足 4 个补 q = 0（facce(S, 0, …) = S）。不同行互不相干，单车道调用由引擎按层级并组、进 sege 段内核。
-      // 例外高度集中在少数行（同行同组常有 13–25 个），天然串行，一步算 4 个省掉段内核每步的固定开销。
+      // 本组例外（≡ 逐个 add(accum, mul(i2f(q), exc))，按原序）：同一行的例外按原序每 4 个一段，一次 racc4（≡ facce4，cells/racc.py）；
+      // 不足 4 个补 X = 0（恒等）。不同行互不相干，单车道调用由引擎按层级并组、进 sege 段内核。
       const byRow = new Map();
-      for (const S of parts) for (const t of S.escByG[g]) { const idx = S.P.exc_index[t], row = S.base + Math.floor(idx / k);
-        if (!byRow.has(row)) byRow.set(row, []); byRow.get(row).push({ S, r: Math.floor(idx / k), col: idx % k, b: S.P.exc_bits[t] }); }
+      for (const S of parts) for (const t of S.escByG[g]) { const row = S.base + Math.floor(S.P.exc_index[t] / k);
+        if (!byRow.has(row)) byRow.set(row, []); byRow.get(row).push(laneOf.get(S.key + ':' + t)); }
       if (byRow.size) {
         e.set_scope(specs[0][1] + '.escape');
-        for (const [row, ex] of byRow) for (let c0 = 0; c0 < ex.length; c0 += 4) {
+        for (const [row, lanes] of byRow) for (let c0 = 0; c0 < lanes.length; c0 += ESC_K) {
           const args = [accum.cols(row)];
-          for (let j = 0; j < 4; j++) { const z = ex[c0 + j];
-            if (z) args.push(q.cols(z.col), literal(z.b & 127, 7), literal(z.S.shOf(z.r, z.b), 3), literal(z.b >> 15, 1));
-            else args.push(literal(0, 8), literal(0, 7), literal(0, 3), literal(0, 1)); }
-          accum = e.put(accum, [row], e.op('facce4', ...args));
+          for (let j = 0; j < ESC_K; j++) args.push(c0 + j < lanes.length ? Xall.cols(lanes[c0 + j]) : literal(0, 24));
+          accum = e.put(accum, [row], e.op(ESC_CELL, ...args));
         }
         e.set_scope(specs[0][1]);
       }

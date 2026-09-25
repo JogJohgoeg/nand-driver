@@ -593,5 +593,23 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 6064
+ },
+ {
+  "name": "u-escmul",
+  "unit": "escmul",
+  "n_in": 19,
+  "n_out": 24,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 960
+ },
+ {
+  "name": "u-racc4",
+  "unit": "racc4",
+  "n_in": 128,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 2321
  }
 ]
