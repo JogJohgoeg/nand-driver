@@ -575,5 +575,23 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 417
+ },
+ {
+  "name": "u-addsel",
+  "unit": "addsel",
+  "n_in": 65,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 2526
+ },
+ {
+  "name": "u-facce4",
+  "unit": "facce4",
+  "n_in": 108,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 6064
  }
 ]

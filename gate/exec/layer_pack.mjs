@@ -3,7 +3,7 @@
 // uploadPack：只做 GPU 一侧（建缓冲、管线、绑定组），得到与 layer_exec.loadLayer 字段相同的 L，tick 路径不变。
 // 准备包可存进 IndexedDB：热启动时跳过生成与建表，只读包、校验、上传。表的内容与 loadLayer 逐字节相同（同一套函数计算）。
 import { decode, analyze, genWGSL } from './gen.mjs';
-import { planSegments6, buildStepTable6, megaWGSL6, megaCase3, splitChains, buildChainTable, chainWGSL, MEGA_SET } from './mega.mjs';
+import { planSegments6, buildStepTable6, megaWGSL6, megaCase3, splitChains, buildChainTable, chainWGSL, MEGA_SET, SEGE_NIMAX } from './mega.mjs';
 import { GATHER5_WGSL, PACK_WGSL } from './layer_exec.mjs';
 const al4 = n => Math.ceil(n / 4) * 4;
 // 模板信息（与层无关，跨层缓存）
@@ -105,6 +105,11 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   const megaCode = megaWGSL6(cases, wmax), stb = buildStepTable6(Lp);
   const segs = Lp.items.filter(it => it.kind === 'seg'), MU = new Uint32Array(Math.max(1, segs.length) * 64);
   segs.forEach((it, j) => { it.u = j * 256; MU.set([it.g0, it.g1, 0, 0xffffffff], j * 64); });
+  // sege：输入多的窄单元（facce4）单独的 v6 段内核，NIMAX = SEGE_NIMAX；步表与主段内核共用
+  const segsE = Lp.items.filter(it => it.kind === 'sege'), MUE = new Uint32Array(Math.max(1, segsE.length) * 64);
+  segsE.forEach((it, j) => { it.u = j * 256; MUE.set([it.g0, it.g1, 0, 0xffffffff], j * 64); });
+  const usedE = new Set(); for (const it of segsE) for (let i = it.g0; i < it.g1; i++) usedE.add(GR(i)[0]);
+  const megaCodeE = segsE.length ? megaWGSL6([...usedE].sort((a, b) => a - b).map(id => { const name = meta.templates[id], e = tm[name].e; return { id, body: megaCase3(getBin(name), e.n_in, e.n_out, e.opts || {}, !!strict).body }; }), wmax, SEGE_NIMAX) : null;
   // 链内核
   const chains = Lp.items.filter(it => it.kind === 'chain'), consumed = new Uint8Array(arenaWords), carryRow = new Set();
   for (const it of chains) for (let gi = it.g0 + 1; gi < it.g1; gi++) { const r0 = members[5 * GR(gi)[4] + 4]; for (let k = 0; k < 32; k++) carryRow.add(r0 + k); }
@@ -120,7 +125,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   return {
     v: 1, meta, strict: !!strict, calls: Uint32Array.from(calls), groups: Uint32Array.from(groups), members5, wordmap: Uint32Array.from(wordmap), dtab: Uint32Array.from(dtab), otab: Uint32Array.from(outtab),
     litpool: shared ? null : Uint32Array.from(ir.litpool), R5g, wtab: wtBuf.slice(0, Math.max(4, wtLen)), ccAppends, UB, PQ, MU, stab: stb.stab, sbase: stb.sbase, ctab: ct.ctab, CU,
-    items, megaCode, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
+    items, megaCode, megaCodeE, MUE, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
     stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
   };
 }
@@ -178,6 +183,12 @@ export async function uploadPack(g, P, { manifest, getBin, tmCache, SH = null, C
   L.megaBG = device.createBindGroup({ layout: mL, entries: [{ binding: 0, resource: { buffer: L.megaUni, size: 16 } }, { binding: 1, resource: { buffer: L.grp } }, { binding: 2, resource: { buffer: L.rows } },
     { binding: 3, resource: { buffer: L.colmap } }, { binding: 4, resource: { buffer: L.members } }, { binding: 5, resource: { buffer: L.wordmap } }, { binding: 6, resource: { buffer: L.arena } },
     { binding: 7, resource: { buffer: L.stab } }, { binding: 8, resource: { buffer: L.sbase } }] });
+  if (P.megaCodeE) {
+    L.megaPipeE = await pipe(P.megaCodeE, mL); L.megaUniE = mk(P.MUE, U.UNIFORM | U.COPY_DST);
+    L.megaBGE = device.createBindGroup({ layout: mL, entries: [{ binding: 0, resource: { buffer: L.megaUniE, size: 16 } }, { binding: 1, resource: { buffer: L.grp } }, { binding: 2, resource: { buffer: L.rows } },
+      { binding: 3, resource: { buffer: L.colmap } }, { binding: 4, resource: { buffer: L.members } }, { binding: 5, resource: { buffer: L.wordmap } }, { binding: 6, resource: { buffer: L.arena } },
+      { binding: 7, resource: { buffer: L.stab } }, { binding: 8, resource: { buffer: L.sbase } }] });
+  }
   if (P.chainCode) {
     const cL = bgl(['ud', 'r', 'w']); L.chainCode = P.chainCode; L.chainPipe = await pipe(P.chainCode, cL);
     L.ctab = mk(P.ctab); L.chainUni = mk(P.CU, U.UNIFORM | U.COPY_DST);

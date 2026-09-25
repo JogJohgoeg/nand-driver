@@ -86,15 +86,23 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
       const mm = new Float64Array(N), sh = new Float64Array(N);
       for (const S of parts) for (let r = 0; r < S.n; r++) { const b = S.P.scale[r * G + g]; mm[S.base + r] = b & 127; sh[S.base + r] = S.shOf(r, b); }
       accum = e.op('facc', accum, d16, literal(mm, 7), literal(sh, 3));   // ≡ add(accum, scale_exact(d, s))
-      // 本组例外：逐个单车道 facce（≡ add(accum, mul(i2f(q), exc))），按原序；不同行互不相干，引擎按层级自动并组，
-      // 且单车道调用能进段内核（多车道分散取位的批量调用进不了，反而更慢，b15 实测）。
-      e.set_scope(specs[0][1] + '.escape');
-      for (const S of parts) for (const t of S.escByG[g]) {
-        const idx = S.P.exc_index[t], r = Math.floor(idx / k), row = S.base + r, col = idx % k, b = S.P.exc_bits[t];
-        const val = e.op('facce', accum.cols(row), q.cols(col), literal(b & 127, 7), literal(S.shOf(r, b), 3), literal(b >> 15, 1));
-        accum = e.put(accum, [row], val);
+      // 本组例外（≡ 逐个 add(accum, mul(i2f(q), exc))，按原序）：同一行的例外按原序每 4 个一段，一次 facce4（4 个 facce 原样串接，
+      // cells/facce4.py）；不足 4 个补 q = 0（facce(S, 0, …) = S）。不同行互不相干，单车道调用由引擎按层级并组、进 sege 段内核。
+      // 例外高度集中在少数行（同行同组常有 13–25 个），天然串行，一步算 4 个省掉段内核每步的固定开销。
+      const byRow = new Map();
+      for (const S of parts) for (const t of S.escByG[g]) { const idx = S.P.exc_index[t], row = S.base + Math.floor(idx / k);
+        if (!byRow.has(row)) byRow.set(row, []); byRow.get(row).push({ S, r: Math.floor(idx / k), col: idx % k, b: S.P.exc_bits[t] }); }
+      if (byRow.size) {
+        e.set_scope(specs[0][1] + '.escape');
+        for (const [row, ex] of byRow) for (let c0 = 0; c0 < ex.length; c0 += 4) {
+          const args = [accum.cols(row)];
+          for (let j = 0; j < 4; j++) { const z = ex[c0 + j];
+            if (z) args.push(q.cols(z.col), literal(z.b & 127, 7), literal(z.S.shOf(z.r, z.b), 3), literal(z.b >> 15, 1));
+            else args.push(literal(0, 8), literal(0, 7), literal(0, 3), literal(0, 1)); }
+          accum = e.put(accum, [row], e.op('facce4', ...args));
+        }
+        e.set_scope(specs[0][1]);
       }
-      e.set_scope(specs[0][1]);
     }
     const kk = new Float64Array(N); for (const S of parts) for (let r = 0; r < S.n; r++) kk[S.base + r] = (S.lo[r] - 134) & 255;
     accum = e.op('fix2f', accum, literal(kk, 8));
@@ -142,13 +150,20 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   weights = e.select(active.cols(pos), weights, literal(0, 32)); let total = literal(zeros(24), 32);
   // 未激活位置的权重是字面 +0，而 total 自 +0 起、只经 add 更新，永不为 −0、NaN 恒为规范值，故 add(total, +0) = total（cells/bmax.py verify
   // 对全部 2^32 个 t 核对），原先的 select(active_p, …, total) 可省。
-  for (let p = 0; p < C; p++) total = e.op('add', total, weights.cols(map(h24, i => i * C + p)));
+  // 执行效率：先把权重重排成「位置优先、每位置占一个对齐整字」（车道 p·32 + i，i ≥ 24 的填充车道取车道 0，结果不用），
+  // 每步输入成为对齐整字，128 步 add 可串进段内核一次派发（原先每步单独两次派发）。重排用 mux32(1, t, t)：
+  // 选择位为常数 1 时 mux32 常数传播后输出线即 t 输入线（结构恒等）。各头的加法与次序不变。
+  const tpos = map(range(0, C * 32), l => (l % 32 < 24 ? (l % 32) * C : 0) + (l % 32 < 24 ? Math.floor(l / 32) : 0));
+  const wT = e.select(literal(1, 1), weights.cols(tpos), weights.cols(tpos));
+  let tot32 = literal(zeros(32), 32);
+  for (let p = 0; p < C; p++) tot32 = e.op('add', tot32, wT.cols(range(p * 32, p * 32 + 32)));
+  total = tot32.cols(h24);
   weights = mark('softmax', bf(e.op('div', weights, total.cols(heads)).low(32)));
   e.set_scope('av'); let acc = literal(zeros(1536), 32);
   const hidx = map(range(0, 1536), i => Math.floor(i / 64)), didx = map(range(0, 1536), i => i % 64);
   for (let p = 0; p < C; p++) {
     const product = e.op('mul', unbf(weights.cols(map(hidx, hh => hh * C + p))), unbf(vc.cols(map(hidx, (hh, i) => p * 512 + Math.floor(hh / 3) * 64 + didx[i]))));
-    const added = e.op('add', acc, product); acc = e.select(active.cols(p), added, acc);
+    acc = e.op('addsel', acc, product, active.cols(p));   // ≡ select(active_p, add(acc, product), acc)（cells/addsel.py），每位置少一个条目
   }
   let out = mark('av', bf(acc)); [out] = projectMany(out, [['self_attn.o_proj', 'o']]);
   e.set_scope('residual1'); let scaled = mark('attention_scaled', bf(e.op('mul', unbf(out), literal(0x3e46cdf7, 32))));

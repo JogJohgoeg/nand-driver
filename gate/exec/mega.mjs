@@ -3,7 +3,7 @@
 // → 输出写回 arena 中与 R3 相同的地址 → storageBarrier + workgroupBarrier 后下一步。只改执行方式，不改门、连线与地址。
 import { decode, analyze, genWGSL } from './gen.mjs';
 
-export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f', 'add_nn', 'bmax'];
+export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f', 'add_nn', 'bmax', 'addsel', 'facce4'];
 
 // 某模板的内联体：输入 → gw(wm0, w, k)（按表搬运），输出 → arena[out + j*W + w]
 export function megaCase(bytes, nIn, nOut, opts) {
@@ -233,7 +233,7 @@ export function planSegments3(L, wmax, rowsA, cm, members, set = MEGA_SET) {
 export function buildStepTable3(L) {
   // 每输入 8 项：[arena 字地址, 移位, 掩码, 字步长, yout 基址, yout 字步长, yout 掩码, 0]；值 = ((arena[a+w*inc]>>sh)&mask) | (yout[ya+w*yinc]&ymask)
   const out = [], sbase = new Uint32Array(L.NG), st = { single: 0, aligned: 0, ldsCarry: 0 };
-  for (const it of L.items) if (it.kind === 'seg') for (let gi = it.g0; gi < it.g1; gi++) {
+  for (const it of L.items) if (it.kind === 'seg' || it.kind === 'sege') for (let gi = it.g0; gi < it.g1; gi++) {
     sbase[gi] = out.length / 4;                                         // vec4 单位
     const f = L._forms[gi], prev = gi > it.g0 ? L.GR(gi - 1) : null, q = L.GR(gi);
     for (const x of f) {
@@ -417,14 +417,16 @@ function inputForms6(L, gi, rowsA, cm, members, wordmap) {
   }
   return f;
 }
+export const SEGE_TPL = ['facce4'], SEGE_NIMAX = 108;
 export function planSegments6(L, wmax, rowsA, cm, members, wordmap, set = MEGA_SET) {
   const T = L.meta.templates, items = [], forms = new Array(L.NG);
   for (let i = 0; i < L.NG; i++) {
     const q = L.GR(i);
     const narrow = set.includes(T[q[0]]) && q[1] <= wmax && (forms[i] = inputForms6(L, i, rowsA, cm, members, wordmap)) !== null;
-    const last = items[items.length - 1];
-    if (narrow && last && last.kind === 'seg' && last.g1 === i) last.g1 = i + 1;
-    else items.push(narrow ? { kind: 'seg', g0: i, g1: i + 1 } : { kind: 'grp', g: i });
+    // sege：输入多于主段内核上限（NIMAX 65）的窄单元（facce4，108 输入）走单独的 v6 段内核（NIMAX = SEGE_NIMAX，layer_pack.mjs）
+    const kind = !narrow ? 'grp' : SEGE_TPL.includes(T[q[0]]) ? 'sege' : 'seg', last = items[items.length - 1];
+    if (kind !== 'grp' && last && last.kind === kind && last.g1 === i) last.g1 = i + 1;
+    else items.push(kind === 'grp' ? { kind, g: i } : { kind, g0: i, g1: i + 1 });
   }
   L._forms = forms;
   return items;
@@ -432,7 +434,7 @@ export function planSegments6(L, wmax, rowsA, cm, members, wordmap, set = MEGA_S
 export function buildStepTable6(L) {
   // 每 (k, fw) 两个 vec4：[arena 字, 移位, 掩码, 0] [yout 字, 0, yout 掩码, yout 移位]；值 = ((arena[a]>>sh)&mask) | ((yout[ya]&ymask)>>ysh)
   const out = [], sbase = new Uint32Array(L.NG), st = { single: 0, aligned: 0, ldsCarry: 0 };
-  for (const it of L.items) if (it.kind === 'seg') for (let gi = it.g0; gi < it.g1; gi++) {
+  for (const it of L.items) if (it.kind === 'seg' || it.kind === 'sege') for (let gi = it.g0; gi < it.g1; gi++) {
     sbase[gi] = out.length / 4;
     const prev = gi > it.g0 ? L.GR(gi - 1) : null;
     for (const x of L._forms[gi]) {
@@ -447,9 +449,9 @@ export function buildStepTable6(L) {
   }
   return { stab: Uint32Array.from(out.length ? out : [0, 0, 0, 0, 0, 0, 0, 0]), sbase, st };
 }
-export function megaWGSL6(cases, WMAX) {
+export function megaWGSL6(cases, WMAX, NIMAX = 65) {
   // 与 v3 相同，唯一差别：项下标 e = sb + 2*it（每 (k,fw) 一项），字步长恒为 0
-  return megaWGSL3(cases, WMAX).replace('let e = sb + 2u * k;', 'let e = sb + 2u * it;')
+  return megaWGSL3(cases, WMAX, NIMAX).replace('let e = sb + 2u * k;', 'let e = sb + 2u * it;')
     .replace('let fromArena = (arena[s0.x + w * s0.w] >> s0.y) & s0.z;', 'let fa = (arena[s0.x + w * s0.w] >> s0.y) & s0.z;\n      let fromArena = (fa & ~s1.y) | (bitcast<u32>(extractBits(bitcast<i32>(fa << 31u), 31u, 1u)) & s1.y);')
     .replace('let fromLds = (yout[s1.x + w * s1.y] & s1.z) >> s1.w;', 'let fromLds = (yout[s1.x] & s1.z) >> s1.w;')
     .replace('// gatesim R4 串行段内核 v3：只收全快速输入的步', '// gatesim R4 串行段内核 v6：只收全快速输入的步（每 (输入, 字) 一项精确来源）');

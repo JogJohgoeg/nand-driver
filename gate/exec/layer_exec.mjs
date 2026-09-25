@@ -135,6 +135,7 @@ async function tickItems(g, L, { chunk, readState, commitAfter, noRead = false, 
     for (let x = s; x < Math.min(items.length, s + ck); x++) {
       const it = items[x];
       if (it.kind === 'seg') { pass.setPipeline(L.megaPipe); pass.setBindGroup(0, L.megaBG, [it.u]); pass.dispatchWorkgroups(1); continue; }
+      if (it.kind === 'sege') { pass.setPipeline(L.megaPipeE); pass.setBindGroup(0, L.megaBGE, [it.u]); pass.dispatchWorkgroups(1); continue; }
       if (it.kind === 'chain') { pass.setPipeline(L.chainPipe); pass.setBindGroup(0, L.chainBG, [it.u]); pass.dispatchWorkgroups(1); continue; }
       if (it.kind === 'pk') { pass.setPipeline(L.pkPipe); pass.setBindGroup(0, L.pkBG, [it.u]); pass.dispatchWorkgroups(L.pkG); continue; }
       const i = it.g, q = L.GR(i), t = L.tm[m.templates[q[0]]], uo = i * 256;

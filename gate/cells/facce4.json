@@ -1,0 +1,1 @@
+{"inputs": {"S": 32, "e0": 19, "e1": 19, "e2": 19, "e3": 19}, "n_in": 108, "n_out": 32, "n_nand": 6064, "n_latch": 0, "semantics": "依次 4 次 facce（每组 q8、m7、sh3、neg1）；线上 facce 原样内联串接", "sha256": "f95581c8e52e17027d6ea1d15be24cda21f22ccd24e62434087d630d08e279d3", "verify": {"construction": "facce.bin 内联 4 次，按构造等价；补位 q=0 为恒等（facce 证明）"}}

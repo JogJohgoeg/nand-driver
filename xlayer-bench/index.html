@@ -66,7 +66,7 @@
   <div id="tool-view" hidden><h2>工具与工作区</h2><p>示例只填入真实终端，不自动执行。</p></div>
   <section id="gate-view" hidden aria-labelledby="gate-title">
     <h1 id="gate-title">门电路大脑 · BitCPM4-1B</h1>
-    <p class="bench-lead">整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,829 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。</p>
+    <p class="bench-lead">整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,821 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。</p>
     <p class="bench-sub">它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 1 秒，笔记本集成显卡约 2.5 秒。提示加回答最多 128 个 token，装不下的上文会自动丢掉。</p>
     <ul id="gate-checks" aria-label="设备预检"></ul>
     <div class="bench-actions"><button id="gate-load" class="primary" type="button">下载并生成电路</button></div>
