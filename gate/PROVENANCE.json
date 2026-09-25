@@ -1,0 +1,310 @@
+{
+ "gen_ir/bits.mjs": {
+  "how": "copy",
+  "source": "gen_ir/bits.mjs",
+  "source_sha256": "5ef19e62ffad27c1821636031c954d7b87cca1842c4666c1ebb7f1b3e481294b",
+  "sha256": "5ef19e62ffad27c1821636031c954d7b87cca1842c4666c1ebb7f1b3e481294b",
+  "edits": []
+ },
+ "gen_ir/engine.mjs": {
+  "how": "copy",
+  "source": "gen_ir/engine.mjs",
+  "source_sha256": "d8efb3a06b7bc8e6227c26d51841cc04ff937a70812dbee9373127ff293e034a",
+  "sha256": "d8efb3a06b7bc8e6227c26d51841cc04ff937a70812dbee9373127ff293e034a",
+  "edits": []
+ },
+ "gen_ir/gen_core.mjs": {
+  "how": "copy",
+  "source": "gen_ir/gen_core.mjs",
+  "source_sha256": "554262a814c2894bde293c08d8597759ee9a6eaca808447cccc89c5e50085ef4",
+  "sha256": "554262a814c2894bde293c08d8597759ee9a6eaca808447cccc89c5e50085ef4",
+  "edits": []
+ },
+ "gen_ir/model.mjs": {
+  "how": "copy",
+  "source": "gen_ir/model.mjs",
+  "source_sha256": "69bac610138eabb9f61a23219f86b3d81d381d626f666e5ccfc0e84679ebff86",
+  "sha256": "69bac610138eabb9f61a23219f86b3d81d381d626f666e5ccfc0e84679ebff86",
+  "edits": []
+ },
+ "gen_ir/gen_worker.mjs": {
+  "how": "copy",
+  "source": "gen_ir/gen_worker.mjs",
+  "source_sha256": "e954522d56b3ecd84bfaca93d1f8c153eb5e9ae3992300f2fda433e04bf8f88e",
+  "sha256": "e954522d56b3ecd84bfaca93d1f8c153eb5e9ae3992300f2fda433e04bf8f88e",
+  "edits": []
+ },
+ "gen_ir/layer.mjs": {
+  "how": "lines",
+  "source": "gen_ir/layer.mjs",
+  "source_sha256": "22e2a326768e769ebd5bbd770fb33a2830a4f25a852a3319c515c4c286f05049",
+  "sha256": "48b2444f2ac65024bb616d74775d10846b695973c780ecc23561284ed2b86d79",
+  "edits": [
+   "keep 1-54",
+   "keep 56-138"
+  ]
+ },
+ "exec/gen.mjs": {
+  "how": "copy",
+  "source": "exec/gen.mjs",
+  "source_sha256": "1e1633ffd9f9ea02249bd31c6dd3b8eba9384eca9b7841e7527f818e76121dbb",
+  "sha256": "1e1633ffd9f9ea02249bd31c6dd3b8eba9384eca9b7841e7527f818e76121dbb",
+  "edits": []
+ },
+ "exec/mega.mjs": {
+  "how": "copy",
+  "source": "exec/mega.mjs",
+  "source_sha256": "8549ffc6f2708f4c62c4a3451e92825ee8093be5eb0d194031b8784b0fac180b",
+  "sha256": "8549ffc6f2708f4c62c4a3451e92825ee8093be5eb0d194031b8784b0fac180b",
+  "edits": []
+ },
+ "exec/layer_pack.mjs": {
+  "how": "copy",
+  "source": "exec/layer_pack.mjs",
+  "source_sha256": "090d57e1209f72e186a56263ac3ecc43b0662616d8b5a55ef4c61cb030bb5467",
+  "sha256": "090d57e1209f72e186a56263ac3ecc43b0662616d8b5a55ef4c61cb030bb5467",
+  "edits": []
+ },
+ "exec/gpu.mjs": {
+  "how": "lines",
+  "source": "exec/gpu.mjs",
+  "source_sha256": "f0c972a594e21cd7dd84241ab4e2f40c42362dc3f8b596e4081c3b80c3c286a6",
+  "sha256": "e69c48a7e8ebde22b8d06c50a6f52404b16a115f4f29eb941ec838ddd6a0c87f",
+  "edits": [
+   "keep 1-1",
+   "keep 3-23"
+  ]
+ },
+ "exec/layer_exec.mjs": {
+  "how": "lines",
+  "source": "exec/layer_exec.mjs",
+  "source_sha256": "9924bde0428c60cc315afe03673de6ed6de1817fa409541cff6fc09b1c565d35",
+  "sha256": "612b9cdb1f2b173b68f24693e9bb93f86e67ae5339037864c16b627deeb91403",
+  "edits": [
+   "keep 1-7",
+   "keep 139-177",
+   "keep 255-275",
+   "keep 613-703"
+  ]
+ },
+ "exec/full_exec.mjs": {
+  "how": "lines",
+  "source": "exec/full_exec.mjs",
+  "source_sha256": "fcf2ccfb96191913c453708b5e1057a264a36b9eb26c1df724220db7b30ee77a",
+  "sha256": "5a54ad61b9006c98955e9110f408cc17694441cccfa3c9efac0d485b7c180976",
+  "edits": [
+   "keep 1-4",
+   "keep 7-7",
+   "keep 16-45"
+  ]
+ },
+ "core/pack_cache.mjs": {
+  "how": "lines",
+  "source": "pack_cache.mjs",
+  "source_sha256": "748f70256d8d5370071d58587ee142f2f6588df1b55a984e0a660e7e72e74f6d",
+  "sha256": "2ddfe2263993f03200dddf4c4fe11e550f8c7a9599043393076019e7115f2dad",
+  "edits": [
+   "keep 1-19",
+   "keep 38-95"
+  ]
+ },
+ "core/cache_worker.mjs": {
+  "how": "copy",
+  "source": "cache_worker.mjs",
+  "source_sha256": "cc4d032822b78c93e02c890fc3bbc5cc048a8e4d8132550b86513e113a5718d7",
+  "sha256": "cc4d032822b78c93e02c890fc3bbc5cc048a8e4d8132550b86513e113a5718d7",
+  "edits": []
+ },
+ "tok/tokenizer.mjs": {
+  "how": "copy",
+  "source": "tok/tokenizer.mjs",
+  "source_sha256": "5208e73e00ddb403593245e916ba10b303a75a12d1b3512af226bec3858b1d7c",
+  "sha256": "5208e73e00ddb403593245e916ba10b303a75a12d1b3512af226bec3858b1d7c",
+  "edits": []
+ },
+ "core/stream_gen.mjs": {
+  "how": "edit",
+  "source": "stream_gen.mjs",
+  "source_sha256": "c16afc0a79c6c74fe46bb2f70be9b22cf148ee389e57f60b8cefe175c77d0960",
+  "sha256": "d468ff5b5df6aec1a3828c64cd02420d31a6d6d2af3361660e6092f34c8f2b1a",
+  "edits": [
+   {
+    "old": "import { weightsView, genUnit, finishLayer, HashPool } from './gen_ir/gen_core.mjs';",
+    "new": "import { weightsView, genUnit, finishLayer, HashPool } from '../gen_ir/gen_core.mjs';"
+   },
+   {
+    "old": "import { Sha256 } from './gen_ir/sha256.mjs';\n",
+    "new": ""
+   },
+   {
+    "old": "import { PROJ } from './gen_ir/layer.mjs';",
+    "new": "import { PROJ } from '../gen_ir/layer.mjs';"
+   },
+   {
+    "old": "import { loadLayer } from './exec/layer_exec.mjs';\n",
+    "new": ""
+   },
+   {
+    "old": "import { preparePack, uploadPack, newCC } from './exec/layer_pack.mjs';",
+    "new": "import { preparePack, uploadPack, newCC } from '../exec/layer_pack.mjs';"
+   },
+   {
+    "old": "import { assembleFull } from './exec/full_exec.mjs';",
+    "new": "import { assembleFull } from '../exec/full_exec.mjs';"
+   },
+   {
+    "old": "const hex = async b => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join('');\nexport async function streamGenLoad",
+    "new": "export async function streamGenLoad"
+   },
+   {
+    "old": "log = () => { }, ref = null, workerUrl,",
+    "new": "log = () => { }, workerUrl,"
+   },
+   {
+    "old": "packSink = null, usePack = true, tool = false, C = 128 } = {}) {",
+    "new": "packSink = null, tool = false, C = 128 } = {}) {"
+   },
+   {
+    "old": ", workers: nWorkers, verify: ref ? { files: 0, same: 0, diff: [] } : null };",
+    "new": ", workers: nWorkers };"
+   },
+   {
+    "old": "  const hooks = { mega: { wmax: 2, v: 6 }, gather4: true, chain: { minLen: 8 }, compactColmap: true, noRows: true, sharedScratch: true };   // 仅 usePack=false（旧加载器对照）时用\n",
+    "new": ""
+   },
+   {
+    "old": "  const OFF = (typeof Deno !== 'undefined' && Deno.env.get('R8OFF')) || ''; for (const f of OFF.split(',').filter(Boolean)) hooks[f] = false;   // 调试：关掉指定开关\n",
+    "new": ""
+   },
+   {
+    "old": "  const cmSha = ref ? new Sha256() : null, lpSha = ref ? new Sha256() : null;\n",
+    "new": ""
+   },
+   {
+    "old": "    cm: new HashPool(ref ? a => cmSha.updateU32(a) : null),",
+    "new": "    cm: new HashPool(null),"
+   },
+   {
+    "old": "lpStage.push(a); lpStageWords += a.length; if (lpSha) lpSha.updateU32(a); }),",
+    "new": "lpStage.push(a); lpStageWords += a.length; }),"
+   },
+   {
+    "old": "  const verifyFiles = async (key, files) => {\n    if (!ref) return; const r = ref[key]; if (!r) { (T.verify.noref ||= []).push(key); return; }   // R9：无 Python 参照的单元（C512 控制器、K6 / 选择器 / 胶合）另列\n    for (const [n, a] of Object.entries(files)) { const h = await hex(bytesOf(a)); T.verify.files++; if (r && r[n + '.u32'] === h) T.verify.same++; else T.verify.diff.push(`${key}/${n}`); }\n  };\n",
+    "new": ""
+   },
+   {
+    "old": "  const loadFrom = async (files, meta, extraHooks, tag) => {\n    const vfs = new Map(Object.entries(files).map(([n, a]) => [`x/${n}.u32`, bytesOf(a)])); vfs.set('x/ir-meta.json', enc.encode(JSON.stringify(meta)));\n    const rd = async p => { const v = vfs.get(p); if (v) return v; const m = p.match(/^cells\\/([^/]+)\\.bin$/); if (m && cellBins.has(m[1])) return cellBins.get(m[1]); throw new Error('missing ' + p); };\n    let L; try { L = await loadLayer(g, rd, 'x', execMan, 'cells', s => log(`[${tag}] ${s}`), { ...hooks, ...extraHooks }); } catch (e) { console.error(`LOADFAIL ${tag}`, e && e.stack, JSON.stringify({ files: Object.fromEntries(Object.entries(files).map(([k, v]) => [k, v && v.length])) })); throw e; }\n    vfs.clear(); return L;\n  };\n",
+    "new": ""
+   },
+   {
+    "old": "    await verifyFiles(`ir-${job.unit}`, r.files);\n",
+    "new": ""
+   },
+   {
+    "old": "units[job.unit] = usePack ? await loadPack(r.files, r.meta, null, job.unit) : await loadFrom(r.files, r.meta, {}, job.unit);",
+    "new": "units[job.unit] = await loadPack(r.files, r.meta, null, job.unit);"
+   },
+   {
+    "old": "    await verifyFiles(`L${String(L).padStart(2, '0')}`, r.files);\n",
+    "new": ""
+   },
+   {
+    "old": "layers[L] = usePack ? await loadPack(files, r.meta, { litBase: BOUNDS.LITBASE, maxN: BOUNDS.MAXN, lpLen: BOUNDS.LPCAP, words }, 'L' + L, lpAppend) : await loadFrom(files, r.meta, { shared: SH }, 'L' + L);",
+    "new": "layers[L] = await loadPack(files, r.meta, { litBase: BOUNDS.LITBASE, maxN: BOUNDS.MAXN, lpLen: BOUNDS.LPCAP, words }, 'L' + L, lpAppend);"
+   },
+   {
+    "old": "  if (ref) { T.verify.sharedColmap = cmSha.hex() === ref.shared['colmap.u32']; T.verify.sharedLitpool = lpSha.hex() === ref.shared['litpool.u32']; }\n",
+    "new": ""
+   },
+   {
+    "old": "...(tool ? ['k6', 'merge', 'glue', 'glue2', 'glue3'].map(unit => ({ kind: 'unit', unit })) : [])",
+    "new": "...(tool ? ['k6', 'merge', 'glue3'].map(unit => ({ kind: 'unit', unit })) : [])"
+   },
+   {
+    "old": "k6: [], merge: [], glue: [], glue2: [], glue3: [],",
+    "new": "k6: [], merge: [], glue3: [],"
+   },
+   {
+    "old": "toolUnits: tool ? { k6: units.k6, merge: units.merge, glue: units.glue, glue2: units.glue2, glue3: units.glue3 } : null",
+    "new": "toolUnits: tool ? { k6: units.k6, merge: units.merge, glue3: units.glue3 } : null"
+   },
+   {
+    "old": "toolUnits: units.k6 ? { k6: units.k6, merge: units.merge, glue: units.glue, glue2: units.glue2, glue3: units.glue3 } : null",
+    "new": "toolUnits: units.k6 ? { k6: units.k6, merge: units.merge, glue3: units.glue3 } : null"
+   }
+  ]
+ },
+ "core/package.mjs": {
+  "how": "lines",
+  "source": "full_gen.mjs",
+  "source_sha256": "bf434b001bc544faddf177e29b8b248c1c49b805b6d24824b45a4aa305551d4e",
+  "sha256": "1e774f6efb0174bf1634a614d334da56e1f4e04aa5eca26fa56393a1665f43a0",
+  "edits": [
+   "keep 9-12"
+  ]
+ },
+ "exec/templates.json": {
+  "how": "filter",
+  "source": "exec/manifest_r6.json",
+  "source_sha256": "c410d8293fde42d504c6d1b84ea246c82227152f34404bf5ca7998a16b242e47",
+  "sha256": "067516fa00b4be976a57d1f08126c173d270018de98d58b4ab41815a37f804a0",
+  "edits": [
+   "只留 name/unit/n_in/n_out/n_latch/opts/n_nand；去掉 u-k6_glue、u-k6_glue2"
+  ]
+ },
+ "gate-brain.mjs": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "5332a7ff16f889e6f6fbd36ed447a7b9a24fb1b6e6c6994e1e5a357b3a618684",
+  "edits": []
+ },
+ "exec/tool_exec.mjs": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "75c77a4fd1cd74892de30457175d61bb748fa5fb2f01358332e4b82a0fefa9f6",
+  "edits": []
+ },
+ "demo.html": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "651e30820eba7c0d3d206bde80993aac9718ad7f3778b4bc294cb4469ef97355",
+  "edits": []
+ },
+ "README.md": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "914482185709c558aeba234c4153deaabcf074daa7e7381355221f695cadfe1a",
+  "edits": []
+ },
+ "LICENSES/NOTICE": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "aaad2bad273070fcf32b4dcb3f2dbd67594eab853b5ec8a117fcf7258c181ca9",
+  "edits": []
+ },
+ "LICENSES/Apache-2.0.txt": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+  "edits": []
+ },
+ "LICENSES/BitCPM4-1B-README.md": {
+  "how": "new",
+  "source": null,
+  "source_sha256": null,
+  "sha256": "59f570653434475258dec87ed0f8ac8a117316f2a61c720b42d77c24e80b68a8",
+  "edits": []
+ },
+ "_shader_invariance": {
+  "exec/gen.mjs": "copy",
+  "exec/mega.mjs": "copy",
+  "exec/layer_pack.mjs": "copy",
+  "exec/layer_exec.mjs": "lines"
+ }
+}

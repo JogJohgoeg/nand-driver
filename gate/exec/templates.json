@@ -1,0 +1,453 @@
+[
+ {
+  "name": "u-add",
+  "unit": "add",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 4750
+ },
+ {
+  "name": "u-and",
+  "unit": "and",
+  "n_in": 2,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 4
+ },
+ {
+  "name": "u-bf16",
+  "unit": "bf16",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 261
+ },
+ {
+  "name": "u-clip",
+  "unit": "clip",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 198
+ },
+ {
+  "name": "u-control",
+  "unit": "control",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 158
+ },
+ {
+  "name": "u-div",
+  "unit": "div",
+  "n_in": 64,
+  "n_out": 33,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 15501
+ },
+ {
+  "name": "u-eq8",
+  "unit": "eq8",
+  "n_in": 16,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 56
+ },
+ {
+  "name": "u-exp",
+  "unit": "exp",
+  "n_in": 32,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "cut": "live",
+   "R": 96,
+   "Kmin": 512
+  },
+  "n_nand": 167967
+ },
+ {
+  "name": "u-exp_select",
+  "unit": "exp_select",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 341
+ },
+ {
+  "name": "u-f2i",
+  "unit": "f2i",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1766
+ },
+ {
+  "name": "u-gt",
+  "unit": "gt",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1628
+ },
+ {
+  "name": "u-i2f",
+  "unit": "i2f",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1715
+ },
+ {
+  "name": "u-mul",
+  "unit": "mul",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs"
+  },
+  "n_nand": 10075
+ },
+ {
+  "name": "u-mux16",
+  "unit": "mux16",
+  "n_in": 33,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 81
+ },
+ {
+  "name": "u-mux32",
+  "unit": "mux32",
+  "n_in": 65,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 161
+ },
+ {
+  "name": "u-nf",
+  "unit": "nf",
+  "n_in": 8,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 17
+ },
+ {
+  "name": "u-not",
+  "unit": "not",
+  "n_in": 1,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 3
+ },
+ {
+  "name": "u-or",
+  "unit": "or",
+  "n_in": 2,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 5
+ },
+ {
+  "name": "u-powers",
+  "unit": "powers",
+  "n_in": 64,
+  "n_out": 64,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 435
+ },
+ {
+  "name": "u-rope_rom",
+  "unit": "rope_rom",
+  "n_in": 7,
+  "n_out": 2048,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 155186
+ },
+ {
+  "name": "u-rsqrt",
+  "unit": "rsqrt",
+  "n_in": 32,
+  "n_out": 33,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "cut": "live",
+   "R": 96,
+   "Kmin": 512
+  },
+  "n_nand": 24462
+ },
+ {
+  "name": "u-silu",
+  "unit": "silu",
+  "n_in": 32,
+  "n_out": 17,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "cut": "live",
+   "R": 96,
+   "Kmin": 512
+  },
+  "n_nand": 188662
+ },
+ {
+  "name": "u-silu_select",
+  "unit": "silu_select",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 212
+ },
+ {
+  "name": "u-sqrt",
+  "unit": "sqrt",
+  "n_in": 64,
+  "n_out": 33,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 8893
+ },
+ {
+  "name": "u-sub",
+  "unit": "sub",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 4748
+ },
+ {
+  "name": "u-ternary32",
+  "unit": "ternary32",
+  "n_in": 320,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs"
+  },
+  "n_nand": 6013
+ },
+ {
+  "name": "u-umax",
+  "unit": "umax",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 509
+ },
+ {
+  "name": "u-iadd32",
+  "unit": "iadd32",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 348
+ },
+ {
+  "name": "u-dot32_s8",
+  "unit": "dot32_s8",
+  "n_in": 512,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 39844
+ },
+ {
+  "name": "u-rom256x16",
+  "unit": "rom256x16",
+  "n_in": 4104,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 12280
+ },
+ {
+  "name": "u-argmax_bf16",
+  "unit": "argmax_bf16",
+  "n_in": 66,
+  "n_out": 33,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 866
+ },
+ {
+  "name": "u-model_control",
+  "unit": "model_control",
+  "n_in": 72,
+  "n_out": 74,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 634
+ },
+ {
+  "name": "u-head_scale",
+  "unit": "head_scale",
+  "n_in": 96,
+  "n_out": 17,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 33014
+ },
+ {
+  "name": "u-quant_s8",
+  "unit": "quant_s8",
+  "n_in": 48,
+  "n_out": 8,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 12055
+ },
+ {
+  "name": "u-model_control_cap256_C128",
+  "unit": "model_control_cap256_C128",
+  "n_in": 75,
+  "n_out": 77,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 676
+ },
+ {
+  "name": "u-model_control_cap256_C512",
+  "unit": "model_control_cap256_C512",
+  "n_in": 77,
+  "n_out": 79,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 702
+ },
+ {
+  "name": "u-model_control_cap32_C128",
+  "unit": "model_control_cap32_C128",
+  "n_in": 72,
+  "n_out": 74,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 634
+ },
+ {
+  "name": "u-k6_comb",
+  "unit": "k6_comb",
+  "n_in": 1300,
+  "n_out": 1295,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 301830
+ },
+ {
+  "name": "u-merge_comb",
+  "unit": "merge_comb",
+  "n_in": 40,
+  "n_out": 21,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 296
+ },
+ {
+  "name": "u-control_c512",
+  "unit": "control_c512",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 174
+ },
+ {
+  "name": "u-eq10",
+  "unit": "eq10",
+  "n_in": 20,
+  "n_out": 1,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 70
+ },
+ {
+  "name": "u-rope_rom1",
+  "unit": "rope_rom1",
+  "n_in": 7,
+  "n_out": 2048,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 148733
+ },
+ {
+  "name": "u-rope_rom2",
+  "unit": "rope_rom2",
+  "n_in": 7,
+  "n_out": 2048,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 148061
+ },
+ {
+  "name": "u-rope_rom3",
+  "unit": "rope_rom3",
+  "n_in": 7,
+  "n_out": 2048,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 148272
+ },
+ {
+  "name": "u-rope_rom0",
+  "unit": "rope_rom0",
+  "n_in": 7,
+  "n_out": 2048,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "K": 4096
+  },
+  "n_nand": 155186
+ },
+ {
+  "name": "u-k6_glue3",
+  "unit": "k6_glue3",
+  "n_in": 42,
+  "n_out": 20,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 107
+ }
+]

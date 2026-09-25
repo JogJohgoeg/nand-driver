@@ -38,6 +38,7 @@ summary{cursor:pointer;min-height:44px;padding-block:10px;box-sizing:border-box;
 #brain-picker fieldset{min-width:0;border:0;padding:12px 0;margin:12px 0}
 #brain-presets{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 24px}
 #brain-presets button{white-space:normal}
+#brain-gate{margin:-12px 0 20px}
 #brain-status[data-error=true],#bench-error{border-left:2px solid var(--accent);padding-left:12px;color:var(--text)}
 .bench-examples{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:12px 0}
 #bench-example,#brain-frame{max-width:100%;min-width:0;min-height:40px;background:transparent;color:var(--text);border:1px solid var(--line);padding:8px}

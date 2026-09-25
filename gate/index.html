@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>门电路大脑 · BitCPM4-1B</title>
+<meta name="description" content="整个 BitCPM4-1B 语言模型编译成 NAND/LATCH 门电路，在你的显卡上用 WebGPU 逐位执行，与参照实现逐位一致。">
+<link rel="icon" href="../xlayer-bench/favicon.svg">
+<style>
+:root{color-scheme:light;--bg:#fafafa;--panel:#f2f2f2;--hover:#eaeaea;--line:#d6d6d6;--line-strong:#858585;--text:#222;--muted:#626262;--accent:#256b62;--ok:#0a7d32;--bad:#b3261e;--warn:#8a5a00;--tool:#0b57d0;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#181818;--panel:#242424;--hover:#303030;--line:#494949;--line-strong:#8c8c8c;--text:#e6e6e6;--muted:#aaa;--accent:#83b6ad;--ok:#5bd17f;--bad:#ff8a80;--warn:#e0b060;--tool:#8ab4f8}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#181818;--panel:#242424;--hover:#303030;--line:#494949;--line-strong:#8c8c8c;--text:#e6e6e6;--muted:#aaa;--accent:#83b6ad;--ok:#5bd17f;--bad:#ff8a80;--warn:#e0b060;--tool:#8ab4f8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px 48px}
+header{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+header h1{font-size:17px;margin:0;font-weight:600}
+header .sp{flex:1}
+a{color:var(--accent)}
+button,.btn{font:inherit;font-size:14px;padding:5px 14px;border:1px solid var(--line-strong);background:var(--panel);color:var(--text);border-radius:4px;cursor:pointer;text-decoration:none}
+button:hover:not(:disabled),.btn:hover{background:var(--hover)}
+button:disabled{opacity:.5;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.mute{color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.tool{color:var(--tool)}
+.lead{margin:0 0 16px}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:20px}
+.facts div{background:var(--bg);padding:10px 12px}
+.facts b{display:block;font-family:var(--mono);font-size:16px;font-weight:600}
+.facts span{font-size:12px;color:var(--muted)}
+section{border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-bottom:16px}
+section h2{font-size:14px;margin:0 0 10px;font-weight:600}
+table{border-collapse:collapse;font-size:13px;width:100%}
+td{padding:3px 8px 3px 0;vertical-align:top}
+td:first-child{width:1.5em}
+.bar{height:4px;background:var(--panel);border-radius:2px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+textarea{width:100%;font:14px/1.5 var(--mono);background:var(--panel);color:var(--text);border:1px solid var(--line);padding:8px;border-radius:4px;resize:vertical}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{font-size:13px;padding:3px 10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+#out{background:var(--panel);padding:12px;min-height:3em;white-space:pre-wrap;border-radius:4px;margin-top:12px;font-size:15px;overflow-wrap:anywhere}
+#out:empty::before{content:attr(data-empty);color:var(--muted)}
+pre{font:12px/1.5 var(--mono);background:var(--panel);padding:8px;border-radius:4px;overflow:auto}
+details summary{cursor:pointer;color:var(--muted);font-size:13px}
+.foot{font-size:13px;color:var(--muted)}
+.foot p{margin:6px 0}
+@media (max-width:640px){.wrap{padding:0 16px 40px}.facts{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body><div class="wrap">
+<header>
+  <h1 data-t="title">门电路大脑 · BitCPM4-1B</h1><span class="sp"></span>
+  <a class="btn" href="../xlayer-bench/" data-t="back">← 工作台</a>
+  <button id="lang" type="button">EN</button>
+</header>
+
+<p class="lead" data-t="lead">整个 BitCPM4-1B 语言模型被编译成 NAND / LATCH 门电路，在你的显卡上用 WebGPU 一位一位地执行。生成的每个 token 都与参照实现逐位一致，没有调用任何浮点推理库。</p>
+
+<div class="facts">
+  <div><b>1.44 × 10¹²</b><span data-t="f_nand">NAND / token</span></div>
+  <div><b>1.09 × 10⁸</b><span data-t="f_latch">LATCH（状态位）</span></div>
+  <div><b id="fC">C128</b><span data-t="f_cap">容量：提示 + 回答 token</span></div>
+  <div><b>≈ 750 MB</b><span data-t="f_dl">首次下载（之后走本机缓存）</span></div>
+</div>
+
+<section>
+  <h2 data-t="s_dev">设备与准备</h2>
+  <div id="st" class="mute" data-t="checking">检查中…</div>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="pre" style="margin-top:10px"></div>
+  <div class="row"><button id="start" class="primary" hidden data-t="start">下载并生成电路</button><span id="startNote" class="mute" style="font-size:13px"></span></div>
+</section>
+
+<section>
+  <h2 data-t="s_ask">提问</h2>
+  <textarea id="msg" rows="3">What is the capital of France?</textarea>
+  <div class="chips" id="chips"></div>
+  <details><summary data-t="tools_sum">工具定义（可选，OpenAI function 格式 JSON 数组）</summary>
+    <textarea id="tools" rows="6" style="margin-top:6px"></textarea>
+    <div class="row"><button id="toolEx" type="button" data-t="tool_ex">填入示例工具</button></div>
+  </details>
+  <div class="row">
+    <button id="go" class="primary" disabled data-t="go">生成</button>
+    <button id="stop" disabled data-t="stop">停止</button>
+    <button id="long" hidden data-t="long">改用长回答模式（C512）重来</button>
+    <span id="info" class="mute" style="font-size:13px"></span>
+  </div>
+  <div id="out" data-empty="回答会一个 token 一个 token 地出现在这里。"></div>
+  <div id="call"></div>
+</section>
+
+<section class="foot">
+  <h2 data-t="s_how">它是怎么跑的</h2>
+  <p data-t="h1">单元库（整数投影、int8 头、RMSNorm、softmax 等）是预综合好的固定网表；页面按权重在浏览器里现场生成「选哪些单元、怎么连线」，得到约 1.44 万亿个 NAND，然后在 GPU 上按位切片执行。浮点运算按固定的 IEEE 舍入与求和顺序做成门电路，所以结果可复现、可逐位对拍。</p>
+  <p data-t="h2">文字与 token 编号之间的转换由原版 tokenizer 在页面里完成，这是宿主 I/O，不参与计算。给了工具定义时，工具调用由门内的 K6 摘要机生成，页面只展示，不执行。</p>
+  <p data-t="h3">每个 token 在普通显卡上约 1 秒。C128 需要约 6 GB 内存；长回答模式 C512 约 7.6 GB。</p>
+  <p><a href="./PROVENANCE.json">PROVENANCE.json</a> · <a href="./LICENSES/NOTICE">NOTICE</a> · <a href="./LICENSES/Apache-2.0.txt">Apache-2.0</a> · <a href="./LICENSES/BitCPM4-1B-README.md" data-t="model_card">模型说明（OpenBMB BitCPM4-1B）</a> · <a href="./demo.html" data-t="plain">精简版页面</a></p>
+</section>
+</div>
+
+<script type="module">
+import { createGateBrain, precheck } from './gate-brain.mjs';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const q = new URLSearchParams(location.search);
+const C = q.get('C') === '512' ? 512 : 128;
+$('fC').textContent = 'C' + C;
+
+// ---------- i18n ----------
+const EN = {
+  title: 'Gate brain · BitCPM4-1B', back: '← Workbench',
+  lead: 'The whole BitCPM4-1B language model is compiled into NAND / LATCH gates and executed bit by bit on your GPU with WebGPU. Every generated token matches the reference implementation bit for bit; no floating-point inference library is involved.',
+  f_nand: 'NAND / token', f_latch: 'LATCH (state bits)', f_cap: 'capacity: prompt + reply tokens', f_dl: 'first download (cached afterwards)',
+  s_dev: 'Device & setup', checking: 'Checking…', start: 'Download & build circuit',
+  s_ask: 'Ask', tools_sum: 'Tool definitions (optional, OpenAI function-format JSON array)', tool_ex: 'Insert example tool',
+  go: 'Generate', stop: 'Stop', long: 'Retry in long mode (C512)',
+  s_how: 'How it runs',
+  h1: 'The cell library (integer projections, int8 head, RMSNorm, softmax, …) is a fixed pre-synthesized netlist. The page generates, in your browser, which cells to use and how to wire them from the weights — about 1.44 trillion NANDs — and runs them bit-sliced on the GPU. Floating point is built as gates with fixed IEEE rounding and summation order, so results are reproducible and checked bit for bit.',
+  h2: 'Text ↔ token-id conversion is done by the original tokenizer in the page; that is host I/O and computes nothing. When tools are given, the tool call is produced by the in-circuit K6 summarizer; the page only shows it and never executes it.',
+  h3: 'About 1 s per token on an ordinary GPU. C128 needs about 6 GB of memory; long mode C512 about 7.6 GB.',
+  model_card: 'Model card (OpenBMB BitCPM4-1B)', plain: 'Plain page',
+};
+const ZH = {};
+for (const el of document.querySelectorAll('[data-t]')) ZH[el.dataset.t] = el.textContent;
+const STR = {
+  zh: { empty: '回答会一个 token 一个 token 地出现在这里。', stage: { cache: '检查本机缓存', download: '下载并校验权重', generate: '现场生成电路', upload: '从缓存上传', prompt: '读入提示' },
+    ready: (e) => `就绪（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`,
+    stop: { eos: '模型结束', max_tokens: '达到 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' },
+    done: (r, n) => `结束：${STR.zh.stop[r.stop] || r.stop}；首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}；本次约 ${n} 次 NAND 求值`,
+    toolCall: '工具调用（门内 K6 生成，未执行）：', badJson: '工具定义不是合法 JSON：', promptIn: '读入提示',
+    startNote: e => `将下载约 750 MB 权重并在本机生成电路，需要几分钟；峰值内存约 ${e.ramGB} GB。`, blocked: '这台设备不满足硬性条件，未开始下载。',
+    confirmLong: '浏览器不报告内存大小。长回答模式需要约 7.6 GB 内存与 6.4 GB 显存，确定这台设备足够吗？',
+    chips: ['What is the capital of France?', '用一句话介绍你自己。', 'Write a haiku about logic gates.', '1+1 等于几？'] },
+  en: { empty: 'The reply appears here one token at a time.', stage: { cache: 'Checking local cache', download: 'Downloading & verifying weights', generate: 'Building circuit', upload: 'Uploading from cache', prompt: 'Reading prompt' },
+    ready: (e) => `Ready (C${e.C}, ${e.warm ? 'from local cache' : 'freshly built'}, ${(e.prepMs / 1e3).toFixed(0)} s)`,
+    stop: { eos: 'model finished', max_tokens: 'token limit reached', capacity: 'capacity full', stopped: 'stopped', tool_truncated: 'tool call truncated', tool_aborted: 'tool call aborted' },
+    done: (r, n) => `Done: ${STR.en.stop[r.stop] || r.stop}; first token ${(r.firstTokenMs / 1e3).toFixed(1)} s, ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'} per token; ≈ ${n} NAND evaluations`,
+    toolCall: 'Tool call (produced by in-circuit K6, not executed):', badJson: 'Tool definitions are not valid JSON: ', promptIn: 'Reading prompt',
+    startNote: e => `Downloads about 750 MB of weights and builds the circuit locally — a few minutes; peak memory about ${e.ramGB} GB.`, blocked: 'This device does not meet the hard requirements; nothing was downloaded.',
+    confirmLong: 'Your browser does not report its memory size. Long mode needs about 7.6 GB RAM and 6.4 GB VRAM. Is this device big enough?',
+    chips: ['What is the capital of France?', 'Introduce yourself in one sentence.', 'Write a haiku about logic gates.', 'What is 1+1?'] },
+};
+const DETAIL_EN = [
+  [/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)'], [/ 字节/g, ' bytes'],
+  [/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）。$/, 'Browser reports ≥ $1 GB (browsers report at most 8).'],
+  [/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）——.*$/, 'Browser reports $1 GB — this device may not have enough memory; the page may be killed by the system or browser.'],
+  [/^浏览器不报告内存大小。.*$/, 'The browser does not report memory size. Peak for this mode: about 6–7.6 GB of browser memory plus 4.3–6.4 GB of VRAM (or shared iGPU memory).'],
+  [/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB）$/, 'About $1 GB free (cache needs about $2 GB)'],
+  [/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB，.*$/, 'About $1 GB free (cache needs about $2 GB) — not enough; the circuit will be rebuilt on every visit'],
+  [/^无法查询；.*$/, 'Cannot query; runs fine, just without caching'],
+];
+const detailEn = d => { for (const [re, to] of DETAIL_EN) d = d.replace(re, to); return d; };
+const WHAT_EN = { 'WebGPU 适配器': 'WebGPU adapter', '单个存储缓冲绑定上限': 'Max storage buffer binding', '单个缓冲大小上限': 'Max buffer size', '每阶段存储缓冲数': 'Storage buffers per stage', '工作组共享内存': 'Workgroup shared memory', '内存': 'Memory', '本机缓存空间': 'Local cache space' };
+let lang = 'zh';
+try { const s = localStorage.getItem('bench-lang'); if (s === 'en' || s === 'zh') lang = s; else if (!/^zh/i.test(navigator.language || '')) lang = 'en'; } catch { }
+let lastPre = null, lastSt = null;
+function applyLang() {
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh';
+  for (const el of document.querySelectorAll('[data-t]')) el.textContent = lang === 'en' ? (EN[el.dataset.t] ?? ZH[el.dataset.t]) : ZH[el.dataset.t];
+  $('lang').textContent = lang === 'en' ? '中文' : 'EN';
+  $('out').dataset.empty = STR[lang].empty;
+  $('chips').innerHTML = STR[lang].chips.map(c => `<button type="button">${esc(c)}</button>`).join('');
+  for (const b of $('chips').children) b.onclick = () => { $('msg').value = b.textContent; };
+  if (lastPre) renderPre(lastPre);
+  if (lastSt) lastSt();
+}
+$('lang').onclick = () => { lang = lang === 'en' ? 'zh' : 'en'; try { localStorage.setItem('bench-lang', lang); } catch { } applyLang(); };
+const T = () => STR[lang];
+const status = f => { lastSt = f; f(); };
+
+function renderPre(rows) {
+  lastPre = rows;
+  $('pre').innerHTML = '<table>' + rows.map(r => {
+    const cls = r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad', mark = r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗';
+    return `<tr><td class="${cls}">${mark}</td><td>${esc(lang === 'en' ? (WHAT_EN[r.what] || r.what) : r.what)}</td><td class="mute">${esc(lang === 'en' ? detailEn(r.detail) : r.detail)}</td></tr>`;
+  }).join('') + '</table>';
+}
+
+const EXAMPLE_TOOLS = [{ type: 'function', function: { name: 'get_weather', description: 'Get the current weather for a city', parameters: { type: 'object', properties: { city: { type: 'string', description: 'City name' } }, required: ['city'] } } }];
+$('toolEx').onclick = () => { $('tools').value = JSON.stringify(EXAMPLE_TOOLS, null, 1); $('msg').value = lang === 'en' ? "What's the weather in Paris?" : '巴黎现在天气怎么样？'; };
+
+applyLang();
+
+// ---------- brain ----------
+const NAND_PER_TOKEN = 1440324304923;
+let brain = null, ctrl = null;
+
+function onEvent(e) {
+  if (e.type === 'precheck') renderPre(e.rows);
+  else if (e.type === 'progress' && e.stage !== 'prompt') {
+    status(() => { $('st').className = 'mute'; $('st').textContent = T().stage[e.stage] + (e.total ? `：${e.stage === 'download' ? (e.done / 1e6).toFixed(0) + ' / ' + (e.total / 1e6).toFixed(0) + ' MB' : e.done + ' / ' + e.total}` : e.unit ? `：${e.unit}` : e.tag ? `：${e.tag}` : ''); });
+    if (e.total) $('bar').style.width = (100 * e.done / e.total).toFixed(1) + '%';
+  }
+  else if (e.type === 'progress') $('info').textContent = `${T().promptIn}：${e.done} / ${e.total}`;
+  else if (e.type === 'ready') { $('bar').style.width = '100%'; status(() => { $('st').className = 'ok'; $('st').textContent = T().ready(e); }); $('go').disabled = false; $('fC').textContent = 'C' + e.C; }
+  else if (e.type === 'warning') $('startNote').innerHTML = `<span class="warn">${esc(e.message)}</span>`;
+  else if (e.type === 'error') status(() => { $('st').className = 'bad'; $('st').textContent = e.message; });
+  else if (e.type === 'capacity') { $('info').innerHTML = `<span class="warn">${esc(e.message)}</span>`; $('long').hidden = !e.canSwitchLong; }
+}
+
+function boot() {
+  $('start').hidden = true; $('startNote').textContent = '';
+  brain = createGateBrain({ weightsBase: q.get('w') || undefined, C, confirmLong: false, onEvent });
+  brain.ready.catch(() => { });
+}
+
+// 先只做预检；满足条件后由用户点按钮再开始下载 750 MB（有缓存时直接启动）。
+(async () => {
+  const pc = await precheck({ C });
+  renderPre(pc.rows);
+  if (pc.hard) { status(() => { $('st').className = 'bad'; $('st').textContent = T().blocked; }); return; }
+  let warm = false;
+  try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) { warm = true; break; } } catch { }
+  if (warm || q.has('auto')) { boot(); return; }
+  status(() => { $('st').className = 'mute'; $('st').textContent = ''; });
+  const est = { 128: { ramGB: 6 }, 512: { ramGB: 7.6 } }[C];
+  $('start').hidden = false; lastSt = () => { $('startNote').textContent = T().startNote(est); }; lastSt();
+  $('start').onclick = boot;
+})();
+
+async function run() {
+  let tools = null; const tt = $('tools').value.trim();
+  if (tt) { try { tools = JSON.parse(tt); } catch (err) { $('info').innerHTML = `<span class="bad">${esc(T().badJson + err.message)}</span>`; return; } }
+  $('out').textContent = ''; $('call').innerHTML = ''; $('info').textContent = '';
+  $('go').disabled = true; $('stop').disabled = false; $('long').hidden = true; ctrl = new AbortController();
+  let capMsg = '';
+  try {
+    const r = await brain.ask([{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: $('msg').value }], tools, {
+      signal: ctrl.signal,
+      onToken: t => { $('out').innerHTML = t.tool ? `<span class="tool">${esc(t.text)}</span>` : esc(t.text.replace(/<\|im_end\|>$/, '')); },
+    });
+    if ($('info').innerHTML.includes('warn')) capMsg = '<br>' + $('info').innerHTML;
+    const n = ((r.promptIds?.length || 0) + (r.ids?.length || 0)) * NAND_PER_TOKEN;
+    $('info').innerHTML = esc(T().done(r, n.toExponential(2).replace('e+', ' × 10^'))) + capMsg;
+    if (r.toolCall) $('call').innerHTML = `<p class="tool">${esc(T().toolCall)}</p><pre>${esc(JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1))}</pre>`;
+  } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; }
+  $('go').disabled = false; $('stop').disabled = true;
+}
+$('go').onclick = run;
+$('stop').onclick = () => { ctrl?.abort(); brain?.stop(); };
+$('long').onclick = async () => {
+  const pc = await precheck({ C: 512 });
+  if (pc.longMode.allowed === false) { $('info').innerHTML = `<span class="bad">${esc(pc.longMode.reason)}</span>`; $('long').hidden = true; return; }
+  if (pc.longMode.allowed === 'confirm') {
+    // 浏览器不报内存：用户确认后以 C512 重开页面（同时释放 C128 占用的显存）
+    if (!confirm(T().confirmLong)) return;
+    try { sessionStorage.setItem('gate-msg', $('msg').value); sessionStorage.setItem('gate-tools', $('tools').value); } catch { }
+    brain?.dispose(); location.search = '?C=512&auto=1' + (q.get('w') ? '&w=' + encodeURIComponent(q.get('w')) : ''); return;
+  }
+  $('long').hidden = true; $('go').disabled = true;
+  try { await brain.switchToLong(); await run(); } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; $('go').disabled = false; }
+};
+try { const m = sessionStorage.getItem('gate-msg'), t = sessionStorage.getItem('gate-tools'); if (m != null) { $('msg').value = m; $('tools').value = t || ''; sessionStorage.removeItem('gate-msg'); sessionStorage.removeItem('gate-tools'); } } catch { }
+</script>
+</body></html>
