@@ -1,0 +1,1 @@
+{"inputs": {"a": 8, "w": 8}, "n_in": 16, "n_out": 16, "n_nand": 620, "n_latch": 0, "semantics": "a·w（int8 × int8），16 位二补码", "sha256": "2b969477481592d124d20c369299fa0eb12e2c1caf2f54a14ce2e12ed2a84b0f", "verify": "代数证明 mod 2^16（64 项）+ 穷举 65536 例 0 差"}

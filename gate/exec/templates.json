@@ -505,12 +505,30 @@
   "n_nand": 921
  },
  {
-  "name": "u-iadd16",
-  "unit": "iadd16",
-  "n_in": 32,
+  "name": "u-sum8",
+  "unit": "sum8",
+  "n_in": 128,
   "n_out": 16,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 171
+  "n_nand": 719
+ },
+ {
+  "name": "u-mul8",
+  "unit": "mul8",
+  "n_in": 16,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 620
+ },
+ {
+  "name": "u-sum32",
+  "unit": "sum32",
+  "n_in": 512,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 4529
  }
 ]
