@@ -27,18 +27,23 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) 
   let d = rows5[members[mo + 4u] + r];                // [地址（对齐字基 / 广播位号 / 一般行基）, 对齐掩码字, 偏移 | 类别<<30, 广播掩码字]
   let cls = d.z >> 30u;
   let off = d.z & 0x3fffffffu;
-  let isA = u32(cls == 0u); let isB = u32(cls == 1u); let isG = u32(cls == 2u); let isW = u32(cls == 3u);
+  let isA = u32(cls == 0u); let isB = u32(cls == 1u); let isG0 = u32(cls == 2u); let isW = u32(cls == 3u);
+  let isX = isG0 * u32(d.w == 1u); let isG = isG0 - isX;   // 类别 X：逐字字节偏移（d.w = 1；arena 字 0 恒为 0，故 vB 仍为 0）
+  let xr = (off + wl * 9u) * isX;                        // wtab 按 u32 编址：[字基址, 8 个 u32 装 32 个字节偏移]
+  let xbase = wtab[xr >> 1u][xr & 1u];
   let wt = wtab[(off + wl) * isW];                    // 类别 3：[对齐字地址 或 一般段偏移, 对齐掩码字]；其余类别读第 0 项 (0, 0)
   let wGen = u32(wt.y == 0u) * isW;
   let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen)] & (d.y | wt.y);
   let bit = (arena[(d.x >> 5u) * isB] >> ((d.x & 31u) * isB)) & 1u;
   let vB = bitcast<u32>(extractBits(bitcast<i32>(bit << 31u), 31u, 1u)) & d.w;
-  let nb = min(32u, n - min(n, wl * 32u)) * (isG | wGen);
-  let rb = d.x * isG;
+  let nb = min(32u, n - min(n, wl * 32u)) * (isG | wGen | isX);
+  let rb = d.x * (isG | isX);
   let co = (off + wl * 32u) * isG + wt.x * wGen;
   var acc = vA | vB;
   for (var b = 0u; b < nb; b++) {
-    let gi = rb + colmap[co + b];
+    let xi = xr + 1u + (b >> 2u);
+    let xo = xbase + ((wtab[xi >> 1u][xi & 1u] >> ((b & 3u) * 8u)) & 0xffu);
+    let gi = rb + select(colmap[co + b], xo, isX == 1u);
     acc = acc | (((arena[gi >> 5u] >> (gi & 31u)) & 1u) << b);
   }
   dst[x] = acc;

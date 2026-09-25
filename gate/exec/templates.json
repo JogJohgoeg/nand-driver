@@ -494,5 +494,23 @@
    "order": "dfs"
   },
   "n_nand": 3378
+ },
+ {
+  "name": "u-tern4",
+  "unit": "tern4",
+  "n_in": 40,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 921
+ },
+ {
+  "name": "u-iadd16",
+  "unit": "iadd16",
+  "n_in": 32,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 171
  }
 ]

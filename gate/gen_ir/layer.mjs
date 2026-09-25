@@ -52,12 +52,16 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     // escape 按 exceptions 数组原序、按组筛选
     const escByG = Array.from({ length: G }, () => []);
     for (let t = 0; t < P.exc_index.length; t++) escByG[Math.floor((P.exc_index[t] % k) / 32)].push(t);
-    // ternary32pm（≡ ternary32）：~q 每个激活只算一次；权重码直接写成 +1 / −1 两组常数位（码 1 → p，码 2 → m，码 0 / 3 → 皆 0）
-    const nq = join([...Array(8).keys()].map(b => e.op('not', q.bit(b))));
+    // 查表法三值点积（≡ ternary32，整数加法精确、|d| ≤ 4096）：每 4 个激活一组，tern4 算出 81 种 ±/0 组合之和（车道 h*81 + c，c 的三进制位 0→0、1→+1、2→−1），
+    // 各行按常数权重码取 8 个表项（逐字字节偏移收集，见 exec/layer_pack.mjs 类别 X），7 次 iadd16 求和。例外码 3 记 0（与 ternary32 相同，例外另加）。
+    const G4 = k / 4, NL = G4 * 81, P3 = [1, 3, 9, 27], digit = c => (c === 1 ? 1 : c === 2 ? 2 : 0);
+    const lutQ = join([0, 1, 2, 3].map(i => q.cols(map(range(0, NL), l => Math.floor(l / 81) * 4 + i))));
+    const lutC = []; for (let i = 0; i < 4; i++) for (let b = 0; b < 2; b++) { const a = new Uint8Array(NL); for (let l = 0; l < NL; l++) a[l] = (Math.floor((l % 81) / P3[i]) % 3 >> b) & 1; lutC.push(new Row('L', NL, { a })); }
+    const lut = e.op('tern4', lutQ, new Bits(lutC, NL));
     for (let g = 0; g < G; g++) {
-      const group = join([...Array(32).keys()].map(j => q.cols(g * 32 + j))), ngroup = join([...Array(32).keys()].map(j => nq.cols(g * 32 + j)));
-      const pm = []; for (const want of [1, 2]) for (let j = 0; j < 32; j++) { const a = new Uint8Array(n); for (let r = 0; r < n; r++) a[r] = code(r, g * 32 + j) === want ? 1 : 0; pm.push(new Row('L', n, { a })); }
-      const d = e.op('ternary32pm', group.broadcast(n), ngroup.broadcast(n), new Bits(pm, n));
+      const sel = []; for (let j = 0; j < 8; j++) { const idx = new Int32Array(n); for (let r = 0; r < n; r++) { let c = 0; for (let i = 0; i < 4; i++) c += digit(code(r, g * 32 + j * 4 + i)) * P3[i]; idx[r] = (g * 8 + j) * 81 + c; } sel.push(lut.cols(idx)); }
+      const s01 = e.op('iadd16', sel[0], sel[1]), s23 = e.op('iadd16', sel[2], sel[3]), s45 = e.op('iadd16', sel[4], sel[5]), s67 = e.op('iadd16', sel[6], sel[7]);
+      const d16 = e.op('iadd16', e.op('iadd16', s01, s23), e.op('iadd16', s45, s67)), d = join([d16, ...Array(16).fill(d16.bit(15))]);
       const sc = new Float64Array(n); for (let r = 0; r < n; r++) sc[r] = P.scale[r * G + g] * 65536;
       const product = e.op('scale_exact', d, literal(sc, 32));   // ≡ mul(i2f(d), s)：|d|≤4096、s 为 bf16 正规数时积恒精确（cells/verify_scale_exact.py 穷举 5.08 亿例）
       accum = e.op('add', accum, product);
@@ -132,7 +136,7 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   // 输出表：og.T.reshape(-1)（第 i 个输出值的第 b 位）
   const rIds = e.ids(result), outIds = new Float64Array(16 * 1536);
   for (let i = 0; i < 1536; i++) for (let b = 0; b < 16; b++) outIds[i * 16 + b] = rIds[b][i];
-  if (e.counts['ternary32pm'] !== 749568) throw new Error('ternary32pm ' + e.counts['ternary32pm']);
+  if ((e.counts['iadd16'] || 0) !== 7 * 749568) throw new Error('iadd16 ' + e.counts['iadd16']);   // 查表法：每（行，32 组）7 次 iadd16
   return { outIds, dIds, NIN: ninput, NST: nstate };
 }
 export { PROJ };

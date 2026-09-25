@@ -7,9 +7,11 @@ import { preparePack, uploadPack, newCC } from '../exec/layer_pack.mjs';
 import { assembleFull } from '../exec/full_exec.mjs';
 const enc = new TextEncoder(), bytesOf = a => new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
 // 共享 arena 的结构上界（R5 实测 52 层最大值：arena 4,906,432 字、常量池 90,015,355 字、输出区 368,640 字、实例 131,072；上界留 6–7% 余量，越界即报错）
-export const BOUNDS = { LITBASE: 5242880, LPCAP: 96000000, OUT: 1048576, MAXN: 131072 };
+// LITBASE：查表法三值点积（tern4 + iadd16）中间线更多，按层 arena 实测放宽（C128 +25%、C512 +8%）。
+// LPCAP：权重码不再以常数位进常量池（改为 wtab 字节偏移），52 层实测 12,087,531 / 12,100,671 字（C128 / C512），预留 1600 万字。
+export const BOUNDS = { LITBASE: 6553600, LPCAP: 16000000, OUT: 1048576, MAXN: 131072 };
 // R9：C512 的上界（R63 层：arena 与输出区约 ×1.8–4，单次调用最大实例 2·512·512 = 524288）；数值按 Python C512 追踪 52 层实测最大值留余量，越界即报错
-export const boundsFor = C => C === 512 ? { LITBASE: 9961472, LPCAP: 96000000, OUT: 2621440, MAXN: 524288, CC: 48 * 1024 * 1024 } : BOUNDS;
+export const boundsFor = C => C === 512 ? { LITBASE: 10747904, LPCAP: 16000000, OUT: 2621440, MAXN: 524288, CC: 48 * 1024 * 1024 } : BOUNDS;
 export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, controller = 'model_control', log = () => { }, workerUrl, releaseChunks = null, onStage = () => { }, packSink = null, tool = false, C = 128 } = {}) {
   const BOUNDS = boundsFor(C);
   const device = g.device, U = GPUBufferUsage, t0 = performance.now(), T = { units: {}, layers: [], workers: nWorkers };
