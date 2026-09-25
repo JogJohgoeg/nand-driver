@@ -49,6 +49,92 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) 
   dst[x] = acc;
 }
 `;
+// X16：对「全部输入为 X 类（逐字字节偏移）、每 16 行一项、同项共用偏移记录、行基址等距」的组，改为两步取数（结果与 gather5 逐字相同）：
+//   XPACK：把源表（位切片的 16 位项，第 k 位在 rb0 + k·stride 起的行）转成每项一个 u32 的 T；
+//   GATHERX16：每 (项 j, 字 fw) 一线程，每车道读 T 一次得全部 16 位，寄存器内转置成 16 个位切片字写入 dst（原 gather5 每位读一次 arena，读次数 16 倍）。
+export const XPACK_WGSL = `// gatesim X16 源表转置：T[tbase + l] = Σ_k bit(rb0 + l + k·stride) << k
+struct XP { rb0: u32, stride: u32, nt: u32, tbase: u32 }
+@group(0) @binding(0) var<uniform> xp: XP;
+@group(0) @binding(1) var<storage, read> arena: array<u32>;
+@group(0) @binding(2) var<storage, read_write> T: array<u32>;
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) nw: vec3<u32>) {
+  let l = gid.x + gid.y * nw.x * 64u;
+  if (l >= xp.nt) { return; }
+  var v = 0u;
+  for (var k = 0u; k < 16u; k++) { let gi = xp.rb0 + l + k * xp.stride; v = v | (((arena[gi >> 5u] >> (gi & 31u)) & 1u) << k); }
+  T[xp.tbase + l] = v;
+}
+`;
+export const GATHERX16_WGSL = `// gatesim X16 取数：dst 与 gather5 逐字相同。X 类项按项一次读 16 位（T），其余类别的项逐行执行与 gather5 相同的代码（g5）
+struct G { W: u32, k0: u32, k1: u32, km: u32, ni: u32, wm0: u32, pad0: u32, pad1: u32 }
+@group(0) @binding(0) var<uniform> g: G;
+@group(0) @binding(1) var<storage, read> rows5: array<vec4<u32>>;
+@group(0) @binding(2) var<storage, read> colmap: array<u32>;
+@group(0) @binding(3) var<storage, read> members: array<u32>;
+@group(0) @binding(4) var<storage, read> wordmap: array<u32>;
+@group(0) @binding(5) var<storage, read> arena: array<u32>;
+@group(0) @binding(6) var<storage, read_write> dst: array<u32>;
+@group(0) @binding(7) var<storage, read> wtab: array<vec2<u32>>;
+@group(0) @binding(8) var<storage, read> T: array<u32>;
+@group(0) @binding(9) var<uniform> gx: vec4<u32>;                   // 本组：[源在 T 中的基址, 源 rb0, 0, 0]
+fn g5(r: u32, fw: u32) -> u32 {                                     // gather5 主体（逐行逐字，同 GATHER5_WGSL）
+  let mo = 5u * wordmap[g.wm0 + fw];
+  let wl = fw - members[mo + 1u];
+  let n = members[mo + 3u];
+  let d = rows5[members[mo + 4u] + r];
+  let cls = d.z >> 30u;
+  let off = d.z & 0x3fffffffu;
+  let isA = u32(cls == 0u); let isB = u32(cls == 1u); let isG0 = u32(cls == 2u); let isW = u32(cls == 3u);
+  let isX = isG0 * u32(d.w == 1u); let isG = isG0 - isX;
+  let xr = (off + wl * 9u) * isX;
+  let xbase = wtab[xr >> 1u][xr & 1u];
+  let wt = wtab[(off + wl) * isW];
+  let wGen = u32(wt.y == 0u) * isW;
+  let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen)] & (d.y | wt.y);
+  let bit = (arena[(d.x >> 5u) * isB] >> ((d.x & 31u) * isB)) & 1u;
+  let vB = bitcast<u32>(extractBits(bitcast<i32>(bit << 31u), 31u, 1u)) & d.w;
+  let nb = min(32u, n - min(n, wl * 32u)) * (isG | wGen | isX);
+  let rb = d.x * (isG | isX);
+  let co = (off + wl * 32u) * isG + wt.x * wGen;
+  var acc = vA | vB;
+  for (var b = 0u; b < nb; b++) {
+    let xi = xr + 1u + (b >> 2u);
+    let xo = xbase + ((wtab[xi >> 1u][xi & 1u] >> ((b & 3u) * 8u)) & 0xffu);
+    let gi = rb + select(colmap[co + b], xo, isX == 1u);
+    acc = acc | (((arena[gi >> 5u] >> (gi & 31u)) & 1u) << b);
+  }
+  return acc;
+}
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) nw: vec3<u32>) {
+  let x = gid.x + gid.y * nw.x * 64u;
+  let nj = g.ni / 16u;
+  if (x >= nj * g.W) { return; }
+  let j = x / g.W;
+  let fw = x % g.W;
+  let mo = 5u * wordmap[g.wm0 + fw];
+  let d = rows5[members[mo + 4u] + j * 16u];
+  if ((d.z >> 30u) != 2u || d.w != 1u) {                          // 非 X 类的项：逐行照搬 gather5
+    for (var k = 0u; k < 16u; k++) { dst[(j * 16u + k) * g.W + fw] = g5(j * 16u + k, fw); }
+    return;
+  }
+  let wl = fw - members[mo + 1u];
+  let n = members[mo + 3u];
+  let xr = (d.z & 0x3fffffffu) + wl * 9u;
+  let xbase = wtab[xr >> 1u][xr & 1u];
+  let e0 = gx.x + d.x - gx.y + xbase;
+  let nb = min(32u, n - min(n, wl * 32u));
+  var o: array<u32, 16>;
+  for (var k = 0u; k < 16u; k++) { o[k] = 0u; }
+  for (var b = 0u; b < nb; b++) {
+    let xi = xr + 1u + (b >> 2u);
+    let v = T[e0 + ((wtab[xi >> 1u][xi & 1u] >> ((b & 3u) * 8u)) & 0xffu)];
+    for (var k = 0u; k < 16u; k++) { o[k] = o[k] | (((v >> k) & 1u) << b); }
+  }
+  for (var k = 0u; k < 16u; k++) { dst[(j * 16u + k) * g.W + fw] = o[k]; }
+}
+`;
 export const PACK_WGSL = `// gatesim R3 pack（拍末采 D / 读输出）：来源位号来自静态表
 struct Q { count: u32, a: u32, b: u32, c: u32 }
 @group(0) @binding(0) var<uniform> q: Q;
@@ -129,7 +215,7 @@ async function tickItems(g, L, { chunk, readState, commitAfter, noRead = false, 
   if (L.bar) device.queue.writeBuffer(L.bar, 0, new Uint32Array(4));        // 持久内核屏障计数每拍清零
   if (L.stateStore) { const e0 = device.createCommandEncoder(); e0.copyBufferToBuffer(L.stateStore, 0, L.arena, m.off_st * 4, L.stateStore.size); device.queue.submit([e0.finish()]); }
   const commitDst = L.stateStore || L.arena, commitOff = L.stateStore ? 0 : m.off_st * 4;
-  const ck = early ? commitAfter : chunk;
+  const ck = early ? commitAfter : chunk, packed = new Set();   // packed：本拍已转置过的 X16 源表
   for (let s = 0; s < items.length; s += ck) {
     const enc = device.createCommandEncoder(), pass = enc.beginComputePass();
     for (let x = s; x < Math.min(items.length, s + ck); x++) {
@@ -141,7 +227,11 @@ async function tickItems(g, L, { chunk, readState, commitAfter, noRead = false, 
       const i = it.g, q = L.GR(i), t = L.tm[m.templates[q[0]]], uo = i * 256;
       if (L.readFused) { for (let k = 0; k < t.fpipes.length; k++) { pass.setPipeline(t.fpipes[k]); pass.setBindGroup(0, t.fbg, [uo]); pass.dispatchWorkgroups(Math.ceil(q[1] / t.WG)); } continue; }
       if (L.readFast && L.fastOK[i]) { for (let k = 0; k < t.rpipes.length; k++) { pass.setPipeline(t.rpipes[k]); pass.setBindGroup(0, t.rbg, [uo]); pass.dispatchWorkgroups(Math.ceil(q[1] / t.WG)); } continue; }
-      pass.setPipeline(L.gatherPipe); pass.setBindGroup(0, L.gatherBG, [uo]); gatherDispatch(pass, L, q);
+      if (L.x16 && L.x16g[i] !== 0xffffffff) {                     // X16 取数（与 gather5 结果逐字相同）
+        const sidx = L.x16g[i];
+        if (!packed.has(sidx)) { packed.add(sidx); const nt = L.x16nt[sidx]; pass.setPipeline(L.xpackPipe); pass.setBindGroup(0, L.xpackBG, [sidx * 256]); const nwg = Math.ceil(nt / 64), xw = Math.min(nwg, 65535); pass.dispatchWorkgroups(xw, Math.ceil(nwg / xw)); }
+        pass.setPipeline(L.gx16Pipe); pass.setBindGroup(0, L.gx16BG, [uo, L.x16u[i] * 256]); const nwg = Math.ceil((q[3] / 16) * q[1] / 64), xw = Math.min(nwg, 65535); pass.dispatchWorkgroups(xw, Math.ceil(nwg / xw));
+      } else { pass.setPipeline(L.gatherPipe); pass.setBindGroup(0, L.gatherBG, [uo]); gatherDispatch(pass, L, q); }
       for (let k = 0; k < t.pipes.length; k++) { pass.setPipeline(t.pipes[k]); pass.setBindGroup(0, t.bg, [uo, q[2] * 4]); pass.dispatchWorkgroups(Math.ceil(q[1] / t.WG)); }
     }
     const lastChunk = s + ck >= items.length;
