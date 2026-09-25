@@ -3,7 +3,7 @@
 // → 输出写回 arena 中与 R3 相同的地址 → storageBarrier + workgroupBarrier 后下一步。只改执行方式，不改门、连线与地址。
 import { decode, analyze, genWGSL } from './gen.mjs';
 
-export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32'];
+export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f'];
 
 // 某模板的内联体：输入 → gw(wm0, w, k)（按表搬运），输出 → arena[out + j*W + w]
 export function megaCase(bytes, nIn, nOut, opts) {

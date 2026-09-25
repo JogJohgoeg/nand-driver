@@ -48,6 +48,16 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     const maximum = e.op('umax', e.reduce('umax', mag), literal(0x3727c5ac, 32));
     const sx = e.op('div', literal(0x42fe0000, 32), maximum).low(32);
     const q = e.op('clip', e.op('f2i', e.op('mul', unbf(x), sx))).low(8);
+    // 定点累加（≡ fp32 逐组 add，cells/facc.py、prove_facc.py）：每行网格 u = 2^(lo−134)，lo = 行内组缩放与例外缩放的最小 bf16 指数域；
+    // accum 以整数 S 表示（S·u 即 fp32 值），facc / facce 逐步做 RNE24，最后 fix2f 转回 fp32。前提逐行检查：缩放皆为正规 bf16、指数跨度 ≤ 5、Σ|x| < 2^29。
+    const lo = new Int32Array(n).fill(999), bound = new Float64Array(n), ebits = b => (b >> 7) & 255;
+    const chk = (b, pos) => { const e = ebits(b); if (e === 0 || e === 255 || (pos && b >> 15)) throw new Error(`${key}: 缩放不是正规数 ${b}`); return e; };
+    for (let r = 0; r < n; r++) for (let g = 0; g < G; g++) lo[r] = Math.min(lo[r], chk(P.scale[r * G + g], true));
+    for (let t = 0; t < P.exc_index.length; t++) { const r = Math.floor(P.exc_index[t] / k); lo[r] = Math.min(lo[r], chk(P.exc_bits[t], false)); }
+    const shOf = (r, b) => { const s = ebits(b) - lo[r]; if (s > 5) throw new Error(`${key}: 行 ${r} 指数跨度 ${s} > 5`); return s; };
+    for (let r = 0; r < n; r++) for (let g = 0; g < G; g++) { const b = P.scale[r * G + g]; bound[r] += 4096 * (128 | (b & 127)) * 2 ** shOf(r, b); }
+    for (let t = 0; t < P.exc_index.length; t++) { const r = Math.floor(P.exc_index[t] / k), b = P.exc_bits[t]; bound[r] += 128 * (128 | (b & 127)) * 2 ** shOf(r, b); }
+    for (let r = 0; r < n; r++) if (bound[r] >= 2 ** 29) throw new Error(`${key}: 行 ${r} Σ|x| 上界 ${bound[r]} ≥ 2^29`);
     let accum = literal(zeros(n), 32);
     // escape 按 exceptions 数组原序、按组筛选
     const escByG = Array.from({ length: G }, () => []);
@@ -60,16 +70,17 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     const lut = e.op('tern4', lutQ, new Bits(lutC, NL));
     for (let g = 0; g < G; g++) {
       const sel = []; for (let j = 0; j < 8; j++) { const idx = new Int32Array(n); for (let r = 0; r < n; r++) { let c = 0; for (let i = 0; i < 4; i++) c += digit(code(r, g * 32 + j * 4 + i)) * P3[i]; idx[r] = (g * 8 + j) * 81 + c; } sel.push(lut.cols(idx)); }
-      const d16 = e.op('sum8', ...sel), d = join([d16, ...Array(16).fill(d16.bit(15))]);   // sum8 ≡ 7 次 iadd16（表项 |v| ≤ 512，按 11 位二补码求和）
-      const sc = new Float64Array(n); for (let r = 0; r < n; r++) sc[r] = P.scale[r * G + g] * 65536;
-      const product = e.op('scale_exact', d, literal(sc, 32));   // ≡ mul(i2f(d), s)：|d|≤4096、s 为 bf16 正规数时积恒精确（cells/verify_scale_exact.py 穷举 5.08 亿例）
-      accum = e.op('add', accum, product);
+      const d16 = e.op('sum8', ...sel);   // sum8 ≡ 7 次 iadd16（表项 |v| ≤ 512，按 11 位二补码求和），|d| ≤ 4096
+      const mm = new Float64Array(n), sh = new Float64Array(n); for (let r = 0; r < n; r++) { const b = P.scale[r * G + g]; mm[r] = b & 127; sh[r] = shOf(r, b); }
+      accum = e.op('facc', accum, d16, literal(mm, 7), literal(sh, 3));   // ≡ add(accum, scale_exact(d, s))
       for (const t of escByG[g]) {
-        e.set_scope(label + '.escape'); const idx = P.exc_index[t], row = Math.floor(idx / k), col = idx % k;
-        const v = e.op('mul', e.op('i2f', signed8(q.cols(col))), literal(P.exc_bits[t] * 65536, 32));
-        const val = e.op('add', accum.cols(row), v); accum = e.put(accum, [row], val); e.set_scope(label);
+        e.set_scope(label + '.escape'); const idx = P.exc_index[t], row = Math.floor(idx / k), col = idx % k, b = P.exc_bits[t];
+        const val = e.op('facce', accum.cols(row), q.cols(col), literal(b & 127, 7), literal(shOf(row, b), 3), literal(b >> 15, 1));   // ≡ add(accum, mul(i2f(q), exc))
+        accum = e.put(accum, [row], val); e.set_scope(label);
       }
     }
+    const kk = new Float64Array(n); for (let r = 0; r < n; r++) kk[r] = (lo[r] - 134) & 255;
+    accum = e.op('fix2f', accum, literal(kk, 8));
     const out = bf(e.op('div', accum, sx).low(32)); st.err1 = e.op('or', st.err1, nonfinite(out));
     return mark(label, out);
   };
