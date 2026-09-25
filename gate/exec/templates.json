@@ -253,7 +253,7 @@
   "opts": {
    "order": "dfs"
   },
-  "n_nand": 6013
+  "n_nand": 3829
  },
  {
   "name": "u-umax",
@@ -280,7 +280,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 39844
+  "n_nand": 22013
  },
  {
   "name": "u-rom256x16",
