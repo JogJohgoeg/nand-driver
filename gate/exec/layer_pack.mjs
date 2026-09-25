@@ -4,7 +4,7 @@
 // 准备包可存进 IndexedDB：热启动时跳过生成与建表，只读包、校验、上传。表的内容与 loadLayer 逐字节相同（同一套函数计算）。
 import { decode, analyze, genWGSL } from './gen.mjs';
 import { planSegments6, buildStepTable6, megaWGSL6, megaCase3, splitChains, buildChainTable, chainWGSL, MEGA_SET, SEGE_NIMAX } from './mega.mjs';
-import { GATHER5_WGSL, PACK_WGSL } from './layer_exec.mjs';
+import { GATHER5_WGSL, PACK_WGSL, XPACK_WGSL, GATHERX16_WGSL } from './layer_exec.mjs';
 const al4 = n => Math.ceil(n / 4) * 4;
 // 模板信息（与层无关，跨层缓存）
 export function templateInfo(cache, manifest, getBin, name, strict) {
@@ -95,6 +95,36 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
     } else { const o = ccPut(CC, cm2.subarray(off, off + n), ccAppends); if (o >= 2 ** 30) throw new Error('colmap offset too large'); ent = [rb, 0, o | (2 << 30), 0]; }
     rowCache.set(ck, ent); R5g.set(ent, 4 * rr); st5[ent[2] >>> 30]++;
   }
+  // X16（exec/layer_exec.mjs）：组内全部输入为 X 类、每 16 行一项、同项共用偏移记录（z 相同）、行基址按 stride 等距、各项同一源行基 rb0。
+  // 源按 (rb0, stride) 去重；nt = 该源被读到的最大车道 + 1。dst 与 gather5 逐字相同，只是读法不同。
+  const X16g = new Uint32Array(NG).fill(0xffffffff), X16u = new Uint32Array(NG), x16src = [], x16uni = [], srcKey = new Map();
+  for (const it of Lp.items) if (it.kind === 'grp') {
+    const gi = it.g, q = GR(gi), W = q[1], ni = q[3]; if (!ni || ni % 16) continue;
+    let ok = true, rb0 = null, stride = null, maxE = 0;
+    for (let fw = 0; ok && fw < W; fw++) {
+      const mo = 5 * wordmap[q[8] + fw], rbase = members5[mo + 4], wl = fw - members5[mo + 1], n = members5[mo + 3];
+      for (let j = 0; ok && j < ni / 16; j++) {
+        const e0 = 4 * (rbase + j * 16), x0 = R5g[e0], z0 = R5g[e0 + 2];
+        if (z0 >>> 30 !== 2 || R5g[e0 + 3] !== 1) continue;           // 非 X 类的项：内核逐行照搬 gather5，不设约束
+        if (rb0 === null) rb0 = x0; else if (x0 !== rb0) { ok = false; break; }
+        for (let k = 1; k < 16; k++) { const e = 4 * (rbase + j * 16 + k), st = R5g[e] - R5g[e - 4];
+          if (R5g[e + 2] !== z0 || R5g[e + 3] !== 1 || st <= 0) { ok = false; break; }
+          if (stride === null) stride = st; else if (st !== stride) { ok = false; break; } }
+        if (!ok) break;
+        const xr = (z0 & 0x3fffffff) + wl * 9, xbase = wtBuf[xr], nb = Math.min(32, Math.max(0, n - wl * 32));
+        for (let b = 0; b < nb; b++) { const e = xbase + ((wtBuf[xr + 1 + (b >> 2)] >>> ((b & 3) * 8)) & 255); if (e > maxE) maxE = e; }
+      }
+    }
+    if (!ok || rb0 === null || stride === null) continue;
+    const key = rb0 + ':' + stride; let si = srcKey.get(key);
+    if (si === undefined) { si = x16src.length; srcKey.set(key, si); x16src.push({ rb0, stride, nt: 0 }); }
+    x16src[si].nt = Math.max(x16src[si].nt, maxE + 1);
+    X16g[gi] = si; X16u[gi] = x16uni.length; x16uni.push(si);
+  }
+  let tAll = 0; for (const sr of x16src) { sr.tbase = tAll; tAll += sr.nt; }
+  const XPU = new Uint32Array(Math.max(1, x16src.length) * 64), GXU = new Uint32Array(Math.max(1, x16uni.length) * 64);
+  x16src.forEach((sr, i) => XPU.set([sr.rb0, sr.stride, sr.nt, sr.tbase], i * 64));
+  x16uni.forEach((si, i) => GXU.set([x16src[si].tbase, x16src[si].rb0, 0, 0], i * 64));
   // 组 uniform 与打包 uniform
   const UB = new Uint32Array(NG * 64);
   for (let i = 0; i < NG; i++) { const q = GR(i); UB.set([q[1], 0, 0xffffffff, 0xffffffff, q[3], q[8], q[2], members[5 * q[4] + 4]], i * 64); }
@@ -125,7 +155,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   return {
     v: 1, meta, strict: !!strict, calls: Uint32Array.from(calls), groups: Uint32Array.from(groups), members5, wordmap: Uint32Array.from(wordmap), dtab: Uint32Array.from(dtab), otab: Uint32Array.from(outtab),
     litpool: shared ? null : Uint32Array.from(ir.litpool), R5g, wtab: wtBuf.slice(0, Math.max(4, wtLen)), ccAppends, UB, PQ, MU, stab: stb.stab, sbase: stb.sbase, ctab: ct.ctab, CU,
-    items, megaCode, megaCodeE, MUE, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
+    items, megaCode, megaCodeE, MUE, x16: { g: X16g, u: X16u, nt: Uint32Array.from(x16src.map(sr => sr.nt)), XPU, GXU, tAll, nGroups: x16uni.length }, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
     stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
   };
 }
@@ -165,6 +195,17 @@ export async function uploadPack(g, P, { manifest, getBin, tmCache, SH = null, C
     if (!g.plCache.has(key)) g.plCache.set(key, device.createComputePipelineAsync({ layout: device.createPipelineLayout({ bindGroupLayouts: [layout] }), compute: { module: device.createShaderModule({ code }), entryPoint: 'main' } })); return g.plCache.get(key); };
   const gL5 = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r']), pL = bgl(['ud', 'r', 'r', 'w']), sL = bgl(['ud', 'r', 'r', 'w', 'wd', 'w']);
   L.gatherPipe = await pipe(GATHER5_WGSL, gL5); L.packPipe = await pipe(PACK_WGSL, pL);
+  if (P.x16 && P.x16.nGroups) {                                         // X16 取数（exec/layer_exec.mjs）
+    const xL = bgl(['ud', 'r', 'w']), gxL = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r', 'r', 'ud']);
+    L.xpackPipe = await pipe(XPACK_WGSL, xL); L.gx16Pipe = await pipe(GATHERX16_WGSL, gxL);
+    L.x16 = true; L.x16g = P.x16.g; L.x16u = P.x16.u; L.x16nt = P.x16.nt;
+    L.x16T = device.createBuffer({ size: al4(Math.max(16, P.x16.tAll * 4)), usage: U.STORAGE });
+    L.xpackU = mk(P.x16.XPU, U.UNIFORM | U.COPY_DST); L.gx16U = mk(P.x16.GXU, U.UNIFORM | U.COPY_DST);
+    L.xpackBG = device.createBindGroup({ layout: xL, entries: [{ binding: 0, resource: { buffer: L.xpackU, size: 16 } }, { binding: 1, resource: { buffer: L.arena } }, { binding: 2, resource: { buffer: L.x16T } }] });
+    L.gx16BG = device.createBindGroup({ layout: gxL, entries: [{ binding: 0, resource: { buffer: L.uni, size: 32 } }, { binding: 1, resource: { buffer: L.rows4 } }, { binding: 2, resource: { buffer: L.colmap } },
+      { binding: 3, resource: { buffer: L.members } }, { binding: 4, resource: { buffer: L.wordmap } }, { binding: 5, resource: { buffer: L.arena } }, { binding: 6, resource: { buffer: L.inp } },
+      { binding: 7, resource: { buffer: L.wtab } }, { binding: 8, resource: { buffer: L.x16T } }, { binding: 9, resource: { buffer: L.gx16U, size: 16 } }] });
+  }
   L.gatherBG = device.createBindGroup({ layout: gL5, entries: [{ binding: 0, resource: { buffer: L.uni, size: 32 } }, { binding: 1, resource: { buffer: L.rows4 } }, { binding: 2, resource: { buffer: L.colmap } },
     { binding: 3, resource: { buffer: L.members } }, { binding: 4, resource: { buffer: L.wordmap } }, { binding: 5, resource: { buffer: L.arena } }, { binding: 6, resource: { buffer: L.inp } }, { binding: 7, resource: { buffer: L.wtab } }] });
   L.packD = device.createBindGroup({ layout: pL, entries: [{ binding: 0, resource: { buffer: L.puni, size: 16 } }, { binding: 1, resource: { buffer: L.dtab } }, { binding: 2, resource: { buffer: L.arena } }, { binding: 3, resource: { buffer: L.newState } }] });
