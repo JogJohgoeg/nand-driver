@@ -57,7 +57,7 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
       const cbRows = []; for (let j = 0; j < 32; j++) for (let b = 0; b < 2; b++) { const a = new Uint8Array(n); for (let r = 0; r < n; r++) a[r] = (code(r, g * 32 + j) >> b) & 1; cbRows.push(new Row('L', n, { a })); }
       const d = e.op('ternary32', group.broadcast(n), new Bits(cbRows, n));
       const sc = new Float64Array(n); for (let r = 0; r < n; r++) sc[r] = P.scale[r * G + g] * 65536;
-      const product = e.op('mul', e.op('i2f', d), literal(sc, 32));
+      const product = e.op('scale_exact', d, literal(sc, 32));   // ≡ mul(i2f(d), s)：|d|≤4096、s 为 bf16 正规数时积恒精确（cells/verify_scale_exact.py 穷举 5.08 亿例）
       accum = e.op('add', accum, product);
       for (const t of escByG[g]) {
         e.set_scope(label + '.escape'); const idx = P.exc_index[t], row = Math.floor(idx / k), col = idx % k;

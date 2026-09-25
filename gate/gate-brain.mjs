@@ -18,7 +18,9 @@ import { Tokenizer, renderChat, adaptTools } from './tok/tokenizer.mjs';
 
 export const DEFAULT_WEIGHTS_BASE = 'https://nand.aihashrate.stream/gate-weights/';
 const here = p => new URL(p, import.meta.url).href;
-const CODE_FILES = ['gen_ir/bits.mjs', 'gen_ir/engine.mjs', 'gen_ir/layer.mjs', 'gen_ir/model.mjs', 'gen_ir/gen_core.mjs', 'exec/layer_pack.mjs', 'exec/gen.mjs', 'exec/mega.mjs', 'exec/layer_exec.mjs', 'core/stream_gen.mjs', 'exec/tool_exec.mjs'];
+const CODE_FILES = ['gen_ir/bits.mjs', 'gen_ir/engine.mjs', 'gen_ir/layer.mjs', 'gen_ir/model.mjs', 'gen_ir/gen_core.mjs', 'exec/layer_pack.mjs', 'exec/gen.mjs', 'exec/mega.mjs', 'exec/layer_exec.mjs', 'core/stream_gen.mjs', 'exec/tool_exec.mjs', 'cells/scale_exact.json'];
+// 附加单元：不在权重包里、随代码发布的单元（逐位等价替换，见 cells/*.json 的 semantics / replaces）。加载后作为一个虚拟权重块挂进内存中的清单。
+const EXTRA_CELLS = ['scale_exact'];
 // m149（AMD Radeon 8060S，Chromium）实测：C128 浏览器全部进程 5.4–5.9 GB、显存 4.3 GB；C512 7.3–7.5 GB、显存 6.3 GB
 const NEED = { bindingMiB: 512, bufferMiB: 512, storagePerStage: 8, workgroupStorage: 16384, cacheGB: { 128: 2.5, 512: 4.5 } };
 export const MEMORY_ESTIMATE = { 128: { ramGB: 6, vramGB: 4.3, cacheGB: 2.1 }, 512: { ramGB: 7.6, vramGB: 6.4, cacheGB: 3.8 } };
@@ -83,6 +85,11 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
     catch (e) { throw fail('weights_fetch', `取不到权重清单（${weightsBase}manifest.json）：${e.message || e}。若权重与页面不同源，托管端需返回 Access-Control-Allow-Origin。`); }
     const man = JSON.parse(new TextDecoder().decode(manBytes)), controller = CTL[Cn];
     if (!man.cells.includes(controller) || !man.cells.includes('k6_glue3')) throw fail('weights_mismatch', '权重包版本与本代码不符（缺少所需模板）。');
+    const extra = await Promise.all(EXTRA_CELLS.map(async c => {
+      const meta = await (await fetch(here(`cells/${c}.json`))).json(), bin = new Uint8Array(await (await fetch(here(`cells/${c}.bin`))).arrayBuffer());
+      if (bin.length !== meta.n_nand * 7 || (await hex(bin)) !== meta.sha256) throw fail('weights_mismatch', `附加单元 ${c} 的网表校验失败。`);
+      return { c, meta, bin };
+    }));
     const codeTexts = await Promise.all(CODE_FILES.map(async f => await (await fetch(here(f))).text()));
     const verKey = await sourceKey(manBytes, codeTexts), key = verKey + '-' + controller + '-tool';
     const useCache = cache && PC.cacheOK;
@@ -100,14 +107,29 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
       } catch (e) { emit({ type: 'warning', code: 'cache_failed', message: `读取本机缓存出错（${e.name || e}），改为重新生成。` }); store = null; }
     }
     if (!F0) {
-      const chunks = []; let got = 0;
-      for (let i = 0; i < man.chunks.length; i++) {
-        const c = man.chunks[i]; let b;
-        try { const r = await fetch(weightsBase + c.file); if (!r.ok) throw new Error('HTTP ' + r.status); b = new Uint8Array(await r.arrayBuffer()); }
-        catch (e) { throw fail('weights_fetch', `下载权重块 ${c.file} 失败：${e.message || e}`); }
-        if ((await hex(b)) !== c.sha256) throw fail('chunk_sha', `权重块 ${c.file} 的 SHA-256 与清单不符，已拒绝生成（文件损坏或被替换）。`);
-        chunks.push(b); got += b.length; emit({ type: 'progress', stage: 'download', done: got, total: man.total_bytes, chunks: i + 1, of: man.chunks.length });
-      }
+      // 预压缩（可选）：manifest.gz.json 列出 chunk-*.bin.gz；浏览器原生 gzip 解压后仍按 manifest.json 的原始 SHA-256 校验，
+      // 所以与直接下载 .bin 逐字节相同。没有旁挂清单或浏览器不支持 DecompressionStream 时退回 .bin。4 路并发下载。
+      let gz = null;
+      if (typeof DecompressionStream !== 'undefined') try { const r = await fetch(weightsBase + 'manifest.gz.json'); if (r.ok) { const j = await r.json(); if (j.format === 'gatesim-weights-gz-v1' && j.chunks.length === man.chunks.length) gz = j; } } catch { }
+      const total = gz ? gz.total_bytes : man.total_bytes, chunks = new Array(man.chunks.length); let got = 0, done = 0, next = 0;
+      const one = async i => {
+        const c = man.chunks[i], z = gz && gz.chunks[i]; let b;
+        try {
+          const r = await fetch(weightsBase + (z ? z.file : c.file)); if (!r.ok) throw new Error('HTTP ' + r.status);
+          b = new Uint8Array(await r.arrayBuffer());   // 若托管端已按 Content-Encoding 解过压，这里拿到的就是原始字节；只在见到 gzip 魔数时自己解
+          if (z && b[0] === 0x1f && b[1] === 0x8b) b = new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+        } catch (e) { throw fail('weights_fetch', `下载权重块 ${z ? z.file : c.file} 失败：${e.message || e}`); }
+        if (b.length !== c.bytes || (await hex(b)) !== c.sha256) throw fail('chunk_sha', `权重块 ${c.file} 的 SHA-256 与清单不符，已拒绝生成（文件损坏或被替换）。`);
+        chunks[i] = b; got += z ? z.bytes : b.length; done++; emit({ type: 'progress', stage: 'download', done: got, total, chunks: done, of: man.chunks.length });
+      };
+      await Promise.all(Array.from({ length: 4 }, async () => { while (next < man.chunks.length) await one(next++); }));
+      { const enc = new TextEncoder(), base = man.chunks.length * man.chunk_max_bytes, parts = []; let off = 0;
+        for (const { c, meta, bin } of extra) {
+          const j = enc.encode(JSON.stringify(meta)); man.tensors.push({ name: `cell.${c}.json`, bytes: j.length, offset: base + off }); parts.push(j); off += j.length;
+          man.tensors.push({ name: `cell.${c}.bin`, bytes: bin.length, offset: base + off }); parts.push(bin); off += bin.length; man.cells.push(c);
+        }
+        const blob = new Uint8Array(off); let p = 0; for (const x of parts) { blob.set(x, p); p += x.length; }
+        man.chunks.push({ file: null, bytes: off }); chunks.push(blob); }
       const Wv = weightsView(man, packageReader(man, chunks)), cellBins = new Map(man.cells.map(c => [c, Wv.bytes(`cell.${c}.bin`)]));
       tokBytes = Wv.bytes('tokenizer.json').slice();
       const discard = new DiscardSink(here('core/cache_worker.mjs')); const cw0 = store ? cacheWriter(store, cellBins) : null; let broken = null;

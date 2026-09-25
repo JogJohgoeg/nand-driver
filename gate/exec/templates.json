@@ -449,5 +449,14 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 107
+ },
+ {
+  "name": "u-scale_exact",
+  "unit": "scale_exact",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1780
  }
 ]

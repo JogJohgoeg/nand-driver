@@ -1,0 +1,1 @@
+{"inputs": {"a": 32, "b": 32}, "n_in": 64, "n_out": 32, "n_nand": 1780, "n_latch": 0, "semantics": "fp32 RN(float(int32 a) * fp32 b); exact on domain |a|<=4096, b bf16 normal with product exponent in normal range", "replaces": "mul(i2f(a), b)", "sha256": "de7c13f3ee541160cb586fb492f69578d1dec284349decabc6535523282cef25"}

@@ -53,10 +53,10 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 <p class="lead" data-t="lead">整个 BitCPM4-1B 语言模型被编译成 NAND / LATCH 门电路，在你的显卡上用 WebGPU 一位一位地执行。生成的每个 token 都与参照实现逐位一致，没有调用任何浮点推理库。</p>
 
 <div class="facts">
-  <div><b>1.44 × 10¹²</b><span data-t="f_nand">NAND / token</span></div>
+  <div><b>1.05 × 10¹²</b><span data-t="f_nand">NAND / token</span></div>
   <div><b>1.09 × 10⁸</b><span data-t="f_latch">LATCH（状态位）</span></div>
   <div><b id="fC">C128</b><span data-t="f_cap">容量：提示 + 回答 token</span></div>
-  <div><b>≈ 750 MB</b><span data-t="f_dl">首次下载（之后走本机缓存）</span></div>
+  <div><b>≈ 580 MB</b><span data-t="f_dl">首次下载（之后走本机缓存）</span></div>
 </div>
 
 <section>
@@ -87,7 +87,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 
 <section class="foot">
   <h2 data-t="s_how">它是怎么跑的</h2>
-  <p data-t="h1">单元库（整数投影、int8 头、RMSNorm、softmax 等）是预综合好的固定网表；页面按权重在浏览器里现场生成「选哪些单元、怎么连线」，得到约 1.44 万亿个 NAND，然后在 GPU 上按位切片执行。浮点运算按固定的 IEEE 舍入与求和顺序做成门电路，所以结果可复现、可逐位对拍。</p>
+  <p data-t="h1">单元库（整数投影、int8 头、RMSNorm、softmax 等）是预综合好的固定网表；页面按权重在浏览器里现场生成「选哪些单元、怎么连线」，得到约 1.05 万亿个 NAND，然后在 GPU 上按位切片执行。浮点运算按固定的 IEEE 舍入与求和顺序做成门电路，所以结果可复现、可逐位对拍。</p>
   <p data-t="h2">文字与 token 编号之间的转换由原版 tokenizer 在页面里完成，这是宿主 I/O，不参与计算。给了工具定义时，工具调用由门内的 K6 摘要机生成，页面只展示，不执行。</p>
   <p data-t="h3">每个 token 在普通显卡上约 1 秒。C128 需要约 6 GB 内存；长回答模式 C512 约 7.6 GB。</p>
   <p><a href="./PROVENANCE.json">PROVENANCE.json</a> · <a href="./LICENSES/NOTICE">NOTICE</a> · <a href="./LICENSES/Apache-2.0.txt">Apache-2.0</a> · <a href="./LICENSES/BitCPM4-1B-README.md" data-t="model_card">模型说明（OpenBMB BitCPM4-1B）</a> · <a href="./demo.html" data-t="plain">精简版页面</a></p>
@@ -112,7 +112,7 @@ const EN = {
   s_ask: 'Ask', tools_sum: 'Tool definitions (optional, OpenAI function-format JSON array)', tool_ex: 'Insert example tool',
   go: 'Generate', stop: 'Stop', long: 'Retry in long mode (C512)',
   s_how: 'How it runs',
-  h1: 'The cell library (integer projections, int8 head, RMSNorm, softmax, …) is a fixed pre-synthesized netlist. The page generates, in your browser, which cells to use and how to wire them from the weights — about 1.44 trillion NANDs — and runs them bit-sliced on the GPU. Floating point is built as gates with fixed IEEE rounding and summation order, so results are reproducible and checked bit for bit.',
+  h1: 'The cell library (integer projections, int8 head, RMSNorm, softmax, …) is a fixed pre-synthesized netlist. The page generates, in your browser, which cells to use and how to wire them from the weights — about 1.05 trillion NANDs — and runs them bit-sliced on the GPU. Floating point is built as gates with fixed IEEE rounding and summation order, so results are reproducible and checked bit for bit.',
   h2: 'Text ↔ token-id conversion is done by the original tokenizer in the page; that is host I/O and computes nothing. When tools are given, the tool call is produced by the in-circuit K6 summarizer; the page only shows it and never executes it.',
   h3: 'About 1 s per token on an ordinary GPU. C128 needs about 6 GB of memory; long mode C512 about 7.6 GB.',
   model_card: 'Model card (OpenBMB BitCPM4-1B)', plain: 'Plain page',
@@ -125,7 +125,7 @@ const STR = {
     stop: { eos: '模型结束', max_tokens: '达到 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' },
     done: (r, n) => `结束：${STR.zh.stop[r.stop] || r.stop}；首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}；本次约 ${n} 次 NAND 求值`,
     toolCall: '工具调用（门内 K6 生成，未执行）：', badJson: '工具定义不是合法 JSON：', promptIn: '读入提示',
-    startNote: e => `将下载约 750 MB 权重并在本机生成电路，需要几分钟；峰值内存约 ${e.ramGB} GB。`, blocked: '这台设备不满足硬性条件，未开始下载。',
+    startNote: e => `将下载约 580 MB 权重并在本机生成电路，需要几分钟；峰值内存约 ${e.ramGB} GB。`, blocked: '这台设备不满足硬性条件，未开始下载。',
     confirmLong: '浏览器不报告内存大小。长回答模式需要约 7.6 GB 内存与 6.4 GB 显存，确定这台设备足够吗？',
     chips: ['What is the capital of France?', '用一句话介绍你自己。', 'Write a haiku about logic gates.', '1+1 等于几？'] },
   en: { empty: 'The reply appears here one token at a time.', stage: { cache: 'Checking local cache', download: 'Downloading & verifying weights', generate: 'Building circuit', upload: 'Uploading from cache', prompt: 'Reading prompt' },
@@ -133,7 +133,7 @@ const STR = {
     stop: { eos: 'model finished', max_tokens: 'token limit reached', capacity: 'capacity full', stopped: 'stopped', tool_truncated: 'tool call truncated', tool_aborted: 'tool call aborted' },
     done: (r, n) => `Done: ${STR.en.stop[r.stop] || r.stop}; first token ${(r.firstTokenMs / 1e3).toFixed(1)} s, ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'} per token; ≈ ${n} NAND evaluations`,
     toolCall: 'Tool call (produced by in-circuit K6, not executed):', badJson: 'Tool definitions are not valid JSON: ', promptIn: 'Reading prompt',
-    startNote: e => `Downloads about 750 MB of weights and builds the circuit locally — a few minutes; peak memory about ${e.ramGB} GB.`, blocked: 'This device does not meet the hard requirements; nothing was downloaded.',
+    startNote: e => `Downloads about 580 MB of weights and builds the circuit locally — a few minutes; peak memory about ${e.ramGB} GB.`, blocked: 'This device does not meet the hard requirements; nothing was downloaded.',
     confirmLong: 'Your browser does not report its memory size. Long mode needs about 7.6 GB RAM and 6.4 GB VRAM. Is this device big enough?',
     chips: ['What is the capital of France?', 'Introduce yourself in one sentence.', 'Write a haiku about logic gates.', 'What is 1+1?'] },
 };
@@ -179,7 +179,7 @@ $('toolEx').onclick = () => { $('tools').value = JSON.stringify(EXAMPLE_TOOLS, n
 applyLang();
 
 // ---------- brain ----------
-const NAND_PER_TOKEN = 1440324304923;
+const NAND_PER_TOKEN = 1050159169563;   // C128 每拍：原 1,440,324,304,923，scale_exact 替换后每层少 7,503,175,680
 let brain = null, ctrl = null;
 
 function onEvent(e) {
