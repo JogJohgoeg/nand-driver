@@ -2,6 +2,7 @@ import { progressText, readSelection } from './brain-source.js';
 import { DEFAULT_BRAIN_URL } from './brain-config.js';
 import './bench-lab.js';
 import { benchConfirm } from './bench-dialog.js';
+import './bench-gate.js';
 const $ = id => document.getElementById(id);
 $('bench-load-slot').append($('load'));
 const more=$('bench-secondary');
@@ -36,9 +37,10 @@ function inspector(open) {
   $('panel-toggle').setAttribute('aria-expanded',String(open));
 }
 function view(name) {
-  $('chat-view').hidden=name!=='chat';$('tool-view').hidden=name!=='tools';
-  for(const kind of ['chat','tools'])$('tab-'+kind).setAttribute('aria-pressed',String(name===kind));
+  $('chat-view').hidden=name!=='chat';$('tool-view').hidden=name!=='tools';$('gate-view').hidden=name!=='gate';
+  for(const kind of ['chat','tools','gate'])$('tab-'+kind).setAttribute('aria-pressed',String(name===kind));
   if(name==='chat')window.dispatchEvent(new Event('resize'));
+  window.dispatchEvent(new CustomEvent('bench-view',{detail:name}));
 }
 $('sidebar-toggle').onclick=()=>sidebar(!document.body.classList.contains('sidebar-open'));
 $('sidebar-close').onclick=$('sidebar-backdrop').onclick=()=>sidebar(false);
@@ -50,7 +52,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.class
 $('panel-toggle').onclick=()=>inspector($('bench-inspector').hidden);
 $('inspector-close').onclick=()=>inspector(false);
 if(matchMedia('(max-width: 760px)').matches)inspector(false);
-for(const name of ['chat','tools'])$('tab-'+name).onclick=()=>view(name);
+for(const name of ['chat','tools','gate'])$('tab-'+name).onclick=()=>view(name);
+document.querySelector('[data-gate-brain]').onclick=()=>{view('gate');if(matchMedia('(max-width: 760px)').matches)sidebar(false);};
 $('side-session').onclick=()=>{view('chat');if(matchMedia('(max-width: 760px)').matches)sidebar(false);};
 const brainDialog=$('brain-dialog');
 function openBrains(){
@@ -146,6 +149,14 @@ export function benchTerminalTheme() {
 }
 function theme() {colors();window.browserPi?.terminal.refreshTheme();window.dispatchEvent(new Event('bench-theme'));}
 window.addEventListener('bench-ready',theme);
+// 兜底：语音输入、部分手机键盘等不经输入法组合、直接插入的非 ASCII 文字，xterm 不会转给编辑器（中文会整句丢失）。
+window.addEventListener('bench-ready',()=>{
+  const ta=document.querySelector('.xterm-helper-textarea'); if(!ta)return;
+  ta.addEventListener('input',e=>{
+    if(e.isComposing||e.inputType!=='insertText'||!e.data||/^[\x20-\x7e]*$/.test(e.data))return;
+    const t=window.browserPi?.terminal;if(t&&!t.text.endsWith(e.data))t.setDraft(t.text+e.data);   // 同步插入，保持与后续按键的顺序
+  });
+});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',theme);
 let ready = false;
 
@@ -154,7 +165,23 @@ function errorText(message) {
     return '大脑数据没能完整读取。请检查网络后重试，或在「换大脑」选择下载好的本地文件。';
   return '这次操作没有完成。可按下面的原因修正，或在「换大脑」恢复默认。';
 }
+let restoredNoted = false;
+// 页面刷新后 Pi 会恢复上次的对话；若上次在工具运行途中关掉，恢复出的工具块会一直显示 Running…，这里说明一句。
+function noteRestored(messages) {
+  if (restoredNoted || !messages?.length) return; restoredNoted = true;
+  const calls = new Set(), done = new Set();
+  for (const m of messages) {
+    if (m.role === 'assistant') for (const c of m.content || []) if (c.type === 'toolCall') calls.add(c.id);
+    if (m.role === 'toolResult') done.add(m.toolCallId);
+  }
+  const stale = [...calls].some(id => !done.has(id));
+  const msg = stale ? '这是恢复的上次对话：其中有工具在运行途中被中断，显示的 Running… 不会再结束。点「新对话」可以清空。'
+    : '这是恢复的上次对话。点「新对话」可以清空。';
+  const show = () => window.browserPi?.terminal?.notice ? import('./bench-i18n.js').then(m => m.t(msg), () => msg).then(t => window.browserPi.terminal.notice(t)) : setTimeout(show, 200);
+  show();
+}
 export function onBenchEvent(e) {
+  if (e.type === 'initialized') noteRestored(e.messages);
   if (e.type === 'brain_tick') window.dispatchEvent(new CustomEvent('brain-tick',{detail:e}));
   if (e.type === 'busy' && e.action === 'load') {
     $('status-brain').textContent='◌ 正在加载大脑';
