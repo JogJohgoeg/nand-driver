@@ -113,7 +113,8 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   for (const v of dtab) consumed[v >>> 5] = 1; for (const v of outtab) consumed[v >>> 5] = 1;
   const ct = buildChainTable(Lp, consumed);
   let chainCode = null; const CU = new Uint32Array(Math.max(1, chains.length) * 64);
-  if (meta.templates.includes('add')) { const e = tm.add.e; chainCode = chainWGSL(megaCase3(getBin('add'), e.n_in, e.n_out, e.opts || {}, !!strict).body); }
+  const CT = meta.templates.includes('add_nn') ? 'add_nn' : meta.templates.includes('add') ? 'add' : null;   // 与 splitChains 同一规则
+  if (CT) { const e = tm[CT].e; chainCode = chainWGSL(megaCase3(getBin(CT), e.n_in, e.n_out, e.opts || {}, !!strict).body); }
   chains.forEach((it, j) => { it.u = j * 256; CU.set([it.base, it.g1 - it.g0, 0, 0xffffffff, 0, 0, 0, 0], j * 64); });
   const items = Lp.items.map(it => ({ ...it }));
   return {

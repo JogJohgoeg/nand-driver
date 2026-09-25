@@ -130,8 +130,8 @@ const PAIRS = [
   ['准备分词器与映射', 'Preparing tokenizer and mapping'], ['准备大脑', 'Preparing brain'], ['累计读取 ', 'Read '], ['本文件 ', 'this file '],
   ['总量未知', 'total unknown'], ['（读取量含压缩数据，不是解压后的网表大小）', ' (counts compressed bytes, not the unpacked netlist size)'],
   // Gate brain view
-  ['整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,903 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。',
-    'The whole 1B-parameter BitCPM4-1B is compiled into about 290 billion NAND evaluations per token (plus 109 million LATCH state bits), executed bit by bit on your GPU with WebGPU; every token matches the reference implementation bit for bit.'],
+  ['整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,829 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。',
+    'The whole 1B-parameter BitCPM4-1B is compiled into about 283 billion NAND evaluations per token (plus 109 million LATCH state bits), executed bit by bit on your GPU with WebGPU; every token matches the reference implementation bit for bit.'],
   ['它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 1 秒，笔记本集成显卡约 2.5 秒。提示加回答最多 128 个 token，装不下的上文会自动丢掉。',
     'It answers questions directly, which the default brain cannot. The cost is speed, and it is not wired to the Pi agent: first download is about 580 MB and building the circuit locally takes 3–5 minutes; about 1 s per token on a discrete GPU, about 2.5 s on a laptop integrated GPU. Prompt plus reply is at most 128 tokens; earlier turns that do not fit are dropped automatically.'],
   ['门电路大脑 · BitCPM4-1B', 'Gate brain · BitCPM4-1B'], ['BitCPM4-1B · 显卡逐位', 'BitCPM4-1B · bit by bit on GPU'], ['门电路大脑', 'Gate brain'],

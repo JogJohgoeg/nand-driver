@@ -557,5 +557,23 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 1141
+ },
+ {
+  "name": "u-add_nn",
+  "unit": "add_nn",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1677
+ },
+ {
+  "name": "u-bmax",
+  "unit": "bmax",
+  "n_in": 32,
+  "n_out": 16,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 417
  }
 ]

@@ -3,7 +3,7 @@
 // → 输出写回 arena 中与 R3 相同的地址 → storageBarrier + workgroupBarrier 后下一步。只改执行方式，不改门、连线与地址。
 import { decode, analyze, genWGSL } from './gen.mjs';
 
-export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f'];
+export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f', 'add_nn', 'bmax'];
 
 // 某模板的内联体：输入 → gw(wm0, w, k)（按表搬运），输出 → arena[out + j*W + w]
 export function megaCase(bytes, nIn, nOut, opts) {
@@ -538,7 +538,8 @@ ${st.join('\n')}
 // 链：段内连续的组，模板都是 add、W=1、单成员 n=1，且第 2 步起前 32 个输入恰为上一步的 32 个输出（位 0）。
 export function splitChains(L, minLen = 8) {
   const T = L.meta.templates, out = [];
-  const isAdd1 = gi => { const q = L.GR(gi); return T[q[0]] === 'add' && q[1] === 1 && q[5] === 1 && L._forms[gi] && L._forms[gi].length === 64 && L._forms[gi].every(x => x.single); };
+  const CT = T.includes('add_nn') ? 'add_nn' : 'add';   // 链内核只按一种加法模板生成（layer_pack.mjs 同一规则）
+  const isAdd1 = gi => { const q = L.GR(gi); return T[q[0]] === CT && q[1] === 1 && q[5] === 1 && L._forms[gi] && L._forms[gi].length === 64 && L._forms[gi].every(x => x.single); };
   const carries = gi => { const p = L.GR(gi - 1), f = L._forms[gi]; for (let k = 0; k < 32; k++) if (f[k].gi !== (p[2] + k) * 32) return false; return true; };
   for (const it of L.items) {
     if (it.kind !== 'seg') { out.push(it); continue; }
