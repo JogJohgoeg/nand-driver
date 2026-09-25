@@ -39,6 +39,7 @@
     <button type="button" data-brain-preset="default" data-search="默认大脑"><span class="status-dot" id="dot-default" aria-hidden="true"></span><span>默认大脑<small>语言网表 · 链下</small></span><time class="row-time" title="本次加载时间"></time></button>
     <button type="button" data-brain-preset="recall" data-search="记忆电路 recall"><span class="status-dot" id="dot-recall" aria-hidden="true"></span><span>记忆电路<small>144 元件 · 6 LATCH</small></span><time class="row-time" title="本次选择时间"></time></button>
     <button type="button" data-brain-preset="toolcall" data-search="工具摘要 tool"><span class="status-dot" id="dot-toolcall" aria-hidden="true"></span><span>工具摘要<small>10,141 元件 · 558 LATCH</small></span><time class="row-time" title="本次选择时间"></time></button>
+    <button type="button" data-gate-brain data-search="门电路大脑 BitCPM4 gate"><span class="status-dot" aria-hidden="true"></span><span>门电路大脑<small>BitCPM4-1B · 显卡逐位</small></span><time class="row-time"></time></button>
     <button id="side-current" type="button" data-search="当前网表 自定义" hidden><span class="status-dot" aria-hidden="true"></span><span>当前网表<small id="side-source">本地或 URL</small></span><time class="row-time" title="本次选择时间"></time></button>
   </div>
   <div class="tree-heading">会话</div>
@@ -46,7 +47,7 @@
 </aside>
 <section id="bench-center" aria-label="工作台主区">
   <nav id="bench-tabs" aria-label="打开的视图"><button id="sidebar-toggle" type="button" aria-label="打开导航" aria-controls="bench-sidebar" aria-expanded="false">☰</button>
-    <button id="tab-chat" type="button" aria-pressed="true">对话</button><button id="tab-tools" type="button" aria-pressed="false">工具</button>
+    <button id="tab-chat" type="button" aria-pressed="true">对话</button><button id="tab-tools" type="button" aria-pressed="false">工具</button><button id="tab-gate" type="button" aria-pressed="false">门电路大脑</button>
     <span class="tab-spacer"></span><button id="tab-new" type="button" aria-label="新对话">＋</button>
     <button id="tab-command" type="button">Shell</button><button id="lang-toggle" type="button" aria-label="切换为英文" aria-pressed="false" data-no-i18n><span data-lang="zh" class="on">中</span><span data-lang="en">EN</span></button><button id="panel-toggle" type="button" aria-controls="bench-inspector" aria-expanded="true" aria-label="切换信息面板">▣</button>
   </nav>
@@ -56,13 +57,28 @@
   <p class="bench-lead">一颗 4,850,702 个晶体管的门级语言大脑（4,850,059 NAND + 643 LATCH），在你的浏览器里逐门运行。</p>
   <p class="bench-sub">晶体管池规划发行在 X Layer 上的 TapeOut 处理器（待部署）；你也可以换上自己设计的网表。</p>
   <div class="bench-actions"><span id="bench-load-slot"></span><button id="bench-bit-run" class="primary" hidden>运行位电路</button></div>
-  <p id="bench-limit">自由问答仍不可靠，工具参数也可能不准确。</p>
+  <p id="bench-limit">默认大脑只会调用 nand_step 工具，不会自由问答，工具参数也可能不准确。想直接问问题，换左侧的「门电路大脑 · BitCPM4-1B」。</p>
   <div id="bench-try"><p>试试这些（默认大脑能跑通的工具调用）：</p>
     <div class="try-chips"><button type="button" data-example>Please run the NAND navigation tool.</button><button type="button" data-example>Use nand_step from (0,0) to (0,0).</button><button type="button" data-example>Hello. Use nand_step to move from (5,5) to (0,0).</button></div>
     <p class="try-hint">点一下填入输入框，再按 Enter 发送。</p></div>
 </section>
   </div>
   <div id="tool-view" hidden><h2>工具与工作区</h2><p>示例只填入真实终端，不自动执行。</p></div>
+  <section id="gate-view" hidden aria-labelledby="gate-title">
+    <h1 id="gate-title">门电路大脑 · BitCPM4-1B</h1>
+    <p class="bench-lead">整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,903 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。</p>
+    <p class="bench-sub">它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 1 秒，笔记本集成显卡约 2.5 秒。提示加回答最多 128 个 token，装不下的上文会自动丢掉。</p>
+    <ul id="gate-checks" aria-label="设备预检"></ul>
+    <div class="bench-actions"><button id="gate-load" class="primary" type="button">下载并生成电路</button></div>
+    <p id="gate-stage" role="status"></p><progress id="gate-progress" hidden aria-label="门电路大脑准备进度"></progress>
+    <p id="gate-note" class="field-note"></p>
+    <div id="gate-log" aria-live="polite"></div>
+    <form id="gate-form" hidden>
+      <div id="gate-chips" class="try-chips"><button type="button">用一句话介绍你自己。</button><button type="button">1+1 等于几？</button><button type="button">What is a NAND gate?</button></div>
+      <textarea id="gate-input" rows="3" placeholder="问点什么，例如：用一句话介绍你自己。" aria-label="给门电路大脑的消息"></textarea>
+      <div class="gate-row"><p id="gate-run" class="field-note" role="status"></p><span class="tab-spacer"></span><button id="gate-new" type="button">新对话</button><button id="gate-stop" type="button" disabled>停止</button><button id="gate-send" class="primary" type="submit" disabled>发送 ↑</button></div>
+    </form>
+  </section>
 </section>
 <aside id="bench-inspector" aria-label="网表及链上信息">
   <div class="inspector-heading"><strong>当前网表</strong><button id="inspector-close" type="button" aria-label="关闭信息面板">×</button></div>

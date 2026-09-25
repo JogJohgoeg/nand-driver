@@ -16,7 +16,7 @@ header,.badge,#column-resizer,.empty-mascot,.terminal-paws,.setup-cat,.setup-paw
 button,.button{min-height:40px;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:4px;padding:8px 14px;box-shadow:none}
 button:hover,.button:hover{background:var(--hover)}
 button:disabled{color:var(--muted);background:transparent;opacity:1}
-#load:not(:disabled),#bench-bit-run:not(:disabled),#send:not(:disabled){background:var(--accent);color:var(--background);border-color:transparent}
+#load:not(:disabled),#bench-bit-run:not(:disabled),#send:not(:disabled),#gate-load:not(:disabled),#gate-send:not(:disabled){background:var(--accent);color:var(--background);border-color:transparent}
 #load.is-loaded{border-color:transparent;padding-left:0;background:transparent;color:var(--muted)}
 body[data-brain=ready] #bench-intro,body[data-brain=bits] #bench-intro{min-height:0;padding-block:40px 24px}
 main{display:block;height:auto;min-height:0;padding-bottom:36px}
@@ -112,8 +112,8 @@ html,body{min-height:100%;}
 #bench-tabs button[aria-pressed="true"]{color:var(--text);border-radius:0;border-bottom:2px solid var(--accent)}
 #bench-tabs button:hover{background:var(--control)}
 .tab-spacer{flex:1}
-#chat-view,#tool-view{min-width:0;min-height:0;overflow:auto;padding:0 clamp(16px,3vw,38px) 30px}
-#chat-view[hidden],#tool-view[hidden]{display:none!important}
+#chat-view,#tool-view,#gate-view{min-width:0;min-height:0;overflow:auto;padding:0 clamp(16px,3vw,38px) 30px}
+#chat-view[hidden],#tool-view[hidden],#gate-view[hidden]{display:none!important}
 #bench-intro,#chat-view main{width:100%;max-width:none;margin:0}
 #bench-intro{min-height:0;padding:20px 0 14px;display:block}
 #bench-intro h1{font-size:22px}
@@ -147,7 +147,7 @@ body[data-brain=ready] #bench-intro,body[data-brain=bits] #bench-intro{min-heigh
   #bench-statusbar{grid-area:2/1;gap:9px;padding:0 9px;font-size:10px}
   #bench-tabs{min-height:50px;padding:0 6px}
   #bench-tabs button{padding:6px 9px}
-  #chat-view,#tool-view{padding:0 18px 24px}
+  #chat-view,#tool-view,#gate-view{padding:0 18px 24px}
   #bench-intro h1{font-size:19px}
   #chat-view .conversation{height:min(54svh,500px);min-height:300px}
   #bench-limit{white-space:normal}
@@ -177,3 +177,29 @@ dialog::backdrop{background:rgb(0 0 0 / .45)}
 #brain-dialog #brain-open{display:none}
 #brain-dialog #brain-picker{border-top:0;padding-top:0}
 #brain-dialog p{color:var(--muted);overflow-wrap:anywhere}
+/* 全屏应用：外层不滚动（读屏元素 #activity 为 absolute 且无 top，会把文档撑高 148px，状态栏下露出空白） */
+html,body{height:100%;overflow:hidden}
+.sr-only{top:0;left:0}
+/* 「加载大脑」按钮由脚本移入，先占位，避免示例按钮下移、首次点击落空 */
+.bench-actions{min-height:40px}
+/* 门电路大脑视图 */
+#gate-view h1{margin:20px 0 8px}
+#gate-checks{list-style:none;padding:0;margin:16px 0;display:grid;gap:4px;font-size:12px}
+#gate-checks li{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:8px}
+#gate-checks li small{grid-column:2;color:var(--muted);overflow-wrap:anywhere}
+#gate-checks .bad{color:var(--accent)}
+#gate-progress{width:100%;max-width:520px}
+#gate-stage{margin:12px 0 4px}
+#gate-log{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+.gate-msg{scroll-margin-bottom:230px;max-width:min(720px,100%);padding:10px 14px;border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
+.gate-msg.user{align-self:flex-end;background:var(--selected)}
+.gate-msg.assistant{align-self:flex-start}
+.gate-wait{color:var(--muted)}
+.gate-info{scroll-margin-bottom:230px;margin:-4px 0 4px;color:var(--muted);font-size:12px}
+#gate-form{position:sticky;bottom:0;background:var(--background);padding-top:8px}
+#gate-form[hidden]{display:none}
+#gate-form .try-chips{margin-bottom:8px}
+#gate-run{margin:0}
+#gate-input{box-sizing:border-box;width:100%;min-height:72px;resize:vertical;background:transparent;color:var(--text);border:1px solid var(--line);padding:10px;font:inherit}
+.gate-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.gate-row .tab-spacer{flex:1}
