@@ -60,7 +60,7 @@ export function traceTail(e, { normW, qw, sw }) {  // normW: Uint16Array(1536)�
   // Tail.forward
   e.set_scope('final-norm'); e.set_scope('final_norm');   // Tail.forward 先 set_scope('final-norm')，随即 OriginalLayer.norm 内 set_scope(label)
   const xf = unbf(x), squared = e.op('mul', xf, xf); let s = literal(0, 32);
-  for (let j = 0; j < x.n; j++) s = e.op('add', s, squared.cols(j));
+  for (let j = 0; j < x.n; j++) s = e.op('add_nn', s, squared.cols(j));   // ≡ add：链上两输入符号位恒 0（cells/add_nn.json）
   const f32 = new Float32Array(1), u32 = new Uint32Array(f32.buffer); f32[0] = 1536;
   const v = e.op('add', e.op('div', s, literal(u32[0], 32)).low(32), literal(0x3727c5ac, 32));
   const u = e.op('div', literal(0x3f800000, 32), e.op('sqrt', v).low(32)).low(32);
