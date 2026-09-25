@@ -1,0 +1,1 @@
+{"inputs": {"a": 16, "b": 16}, "n_in": 32, "n_out": 16, "n_nand": 171, "n_latch": 0, "semantics": "(a + b) mod 2^16；由 iadd32 派生（高 16 位接 0，裁剪到低 16 位输出）", "sha256": "c1daff07ab4d289c690daabb5e8bcd0e8e1ecc2d821a49bf887e26b90c0b07bd", "verify": {"n_nand": 171, "exhaustive_cases": 4294967296, "mismatches": 0}}

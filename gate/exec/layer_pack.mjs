@@ -60,7 +60,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   const rowMap = new Int32Array(NR).fill(-1), members5 = Uint32Array.from(members); let nNew = 0;
   for (let gi = 0; gi < NG; gi++) { if (!grpSet.has(gi)) continue; const q = GR(gi);
     for (let m = q[4]; m < q[4] + q[5]; m++) { const r0 = members[5 * m + 4]; if (rowMap[r0] < 0) for (let k = 0; k < q[3]; k++) rowMap[r0 + k] = nNew++; members5[5 * m + 4] = rowMap[r0]; } }
-  const R5g = new Uint32Array(Math.max(4, nNew * 4)), ccAppends = [], rowCache = new Map(), st5 = [0, 0, 0, 0];
+  const R5g = new Uint32Array(Math.max(4, nNew * 4)), ccAppends = [], rowCache = new Map(), st5 = [0, 0, 0, 0], xCache = new Map(); let st5x = 0;
   // 逐字映射表第 0 项固定为 (0, 0)：非逐字映射的行读它作占位
   let wtBuf = new Uint32Array(1 << 16), wtLen = 2; const wtPush = a => { if (wtLen + a.length > wtBuf.length) { let c = wtBuf.length; while (c < wtLen + a.length) c *= 2; const nb = new Uint32Array(c); nb.set(wtBuf.subarray(0, wtLen)); wtBuf = nb; } wtBuf.set(a, wtLen); wtLen += a.length; };
   for (let r = 0; r < NR; r++) {
@@ -75,7 +75,21 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
       for (let c = c0 + 1; ok && c < c1; c++) if (rb + cm2[off + c] !== g0 + (c - c0)) ok = false;
       if (ok) { words[2 * w] = g0 / 32; words[2 * w + 1] = 0xffffffff; al++; } else { words[2 * w] = 0; words[2 * w + 1] = 0; } }
     let ent;
-    if (al * 2 >= nw) {
+    // 类别 X（逐字字节偏移）：每个 32 车道字内列号跨度 < 256 时，存 [字基址, 32 个字节偏移] 共 9 个 u32 于 wtab，不进全局列映射。
+    // 记录与行基址无关（按 off:n 去重，同一选择的各位行共用）；GPU 地址 = 行基址 + 字基址 + 字节。
+    const xk = off + ':' + n; let xrec = xCache.get(xk);
+    if (xrec === undefined && al * 2 < nw) {
+      let ok = true; const rec = new Uint32Array(nw * 9);
+      for (let w = 0; ok && w < nw; w++) { const c0 = w * 32, c1 = Math.min(n, c0 + 32); let lo = 0xffffffff, hi = 0;
+        for (let c = c0; c < c1; c++) { const v = cm2[off + c]; if (v < lo) lo = v; if (v > hi) hi = v; }
+        if (hi - lo > 255) { ok = false; break; }
+        rec[9 * w] = lo; for (let c = c0; c < c1; c++) rec[9 * w + 1 + ((c - c0) >> 2)] |= (cm2[off + c] - lo) << (8 * ((c - c0) & 3)); }
+      if (ok) { if (wtLen & 1) wtPush(new Uint32Array(1)); xrec = wtLen; if (xrec >= 2 ** 30) throw new Error('wtab too large'); wtPush(rec); if (wtLen & 1) wtPush(new Uint32Array(1)); }
+      else xrec = null;
+      xCache.set(xk, xrec);
+    }
+    if (xrec !== undefined && xrec !== null) { ent = [rb, 0, xrec | (2 << 30), 1]; st5x++; }
+    else if (al * 2 >= nw) {
       for (let w = 0; w < nw; w++) if (!words[2 * w + 1]) { const c0 = w * 32, c1 = Math.min(n, c0 + 32), seg = new Uint32Array(c1 - c0); for (let c = c0; c < c1; c++) seg[c - c0] = rb + cm2[off + c]; words[2 * w] = ccPut(CC, seg, ccAppends); }   // 一般字：绝对位号进全局列映射，掩码 0
       const base = wtLen / 2; if (base >= 2 ** 30) throw new Error('wtab too large'); wtPush(words); ent = [0, 0, base | (3 << 30), 0];
     } else { const o = ccPut(CC, cm2.subarray(off, off + n), ccAppends); if (o >= 2 ** 30) throw new Error('colmap offset too large'); ent = [rb, 0, o | (2 << 30), 0]; }
@@ -106,7 +120,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
     v: 1, meta, strict: !!strict, calls: Uint32Array.from(calls), groups: Uint32Array.from(groups), members5, wordmap: Uint32Array.from(wordmap), dtab: Uint32Array.from(dtab), otab: Uint32Array.from(outtab),
     litpool: shared ? null : Uint32Array.from(ir.litpool), R5g, wtab: wtBuf.slice(0, Math.max(4, wtLen)), ccAppends, UB, PQ, MU, stab: stb.stab, sbase: stb.sbase, ctab: ct.ctab, CU,
     items, megaCode, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
-    stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2], wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
+    stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
   };
 }
 // GPU 一侧。SH：{ arena: { buffer, words } } 或 null；CCgpu：{ buf }（全局紧凑列映射 GPU 缓冲）

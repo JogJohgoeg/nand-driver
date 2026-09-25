@@ -1,0 +1,1 @@
+{"inputs": {"q": 32, "code": 8}, "n_in": 40, "n_out": 16, "n_nand": 921, "n_latch": 0, "semantics": "Σ q_i·map[code_i] 的低 16 位（二补码），map = [0, +1, −1, 0]；由 ternary32 派生（q4..31、code4..31 接 0，裁剪到低 16 位）", "sha256": "c94b54415677df6c495cabc185e01b10653738143ed3e5725542b01123aad2a4", "verify": {"n_nand": 921, "cases": 10240000, "all_256_codes_x_2401_extreme": true, "mismatches": 0}}
