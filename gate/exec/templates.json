@@ -530,5 +530,32 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 4529
+ },
+ {
+  "name": "u-facc",
+  "unit": "facc",
+  "n_in": 58,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1889
+ },
+ {
+  "name": "u-facce",
+  "unit": "facce",
+  "n_in": 51,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1540
+ },
+ {
+  "name": "u-fix2f",
+  "unit": "fix2f",
+  "n_in": 40,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 1141
  }
 ]
