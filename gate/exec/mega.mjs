@@ -3,7 +3,7 @@
 // → 输出写回 arena 中与 R3 相同的地址 → storageBarrier + workgroupBarrier 后下一步。只改执行方式，不改门、连线与地址。
 import { decode, analyze, genWGSL } from './gen.mjs';
 
-export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f', 'add_nn', 'bmax', 'addsel', 'facce4'];
+export const MEGA_SET = ['add', 'mux32', 'mux16', 'gt', 'umax', 'or', 'and', 'not', 'nf', 'eq8', 'bf16', 'i2f', 'f2i', 'clip', 'sub', 'mul', 'control', 'div', 'sqrt', 'ternary32', 'scale_exact', 'mul_bb', 'ternary32pm', 'tern4', 'sum8', 'mul8', 'sum32', 'facc', 'facce', 'fix2f', 'add_nn', 'bmax', 'addsel', 'facce4', 'escmul', 'racc4'];
 
 // 某模板的内联体：输入 → gw(wm0, w, k)（按表搬运），输出 → arena[out + j*W + w]
 export function megaCase(bytes, nIn, nOut, opts) {
@@ -417,7 +417,7 @@ function inputForms6(L, gi, rowsA, cm, members, wordmap) {
   }
   return f;
 }
-export const SEGE_TPL = ['facce4'], SEGE_NIMAX = 108;
+export const SEGE_TPL = ['facce4', 'racc4'], SEGE_NIMAX = 128;   // racc8（224 输入）实测更慢：装载抵消了步数减半
 export function planSegments6(L, wmax, rowsA, cm, members, wordmap, set = MEGA_SET) {
   const T = L.meta.templates, items = [], forms = new Array(L.NG);
   for (let i = 0; i < L.NG; i++) {

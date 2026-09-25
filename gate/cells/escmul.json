@@ -1,0 +1,1 @@
+{"inputs": {"q": 8, "m": 7, "sh": 3, "neg": 1}, "n_in": 19, "n_out": 24, "n_nand": 960, "n_latch": 0, "semantics": "X24 = (±q)·(128+m)·2^sh", "sha256": "568745dc867413ba237860e60e6fde7b4ee804e040b5f663ca2169a996c85511", "verify": {"cec": "cells/racc.py：racc4 ∘ 4×escmul 与 facce4（4×facce）ABC cec 等价（结构哈希后相同）；facc.py 同一组构造函数", "padding": "X = 0 补位：round24 对可表示的 S 不变（facc 证明 C 段）"}}
