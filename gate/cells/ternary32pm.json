@@ -1,0 +1,1 @@
+{"inputs": {"q": 256, "nq": 256, "p": 32, "m": 32}, "n_in": 576, "n_out": 32, "n_nand": 3378, "n_latch": 0, "semantics": "int32 Σ q_j·(p_j − m_j)，前提 nq = ~q、p_j·m_j = 0；替代 ternary32（码 1→p、码 2→m）", "sha256": "a553b6579e4d357b864581bf4ff8b5340797aa9efdb302f4d4109a50460a3166"}
