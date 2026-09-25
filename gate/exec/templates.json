@@ -6,7 +6,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 4150
+  "n_nand": 2521
  },
  {
   "name": "u-and",
@@ -74,7 +74,7 @@
    "R": 96,
    "Kmin": 512
   },
-  "n_nand": 113075
+  "n_nand": 106436
  },
  {
   "name": "u-exp_select",
@@ -483,5 +483,16 @@
    "Kmin": 512
   },
   "n_nand": 105322
+ },
+ {
+  "name": "u-ternary32pm",
+  "unit": "ternary32pm",
+  "n_in": 576,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs"
+  },
+  "n_nand": 3378
  }
 ]

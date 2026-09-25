@@ -52,10 +52,12 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     // escape 按 exceptions 数组原序、按组筛选
     const escByG = Array.from({ length: G }, () => []);
     for (let t = 0; t < P.exc_index.length; t++) escByG[Math.floor((P.exc_index[t] % k) / 32)].push(t);
+    // ternary32pm（≡ ternary32）：~q 每个激活只算一次；权重码直接写成 +1 / −1 两组常数位（码 1 → p，码 2 → m，码 0 / 3 → 皆 0）
+    const nq = join([...Array(8).keys()].map(b => e.op('not', q.bit(b))));
     for (let g = 0; g < G; g++) {
-      const group = join([...Array(32).keys()].map(j => q.cols(g * 32 + j)));
-      const cbRows = []; for (let j = 0; j < 32; j++) for (let b = 0; b < 2; b++) { const a = new Uint8Array(n); for (let r = 0; r < n; r++) a[r] = (code(r, g * 32 + j) >> b) & 1; cbRows.push(new Row('L', n, { a })); }
-      const d = e.op('ternary32', group.broadcast(n), new Bits(cbRows, n));
+      const group = join([...Array(32).keys()].map(j => q.cols(g * 32 + j))), ngroup = join([...Array(32).keys()].map(j => nq.cols(g * 32 + j)));
+      const pm = []; for (const want of [1, 2]) for (let j = 0; j < 32; j++) { const a = new Uint8Array(n); for (let r = 0; r < n; r++) a[r] = code(r, g * 32 + j) === want ? 1 : 0; pm.push(new Row('L', n, { a })); }
+      const d = e.op('ternary32pm', group.broadcast(n), ngroup.broadcast(n), new Bits(pm, n));
       const sc = new Float64Array(n); for (let r = 0; r < n; r++) sc[r] = P.scale[r * G + g] * 65536;
       const product = e.op('scale_exact', d, literal(sc, 32));   // ≡ mul(i2f(d), s)：|d|≤4096、s 为 bf16 正规数时积恒精确（cells/verify_scale_exact.py 穷举 5.08 亿例）
       accum = e.op('add', accum, product);
@@ -130,7 +132,7 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   // 输出表：og.T.reshape(-1)（第 i 个输出值的第 b 位）
   const rIds = e.ids(result), outIds = new Float64Array(16 * 1536);
   for (let i = 0; i < 1536; i++) for (let b = 0; b < 16; b++) outIds[i * 16 + b] = rIds[b][i];
-  if (e.counts['ternary32'] !== 749568) throw new Error('ternary32 ' + e.counts['ternary32']);
+  if (e.counts['ternary32pm'] !== 749568) throw new Error('ternary32pm ' + e.counts['ternary32pm']);
   return { outIds, dIds, NIN: ninput, NST: nstate };
 }
 export { PROJ };
