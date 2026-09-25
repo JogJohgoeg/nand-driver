@@ -18,9 +18,9 @@ import { Tokenizer, renderChat, adaptTools } from './tok/tokenizer.mjs';
 
 export const DEFAULT_WEIGHTS_BASE = 'https://nand.aihashrate.stream/gate-weights/';
 const here = p => new URL(p, import.meta.url).href;
-const CODE_FILES = ['gen_ir/bits.mjs', 'gen_ir/engine.mjs', 'gen_ir/layer.mjs', 'gen_ir/model.mjs', 'gen_ir/gen_core.mjs', 'exec/layer_pack.mjs', 'exec/gen.mjs', 'exec/mega.mjs', 'exec/layer_exec.mjs', 'core/stream_gen.mjs', 'exec/tool_exec.mjs', 'cells/scale_exact.json'];
+const CODE_FILES = ['gen_ir/bits.mjs', 'gen_ir/engine.mjs', 'gen_ir/layer.mjs', 'gen_ir/model.mjs', 'gen_ir/gen_core.mjs', 'exec/layer_pack.mjs', 'exec/gen.mjs', 'exec/mega.mjs', 'exec/layer_exec.mjs', 'core/stream_gen.mjs', 'exec/tool_exec.mjs', 'cells/scale_exact.json', 'cells/ternary32.json', 'cells/dot32_s8.json'];
 // 附加单元：不在权重包里、随代码发布的单元（逐位等价替换，见 cells/*.json 的 semantics / replaces）。加载后作为一个虚拟权重块挂进内存中的清单。
-const EXTRA_CELLS = ['scale_exact'];
+const EXTRA_CELLS = ['scale_exact', 'ternary32', 'dot32_s8'];   // 与权重包同名者为等价再设计的替换版（按名覆盖）
 // m149（AMD Radeon 8060S，Chromium）实测：C128 浏览器全部进程 5.4–5.9 GB、显存 4.3 GB；C512 7.3–7.5 GB、显存 6.3 GB
 const NEED = { bindingMiB: 512, bufferMiB: 512, storagePerStage: 8, workgroupStorage: 16384, cacheGB: { 128: 2.5, 512: 4.5 } };
 export const MEMORY_ESTIMATE = { 128: { ramGB: 6, vramGB: 4.3, cacheGB: 2.1 }, 512: { ramGB: 7.6, vramGB: 6.4, cacheGB: 3.8 } };
@@ -126,7 +126,7 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
       { const enc = new TextEncoder(), base = man.chunks.length * man.chunk_max_bytes, parts = []; let off = 0;
         for (const { c, meta, bin } of extra) {
           const j = enc.encode(JSON.stringify(meta)); man.tensors.push({ name: `cell.${c}.json`, bytes: j.length, offset: base + off }); parts.push(j); off += j.length;
-          man.tensors.push({ name: `cell.${c}.bin`, bytes: bin.length, offset: base + off }); parts.push(bin); off += bin.length; man.cells.push(c);
+          man.tensors.push({ name: `cell.${c}.bin`, bytes: bin.length, offset: base + off }); parts.push(bin); off += bin.length; if (!man.cells.includes(c)) man.cells.push(c);
         }
         const blob = new Uint8Array(off); let p = 0; for (const x of parts) { blob.set(x, p); p += x.length; }
         man.chunks.push({ file: null, bytes: off }); chunks.push(blob); }
