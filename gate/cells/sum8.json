@@ -1,0 +1,1 @@
+{"inputs": {"x": 128}, "n_in": 128, "n_out": 16, "n_nand": 719, "n_latch": 0, "semantics": "Σ_{j<8} sext11(x_j) mod 2^16（x_j 取低 11 位按二补码；调用处 tern4 输出 |v| ≤ 512，高位为符号扩展）", "sha256": "c2bfa9c6d4fa3f3e4ff0f5a171b2eea2fa4fc6af884ddfc12931a8a7bce3b086", "verify": {"algebraic_proof": "backward rewriting mod 2^16：Σ2^k o_k ≡ Σ_j sext11(x_j)，88 项逐项相同"}}

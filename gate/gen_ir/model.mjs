@@ -1,6 +1,6 @@
 // gatesim R7 生成器：R61 model.py 的 Model.control / Model.embed / Tail.forward 逐行移植（只读参照；追踪不求值）。
 // 输入只有权重编码：embedding（BF16 位型）、final norm、int8 head 与行 scale；控制器模板名为参数（产品上限 256 的控制器交付后只换参数）。
-import { Row, Bits, literal, join, unbf, range } from './bits.mjs';
+import { Row, Bits, literal, join, unbf, range, map } from './bits.mjs';
 const genRow = a => new Row('G', a.length, { a });
 const vm = (e, b) => { const I = e.ids(b), n = b.n, h = b.h, o = new Float64Array(n * h); for (let i = 0; i < n; i++) for (let r = 0; r < h; r++) o[i * h + r] = I[r][i]; return o; };
 // constant_rows(A[out, red], width)：第 (r·width + b) 行、第 o 列 = A[o][r] 的第 b 位
@@ -74,13 +74,18 @@ export function traceTail(e, { normW, qw, sw }) {  // normW: Uint16Array(1536)�
   const q = mark('head_codes', e.op('quant_s8', z, sx));
   let errors = e.op('or', e.reduce('or', errs), T.nonfinite(z));
   const chunks = [];
+  // 查表法（≡ dot32_s8 逐 32 项整数和，整数加法精确）：每个激活 i 先算与全部 256 个 int8 码之积（车道 i*256 + 码，mul8），
+  // 各行按常数权重码取积（逐字字节偏移收集），每 32 个用 sum32 求和，再 iadd32 累加 48 组。
+  e.set_scope('head-lut');
+  const NLh = 1536 * 256, lutA = q.cols(map(range(0, NLh), l => Math.floor(l / 256)));
+  const lutW = []; for (let b = 0; b < 8; b++) { const a = new Uint8Array(NLh); for (let l = 0; l < NLh; l++) a[l] = ((l & 255) >> b) & 1; lutW.push(new Row('L', NLh, { a })); }
+  const prod = e.op('mul8', lutA, new Bits(lutW, NLh));
   for (let begin = 0; begin < 73448; begin += 256) {
     const end = Math.min(73448, begin + 256), n = end - begin;
     e.set_scope('head-dot'); let total = literal(new Float64Array(n), 32);
     for (let g = 0; g < 48; g++) {
-      const qa = join([...Array(32).keys()].map(j => q.cols(g * 32 + j))).broadcast(n);
-      const coeff = constantRows((o, r) => qw[(begin + o) * 1536 + g * 32 + r] & 255, n, 32, 8);
-      total = e.op('iadd32', total, e.op('dot32_s8', qa, coeff));
+      const sel = []; for (let j = 0; j < 32; j++) { const i = g * 32 + j, idx = new Int32Array(n); for (let o = 0; o < n; o++) idx[o] = i * 256 + (qw[(begin + o) * 1536 + i] & 255); sel.push(prod.cols(idx)); }
+      total = e.op('iadd32', total, e.op('sum32', ...sel));
     }
     e.set_scope('head-rescale');
     const result = e.op('head_scale', total, literal(Float64Array.from(sw.subarray(begin, end)), 32), sx);

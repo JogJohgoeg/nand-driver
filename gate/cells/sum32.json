@@ -1,0 +1,1 @@
+{"inputs": {"x": 512}, "n_in": 512, "n_out": 32, "n_nand": 4529, "n_latch": 0, "semantics": "Σ_{j<32} sext16(x_j) mod 2^32", "sha256": "36d83c4aabcd412d6e05e35b99b7cc6ad45fae347f8a0c62c22a9bc01f20c613", "verify": "代数证明 mod 2^32：Σ2^k o_k ≡ Σ sext16(x_j)（512 项）"}
