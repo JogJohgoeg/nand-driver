@@ -47,6 +47,9 @@ const packLit = (r) => {                               // 常量行 → packbits
   for (let i = 0; i < n; i++) if (r.litAt(i)) w[i >> 5] |= 1 << (i & 31);
   return w;
 };
+const range16 = o => Array.from({ length: 16 }, (_, i) => o + i);
+const SPECIAL = [['mul', 'mul_bb', [...range16(0), ...range16(32)]], ['silu', 'silu_b', range16(0)]];
+const zeroLit = r => r.t === 'L' && (r.a.length === 1 ? r.a[0] === 0 : r.a.every(v => v === 0));
 export class Engine {
   constructor(meta, { mode, base = 0, region }) {
     this.meta = meta; this.mode = mode; this.base = base; this.region = region;    // region = [IN, ST, CB]
@@ -106,9 +109,11 @@ export class Engine {
   recDefer(K, J, C) { if (this.mode === 'unit') { this.X.push([K, J, C]); return ['X', this.X.length - 1]; } return ['D', K, J, C]; }
   op(name, ...args) {
     const n = Math.max(...args.map(x => x.n)); args = args.map(x => x.broadcast(n));
-    const m = this.m(name), ni = m.n_in, have = args.reduce((s, x) => s + x.h, 0);
+    let m = this.m(name); const ni = m.n_in, have = args.reduce((s, x) => s + x.h, 0);
     if (have < ni) args.push(literal(0, ni - have).broadcast(n));
     const rows = args.flatMap(x => x.rows); if (rows.length !== ni) throw new Error(`${name}: ${rows.length} != ${ni}`);
+    // 专用单元改写：规则所列输入位在全部车道上都是字面常数 0 时，换成由原单元派生的等价专用单元（接口不变，见 cells/*.json 的 derived_from / zero_inputs）
+    for (const [base, alt, zs] of SPECIAL) if (name === base && this.meta[alt] && zs.every(i => zeroLit(rows[i]))) { name = alt; m = this.meta[alt]; break; }
     const k = this.calls, row0 = this.rows.length, srcs = new Set();
     for (const r of rows) { const rec = this.classify(r, srcs); if (rec[0] === 'L' && this.mode === 'unit') rec[1] = this.lp.intern(rec[1]); this.rows.push(rec); }
     let lev = 1; for (const s of srcs) lev = Math.max(lev, this.lvl[s] + 1);

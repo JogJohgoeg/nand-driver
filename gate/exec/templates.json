@@ -6,7 +6,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 4750
+  "n_nand": 4150
  },
  {
   "name": "u-and",
@@ -24,7 +24,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 261
+  "n_nand": 189
  },
  {
   "name": "u-clip",
@@ -33,7 +33,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 198
+  "n_nand": 157
  },
  {
   "name": "u-control",
@@ -51,7 +51,7 @@
   "n_out": 33,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 15501
+  "n_nand": 14450
  },
  {
   "name": "u-eq8",
@@ -74,7 +74,7 @@
    "R": 96,
    "Kmin": 512
   },
-  "n_nand": 167967
+  "n_nand": 113075
  },
  {
   "name": "u-exp_select",
@@ -92,7 +92,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 1766
+  "n_nand": 1031
  },
  {
   "name": "u-gt",
@@ -101,7 +101,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 1628
+  "n_nand": 1288
  },
  {
   "name": "u-i2f",
@@ -110,7 +110,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 1715
+  "n_nand": 1011
  },
  {
   "name": "u-mul",
@@ -121,7 +121,7 @@
   "opts": {
    "order": "dfs"
   },
-  "n_nand": 10075
+  "n_nand": 9543
  },
  {
   "name": "u-mux16",
@@ -130,7 +130,7 @@
   "n_out": 16,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 81
+  "n_nand": 49
  },
  {
   "name": "u-mux32",
@@ -139,7 +139,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 161
+  "n_nand": 97
  },
  {
   "name": "u-nf",
@@ -201,7 +201,7 @@
    "R": 96,
    "Kmin": 512
   },
-  "n_nand": 24462
+  "n_nand": 14258
  },
  {
   "name": "u-silu",
@@ -233,7 +233,7 @@
   "n_out": 33,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 8893
+  "n_nand": 5548
  },
  {
   "name": "u-sub",
@@ -262,7 +262,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 509
+  "n_nand": 303
  },
  {
   "name": "u-iadd32",
@@ -271,7 +271,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 348
+  "n_nand": 286
  },
  {
   "name": "u-dot32_s8",
@@ -298,7 +298,7 @@
   "n_out": 33,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 866
+  "n_nand": 373
  },
  {
   "name": "u-model_control",
@@ -316,7 +316,7 @@
   "n_out": 17,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 33014
+  "n_nand": 29062
  },
  {
   "name": "u-quant_s8",
@@ -325,7 +325,7 @@
   "n_out": 8,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 12055
+  "n_nand": 3677
  },
  {
   "name": "u-model_control_cap256_C128",
@@ -457,6 +457,31 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 1780
+  "n_nand": 1509
+ },
+ {
+  "name": "u-mul_bb",
+  "unit": "mul_bb",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs"
+  },
+  "n_nand": 2271
+ },
+ {
+  "name": "u-silu_b",
+  "unit": "silu_b",
+  "n_in": 32,
+  "n_out": 17,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "cut": "live",
+   "R": 96,
+   "Kmin": 512
+  },
+  "n_nand": 105322
  }
 ]
