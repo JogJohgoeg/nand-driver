@@ -17,7 +17,11 @@ const big = n => n >= 1e12 ? L(`${(n / 1e12).toFixed(0)} 万亿`, `${(n / 1e12).
 const WHAT_EN = { 'WebGPU 适配器': 'WebGPU adapter', '单个存储缓冲绑定上限': 'Max storage buffer binding', '单个缓冲大小上限': 'Max buffer size', '每阶段存储缓冲数': 'Storage buffers per stage', '工作组共享内存': 'Workgroup shared memory', '内存': 'Memory', '本机缓存空间': 'Local cache space' };
 const detailEn = d => d.replace(/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)').replace(/ 字节/g, ' bytes').replace(/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）。$/, 'Browser reports ≥ $1 GB (browsers report at most 8).').replace(/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB）$/, 'About $1 GB free (cache needs about $2 GB)');
 
-let mod = null, brain = null, ctrl = null, started = false, stageT0 = 0, stageName = '';
+let mod = null, brain = null, ctrl = null, started = false, stageT0 = 0, stageName = '', lastRows = null;
+// 动态文字登记：切换语言时按新语言重新生成（否则页面的片段翻译器会把中文拆开乱译，如「本机有之前Generation的电路缓存」）
+const live = new Map();
+const setLive = (id, fn) => { live.set(id, fn); $(id).textContent = fn(); };
+window.addEventListener('bench-lang', () => { for (const [id, fn] of live) $(id).textContent = fn(); if (lastRows) renderChecks(lastRows); if (visible()) setStatus(); });
 const history = [];   // {role, content}
 const queued = [];    // 准备期间先发的问题：{ text, out, info }，就绪后依次回答
 
@@ -31,6 +35,7 @@ async function gateModule() {
 }
 
 function renderChecks(rows) {
+  lastRows = rows;
   // 默认折叠成一句结论；术语细节点开才看（新手只需要知道能不能跑）
   const bad = rows.filter(r => r.ok !== true && r.ok !== 'warn').length, warn = rows.filter(r => r.ok === 'warn').length;
   $('gate-checks-sum').textContent = bad ? L(`设备检查：${bad} 项不满足（点开看原因）`, `Device check: ${bad} requirement(s) not met (open for details)`)
@@ -55,12 +60,11 @@ function onEvent(e) {
   if (e.type === 'precheck') renderChecks(e.rows);
   else if (e.type === 'progress' && e.stage !== 'prompt') {
     if (e.stage !== stageName) { stageName = e.stage; stageT0 = performance.now(); }
-    const detail = e.total ? (e.stage === 'download' ? `${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB` : e.stage === 'generate' ? L(`第 ${e.done} / ${e.total} 层`, `layer ${e.done} / ${e.total}`) : `${e.done} / ${e.total}`) : '';
+    const detailF = () => e.total ? (e.stage === 'download' ? `${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB` : e.stage === 'generate' ? L(`第 ${e.done} / ${e.total} 层`, `layer ${e.done} / ${e.total}`) : `${e.done} / ${e.total}`) : '';
     // 预计剩余：按本阶段已用时间与进度线性估计；下载阶段另加搭电路的大致时间
-    let eta = ''; const el = performance.now() - stageT0;
-    if (e.total && e.done > 0 && el > 3000) { const rest = el * (e.total - e.done) / e.done;
-      eta = e.stage === 'download' ? L(`，还要约 ${dur(rest)}，之后在本机搭电路约 2–4 分钟`, `, about ${dur(rest)} left, then 2–4 min to build`) : L(`，还要约 ${dur(rest)}`, `, about ${dur(rest)} left`); }
-    $('gate-stage').textContent = (STAGE[e.stage] ? L(...STAGE[e.stage]) : L('准备中', 'Preparing')) + (detail ? L('：', ': ') + detail : '') + eta;
+    const el = performance.now() - stageT0, rest = e.total && e.done > 0 && el > 3000 ? el * (e.total - e.done) / e.done : null;
+    const etaF = () => rest === null ? '' : e.stage === 'download' ? L(`，还要约 ${dur(rest)}，之后在本机搭电路约 2–4 分钟`, `, about ${dur(rest)} left, then 2–4 min to build`) : L(`，还要约 ${dur(rest)}`, `, about ${dur(rest)} left`);
+    setLive('gate-stage', () => { const d = detailF(); return (STAGE[e.stage] ? L(...STAGE[e.stage]) : L('准备中', 'Preparing')) + (d ? L('：', ': ') + d : '') + etaF(); });
     const bar = $('gate-progress'); bar.hidden = false;
     if (e.total) { bar.max = e.total; bar.value = e.done; } else bar.removeAttribute('value');
     setStatus();
@@ -70,33 +74,33 @@ function onEvent(e) {
     $('gate-run').textContent = txt; const w = document.querySelector('#gate-log .gate-msg.assistant:last-of-type .gate-wait'); if (w) w.textContent = txt; }
   else if (e.type === 'ready') {
     $('gate-progress').hidden = true;
-    $('gate-stage').textContent = e.warm ? L(`准备好了（用了本机缓存，${dur(e.prepMs)}）。`, `Ready (loaded the saved circuit in ${dur(e.prepMs)}).`)
-      : L(`准备好了（用时 ${dur(e.prepMs)}）。下次在这台电脑上打开会快很多（约十几秒）。`, `Ready (took ${dur(e.prepMs)}). Next time on this computer it starts in seconds.`);
+    setLive('gate-stage', () => e.warm ? L(`准备好了（用了本机缓存，${dur(e.prepMs)}）。`, `Ready (loaded the saved circuit in ${dur(e.prepMs)}).`)
+      : L(`准备好了（用时 ${dur(e.prepMs)}）。下次在这台电脑上打开会快很多（约十几秒）。`, `Ready (took ${dur(e.prepMs)}). Next time on this computer it starts in seconds.`));
     $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-load').hidden = true; $('gate-checks-box').hidden = true; $('gate-input').focus();
     runQueued();
     document.querySelector('[data-gate-brain] .status-dot')?.classList.add('active');
     setStatus();
   }
-  else if (e.type === 'warning') $('gate-note').textContent = e.message;
-  else if (e.type === 'error') { $('gate-stage').textContent = e.message; $('gate-load').hidden = false; $('gate-load').disabled = false; $('gate-load').textContent = L('重试', 'Retry'); started = false; }
+  else if (e.type === 'warning') { live.delete('gate-note'); $('gate-note').textContent = e.message; }
+  else if (e.type === 'error') { live.delete('gate-stage'); $('gate-stage').textContent = e.message; $('gate-load').hidden = false; $('gate-load').disabled = false; setLive('gate-load', () => L('重试', 'Retry')); started = false; }
 }
 
 async function precheckOnly() {
   const m = await gateModule();
   const pc = await m.precheck({ C: 128 });
   renderChecks(pc.rows);
-  if (pc.hard) { $('gate-stage').textContent = L('这台设备不满足硬性条件，未开始下载。', 'This device does not meet the hard requirements; nothing was downloaded.'); $('gate-load').disabled = true; return; }
+  if (pc.hard) { setLive('gate-stage', () => L('这台设备跑不动它，没有下载任何东西。它需要一台显卡较新、内存 8 GB 以上的电脑（手机和平板一般不行）；具体哪一项不满足，点上面的「设备检查」看。', 'This device cannot run it; nothing was downloaded. It needs a computer with a recent GPU and 8 GB+ of memory (phones and tablets usually cannot); open “Device check” above to see which requirement failed.')); $('gate-load').disabled = true; return; }
   // 不自动开始：本机缓存可能是旧版本代码生成的（用不上，会重新下载），下载几百兆须由用户点按钮
   try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) {
-    $('gate-note').textContent = L('本机有之前生成的电路缓存：版本相同会直接启动（十几秒），否则重新下载并生成。', 'A previously built circuit is cached here: if it matches this version it starts in seconds, otherwise it is downloaded and rebuilt.'); break; } } catch { }
+    setLive('gate-note', () => L('这台电脑上有之前搭好的电路：版本没变会直接启动（十几秒），否则重新下载并搭建。', 'A circuit built earlier is saved on this computer: if the version matches it starts in seconds, otherwise it is downloaded and rebuilt.')); break; } } catch { }
 }
 
 async function start() {
   if (started) return; started = true;
   const m = await gateModule();
-  $('gate-load').disabled = true; $('gate-load').textContent = L('准备中…', 'Preparing…'); $('gate-note').textContent = '';
+  $('gate-load').disabled = true; setLive('gate-load', () => L('准备中…', 'Preparing…')); live.delete('gate-note'); $('gate-note').textContent = '';
   // 准备期间就能提问：先排队，电路好了自动回答（首次准备要几分钟，不必干等）
-  $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-input').placeholder = L('可以先把问题写好发出，电路准备好后会自动回答。', 'You can send your question now; it will be answered as soon as the circuit is ready.');
+  $('gate-form').hidden = false; $('gate-send').disabled = false; const ph = () => { $('gate-input').placeholder = L('可以先把问题写好发出，电路准备好后会自动回答。', 'You can send your question now; it will be answered as soon as the circuit is ready.'); }; ph(); window.addEventListener('bench-lang', ph);
   brain = m.createGateBrain({ C: 128, onEvent });
   brain.ready.catch(() => { });
   setStatus();
