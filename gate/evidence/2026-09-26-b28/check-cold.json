@@ -1,0 +1,57 @@
+{
+ "mode": "main",
+ "error": null,
+ "q06": {
+  "promptIdsSame": true,
+  "actionsSame": true,
+  "streamedSame": true,
+  "textSame": true,
+  "rawSame": true,
+  "stop": "eos",
+  "firstTokenMs": 16526.300000190735,
+  "msPerToken": 564.2999999523163,
+  "pass": true
+ },
+ "q05": {
+  "promptIdsSame": true,
+  "actionsSame": true,
+  "streamedSame": true,
+  "textSame": true,
+  "rawSame": true,
+  "stop": "eos",
+  "firstTokenMs": 24739.5,
+  "msPerToken": 824.5,
+  "pass": true
+ },
+ "t02": {
+  "promptIdsSame": true,
+  "idsSame": true,
+  "upstreamParseOK": true,
+  "packageToolCallOK": true,
+  "stop": "eos",
+  "firstTokenMs": 54321,
+  "msPerToken": 563.2000000476837,
+  "pass": true
+ },
+ "tooLong": {
+  "detected": true,
+  "message": "提示有 210 个 token，超过本电路容量（C128，最多 127 个）。请缩短对话，或改用长回答模式（C512）。"
+ },
+ "ready": {
+  "c128": {
+   "type": "ready",
+   "C": 128,
+   "warm": false,
+   "prepMs": 81748.20000004768,
+   "at": 81751.70000004768
+  },
+  "c512": {
+   "type": "ready",
+   "C": 512,
+   "warm": false,
+   "prepMs": 117164.89999985695,
+   "at": 288959.89999985695
+  }
+ },
+ "pass": true
+}

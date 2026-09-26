@@ -1,0 +1,12 @@
+{
+  "note": "各机器实测（门电路大脑，Chrome / Chromium）。cold = 第一次打开（下载 + 搭电路）秒数，warm = 再次打开（用本机缓存）秒数，perWord = 回答时每个字的秒数（中位数），firstWord = 28 个词的标准问题第一个字等待秒数。原始记录见 evidence/。",
+  "updated": "2026-09-26",
+  "rows": [
+    { "device": { "zh": "迷你主机（AMD Ryzen AI MAX+ 395）", "en": "Mini PC (AMD Ryzen AI MAX+ 395)" }, "gpu": "Radeon 8060S", "ram": "32 GB", "browser": "Chromium · Linux",
+      "c128": { "cold": 82, "warm": 12, "perWord": 0.56, "firstWord": 17 }, "c512": { "cold": 117, "warm": 15, "perWord": 0.82 },
+      "note": { "zh": "权重从本机网络下载", "en": "weights served on the local network" }, "evidence": "evidence/2026-09-26-b28/check-cold.json" },
+    { "device": { "zh": "MacBook（Apple A18 Pro）", "en": "MacBook (Apple A18 Pro)" }, "gpu": { "zh": "Apple 集成显卡（5 核）", "en": "Apple integrated GPU (5-core)" }, "ram": "8 GB", "browser": "Chrome · macOS",
+      "c128": { "cold": 193, "warm": 27, "perWord": 1.5, "firstWord": 47 }, "c512": null,
+      "note": { "zh": "下载约 11 MB/s", "en": "download about 11 MB/s" }, "evidence": null }
+  ]
+}

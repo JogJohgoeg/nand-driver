@@ -1,318 +1,185 @@
 <!doctype html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>门电路大脑 · BitCPM4-1B</title>
-<meta name="description" content="一个被拆成几千亿个电子开关的小型 AI，在你电脑的显卡上逐个开关地算出回答，与原版模型一字不差。">
-<link rel="icon" href="../xlayer-bench/favicon.svg">
+<meta name="description" content="一个被拆成几千亿个电子开关的小型 AI，在你电脑的显卡上逐个开关地算出回答，与原版模型一字不差；准备好之后断网也能用。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1512'/%3E%3Cpath d='M8 9h8a7 7 0 0 1 0 14H8z' fill='none' stroke='%2339d98a' stroke-width='2.4'/%3E%3Ccircle cx='24.5' cy='16' r='2.2' fill='none' stroke='%2339d98a' stroke-width='2'/%3E%3C/svg%3E">
 <style>
-:root{color-scheme:light;--bg:#fafafa;--panel:#f2f2f2;--hover:#eaeaea;--line:#d6d6d6;--line-strong:#858585;--text:#222;--muted:#626262;--accent:#256b62;--ok:#0a7d32;--bad:#b3261e;--warn:#8a5a00;--tool:#0b57d0;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#181818;--panel:#242424;--hover:#303030;--line:#494949;--line-strong:#8c8c8c;--text:#e6e6e6;--muted:#aaa;--accent:#83b6ad;--ok:#5bd17f;--bad:#ff8a80;--warn:#e0b060;--tool:#8ab4f8}}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#181818;--panel:#242424;--hover:#303030;--line:#494949;--line-strong:#8c8c8c;--text:#e6e6e6;--muted:#aaa;--accent:#83b6ad;--ok:#5bd17f;--bad:#ff8a80;--warn:#e0b060;--tool:#8ab4f8}
+:root{color-scheme:light;--bg:#f4f8f6;--panel:#fff;--panel2:#eaf3ee;--line:#cfe0d7;--line2:#9fbcae;--text:#13231c;--muted:#587066;--accent:#0c8a52;--accent-bg:rgba(12,138,82,.09);--accent-line:rgba(12,138,82,.45);--on-accent:#fff;--ok:#0c8a52;--bad:#b3261e;--warn:#8a5a00;--tool:#0b57d0;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0b1512;--panel:#0f1d18;--panel2:#132720;--line:#1d372e;--line2:#2d5646;--text:#e2eee8;--muted:#8ea79c;--accent:#39d98a;--accent-bg:rgba(57,217,138,.1);--accent-line:rgba(57,217,138,.5);--on-accent:#06120d;--ok:#39d98a;--bad:#ff8a80;--warn:#e7b964;--tool:#8ab4f8}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1512;--panel:#0f1d18;--panel2:#132720;--line:#1d372e;--line2:#2d5646;--text:#e2eee8;--muted:#8ea79c;--accent:#39d98a;--accent-bg:rgba(57,217,138,.1);--accent-line:rgba(57,217,138,.5);--on-accent:#06120d;--ok:#39d98a;--bad:#ff8a80;--warn:#e7b964;--tool:#8ab4f8}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-.wrap{max-width:960px;margin:0 auto;padding:0 24px 48px}
-header{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
-header h1{font-size:17px;margin:0;font-weight:600}
-header .sp{flex:1}
 a{color:var(--accent)}
-button,.btn{font:inherit;font-size:14px;padding:5px 14px;border:1px solid var(--line-strong);background:var(--panel);color:var(--text);border-radius:4px;cursor:pointer;text-decoration:none}
-button:hover:not(:disabled),.btn:hover{background:var(--hover)}
-button:disabled{opacity:.5;cursor:default}
-button.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.mono{font-family:var(--mono)}
 .mute{color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.tool{color:var(--tool)}
-.lead{margin:0 0 16px}
-.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin-bottom:20px}
-.facts div{background:var(--bg);padding:10px 12px}
-.facts b{display:block;font-family:var(--mono);font-size:16px;font-weight:600}
+button,.btn{font:inherit;font-size:14px;padding:5px 12px;border:1px solid var(--line2);background:var(--panel);color:var(--text);border-radius:8px;cursor:pointer;text-decoration:none;white-space:nowrap}
+button:hover:not(:disabled),.btn:hover{border-color:var(--accent-line);background:var(--accent-bg)}
+button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+button.primary:hover:not(:disabled){background:var(--accent);filter:brightness(1.08)}
+button.icon{padding:5px 9px}
+button.danger{border-color:var(--bad);color:var(--bad)}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+/* 顶栏 */
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px}
+.logo{width:34px;height:34px;flex:none;border-radius:9px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center}
+.title{min-width:0;flex:1}
+.title b{font-size:16px}
+.sub{font-size:11.5px;color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:5px;font:600 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:999px;border:1px solid var(--line2);color:var(--muted);vertical-align:2px;margin-left:6px}
+.pill i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.on{color:var(--accent);border-color:var(--accent-line);background:var(--accent-bg)}
+.pill.off{color:var(--warn);border-color:var(--warn)}
+.rate{font:600 12px/1 var(--mono);color:var(--accent);border:1px solid var(--accent-line);background:var(--accent-bg);border-radius:999px;padding:5px 9px}
+.tools{display:flex;gap:6px;align-items:center}
+/* 卡片 */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:16px 0}
+.card h2{font-size:14px;margin:0 0 8px;font-weight:600}
+.label{font:600 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lead{margin:14px 0 0;color:var(--text)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 0}
+.facts div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+.facts b{display:block;font:600 15px/1.3 var(--mono)}
 .facts span{font-size:12px;color:var(--muted)}
-section{border:1px solid var(--line);border-radius:4px;padding:14px 16px;margin-bottom:16px}
-section h2{font-size:14px;margin:0 0 10px;font-weight:600}
+.bar2{height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:8px}
+.bar2 i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
 table{border-collapse:collapse;font-size:13px;width:100%}
-td{padding:3px 8px 3px 0;vertical-align:top}
-td:first-child{width:1.5em}
-.bar{height:4px;background:var(--panel);border-radius:2px;overflow:hidden;margin-top:8px}
-.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
-textarea{width:100%;font:14px/1.5 var(--mono);background:var(--panel);color:var(--text);border:1px solid var(--line);padding:8px;border-radius:4px;resize:vertical}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.chips button{font-size:13px;padding:3px 10px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
-#out{background:var(--panel);padding:12px;min-height:3em;white-space:pre-wrap;border-radius:4px;margin-top:12px;font-size:15px;overflow-wrap:anywhere}
-#out:empty::before{content:attr(data-empty);color:var(--muted)}
-pre{font:12px/1.5 var(--mono);background:var(--panel);padding:8px;border-radius:4px;overflow:auto}
+td,th{padding:5px 8px 5px 0;vertical-align:top;text-align:left}
+th{font-weight:600;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line)}
+tr+tr td{border-top:1px solid var(--line)}
+.scroll{overflow-x:auto}
 details summary{cursor:pointer;color:var(--muted);font-size:13px}
-.foot{font-size:13px;color:var(--muted)}
-.foot p{margin:6px 0}
-@media (max-width:640px){.wrap{padding:0 16px 40px}.facts{grid-template-columns:repeat(2,1fr)}}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.note{font-size:13px;color:var(--muted);margin:8px 0 0}
+/* 出错卡 */
+.errcard{border:1px solid var(--bad);border-radius:10px;padding:10px 12px;margin-top:8px;background:color-mix(in srgb,var(--bad) 7%,transparent)}
+/* 对话 */
+#log{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.msg{max-width:92%;border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
+.msg .who{margin-bottom:4px}
+.msg.you{align-self:flex-end;background:var(--accent-bg);border-color:var(--accent-line)}
+.msg.bot{align-self:flex-start;background:var(--panel)}
+.msg .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.think{color:var(--muted)}
+.dots::after{content:'';animation:dots 1.4s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+.meta{font:12px/1.5 var(--mono);color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.acts{display:flex;gap:6px;margin-top:6px}
+.acts button{font-size:12px;padding:2px 8px}
+.acts button.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.ideas{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 8px;margin:12px 0 0}
+.idea{display:flex;flex-direction:column;justify-content:flex-start;flex:0 0 220px;scroll-snap-align:start;text-align:left;white-space:normal;border-radius:12px;padding:10px 12px;background:var(--panel)}
+.idea .label{display:block;margin-bottom:6px}
+/* 输入 */
+.composer{position:sticky;bottom:0;z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 0 12px}
+.composer .box{display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;min-height:44px;max-height:160px;font-size:15px;line-height:1.5;font-family:inherit;background:var(--panel);color:var(--text);border:1px solid var(--line2);padding:9px 11px;border-radius:12px;resize:none}
+.composer textarea:focus{outline:none;border-color:var(--accent)}
+.composer .hint{font-size:12px;color:var(--muted);margin-top:6px}
+textarea.code{width:100%;font:13px/1.5 var(--mono);background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:8px;border-radius:8px;resize:vertical}
+pre{font:12px/1.5 var(--mono);background:var(--panel2);padding:8px;border-radius:8px;overflow:auto;white-space:pre-wrap}
+.foot p{font-size:13.5px;color:var(--muted);margin:8px 0}
+@media (max-width:640px){.wrap{padding:0 14px}.facts{grid-template-columns:repeat(2,1fr)}.sub{display:none}.hide-s{display:none}}
 </style></head>
-<body><div class="wrap">
-<header>
-  <h1 data-t="title">门电路大脑 · BitCPM4-1B</h1><span class="sp"></span>
-  <a class="btn" href="../xlayer-bench/" data-t="back">← 工作台</a>
-  <button id="lang" type="button">EN</button>
-</header>
-
-<p class="lead" data-t="lead">这是一个能回答问题的小型 AI（BitCPM4-1B）。特别的地方是：它没有用普通的 AI 算法去跑，而是被拆成了几千亿个最简单的电子开关，就在你电脑的显卡上一个开关一个开关地算出每个字。算出来的回答和原版模型一字不差。</p>
-
-<div class="facts">
-  <div><b data-t="f_nand_v">2,821 亿次</b><span data-t="f_nand">每写一个字要拨动的开关次数</span></div>
-  <div><b data-t="f_latch_v">1.09 亿个</b><span data-t="f_latch">记住上下文用的「记忆开关」</span></div>
-  <div><b id="fC">128</b><span data-t="f_cap">一次对话最多多少个词（问题 + 回答）</span></div>
-  <div><b>580 MB</b><span data-t="f_dl">第一次要下载（之后存在你电脑里）</span></div>
-</div>
-
-<section id="secPrep">
-  <h2 data-t="s_dev">第 1 步：准备（只有第一次要等几分钟）</h2>
-  <div id="verdict" style="margin-bottom:6px"></div>
-  <div class="row" style="margin-top:0"><button id="start" class="primary" hidden data-t="start">开始准备</button></div>
-  <p id="startNote" class="mute" style="font-size:13px;margin:8px 0 0"></p>
-  <div id="st" class="mute" data-t="checking">正在检查你的电脑能不能运行……</div>
-  <div class="bar"><i id="bar"></i></div>
-  <p id="stHint" class="mute" style="font-size:13px;margin:6px 0 0"></p>
-  <details id="preBox" style="margin-top:8px"><summary data-t="pre_sum">查看具体检查了哪些项</summary><div id="pre" style="margin-top:8px"></div></details>
-</section>
-
-<section id="secAsk">
-  <h2 data-t="s_ask">第 2 步：问它问题</h2>
-  <textarea id="msg" rows="3">What is the capital of France?</textarea>
-  <div class="chips" id="chips"></div>
-  <p class="mute" style="font-size:13px;margin:4px 0 0" data-t="ask_tip">问题尽量简短：一次对话（问题加回答）最多大约 128 个词。它读英文比中文更稳。</p>
-  <div class="row">
-    <button id="go" class="primary" disabled data-t="go">提问</button>
-    <button id="stop" disabled data-t="stop">停下</button>
-    <button id="long" hidden data-t="long">换成长回答模式（最多 512 个词）重新回答</button>
+<body>
+<header class="bar"><div class="wrap">
+  <div class="logo" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 32 32"><path d="M6 8h9a8 8 0 0 1 0 16H6z" fill="none" stroke="var(--accent)" stroke-width="2.6"/><circle cx="26" cy="16" r="2.6" fill="none" stroke="var(--accent)" stroke-width="2.2"/></svg></div>
+  <div class="title"><b data-t="title">门电路大脑</b><span id="pill" class="pill"><i></i><span id="pillT"></span></span>
+    <div class="sub mono" id="sub"></div></div>
+  <span id="rate" class="rate" hidden></span>
+  <div class="tools">
+    <button id="newChat" class="icon" type="button" data-tip="newChat" hidden>＋</button>
+    <button id="gear" class="icon" type="button" data-tip="settings">⚙</button>
+    <button id="lang" type="button">EN</button>
+    <a class="btn hide-s" href="../xlayer-bench/" data-t="back">← 工作台</a>
   </div>
-  <div id="out" data-empty="准备好之后，它的回答会在这里一个字一个字地出现。"></div>
-  <p id="info" class="mute" style="font-size:13px;margin:8px 0 0"></p>
-  <div id="call"></div>
-  <details style="margin-top:10px"><summary data-t="tools_sum">给开发者：让它按格式调用工具（一般用不到）</summary>
-    <p class="mute" style="font-size:13px" data-t="tools_help">填入 OpenAI function 格式的 JSON 数组；它会生成一次工具调用，页面只显示，不会真的去执行。</p>
-    <textarea id="tools" rows="6" style="margin-top:6px"></textarea>
-    <div class="row"><button id="toolEx" type="button" data-t="tool_ex">填入一个例子</button></div>
+</div></header>
+
+<main class="wrap">
+  <p class="lead" data-t="lead"></p>
+  <div class="facts">
+    <div><b data-t="f1v"></b><span data-t="f1"></span></div>
+    <div><b data-t="f2v"></b><span data-t="f2"></span></div>
+    <div><b id="fC">128</b><span data-t="f3"></span></div>
+    <div><b data-t="f4v"></b><span data-t="f4"></span></div>
+  </div>
+
+  <section class="card" id="secPrep">
+    <span class="label" data-t="stepLabel"></span>
+    <h2 data-t="s_dev"></h2>
+    <div id="verdict"></div>
+    <div class="row" style="margin-top:6px"><button id="start" class="primary" hidden data-t="start"></button></div>
+    <p id="startNote" class="note"></p>
+    <div id="st" class="mute"></div>
+    <div class="bar2" id="barBox" hidden><i id="bar"></i></div>
+    <p id="stHint" class="note"></p>
+    <div id="errBox"></div>
+    <details id="preBox" style="margin-top:8px"><summary data-t="pre_sum"></summary><div id="pre" style="margin-top:8px"></div></details>
+  </section>
+
+
+  <section class="card" id="secSettings" hidden>
+    <span class="label" data-t="setLabel"></span>
+    <h2 data-t="s_set"></h2>
+
+    <h2 style="margin-top:14px" data-t="st_data"></h2>
+    <div id="dataInfo" class="note" style="margin-top:0"></div>
+    <div class="row" id="clearRow"><button id="clear" type="button" class="danger" data-t="clear"></button></div>
+
+    <h2 style="margin-top:18px" data-t="st_bench"></h2>
+    <p class="note" style="margin-top:0" data-t="bench_help"></p>
+    <div class="row"><button id="bench" type="button" disabled data-t="bench_go"></button></div>
+    <div id="benchOut"></div>
+
+    <h2 style="margin-top:18px" data-t="st_log"></h2>
+    <p class="note" style="margin-top:0" data-t="log_help"></p>
+    <div class="scroll" id="telemetry"></div>
+    <div class="row"><button id="telClear" type="button" data-t="tel_clear"></button></div>
+
+    <h2 style="margin-top:18px" data-t="st_long"></h2>
+    <p class="note" style="margin-top:0" data-t="long_help"></p>
+    <div class="row"><button id="long" type="button" data-t="long"></button></div>
+
+    <details style="margin-top:16px"><summary data-t="tools_sum"></summary>
+      <p class="note" data-t="tools_help"></p>
+      <textarea id="tools" class="code" rows="6" style="margin-top:6px"></textarea>
+      <div class="row"><button id="toolEx" type="button" data-t="tool_ex"></button></div>
+    </details>
+  </section>
+
+  <section class="card" id="secBoard">
+    <span class="label" data-t="boardLabel"></span>
+    <h2 data-t="s_board"></h2>
+    <div class="scroll" id="board"></div>
+    <p class="note" data-t="board_help"></p>
+  </section>
+
+  <section class="card" id="secProof">
+    <span class="label" data-t="proofLabel"></span>
+    <h2 data-t="s_proof"></h2>
+    <div id="proof"></div>
+  </section>
+
+  <details class="card foot"><summary data-t="s_how"></summary>
+    <p data-t="h1"></p><p data-t="h2"></p><p data-t="h3"></p><p data-t="h4"></p>
+    <p><a href="./PROVENANCE.json" data-t="l_prov"></a> · <a href="./LICENSES/NOTICE">NOTICE</a> · <a href="./LICENSES/Apache-2.0.txt">Apache-2.0</a> · <a href="./LICENSES/BitCPM4-1B-README.md" data-t="model_card"></a> · <a href="./demo.html" data-t="plain"></a></p>
   </details>
-</section>
+  <section id="secChat">
+    <div id="ideas" class="ideas"></div>
+    <div id="log"></div>
+  </section>
+</main>
 
-<section class="foot">
-  <details><summary data-t="s_how">它是怎么做到的？（想了解再看）</summary>
-  <p data-t="h1">电脑和手机里的芯片，归根结底都是由大量「与非门」组成的——这是最简单的一种电子开关：两个输入都是 1 时输出 0，否则输出 1。我们把整个 AI 模型拆成了这样的开关网络，每写一个字要拨动约 2,821 亿次开关。</p>
-  <p data-t="h2">你的浏览器先下载模型的参数（约 580 MB），在你电脑上把开关网络搭出来，再交给显卡去算。每一步都按固定的规则计算，所以回答和原版模型一字不差，任何人都可以重复验证。</p>
-  <p data-t="h3">速度：独立显卡每个字约 0.6 秒，笔记本（比如苹果 M 系列）约 1.5 秒。开始回答之前要先读完你的整个问题，第一个字通常要等 30–80 秒。需要约 6 GB 内存（长回答模式约 7.6 GB）。</p>
-  <p data-t="h4">文字和编号之间的转换是页面自己做的，不算在开关里。整个过程都在你的电脑上完成，问题不会发到任何服务器。</p>
-  <p><a href="./PROVENANCE.json" data-t="l_prov">技术出处</a> · <a href="./LICENSES/NOTICE">NOTICE</a> · <a href="./LICENSES/Apache-2.0.txt">Apache-2.0</a> · <a href="./LICENSES/BitCPM4-1B-README.md" data-t="model_card">模型说明（OpenBMB BitCPM4-1B）</a> · <a href="./demo.html" data-t="plain">精简版页面</a></p>
-  </details>
-</section>
-</div>
+<form class="composer" id="composer"><div class="wrap">
+  <div class="box">
+    <textarea id="msg" rows="1"></textarea>
+    <button id="go" class="primary" type="submit" disabled data-t="go"></button>
+    <button id="stop" type="button" disabled data-t="stop" hidden></button>
+  </div>
+  <div class="row" style="margin-top:6px"><button id="cont" type="button" hidden data-t="cont"></button><span id="cHint" class="hint" style="margin:0"></span></div>
+</div></form>
 
-<script type="module">
-import { createGateBrain, precheck } from './gate-brain.mjs';
-
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const q = new URLSearchParams(location.search);
-const C = q.get('C') === '512' ? 512 : 128;
-
-// ---------- 文字（按「什么都不懂的人」写：说清在干什么、还要多久、该做什么） ----------
-const EN = {
-  title: 'Gate brain · BitCPM4-1B', back: '← Workbench',
-  lead: 'This is a small AI that answers questions (BitCPM4-1B). What makes it unusual: instead of running it the normal way, we broke it down into hundreds of billions of the simplest possible electronic switches, and your computer’s graphics chip works out each word switch by switch. The answers match the original model word for word.',
-  f_nand_v: '282 billion', f_nand: 'switch flips to write one word', f_latch_v: '109 million', f_latch: '“memory switches” that hold the conversation', f_cap: 'words per conversation at most (question + answer)', f_dl: 'downloaded the first time (then saved on your computer)',
-  s_dev: 'Step 1: Get ready (only the first time takes a few minutes)', checking: 'Checking whether your computer can run it…', start: 'Get ready', pre_sum: 'See what was checked',
-  s_ask: 'Step 2: Ask it something', ask_tip: 'Keep it short: a conversation (question plus answer) holds about 128 words at most. It reads English more reliably than Chinese.',
-  go: 'Ask', stop: 'Stop', long: 'Answer again in long mode (up to 512 words)',
-  tools_sum: 'For developers: have it produce a tool call (you can ignore this)', tools_help: 'Paste a JSON array in OpenAI function format; it produces one tool call, which the page only shows and never actually runs.', tool_ex: 'Insert an example',
-  s_how: 'How does it work? (optional reading)',
-  h1: 'The chips in computers and phones are ultimately made of huge numbers of “NAND gates” — the simplest kind of electronic switch: if both inputs are 1 the output is 0, otherwise it is 1. We turned the whole AI model into a network of such switches; writing one word takes about 282 billion switch flips.',
-  h2: 'Your browser first downloads the model’s numbers (about 580 MB), builds the switch network on your computer, and hands it to the graphics chip. Every step follows fixed rules, so the answer matches the original model word for word and anyone can check it again.',
-  h3: 'Speed: about 0.6 s per word on a gaming/desktop graphics card, about 1.5 s on a laptop (e.g. Apple M-series). It reads your whole question before answering, so the first word usually takes 30–80 s. Needs about 6 GB of memory (long mode about 7.6 GB).',
-  h4: 'Turning text into numbers and back is done by the page itself and is not part of the switches. Everything happens on your computer; your question is not sent to any server.',
-  l_prov: 'Technical provenance', model_card: 'Model card (OpenBMB BitCPM4-1B)', plain: 'Plain page',
-};
-const ZH = {};
-for (const el of document.querySelectorAll('[data-t]')) ZH[el.dataset.t] = el.textContent;
-const dur = (ms, en) => { const s = Math.max(1, Math.round(ms / 1000)); if (s < 60) return en ? `${s} s` : `${s} 秒`; const m = Math.floor(s / 60), r = s % 60; return en ? `${m} min${r ? ' ' + r + ' s' : ''}` : `${m} 分${r ? ' ' + r + ' 秒' : '钟'}`; };
-const STR = {
-  zh: {
-    empty: '准备好之后，它的回答会在这里一个字一个字地出现。', emptyReady: '在上面输入问题，点「提问」，回答会在这里一个字一个字地出现。',
-    ok: '✓ 你的电脑可以运行它。', okWarn: '! 你的电脑大概可以运行，但有一项不太够（见下面的检查），可能会慢或者中途失败。', no: '✗ 这台设备跑不动它，所以什么都没有下载。它需要一台显卡比较新、内存 8 GB 以上的电脑，手机和平板一般不行。',
-    startNote: e => `第一次要下载约 580 MB，然后在你的电脑上把电路搭起来，一般要 2–8 分钟（电脑越新越快）。准备期间请别关这个页面。准备好之后会存在你电脑里，下次打开十几秒就能用。会用掉约 ${e.ramGB} GB 内存。`,
-    warmNote: '这台电脑上存过之前搭好的电路。点「开始准备」：如果网站没更新过，十几秒就好；如果更新过，就要重新下载、重新搭（几分钟）。',
-    stage: {
-      cache: () => '看看你电脑里有没有存好的电路……',
-      upload: () => '正在读出你电脑里存好的电路……',
-      download: (e, eta) => `正在下载模型：${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB${eta ? `，大约还要 ${eta}` : ''}`,
-      generate: (e, eta) => e.total ? `正在你的电脑上搭电路：已搭好 ${e.done} / ${e.total} 层${eta ? `，大约还要 ${eta}` : ''}` : '正在你的电脑上搭电路（开头的部分）……',
-    },
-    hint: { download: '下载的同时已经开始在你电脑上搭电路了。别关这个页面。', generate: '最费时间的一步。这一步完全在你的电脑上进行，网速不影响它。别关这个页面。', upload: '马上就好。' },
-    ready: e => e.warm ? `✓ 准备好了（用了存好的电路，${dur(e.prepMs)}）。在下面输入问题，点「提问」。` : `✓ 准备好了（这次用了 ${dur(e.prepMs)}，下次打开只要十几秒）。在下面输入问题，点「提问」。`,
-    reading: (d, t, eta) => `它正在读你的问题（${d} / ${t}）……${eta ? `大约还要 ${eta}，` : '一般要 30–80 秒，'}读完就会开始一个字一个字地回答。`,
-    readingStart: '它正在读你的问题……一般要 30–80 秒，读完就会开始一个字一个字地回答。',
-    stop: { eos: '回答完了', max_tokens: '到了长度上限，没写完', capacity: '对话装满了，没写完', stopped: '你让它停下了', tool_truncated: '工具调用被截断了', tool_aborted: '工具调用中止了' },
-    done: (r, n) => `${STR.zh.stop[r.stop] || r.stop}。第一个字等了 ${dur(r.firstTokenMs)}${r.msPerToken ? `，之后每个字约 ${(r.msPerToken / 1e3).toFixed(1)} 秒` : ''}。这次一共拨动了约 ${n} 次开关。`,
-    capacity: e => e.C === 128 ? (e.canSwitchLong ? '回答太长，装不下了（这个模式一次最多约 128 个词）。可以点下面的按钮，换成长回答模式重新回答（要重新准备一次，需要更多内存）。' : '回答太长，装不下了（这个模式一次最多约 128 个词）。这台电脑的内存不够开长回答模式，请把问题改短一点再问。') : '回答太长，连长回答模式（最多约 512 个词）也装不下了。请把问题改短一点。',
-    toolCall: '它生成的工具调用（只是显示，没有真的执行）：', badJson: '工具那一栏填的不是有效的 JSON：',
-    confirmLong: '长回答模式需要大约 7.6 GB 内存和 6.4 GB 显存，你的浏览器没告诉我们这台电脑有多少内存。确定要试吗？（页面会重新准备一次）',
-    err: { no_adapter: '你的浏览器没法用显卡来计算。请换用最新版的 Chrome 或 Edge 电脑版再试。', weights_fetch: '模型下载失败了，可能是网络断了。请检查网络，然后刷新页面重试。', chunk_sha: '下载到的模型文件和原版对不上（可能损坏或被改过），为了安全已经停下，没有使用它。请刷新页面重试。', weights_mismatch: '网站正在更新，模型文件和页面暂时对不上。请过几分钟刷新页面再试。', prompt_too_long: '问题太长了，装不下。请把问题改短一点再问。', gpu_lost: '显卡中途出错了（常见原因是内存不够或显卡驱动重启）。请关掉其他占内存的页面，然后刷新重试。', long_mode_unavailable: '这台电脑的内存不够开长回答模式。请把问题改短一点再问。' },
-    retry: '刷新页面重试', detail: '技术细节',
-    what: { 'WebGPU 适配器': '浏览器能用显卡来计算', '单个存储缓冲绑定上限': '显卡一次能读的内存', '单个缓冲大小上限': '显卡单块内存的大小', '每阶段存储缓冲数': '显卡同时能用的内存块数', '工作组共享内存': '显卡里的高速小内存', '内存': '电脑内存', '本机缓存空间': '能用来存电路的硬盘空间' },
-    chips: ['What is the capital of France?', '用一句话介绍你自己。', 'Write a haiku about logic gates.', '1+1 等于几？'],
-  },
-  en: {
-    empty: 'Once it is ready, its answer will appear here word by word.', emptyReady: 'Type a question above and press “Ask”; the answer will appear here word by word.',
-    ok: '✓ Your computer can run it.', okWarn: '! Your computer can probably run it, but one item is borderline (see the checks below); it may be slow or fail partway.', no: '✗ This device cannot run it, so nothing was downloaded. It needs a computer with a fairly recent graphics chip and 8 GB+ of memory; phones and tablets usually cannot.',
-    startNote: e => `The first time, it downloads about 580 MB and then builds the circuit on your computer — usually 2–8 minutes (faster on newer computers). Please keep this page open meanwhile. Afterwards it is saved on your computer, so next time it starts in seconds. Uses about ${e.ramGB} GB of memory.`,
-    warmNote: 'A circuit built earlier is saved on this computer. Press “Get ready”: if the site has not been updated it takes a few seconds; if it has, it downloads and rebuilds (a few minutes).',
-    stage: {
-      cache: () => 'Looking for a saved circuit on your computer…',
-      upload: () => 'Loading the circuit saved on your computer…',
-      download: (e, eta) => `Downloading the model: ${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB${eta ? `, about ${eta} left` : ''}`,
-      generate: (e, eta) => e.total ? `Building the circuit on your computer: ${e.done} / ${e.total} layers done${eta ? `, about ${eta} left` : ''}` : 'Building the circuit on your computer (first parts)…',
-    },
-    hint: { download: 'It is already building the circuit while downloading. Keep this page open.', generate: 'The longest step. It happens entirely on your computer, so your internet speed does not matter. Keep this page open.', upload: 'Almost there.' },
-    ready: e => e.warm ? `✓ Ready (used the saved circuit, ${dur(e.prepMs, 1)}). Type a question below and press “Ask”.` : `✓ Ready (took ${dur(e.prepMs, 1)} this time; next time only seconds). Type a question below and press “Ask”.`,
-    reading: (d, t, eta) => `It is reading your question (${d} / ${t})… ${eta ? `about ${eta} left; ` : 'usually 30–80 s; '}then it starts answering word by word.`,
-    readingStart: 'It is reading your question… usually 30–80 s; then it starts answering word by word.',
-    stop: { eos: 'Finished', max_tokens: 'Hit the length limit before finishing', capacity: 'The conversation filled up before finishing', stopped: 'You stopped it', tool_truncated: 'Tool call was cut off', tool_aborted: 'Tool call was aborted' },
-    done: (r, n) => `${STR.en.stop[r.stop] || r.stop}. The first word took ${dur(r.firstTokenMs, 1)}${r.msPerToken ? `, then about ${(r.msPerToken / 1e3).toFixed(1)} s per word` : ''}. About ${n} switch flips in total.`,
-    capacity: e => e.C === 128 ? (e.canSwitchLong ? 'The answer got too long to fit (this mode holds about 128 words). You can press the button below to answer again in long mode (it gets ready again and needs more memory).' : 'The answer got too long to fit (this mode holds about 128 words). This computer does not have enough memory for long mode; please ask a shorter question.') : 'The answer got too long even for long mode (about 512 words). Please ask a shorter question.',
-    toolCall: 'Tool call it produced (only shown, not actually run):', badJson: 'The tool box does not contain valid JSON: ',
-    confirmLong: 'Long mode needs about 7.6 GB of memory and 6.4 GB of graphics memory, and your browser does not tell us how much this computer has. Try anyway? (The page will get ready again.)',
-    err: { no_adapter: 'Your browser cannot use the graphics chip for computing. Please try the latest desktop Chrome or Edge.', weights_fetch: 'Downloading the model failed, maybe the connection dropped. Check your internet and reload the page.', chunk_sha: 'A downloaded model file does not match the original (damaged or altered), so it stopped for safety and did not use it. Please reload the page.', weights_mismatch: 'The site is being updated and the model files do not match the page yet. Please reload in a few minutes.', prompt_too_long: 'The question is too long to fit. Please shorten it.', gpu_lost: 'The graphics chip failed partway (usually not enough memory or a driver restart). Close other heavy tabs and reload the page.', long_mode_unavailable: 'This computer does not have enough memory for long mode. Please ask a shorter question.' },
-    retry: 'Reload and retry', detail: 'Technical details',
-    what: { 'WebGPU 适配器': 'Browser can compute on the graphics chip', '单个存储缓冲绑定上限': 'Graphics memory readable at once', '单个缓冲大小上限': 'Size of one graphics memory block', '每阶段存储缓冲数': 'Graphics memory blocks usable at once', '工作组共享内存': 'Fast on-chip graphics memory', '内存': 'Computer memory', '本机缓存空间': 'Disk space to save the circuit' },
-    chips: ['What is the capital of France?', 'Introduce yourself in one sentence.', 'Write a haiku about logic gates.', 'What is 1+1?'],
-  },
-};
-const DETAIL_EN = [
-  [/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)'], [/ 字节/g, ' bytes'],
-  [/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）。$/, 'Browser reports ≥ $1 GB (browsers report at most 8).'],
-  [/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）——.*$/, 'Browser reports $1 GB — this device may not have enough memory; the page may be killed by the system or browser.'],
-  [/^浏览器不报告内存大小。.*$/, 'The browser does not report memory size. Peak for this mode: about 6–7.6 GB of browser memory plus 4.3–6.4 GB of VRAM (or shared iGPU memory).'],
-  [/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB）$/, 'About $1 GB free (cache needs about $2 GB)'],
-  [/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB，.*$/, 'About $1 GB free (cache needs about $2 GB) — not enough; the circuit will be rebuilt on every visit'],
-  [/^无法查询；.*$/, 'Cannot query; runs fine, just without caching'],
-];
-const detailEn = d => { for (const [re, to] of DETAIL_EN) d = d.replace(re, to); return d; };
-let lang = 'zh';
-try { const s = localStorage.getItem('bench-lang'); if (s === 'en' || s === 'zh') lang = s; else if (!/^zh/i.test(navigator.language || '')) lang = 'en'; } catch { }
-const T = () => STR[lang], EN_ = () => lang === 'en';
-// 动态文字都登记成「渲染函数」，切换语言时整体重画（不做片段翻译）
-const live = new Map();
-const setLive = (id, f, cls) => { live.set(id, [f, cls]); const el = $(id); el.innerHTML = f(); if (cls !== undefined) el.className = cls; };
-let lastPre = null, readyNow = false;
-function applyLang() {
-  document.documentElement.lang = EN_() ? 'en' : 'zh';
-  for (const el of document.querySelectorAll('[data-t]')) el.textContent = EN_() ? (EN[el.dataset.t] ?? ZH[el.dataset.t]) : ZH[el.dataset.t];
-  $('lang').textContent = EN_() ? '中文' : 'EN';
-  $('out').dataset.empty = readyNow ? T().emptyReady : T().empty;
-  $('chips').innerHTML = T().chips.map(c => `<button type="button">${esc(c)}</button>`).join('');
-  for (const b of $('chips').children) b.onclick = () => { $('msg').value = b.textContent; };
-  if (lastPre) renderPre(lastPre);
-  for (const [id, [f, cls]] of live) { $(id).innerHTML = f(); if (cls !== undefined) $(id).className = cls; }
-  $('fC').textContent = String(curC);
-}
-$('lang').onclick = () => { lang = EN_() ? 'zh' : 'en'; try { localStorage.setItem('bench-lang', lang); } catch { } applyLang(); };
-let curC = C;
-
-function renderPre(rows) {
-  lastPre = rows;
-  $('pre').innerHTML = '<table>' + rows.map(r => {
-    const cls = r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad', mark = r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗';
-    return `<tr><td class="${cls}">${mark}</td><td>${esc(T().what[r.what] || r.what)}</td><td class="mute">${esc(EN_() ? detailEn(r.detail) : r.detail)}</td></tr>`;
-  }).join('') + '</table>';
-}
-const errText = e => { const f = T().err[e.code]; return f ? `${esc(f)}<br><details><summary>${esc(T().detail)}</summary><span class="mute">${esc(e.message)}</span></details>` : esc(e.message); };
-
-const EXAMPLE_TOOLS = [{ type: 'function', function: { name: 'get_weather', description: 'Get the current weather for a city', parameters: { type: 'object', properties: { city: { type: 'string', description: 'City name' } }, required: ['city'] } } }];
-$('toolEx').onclick = () => { $('tools').value = JSON.stringify(EXAMPLE_TOOLS, null, 1); $('msg').value = EN_() ? "What's the weather in Paris?" : '巴黎现在天气怎么样？'; };
-
-applyLang();
-
-// ---------- brain ----------
-const NAND_PER_TOKEN = 282106356845;   // C128 每拍（含 K6 工具旁路，count_all.mjs 实测）：原 1,440,324,606,564；等价替换单元见 cells/*.json
-let brain = null, ctrl = null, stageName = '', stageT0 = 0, stageD0 = 0, rd = null, sawLayers = false;
-
-function onEvent(e) {
-  if (e.type === 'precheck') renderPre(e.rows);
-  else if (e.type === 'progress' && e.stage !== 'prompt') {
-    if (e.stage === 'generate' && e.total) sawLayers = true; else if (e.stage === 'generate' && sawLayers) return;   // 已在报层数时，不带层数的单元进度不再覆盖
-    if (e.stage !== stageName) { stageName = e.stage; stageT0 = performance.now(); stageD0 = e.done || 0; }
-    const el = performance.now() - stageT0, dd = (e.done || 0) - (e.stage === 'download' ? 0 : stageD0);
-    const rest = e.total && dd > 0 && el > 4000 ? el * (e.total - e.done) / dd : null;
-    setLive('st', () => esc((T().stage[e.stage] || (() => ''))(e, rest === null ? '' : dur(rest, EN_()))), 'mute');
-    setLive('stHint', () => T().hint[e.stage] || '');
-    if (e.total) $('bar').style.width = (100 * e.done / e.total).toFixed(1) + '%';
-  }
-  else if (e.type === 'progress') {                      // 读提示
-    if (!rd) rd = { t0: performance.now() };
-    const el = performance.now() - rd.t0, rest = e.done > 0 && el > 3000 ? el * (e.total - e.done) / e.done : null;
-    if (!$('out').dataset.got) setLive('out', () => `<span class="mute">${esc(T().reading(e.done, e.total, rest === null ? '' : dur(rest, EN_())))}</span>`);
-  }
-  else if (e.type === 'ready') {
-    $('bar').style.width = '100%'; readyNow = true; curC = e.C; $('fC').textContent = String(e.C);
-    setLive('st', () => esc(T().ready(e)), 'ok'); setLive('stHint', () => ''); $('out').dataset.empty = T().emptyReady;
-    $('go').disabled = false; $('secAsk').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  else if (e.type === 'warning') setLive('startNote', () => `<span class="warn">${esc(e.message)}</span>`);
-  else if (e.type === 'error') { if (readyNow && e.code !== 'gpu_lost') return;   // 提问时的错误由 run() 显示在回答下方
-    setLive('st', () => errText(e), 'bad'); setLive('stHint', () => ''); }
-  else if (e.type === 'capacity') { setLive('info', () => `<span class="warn">${esc(T().capacity(e))}</span>`); $('long').hidden = !e.canSwitchLong; }
-}
-
-function boot() {
-  $('start').hidden = true; live.delete('startNote'); $('startNote').textContent = '';
-  setLive('st', () => esc(T().stage.cache()), 'mute');
-  brain = createGateBrain({ weightsBase: q.get('w') || undefined, C, confirmLong: false, onEvent });
-  brain.ready.catch(() => { });
-}
-
-// 先只做预检；满足条件后由用户点按钮再开始下载（有缓存时也要点，缓存可能是旧版本生成的）
-(async () => {
-  const pc = await precheck({ C });
-  renderPre(pc.rows);
-  const warnAny = pc.rows.some(r => r.ok === 'warn');
-  if (pc.hard) { setLive('verdict', () => esc(T().no), 'bad'); live.delete('st'); $('st').textContent = ''; $('preBox').open = true; return; }
-  setLive('verdict', () => esc(warnAny ? T().okWarn : T().ok), warnAny ? 'warn' : 'ok');
-  let warm = false;
-  try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) { warm = true; break; } } catch { }
-  if (q.has('auto')) { boot(); return; }
-  live.delete('st'); $('st').textContent = '';
-  const est = { 128: { ramGB: 6 }, 512: { ramGB: 7.6 } }[C];
-  $('start').hidden = false; setLive('startNote', () => esc(warm ? T().warmNote : T().startNote(est)), 'mute');
-  $('start').onclick = boot;
-})();
-
-async function run() {
-  let tools = null; const tt = $('tools').value.trim();
-  if (tt) { try { tools = JSON.parse(tt); } catch (err) { setLive('info', () => `<span class="bad">${esc(T().badJson + err.message)}</span>`); return; } }
-  $('out').textContent = ''; delete $('out').dataset.got; live.delete('out'); $('call').innerHTML = ''; live.delete('info'); $('info').textContent = ''; rd = null;
-  setLive('out', () => `<span class="mute">${esc(T().readingStart)}</span>`);
-  $('go').disabled = true; $('stop').disabled = false; $('long').hidden = true; ctrl = new AbortController();
-  try {
-    const r = await brain.ask([{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: $('msg').value }], tools, {
-      signal: ctrl.signal,
-      onToken: t => { live.delete('out'); $('out').dataset.got = '1'; $('out').innerHTML = t.tool ? `<span class="tool">${esc(t.text)}</span>` : esc(t.text.replace(/<\|im_end\|>$/, '')); },
-    });
-    if (!$('out').dataset.got) { live.delete('out'); $('out').textContent = ''; }
-    const n = ((r.promptIds?.length || 0) + (r.ids?.length || 0)) * NAND_PER_TOKEN, nTxt = n.toExponential(1).replace(/e\+(\d+)/, (_, x) => ' × 10' + [...x].map(d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]).join(''));
-    const cap = live.get('info');
-    setLive('info', () => esc(T().done(r, nTxt)) + (cap && r.stop === 'capacity' ? '<br>' + cap[0]() : ''));
-    if (r.toolCall) $('call').innerHTML = `<p class="tool">${esc(T().toolCall)}</p><pre>${esc(JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1))}</pre>`;
-  } catch (err) { live.delete('out'); if (!$('out').dataset.got) $('out').textContent = ''; setLive('info', () => `<span class="bad">${errText(err)}</span>`); }
-  $('go').disabled = false; $('stop').disabled = true;
-}
-$('go').onclick = run;
-$('stop').onclick = () => { ctrl?.abort(); brain?.stop(); };
-$('long').onclick = async () => {
-  const pc = await precheck({ C: 512 });
-  if (pc.longMode.allowed === false) { setLive('info', () => `<span class="bad">${esc(T().err.long_mode_unavailable)}</span>`); $('long').hidden = true; return; }
-  if (pc.longMode.allowed === 'confirm') {
-    // 浏览器不报内存：用户确认后以 C512 重开页面（同时释放 C128 占用的显存）
-    if (!confirm(T().confirmLong)) return;
-    try { sessionStorage.setItem('gate-msg', $('msg').value); sessionStorage.setItem('gate-tools', $('tools').value); } catch { }
-    brain?.dispose(); location.search = '?C=512&auto=1' + (q.get('w') ? '&w=' + encodeURIComponent(q.get('w')) : ''); return;
-  }
-  $('long').hidden = true; $('go').disabled = true; readyNow = false; stageName = ''; sawLayers = false;
-  $('secPrep').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  try { await brain.switchToLong(); await run(); } catch (err) { setLive('info', () => `<span class="bad">${errText(err)}</span>`); $('go').disabled = false; }
-};
-try { const m = sessionStorage.getItem('gate-msg'), t = sessionStorage.getItem('gate-tools'); if (m != null) { $('msg').value = m; $('tools').value = t || ''; sessionStorage.removeItem('gate-msg'); sessionStorage.removeItem('gate-tools'); } } catch { }
-</script>
+<script type="module" src="./page.mjs"></script>
 </body></html>
