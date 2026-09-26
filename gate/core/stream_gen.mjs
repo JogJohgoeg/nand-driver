@@ -13,34 +13,31 @@ export const BOUNDS = { LITBASE: 6553600, LPCAP: 16000000, OUT: 1048576, MAXN: 1
 // R9：C512 的上界（R63 层：arena 与输出区约 ×1.8–4，单次调用最大实例 2·512·512 = 524288）；数值按 Python C512 追踪 52 层实测最大值留余量，越界即报错
 export const boundsFor = C => C === 512 ? { LITBASE: 10747904, LPCAP: 16000000, OUT: 2621440, MAXN: 524288, CC: 48 * 1024 * 1024 } : BOUNDS;
 // gate（可选，边下边生成）：{ ready(张量名列表), error(), subscribe(回调) → 取消 }；任务所需的块未全部到齐并校验前不派发，下载出错即中止
-export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, controller = 'model_control', log = () => { }, workerUrl, releaseChunks = null, onStage = () => { }, packSink = null, tool = false, C = 128, gate = null } = {}) {
+export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, controller = 'model_control', log = () => { }, workerUrl, releaseChunks = null, onStage = () => { }, packSink = null, tool = false, C = 128, gate = null, prepUrl = null } = {}) {
   const BOUNDS = boundsFor(C);
   const device = g.device, U = GPUBufferUsage, t0 = performance.now(), T = { units: {}, layers: [], workers: nWorkers };
   // 共享 arena：字 0 = 0，字 1 = 全 1，常量区从 LITBASE 起，由常量池 sink 流式写入
   const words = BOUNDS.LITBASE + BOUNDS.LPCAP + BOUNDS.OUT + 64;
   const arena = device.createBuffer({ size: words * 4, usage: U.STORAGE | U.COPY_DST | U.COPY_SRC });
   const one = new Uint32Array(64); one[1] = 0xffffffff; device.queue.writeBuffer(arena, 0, one);
-  const shared = {
-    cm: new HashPool(null),
-    lp: new HashPool((a, off) => { if (off + a.length > BOUNDS.LPCAP) throw new Error('litpool exceeds LPCAP'); lpStage.push(a); lpStageWords += a.length; }),
-  };
-  // 常量池新内容偏移连续追加：每层攒成一段，加载前一次写入 GPU（逐条 writeBuffer 会在一次提交里堆上百万个小拷贝，触发 GPU 环超时）
-  let lpStage = [], lpStageWords = 0, lpFlushed = 0;
-  const flushLp = () => { if (!lpStageWords) return null; const b = new Uint32Array(lpStageWords); let p = 0; for (const a of lpStage) { b.set(a, p); p += a.length; }
-    device.queue.writeBuffer(arena, (BOUNDS.LITBASE + lpFlushed) * 4, b); const ap = [BOUNDS.LITBASE + lpFlushed, b]; lpFlushed += lpStageWords; lpStage = []; lpStageWords = 0; return ap; };
   const SH = { cache: new Map(), maxN: BOUNDS.MAXN, lpLen: BOUNDS.LPCAP, arena: { buffer: arena, litBase: BOUNDS.LITBASE, words, inited: true } };
   const cellBins = new Map(man.cells.map(c => [c, Wv.bytes(`cell.${c}.bin`)]));      // 单元库网表先拷出（约 6 MB），权重块之后可整体释放
-  // 两段式加载：preparePack（纯 JS，产出可缓存的准备包）→ uploadPack（GPU）；packSink 可接收准备包（写 IndexedDB 缓存）
-  g.tmCache2 ||= new Map(); g.ccHost ||= newCC(BOUNDS.CC || 16 * 1024 * 1024); const CCgpu = g.ccGpu ||= { buf: device.createBuffer({ size: g.ccHost.cap * 4, usage: U.STORAGE | U.COPY_DST }) };
-  const loadPack = async (files, meta, sharedSpec, tag, lpAppend = null) => {
-    const ir = { meta, ...files, outtab: files.outtab };
-    const P = preparePack(ir, { manifest: execMan, getBin: n => cellBins.get(n), tmCache: g.tmCache2, strict: !!g.strict, CC: g.ccHost, shared: sharedSpec });
-    if (lpAppend) P.lpAppend = lpAppend;
+  // 两段式加载：preparePack（纯 JS，在准备 worker 里做，core/prep_worker.mjs）→ uploadPack（GPU，主线程）；packSink 可接收准备包（写本机缓存）
+  g.tmCache2 ||= new Map(); const CCgpu = g.ccGpu ||= { buf: device.createBuffer({ size: (BOUNDS.CC || 16 * 1024 * 1024) * 4, usage: U.STORAGE | U.COPY_DST }) };
+  const prepW = new Worker(prepUrl || new URL('./prep_worker.mjs', import.meta.url), { type: 'module' }), prepCb = new Map(); let prepId = 0, lastInfo = {};
+  prepW.onmessage = ev => { const cb = prepCb.get(ev.data.id); prepCb.delete(ev.data.id); if (ev.data.error) cb.rej(new Error('prepare: ' + ev.data.error)); else { lastInfo = ev.data.info; cb.res(ev.data); } };
+  prepW.onerror = e => { for (const cb of prepCb.values()) cb.rej(new Error('prepare worker: ' + (e.message || e))); prepCb.clear(); };
+  prepW.postMessage({ type: 'init', execMan, bins: [...cellBins], meta: Wv.meta, strict: !!g.strict, BOUNDS, words, ccCap: BOUNDS.CC || 16 * 1024 * 1024 });
+  const bufsOf = (o, out = new Set(), d = 0) => { if (ArrayBuffer.isView(o)) out.add(o.buffer); else if (o && typeof o === 'object' && d < 4) for (const v of Object.values(o)) bufsOf(v, out, d + 1); return [...out]; };
+  const prep = (msg, transfer) => new Promise((res, rej) => { const id = ++prepId; prepCb.set(id, { res, rej }); prepW.postMessage({ ...msg, id }, transfer); });
+  const upload = async (P, sharedSpec, tag) => {
+    if (P.lpAppend) device.queue.writeBuffer(arena, P.lpAppend[0] * 4, P.lpAppend[1]);   // 本层新增的常量池内容（与热启动相同的写法）
     const L = await uploadPack(g, P, { manifest: execMan, getBin: n => cellBins.get(n), tmCache: g.tmCache2, SH: sharedSpec ? SH : null, CCgpu });
     L.prepMs = P.stats.prepMs;
     if (packSink) await packSink(tag, P);                  // 上传之后再写缓存（写入 worker 会接管缓冲，主线程不再持有）
     return L;
   };
+  const sharedSpec = { litBase: BOUNDS.LITBASE, maxN: BOUNDS.MAXN, lpLen: BOUNDS.LPCAP, words };
   // 任务：头尾（embedding 最先，暂存区按它的最大需求一次建好）、52 层
   const cellT = man.cells.map(c => `cell.${c}.json`);
   const need = job => job.kind === 'unit'
@@ -53,22 +50,18 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
   jobs.forEach((job, qi_) => { for (const n of need(job)) { const t = tByName.get(n); for (let c = Math.floor(t.offset / CH); c <= Math.floor((t.offset + t.bytes - 1) / CH); c++) chunkLast[c] = Math.max(chunkLast[c], qi_); } });
   const units = {}, layers = [], pending = new Map(); let qi = 0, inflight = 0, nextL = 0, chain = Promise.resolve(), failed = null;
   const maxAhead = nWorkers + 1;                           // 背压：已完成未处理 + 在途 ≤ nWorkers + 1
-  const unitDone = async (job, r) => {
-    units[job.unit] = await loadPack(r.files, r.meta, null, job.unit); T.units[job.unit] = { gen: r.meta.gen_ms.total, prepMs: units[job.unit].prepMs, uploadMs: units[job.unit].loadMs };
+  const unitDone = async (job, r, pp) => {
+    const { P } = await pp; units[job.unit] = await upload(P, null, job.unit); T.units[job.unit] = { gen: r.meta.gen_ms.total, prepMs: units[job.unit].prepMs, uploadMs: units[job.unit].loadMs };
     log(`unit ${job.unit} gen ${r.meta.gen_ms.total.toFixed(0)} ms prep ${(units[job.unit].prepMs || 0).toFixed(0)} upload ${units[job.unit].loadMs.toFixed(0)} ms`); onStage({ unit: job.unit });
   };
-  const layerDone = async (L, st) => {
-    const r = finishLayer(Wv.meta, st, shared, { runtime: true }); const lpAppend = flushLp();
-    const files = { ...r.files, rows: r.runtime.rows, colmap: r.runtime.colmap };        // 运行时形式：局部列映射 + 局部偏移
-    const t1 = performance.now(); layers[L] = await loadPack(files, r.meta, { litBase: BOUNDS.LITBASE, maxN: BOUNDS.MAXN, lpLen: BOUNDS.LPCAP, words }, 'L' + L, lpAppend);
-    T.layers.push({ L, trace: st.traceMs, emit: r.meta.gen_ms.emit, prep: layers[L].prepMs, load: performance.now() - t1, local: r.runtime.colmap.length });
-    delete SH.cm2; log(`L${L} trace ${st.traceMs.toFixed(0)} emit ${r.meta.gen_ms.emit.toFixed(0)} load ${(performance.now() - t1).toFixed(0)} ms`); onStage({ layer: L });
-  };
+  const got = new Set(); let queued = 0;                  // got：已收到追踪结果的头尾单元（其上传已排进 chain）；queued：已送去准备、未上传完的层
   await new Promise((resolve, reject) => {
     const workers = [...Array(nWorkers)].map(() => new Worker(workerUrl, { type: 'module' }));
+    const stopAll = () => { workers.forEach(x => x.terminate()); prepW.terminate(); };
+    const fail = e => { if (failed) return; failed = e; if (unsub) unsub(); stopAll(); reject(e); };
     const send = w => {
       if (qi >= jobs.length || failed) return false;
-      if (inflight + pending.size >= maxAhead) return false;
+      if (inflight + pending.size + queued >= maxAhead) return false;
       if (gate && !gate.ready(need(jobs[qi]))) return false;
       const job = jobs[qi++], names = need(job), tensors = names.map(n => ({ name: n, bytes: Wv.bytes(n) }));
       w.busy = true; inflight++;
@@ -78,23 +71,35 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
     };
     const kick = () => { for (const w of workers) if (!w.busy) send(w); };
     let done = 0;
-    const unsub = gate ? gate.subscribe(() => { if (failed) return; const e = gate.error(); if (e) { failed = e; unsub(); workers.forEach(x => x.terminate()); reject(e); } else kick(); }) : null;
-    const finish = () => { if (done === jobs.length) { if (unsub) unsub(); workers.forEach(x => x.terminate()); resolve(); } };
+    const unsub = gate ? gate.subscribe(() => { if (failed) return; const e = gate.error(); if (e) fail(e); else kick(); }) : null;
+    const finish = () => { if (done === jobs.length && !failed) { if (unsub) unsub(); stopAll(); resolve(); } };
+    // 层按层号依次送去准备（准备 worker 串行处理，共享池偏移顺序与原先相同），上传按同一顺序排进 chain；头尾单元三个都已排进之后才放层
+    const pump = () => {
+      while (!failed && pending.has(nextL) && got.has('embedding') && got.has('tail') && got.has('control') && queued < 2) {
+        const st = pending.get(nextL); pending.delete(nextL); const L = nextL++; queued++;
+        const pp = prep({ type: 'layer', st }, bufsOf(st)), traceMs = st.traceMs;
+        chain = chain.then(() => pp).then(async ({ P, info }) => {
+          const t1 = performance.now(); layers[L] = await upload(P, sharedSpec, 'L' + L); queued--;
+          T.layers.push({ L, trace: traceMs, emit: info.emit, prep: layers[L].prepMs, load: performance.now() - t1, local: info.local });
+          log(`L${L} trace ${traceMs.toFixed(0)} emit ${info.emit.toFixed(0)} load ${(performance.now() - t1).toFixed(0)} ms`); onStage({ layer: L });
+          done++; kick(); pump(); finish();
+        }).catch(fail);
+      }
+    };
     for (const w of workers) {
-      w.onerror = e => { failed = e.message || String(e); reject(failed); };
+      w.onerror = e => fail(e.message || String(e));
       w.onmessage = ev => {
         w.busy = false; inflight--; const { job } = ev.data;
-        const drain = async () => { while (pending.has(nextL) && units.embedding && units.tail && units.control) { const st = pending.get(nextL); pending.delete(nextL); const L = nextL++; await layerDone(L, st); done++; kick(); } finish(); };
-        if (job.kind === 'unit') { const r = ev.data.unit; chain = chain.then(() => unitDone(job, r)).then(() => { done++; kick(); }).then(drain).catch(e => { failed = e; reject(e); }); }
-        else { pending.set(job.L, ev.data.st); chain = chain.then(drain).catch(e => { failed = e; reject(e); }); }
-        kick();
+        if (job.kind === 'unit') { const r = ev.data.unit, pp = prep({ type: 'unit', meta: r.meta, files: r.files }, bufsOf(r.files)); got.add(job.unit);
+          chain = chain.then(() => unitDone(job, r, pp)).then(() => { done++; kick(); finish(); }).catch(fail); }
+        else pending.set(job.L, ev.data.st);
+        pump(); kick();
       };
     }
     kick();
   });
   if (nextL !== 52) throw new Error('layers incomplete ' + nextL);
-  T.sharedWords = { cm: shared.cm.len, lp: shared.lp.len, cmEntries: shared.cm.entries, lpEntries: shared.lp.entries, ccWords: g.ccHost ? g.ccHost.len : (g.cc ? g.cc.len : 0) };
-  shared.cm = shared.lp = null;
+  T.sharedWords = { ...(lastInfo.shared || {}), ccWords: lastInfo.ccWords || 0 };
   T.totalMs = performance.now() - t0;
   await Promise.all([...Object.values(units), ...layers].map(L => L && L.pipesReady));   // 着色器管线全部编译完成（exec/layer_pack.mjs uploadPack 不逐个等待）
   const F = assembleFull(g, { ctl: units.control, emb: units.embedding, tail: units.tail, M: { layers } }, log);
