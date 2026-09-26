@@ -155,7 +155,8 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   return {
     v: 1, meta, strict: !!strict, calls: Uint32Array.from(calls), groups: Uint32Array.from(groups), members5, wordmap: Uint32Array.from(wordmap), dtab: Uint32Array.from(dtab), otab: Uint32Array.from(outtab),
     litpool: shared ? null : Uint32Array.from(ir.litpool), R5g, wtab: wtBuf.slice(0, Math.max(4, wtLen)), ccAppends, UB, PQ, MU, stab: stb.stab, sbase: stb.sbase, ctab: ct.ctab, CU,
-    items, megaCode, megaCodeE, MUE, x16: { g: X16g, u: X16u, nt: Uint32Array.from(x16src.map(sr => sr.nt)), XPU, GXU, tAll, nGroups: x16uni.length }, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
+    items, megaCode, megaCodeE, MUE, // X16 的表放在顶层：本机缓存（core/pack_cache.mjs）只按顶层字段识别定型数组，嵌套对象会被当 JSON 存成普通对象，热启动时出错
+    x16g: X16g, x16u: X16u, x16nt: Uint32Array.from(x16src.map(sr => sr.nt)), x16XPU: XPU, x16GXU: GXU, x16: { tAll, nGroups: x16uni.length }, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
     stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
   };
 }
@@ -198,9 +199,10 @@ export async function uploadPack(g, P, { manifest, getBin, tmCache, SH = null, C
   if (P.x16 && P.x16.nGroups) {                                         // X16 取数（exec/layer_exec.mjs）
     const xL = bgl(['ud', 'r', 'w']), gxL = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r', 'r', 'ud']);
     L.xpackPipe = await pipe(XPACK_WGSL, xL); L.gx16Pipe = await pipe(GATHERX16_WGSL, gxL);
-    L.x16 = true; L.x16g = P.x16.g; L.x16u = P.x16.u; L.x16nt = P.x16.nt;
+    // 执行器自留拷贝：冷启动时准备包写缓存会把顶层定型数组转移给写入 worker（core/pack_cache.mjs 的 keep 之外）
+    L.x16 = true; L.x16g = P.x16g.slice(); L.x16u = P.x16u.slice(); L.x16nt = P.x16nt.slice();
     L.x16T = device.createBuffer({ size: al4(Math.max(16, P.x16.tAll * 4)), usage: U.STORAGE });
-    L.xpackU = mk(P.x16.XPU, U.UNIFORM | U.COPY_DST); L.gx16U = mk(P.x16.GXU, U.UNIFORM | U.COPY_DST);
+    L.xpackU = mk(P.x16XPU, U.UNIFORM | U.COPY_DST); L.gx16U = mk(P.x16GXU, U.UNIFORM | U.COPY_DST);
     L.xpackBG = device.createBindGroup({ layout: xL, entries: [{ binding: 0, resource: { buffer: L.xpackU, size: 16 } }, { binding: 1, resource: { buffer: L.arena } }, { binding: 2, resource: { buffer: L.x16T } }] });
     L.gx16BG = device.createBindGroup({ layout: gxL, entries: [{ binding: 0, resource: { buffer: L.uni, size: 32 } }, { binding: 1, resource: { buffer: L.rows4 } }, { binding: 2, resource: { buffer: L.colmap } },
       { binding: 3, resource: { buffer: L.members } }, { binding: 4, resource: { buffer: L.wordmap } }, { binding: 5, resource: { buffer: L.arena } }, { binding: 6, resource: { buffer: L.inp } },
