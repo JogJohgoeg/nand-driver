@@ -131,7 +131,8 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
         chunks[i] = b; have[i] = 1; got += z ? z.bytes : b.length; done++; emit({ type: 'progress', stage: 'download', done: got, total, chunks: done, of: nOrig }); wake();
       };
       const dl = Promise.all(Array.from({ length: 4 }, async () => { while (next < order.length && !dlErr) await one(order[next++]); }));
-      dl.then(() => { dlDone = true; wake(); }, e => { dlErr = e; wake(); });
+      let nl = 0;   // 已完成的层数；下载未完时生成进度不单独报阶段（界面显示下载进度），下载完立即切到生成阶段并报已完成的层数
+      dl.then(() => { dlDone = true; wake(); emit({ type: 'progress', stage: 'generate', done: nl, total: 52 }); }, e => { dlErr = e; wake(); });
       { const enc = new TextEncoder(), base = nOrig * CH, parts = []; let off = 0;
         for (const { c, meta, bin } of extra) {
           const j = enc.encode(JSON.stringify(meta)); man.tensors.push({ name: `cell.${c}.json`, bytes: j.length, offset: base + off }); parts.push(j); off += j.length;
@@ -148,7 +149,6 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
       const gate = { ready, error: () => dlErr, subscribe: f => { subs.add(f); return () => subs.delete(f); } };
       const discard = new DiscardSink(here('core/cache_worker.mjs')); const cw0 = store ? cacheWriter(store, cellBins) : null; let broken = null;
       const sink = cw0 ? async (tag, P) => { if (broken) return discard.put(tag, P); try { await cw0.sink(tag, P); } catch (e) { broken = String(e.message || e); await dropCurrent(store); } } : (tag, P) => discard.put(tag, P);
-      let nl = 0;   // 下载未完时生成进度不单独报阶段（界面仍显示下载进度）；下载完后按层报，done 含已完成的层
       const R = await streamGenLoad(g, Wv, man, execMan, { nWorkers: workers, controller, tool: true, C: Cn, workerUrl: here('gen_ir/gen_worker.mjs'), packSink: sink, releaseChunks: c => { chunks[c] = null; }, gate,
         log: s => { if (/^L\d+ /.test(s)) { ++nl; if (dlDone) emit({ type: 'progress', stage: 'generate', done: nl, total: 52 }); } else if (/^unit /.test(s) && dlDone) emit({ type: 'progress', stage: 'generate', unit: s.split(' ')[1] }); } });
       await dl;
