@@ -2,12 +2,23 @@
 // R9：容量参数 C（128 / 512）。C=512 逐行照 R63 layer.py（LAYER-DELTA.patch）：KV 512 槽、10 位计数、eq10、C512 控制模板（IR 中名 control_c512）、
 // RoPE 9 位地址 = 4 页 rope_rom0..3 + mux32 页选择、qk/softmax/av 长度 512。C=128 与 R7/R8 逐字节相同。
 import { Row, Bits, literal, join, unbf, signed8, range, tile, repeat, cat, map, f32bits } from './bits.mjs';
+import { decode } from '../exec/gen.mjs';
 const ESC_K = 4, ESC_CELL = 'racc4';   // 例外串行链每步几个（cells/racc.py；racc8 实测更慢）
 const PROJ = ['self_attn.q_proj', 'self_attn.k_proj', 'self_attn.v_proj', 'self_attn.o_proj', 'mlp.gate_proj', 'mlp.up_proj', 'mlp.down_proj'];
 export const LAYER_NIN = 1536 * 16 + 2, KV_COUNT = 2 * 128 * 8 * 64, LAYER_NST = KV_COUNT * 16 + 10;
 export const layerDims = (C = 128) => { const kv = 2 * C * 8 * 64, cb = C === 512 ? 10 : 8; return { kv, cb, nst: kv * 16 + cb + 2 }; };
 const genRow = a => new Row('G', a.length, { a });
 const zeros = n => new Float64Array(n);
+// 单元网表对全部 2^nIn 个输入求值（位切片，每条线 2^nIn / 32 字；规则同 exec/gen.mjs：线 0 = 0、1 = 1、2.. = 输入、之后依次为门，
+// NAND 引用线号 ≥ 自身读 0，输出 = 末 nOut 条线）。返回 Uint32Array：输出 o 的第 a 个地址位于字 o·W + (a >> 5) 的第 a & 31 位。
+export function ropeTable(bin, nIn, nOut) {
+  const { op, a, b, nGates } = decode(bin), base = 2 + nIn, nW = base + nGates, Wd = (1 << nIn) >>> 5, w = new Uint32Array(nW * Wd);
+  w.fill(0xffffffff, Wd, 2 * Wd);
+  for (let r = 0; r < nIn; r++) for (let ad = 0; ad < (1 << nIn); ad++) if ((ad >> r) & 1) w[(2 + r) * Wd + (ad >> 5)] |= 1 << (ad & 31);
+  for (let i = 0; i < nGates; i++) { if (op[i] !== 0) throw new Error('ropeTable: LATCH'); const k = base + i, x = a[i] >= k ? 0 : a[i], y = b[i] >= k ? 0 : b[i];
+    for (let q = 0; q < Wd; q++) w[k * Wd + q] = ~(w[x * Wd + q] & w[y * Wd + q]); }
+  return w.slice((nW - nOut) * Wd, nW * Wd);
+}
 export function traceLayer(e, W, C = 128) {                      // W: { norms: {input_layernorm, post_attention_layernorm}, proj: {name: {shape, packed, scale, exc_index, exc_bits}} }
   if (C !== 128 && C !== 512) throw new Error('layer C must be 128 or 512');
   const { kv: KV_COUNT, cb: CB, nst: nstate } = layerDims(C), ninput = LAYER_NIN, S = 2 + ninput, CTL = C === 512 ? 'control_c512' : 'control';
@@ -27,14 +38,20 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   const initial = e.op(CTL, control_in, literal(0, 32));
   const st = { err0: literal(0, 1), err1: literal(0, 1) };
   e.set_scope('rope');
-  const romPage = name => { const romB = e.op(name, count.low(7));
-    // rom.v.reshape(64,32).T：第 r 行第 c 列 = 扁平第 c·32 + r 个输出
-    const romIds = e.ids(romB).map(a => a[0]);
-    return new Bits([...Array(32).keys()].map(r => { const a = new Float64Array(64); for (let c = 0; c < 64; c++) a[c] = romIds[c * 32 + r]; return genRow(a); }), 64); };
-  let rom;
-  if (C === 128) rom = romPage('rope_rom');
-  else { const pages = [0, 1, 2, 3].map(pg => romPage('rope_rom' + pg));      // R63：四页 ROM，bit8 / bit7 经 mux32 选页（求值顺序同 Python 实参从左到右）
-    const hi = e.select(count.bit(7), pages[3], pages[2]), lo = e.select(count.bit(7), pages[1], pages[0]); rom = e.select(count.bit(8), hi, lo); }
+  // RoPE 表按位置查：原先是 rope_rom 单元（C=128 一页、C=512 四页，每页 1 个实例约 15.5 万门，只能单线程串行，每页约 0.29 ms）。
+  // 改为：生成时按 rope_rom 网表（同一 NAND 规则）对全部地址求出常量表，再用 mux32 按计数的各位逐层二选一（C=128 七层、C=512 九层，
+  // 每层一次宽调用）。选出的就是表中第 count mod C 项，与 rope_rom（C=512 时 rope_rom0..3 + bit7/bit8 选页）逐位相同。
+  // 布局同前：第 r 行第 c 列 = 扁平第 c·32 + r 个输出。
+  const pages = C === 128 ? ['rope_rom'] : ['rope_rom0', 'rope_rom1', 'rope_rom2', 'rope_rom3'], tabs = pages.map(n => ropeTable(W.cellBin(n), 7, 2048));
+  const P = 128 * pages.length, lanes = P * 64, lit = [];
+  for (let r = 0; r < 32; r++) { const a = new Uint8Array(lanes);
+    for (let p = 0; p < P; p++) { const t = tabs[p >> 7], ad = p & 127; for (let c = 0; c < 64; c++) { const o = c * 32 + r; a[p * 64 + c] = (t[o * 4 + (ad >> 5)] >>> (ad & 31)) & 1; } }
+    lit.push(new Row('L', lanes, { a })); }
+  let rom = new Bits(lit, lanes);
+  for (let lev = 0, n = P; n > 1; lev++, n /= 2) {
+    const half = n / 2, pick = d => map(range(0, half * 64), j => (2 * Math.floor(j / 64) + d) * 64 + (j % 64));
+    rom = e.select(count.bit(lev), rom.cols(pick(1)), rom.cols(pick(0)));
+  }
   const norm = (x, name, label) => {
     e.set_scope(label); const xf = unbf(x), squared = e.op('mul', xf, xf); let s = literal(0, 32);
     for (let j = 0; j < x.n; j++) s = e.op('add_nn', s, squared.cols(j));   // ≡ add：链上两输入符号位恒 0（cells/add_nn.json）

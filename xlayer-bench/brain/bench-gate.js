@@ -6,7 +6,7 @@
 const L = (zh, en) => document.documentElement.lang === 'en' ? en : zh;
 const $ = id => document.getElementById(id);
 const GATE = new URL('../../gate/gate-brain.mjs', import.meta.url).href;
-const NAND_PER_TOKEN = 282073428885;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
+const NAND_PER_TOKEN = 282106356845;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
 const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' }, MIN_ANSWER = 48;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // 面向新手的说法（不出现 C128、token、现场生成等术语）

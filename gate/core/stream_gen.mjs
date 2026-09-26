@@ -42,7 +42,7 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
   const cellT = man.cells.map(c => `cell.${c}.json`);
   const need = job => job.kind === 'unit'
     ? [...cellT, ...({ control: [], k6: [], merge: [], glue3: [], embedding: ['model.embed_tokens.weight'], tail: ['model.norm.weight', 'head.codes', 'head.scales'] })[job.unit]]
-    : [...cellT, ...PROJ.flatMap(p => ['shape', 'packed', 'scale', 'exc_index', 'exc_bits'].map(f => `model.layers.${job.L}.${p}.${f}`)), `model.layers.${job.L}.input_layernorm.weight`, `model.layers.${job.L}.post_attention_layernorm.weight`];
+    : [...cellT, ...(job.C === 512 ? [0, 1, 2, 3].map(i => `cell.rope_rom${i}.bin`) : ['cell.rope_rom.bin']), ...PROJ.flatMap(p => ['shape', 'packed', 'scale', 'exc_index', 'exc_bits'].map(f => `model.layers.${job.L}.${p}.${f}`)), `model.layers.${job.L}.input_layernorm.weight`, `model.layers.${job.L}.post_attention_layernorm.weight`];
   const jobs = [{ kind: 'unit', unit: 'embedding' }, { kind: 'unit', unit: 'tail', opts: { controller } }, { kind: 'unit', unit: 'control', opts: { controller, C } },
     ...(tool ? ['k6', 'merge', 'glue3'].map(unit => ({ kind: 'unit', unit })) : []), ...[...Array(52).keys()].map(L => ({ kind: 'layer', L, C }))];   // R9：工具旁路三个单元；层带容量 C
   // 权重块逐步释放：每块记下最后一个需要它的任务，该任务派发（张量已拷出）后即释放这一块
