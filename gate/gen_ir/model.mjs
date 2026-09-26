@@ -4,9 +4,14 @@ import { Row, Bits, literal, join, unbf, range, map } from './bits.mjs';
 const genRow = a => new Row('G', a.length, { a });
 const vm = (e, b) => { const I = e.ids(b), n = b.n, h = b.h, o = new Float64Array(n * h); for (let i = 0; i < n; i++) for (let r = 0; r < h; r++) o[i * h + r] = I[r][i]; return o; };
 // constant_rows(A[out, red], width)：第 (r·width + b) 行、第 o 列 = A[o][r] 的第 b 位
+// 每个值只取一次；各行同时带上 packbits 结果 pk（engine.mjs packLit 直接采用，与逐位打包相同）
 function constantRows(get, nOut, nRed, width) {
-  const rows = [];
-  for (let r = 0; r < nRed; r++) for (let b = 0; b < width; b++) { const a = new Uint8Array(nOut); for (let o = 0; o < nOut; o++) a[o] = (get(o, r) >> b) & 1; rows.push(new Row('L', nOut, { a })); }
+  const rows = [], nw = Math.ceil(Math.ceil(nOut / 8) / 4);
+  for (let r = 0; r < nRed; r++) {
+    const A = [], P = []; for (let b = 0; b < width; b++) { A.push(new Uint8Array(nOut)); P.push(new Uint32Array(nw)); }
+    for (let o = 0; o < nOut; o++) { const v = get(o, r), sh = o & 31, q = o >> 5; for (let b = 0; b < width; b++) { const t = (v >> b) & 1; A[b][o] = t; P[b][q] |= t << sh; } }
+    for (let b = 0; b < width; b++) rows.push(new Row('L', nOut, { a: A[b], pk: P[b] }));
+  }
   return new Bits(rows, nOut);
 }
 // 控制器为参数：R61 model_control（Q=34，cap32）或 R65 model_control_cap256_C128（Q=37）/ _C512（Q=39）。

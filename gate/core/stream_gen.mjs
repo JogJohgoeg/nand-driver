@@ -12,7 +12,8 @@ const enc = new TextEncoder(), bytesOf = a => new Uint8Array(a.buffer, a.byteOff
 export const BOUNDS = { LITBASE: 6553600, LPCAP: 16000000, OUT: 1048576, MAXN: 131072 };
 // R9：C512 的上界（R63 层：arena 与输出区约 ×1.8–4，单次调用最大实例 2·512·512 = 524288）；数值按 Python C512 追踪 52 层实测最大值留余量，越界即报错
 export const boundsFor = C => C === 512 ? { LITBASE: 10747904, LPCAP: 16000000, OUT: 2621440, MAXN: 524288, CC: 48 * 1024 * 1024 } : BOUNDS;
-export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, controller = 'model_control', log = () => { }, workerUrl, releaseChunks = null, onStage = () => { }, packSink = null, tool = false, C = 128 } = {}) {
+// gate（可选，边下边生成）：{ ready(张量名列表), error(), subscribe(回调) → 取消 }；任务所需的块未全部到齐并校验前不派发，下载出错即中止
+export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, controller = 'model_control', log = () => { }, workerUrl, releaseChunks = null, onStage = () => { }, packSink = null, tool = false, C = 128, gate = null } = {}) {
   const BOUNDS = boundsFor(C);
   const device = g.device, U = GPUBufferUsage, t0 = performance.now(), T = { units: {}, layers: [], workers: nWorkers };
   // 共享 arena：字 0 = 0，字 1 = 全 1，常量区从 LITBASE 起，由常量池 sink 流式写入
@@ -68,6 +69,7 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
     const send = w => {
       if (qi >= jobs.length || failed) return false;
       if (inflight + pending.size >= maxAhead) return false;
+      if (gate && !gate.ready(need(jobs[qi]))) return false;
       const job = jobs[qi++], names = need(job), tensors = names.map(n => ({ name: n, bytes: Wv.bytes(n) }));
       w.busy = true; inflight++;
       w.postMessage({ job, tensors, man: { tensors: man.tensors.filter(t => names.includes(t.name)), cells: man.cells } }, tensors.map(t => t.bytes.buffer));
@@ -76,7 +78,8 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
     };
     const kick = () => { for (const w of workers) if (!w.busy) send(w); };
     let done = 0;
-    const finish = () => { if (done === jobs.length) { workers.forEach(x => x.terminate()); resolve(); } };
+    const unsub = gate ? gate.subscribe(() => { if (failed) return; const e = gate.error(); if (e) { failed = e; unsub(); workers.forEach(x => x.terminate()); reject(e); } else kick(); }) : null;
+    const finish = () => { if (done === jobs.length) { if (unsub) unsub(); workers.forEach(x => x.terminate()); resolve(); } };
     for (const w of workers) {
       w.onerror = e => { failed = e.message || String(e); reject(failed); };
       w.onmessage = ev => {
@@ -93,6 +96,7 @@ export async function streamGenLoad(g, Wv, man, execMan, { nWorkers = 2, control
   T.sharedWords = { cm: shared.cm.len, lp: shared.lp.len, cmEntries: shared.cm.entries, lpEntries: shared.lp.entries, ccWords: g.ccHost ? g.ccHost.len : (g.cc ? g.cc.len : 0) };
   shared.cm = shared.lp = null;
   T.totalMs = performance.now() - t0;
+  await Promise.all([...Object.values(units), ...layers].map(L => L && L.pipesReady));   // 着色器管线全部编译完成（exec/layer_pack.mjs uploadPack 不逐个等待）
   const F = assembleFull(g, { ctl: units.control, emb: units.embedding, tail: units.tail, M: { layers } }, log);
   return { F, T, cellBins, toolUnits: tool ? { k6: units.k6, merge: units.merge, glue3: units.glue3 } : null };
 }
@@ -126,6 +130,7 @@ export async function loadFromCache(g, cache, execMan, { log = () => { }, verify
     log(`warm ${tag}`); onStage({ tag });
   }
   T.totalMs = performance.now() - t0;
+  await Promise.all([...Object.values(units), ...layers].map(L => L && L.pipesReady));   // 着色器管线全部编译完成（exec/layer_pack.mjs uploadPack 不逐个等待）
   const F = assembleFull(g, { ctl: units.control, emb: units.embedding, tail: units.tail, M: { layers } }, log);
   return { F, T, toolUnits: units.k6 ? { k6: units.k6, merge: units.merge, glue3: units.glue3 } : null };
 }
