@@ -31,9 +31,10 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) 
   let isX = isG0 * u32(d.w == 1u); let isG = isG0 - isX;   // 类别 X：逐字字节偏移（d.w = 1；arena 字 0 恒为 0，故 vB 仍为 0）
   let xr = (off + wl * 9u) * isX;                        // wtab 按 u32 编址：[字基址, 8 个 u32 装 32 个字节偏移]
   let xbase = wtab[xr >> 1u][xr & 1u];
-  let wt = wtab[(off + wl) * isW];                    // 类别 3：[对齐字地址 或 一般段偏移, 对齐掩码字]；其余类别读第 0 项 (0, 0)
-  let wGen = u32(wt.y == 0u) * isW;
-  let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen)] & (d.y | wt.y);
+  let wt = wtab[(off + wl) * isW];                    // 类别 3：[对齐字地址 或 一般/混合段偏移, 对齐掩码字]；其余类别读第 0 项 (0, 0)
+  let wGen = u32(wt.y != 0xffffffffu) * isW;          // 一般字（掩码 0）或混合字（部分掩码：掩码车道取对齐字 colmap[段 + 32]，其余逐位）
+  let wMix = u32(wt.y != 0u) * wGen;
+  let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen) + colmap[(wt.x + 32u) * wMix] * wMix] & (d.y | wt.y);
   let bit = (arena[(d.x >> 5u) * isB] >> ((d.x & 31u) * isB)) & 1u;
   let vB = bitcast<u32>(extractBits(bitcast<i32>(bit << 31u), 31u, 1u)) & d.w;
   let nb = min(32u, n - min(n, wl * 32u)) * (isG | wGen | isX);
@@ -43,6 +44,7 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>, @builtin(num_workgroups) 
   for (var b = 0u; b < nb; b++) {
     let xi = xr + 1u + (b >> 2u);
     let xo = xbase + ((wtab[xi >> 1u][xi & 1u] >> ((b & 3u) * 8u)) & 0xffu);
+    if (((wt.y >> b) & 1u) != 0u) { continue; }       // 混合字的掩码车道已由整字读得
     let gi = rb + select(colmap[co + b], xo, isX == 1u);
     acc = acc | (((arena[gi >> 5u] >> (gi & 31u)) & 1u) << b);
   }
@@ -90,8 +92,9 @@ fn g5(r: u32, fw: u32) -> u32 {                                     // gather5 �
   let xr = (off + wl * 9u) * isX;
   let xbase = wtab[xr >> 1u][xr & 1u];
   let wt = wtab[(off + wl) * isW];
-  let wGen = u32(wt.y == 0u) * isW;
-  let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen)] & (d.y | wt.y);
+  let wGen = u32(wt.y != 0xffffffffu) * isW;
+  let wMix = u32(wt.y != 0u) * wGen;
+  let vA = arena[(d.x + wl) * isA + wt.x * (isW - wGen) + colmap[(wt.x + 32u) * wMix] * wMix] & (d.y | wt.y);
   let bit = (arena[(d.x >> 5u) * isB] >> ((d.x & 31u) * isB)) & 1u;
   let vB = bitcast<u32>(extractBits(bitcast<i32>(bit << 31u), 31u, 1u)) & d.w;
   let nb = min(32u, n - min(n, wl * 32u)) * (isG | wGen | isX);
@@ -101,6 +104,7 @@ fn g5(r: u32, fw: u32) -> u32 {                                     // gather5 �
   for (var b = 0u; b < nb; b++) {
     let xi = xr + 1u + (b >> 2u);
     let xo = xbase + ((wtab[xi >> 1u][xi & 1u] >> ((b & 3u) * 8u)) & 0xffu);
+    if (((wt.y >> b) & 1u) != 0u) { continue; }       // 混合字的掩码车道已由整字读得
     let gi = rb + select(colmap[co + b], xo, isX == 1u);
     acc = acc | (((arena[gi >> 5u] >> (gi & 31u)) & 1u) << b);
   }

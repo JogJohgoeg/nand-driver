@@ -4,6 +4,7 @@
 //   C：某次调用 k 的第 j 个输出的若干实例，线号 = base_k + c·ng_k + (ng_k − nout_k + j)，c 取自 cols（null = 0..n−1）
 //   G：一般线号（输入区 / 状态区 / 混合来源），逐元素存
 // stride0：整行是同一个线号（numpy broadcast_to 的视图），只存一个元素。
+const NOCOLS = {};
 export class Row {
   constructor(t, n, o) { this.t = t; this.n = n; Object.assign(this, o); }
   static lit(bits, n = bits.length) { return new Row('L', n, { a: bits, s0: bits.length === 1 && n !== 1 ? true : bits.length === 1 && n === 1 ? false : false }); }
@@ -20,11 +21,12 @@ export class Row {
     if (this.t === 'C') return Row.call(this.k, this.j, n, null, this.colAt(0));
     return new Row('G', n, { a: this.a.subarray(0, 1) });
   }
-  sub(idx) {                                            // 列选取（idx: Int32Array / 数组）
+  sub(idx, memo = null) {                              // 列选取（idx: Int32Array / 数组）；memo：同一次 Bits.cols 内按来源列数组共用结果（内容相同，只少算少存）
     const m = idx.length;
     if (this.t === 'C') {
       if (this.c0 >= 0) return Row.call(this.k, this.j, m, null, this.c0);
-      const c = new Int32Array(m); for (let i = 0; i < m; i++) c[i] = this.cols ? this.cols[idx[i]] : idx[i];
+      const key = this.cols || NOCOLS; let c = memo && memo.get(key);
+      if (!c) { c = new Int32Array(m); const cs = this.cols; if (cs) for (let i = 0; i < m; i++) c[i] = cs[idx[i]]; else c.set(idx); if (memo) memo.set(key, c); }
       return Row.call(this.k, this.j, m, c);
     }
     if (this.a.length === 1 && this.n !== 1) return new Row(this.t, m, { a: this.a });
@@ -49,7 +51,8 @@ export class Bits {
   rowsRange(a, b) { return new Bits(this.rows.slice(a, b), this.n); }
   cols(idx) {
     if (typeof idx === 'number') idx = [idx];
-    return new Bits(this.rows.map(r => r.sub(idx)), idx.length);
+    const memo = new Map();
+    return new Bits(this.rows.map(r => r.sub(idx, memo)), idx.length);
   }
   broadcast(n) { if (this.n !== 1 && this.n !== n) throw new Error('broadcast'); return this.n === n ? this : new Bits(this.rows.map(r => r.bcast(n)), n); }
 }

@@ -43,10 +43,16 @@ export class HashPool {
   }
 }
 const packLit = (r) => {                               // 常量行 → packbits(bitorder='little') 并补齐到 4 字节
-  const n = r.n, nb = Math.ceil(n / 8), nw = Math.ceil(nb / 4), w = new Uint32Array(Math.max(nw, 0));
-  for (let i = 0; i < n; i++) if (r.litAt(i)) w[i >> 5] |= 1 << (i & 31);
+  const n = r.n, nb = Math.ceil(n / 8), nw = Math.ceil(nb / 4), a = r.a;
+  if (r.pk && r.pk.length === nw) return r.pk;          // 生成时已打包（model.mjs constantRows，同一规则）
+  const w = new Uint32Array(Math.max(nw, 0));
+  if (a.length === 1) { if (a[0]) for (let i = 0; i < n; i++) w[i >> 5] |= 1 << (i & 31); }
+  else for (let q = 0; q < nw; q++) { const b0 = q * 32, b1 = Math.min(n, b0 + 32); let x = 0; for (let i = b0; i < b1; i++) x |= (a[i] !== 0) << (i - b0); w[q] = x; }
   return w;
 };
+// 列数组对象 → 编号（列数组创建后不再改写，同一对象内容恒同，可作去重池的快速键）
+const colIds = new WeakMap(); let colSeq = 0;
+const colId = a => { let v = colIds.get(a); if (v === undefined) { v = ++colSeq; colIds.set(a, v); } return v; };
 const range16 = o => Array.from({ length: 16 }, (_, i) => o + i);
 const SPECIAL = [['mul', 'mul_bb', [...range16(0), ...range16(32)]], ['silu', 'silu_b', range16(0)]];
 const zeroLit = r => r.t === 'L' && (r.a.length === 1 ? r.a[0] === 0 : r.a.every(v => v === 0));
@@ -86,7 +92,20 @@ export class Engine {
     const K = new Int32Array(n), J = new Int32Array(n), Cc = new Float64Array(n); let allLit = true;
     const s0 = r.a.length === 1 && n !== 1;
     if (s0) { const [k, j, c] = this.locate(r.a[0]); K.fill(k); J.fill(j); Cc.fill(c); allLit = k === -3; }
-    else for (let i = 0; i < n; i++) { const [k, j, c] = this.locate(r.a[i]); K[i] = k; J[i] = j; Cc[i] = c; if (k !== -3) allLit = false; }
+    else {                                               // 同 locate 逐元素定位；相邻元素多落在同一调用，先查上一次的调用区间再二分（结果相同）
+      const [IN, ST, CB] = this.region, B = this.bases, NG = this.ng, NO = this.nout, CN = this.cn, last = this.calls - 1, a = r.a; let hk = -1;
+      for (let i = 0; i < n; i++) {
+        const id = a[i]; let k, j, c;
+        if (id < 2) { k = -3; j = 0; c = id; } else if (id < ST) { k = -1; j = 0; c = id - IN; } else if (id < CB) { k = -2; j = 0; c = id - ST; }
+        else {
+          if (hk >= 0 && B[hk] <= id && (hk === last || B[hk + 1] > id)) k = hk;
+          else { let lo = 0, hi = last; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (B[mid] <= id) lo = mid; else hi = mid - 1; } k = hk = lo; }
+          const rel = id - B[k], ng = NG[k]; c = Math.floor(rel / ng); j = rel - c * ng - (ng - NO[k]);
+          if (j < 0 || c >= CN[k]) throw new Error('引用了非输出线');
+        }
+        K[i] = k; J[i] = j; Cc[i] = c; if (k !== -3) allLit = false;
+      }
+    }
     if (allLit) { const a = new Uint8Array(n); for (let i = 0; i < n; i++) a[i] = Cc[i]; return this.recLit(new Row('L', n, { a })); }
     for (let i = 0; i < n; i++) if (K[i] >= 0) srcs.add(K[i]);
     let same = true; for (let i = 1; i < n; i++) if (K[i] !== K[0] || J[i] !== J[0]) { same = false; break; }
@@ -98,13 +117,14 @@ export class Engine {
     const c0 = r.c0 !== undefined && r.c0 >= 0 ? r.c0 : -1;
     if (c0 >= 0) return { a: null, fast: 'b:' + c0 + ':' + n, gen: () => new Uint32Array(n).fill(c0) };
     if (r.t === 'C' && !r.cols) return { a: null, fast: 'i:' + n, gen: () => { const a = new Uint32Array(n); for (let i = 0; i < n; i++) a[i] = i; return a; } };
+    if (r.t === 'C' && r.cols && r.cols.length === n) { const cs = r.cols; return { a: null, fast: 'o:' + colId(cs), gen: () => Uint32Array.from(cs) }; }
     const a = new Uint32Array(n); for (let i = 0; i < n; i++) a[i] = r.colAt(i); return { a, fast: null };
   }
   recMap(k, j, r, n) {
-    const cm = this.colmapOf(r, n);
-    if (this.mode === 'unit') { const off = this.cm.intern(cm.a || cm.gen(), cm.fast); return ['M', k, j, off]; }
-    const pid = this.prov.intern(cm.a || cm.gen(), cm.fast);          // multi：先按内容去重（pid 是临时池偏移，emit 时换成共享池偏移）
-    return ['M', k, j, pid];
+    const cm = this.colmapOf(r, n), pool = this.mode === 'unit' ? this.cm : this.prov;
+    let off = cm.fast !== null ? pool.fast.get(cm.fast) : undefined;   // 快速键命中时不必生成内容（intern 同样直接返回该偏移）
+    if (off === undefined) off = pool.intern(cm.a || cm.gen(), cm.fast);   // multi：先按内容去重（临时池偏移，emit 时换成共享池偏移）
+    return ['M', k, j, off];
   }
   recDefer(K, J, C) { if (this.mode === 'unit') { this.X.push([K, J, C]); return ['X', this.X.length - 1]; } return ['D', K, J, C]; }
   op(name, ...args) {

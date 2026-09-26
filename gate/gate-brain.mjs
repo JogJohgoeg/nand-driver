@@ -111,7 +111,15 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
       // 所以与直接下载 .bin 逐字节相同。没有旁挂清单或浏览器不支持 DecompressionStream 时退回 .bin。4 路并发下载。
       let gz = null;
       if (typeof DecompressionStream !== 'undefined') try { const r = await fetch(weightsBase + 'manifest.gz.json'); if (r.ok) { const j = await r.json(); if (j.format === 'gatesim-weights-gz-v1' && j.chunks.length === man.chunks.length) gz = j; } } catch { }
-      const total = gz ? gz.total_bytes : man.total_bytes, chunks = new Array(man.chunks.length); let got = 0, done = 0, next = 0;
+      // 边下边生成：块按「单元库与分词表 → embedding → 输出头 → 第 0..51 层」的先后下载，每块照旧整块 SHA-256 校验后才可读；
+      // 生成任务只在它所需的块全部到齐并通过校验后才派发（core/stream_gen.mjs 的 gate）。任一块失败即中止全部生成，不会 ready。
+      const nOrig = man.chunks.length, CH = man.chunk_max_bytes, total = gz ? gz.total_bytes : man.total_bytes, chunks = new Array(nOrig);
+      const rank = new Float64Array(nOrig).fill(1e9), prio = n => n.startsWith('cell.') || n === 'tokenizer.json' ? 0 : n.startsWith('model.embed_tokens') ? 1
+        : n.startsWith('model.norm') || n.startsWith('head.') ? 2 : n.startsWith('model.layers.') ? 3 + +n.split('.')[2] : 100;
+      for (const t of man.tensors) for (let c = Math.floor(t.offset / CH); c <= Math.floor((t.offset + Math.max(1, t.bytes) - 1) / CH); c++) rank[c] = Math.min(rank[c], prio(t.name));
+      const order = [...Array(nOrig).keys()].sort((x, y) => rank[x] - rank[y] || x - y);
+      const have = new Uint8Array(nOrig + 1), waiters = new Set(), subs = new Set(), wake = () => { for (const f of [...waiters]) f(); for (const f of [...subs]) f(); };
+      let got = 0, done = 0, next = 0, dlErr = null, dlDone = false;
       const one = async i => {
         const c = man.chunks[i], z = gz && gz.chunks[i]; let b;
         try {
@@ -120,23 +128,30 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
           if (z && b[0] === 0x1f && b[1] === 0x8b) b = new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
         } catch (e) { throw fail('weights_fetch', `下载权重块 ${z ? z.file : c.file} 失败：${e.message || e}`); }
         if (b.length !== c.bytes || (await hex(b)) !== c.sha256) throw fail('chunk_sha', `权重块 ${c.file} 的 SHA-256 与清单不符，已拒绝生成（文件损坏或被替换）。`);
-        chunks[i] = b; got += z ? z.bytes : b.length; done++; emit({ type: 'progress', stage: 'download', done: got, total, chunks: done, of: man.chunks.length });
+        chunks[i] = b; have[i] = 1; got += z ? z.bytes : b.length; done++; emit({ type: 'progress', stage: 'download', done: got, total, chunks: done, of: nOrig }); wake();
       };
-      await Promise.all(Array.from({ length: 4 }, async () => { while (next < man.chunks.length) await one(next++); }));
-      { const enc = new TextEncoder(), base = man.chunks.length * man.chunk_max_bytes, parts = []; let off = 0;
+      const dl = Promise.all(Array.from({ length: 4 }, async () => { while (next < order.length && !dlErr) await one(order[next++]); }));
+      dl.then(() => { dlDone = true; wake(); }, e => { dlErr = e; wake(); });
+      { const enc = new TextEncoder(), base = nOrig * CH, parts = []; let off = 0;
         for (const { c, meta, bin } of extra) {
           const j = enc.encode(JSON.stringify(meta)); man.tensors.push({ name: `cell.${c}.json`, bytes: j.length, offset: base + off }); parts.push(j); off += j.length;
           man.tensors.push({ name: `cell.${c}.bin`, bytes: bin.length, offset: base + off }); parts.push(bin); off += bin.length; if (!man.cells.includes(c)) man.cells.push(c);
         }
         const blob = new Uint8Array(off); let p = 0; for (const x of parts) { blob.set(x, p); p += x.length; }
-        man.chunks.push({ file: null, bytes: off }); chunks.push(blob); }
+        man.chunks.push({ file: null, bytes: off }); chunks.push(blob); have[nOrig] = 1; }
+      const tByName = new Map(man.tensors.map(t => [t.name, t]));
+      const ready = names => names.every(n => { const t = tByName.get(n); for (let c = Math.floor(t.offset / CH); c <= Math.floor((t.offset + Math.max(1, t.bytes) - 1) / CH); c++) if (!have[c]) return false; return true; });
+      const waitFor = async names => { while (!ready(names)) { if (dlErr) throw dlErr; await new Promise(r => { const f = () => { waiters.delete(f); r(); }; waiters.add(f); }); } if (dlErr) throw dlErr; };
+      await waitFor([...man.cells.flatMap(c => [`cell.${c}.json`, `cell.${c}.bin`]), 'tokenizer.json']);
       const Wv = weightsView(man, packageReader(man, chunks)), cellBins = new Map(man.cells.map(c => [c, Wv.bytes(`cell.${c}.bin`)]));
       tokBytes = Wv.bytes('tokenizer.json').slice();
+      const gate = { ready, error: () => dlErr, subscribe: f => { subs.add(f); return () => subs.delete(f); } };
       const discard = new DiscardSink(here('core/cache_worker.mjs')); const cw0 = store ? cacheWriter(store, cellBins) : null; let broken = null;
       const sink = cw0 ? async (tag, P) => { if (broken) return discard.put(tag, P); try { await cw0.sink(tag, P); } catch (e) { broken = String(e.message || e); await dropCurrent(store); } } : (tag, P) => discard.put(tag, P);
-      let nl = 0;
-      const R = await streamGenLoad(g, Wv, man, execMan, { nWorkers: workers, controller, tool: true, C: Cn, workerUrl: here('gen_ir/gen_worker.mjs'), packSink: sink, releaseChunks: c => { chunks[c] = null; },
-        log: s => { if (/^L\d+ /.test(s)) emit({ type: 'progress', stage: 'generate', done: ++nl, total: 52 }); else if (/^unit /.test(s)) emit({ type: 'progress', stage: 'generate', unit: s.split(' ')[1] }); } });
+      let nl = 0;   // 下载未完时生成进度不单独报阶段（界面仍显示下载进度）；下载完后按层报，done 含已完成的层
+      const R = await streamGenLoad(g, Wv, man, execMan, { nWorkers: workers, controller, tool: true, C: Cn, workerUrl: here('gen_ir/gen_worker.mjs'), packSink: sink, releaseChunks: c => { chunks[c] = null; }, gate,
+        log: s => { if (/^L\d+ /.test(s)) { ++nl; if (dlDone) emit({ type: 'progress', stage: 'generate', done: nl, total: 52 }); } else if (/^unit /.test(s) && dlDone) emit({ type: 'progress', stage: 'generate', unit: s.split(' ')[1] }); } });
+      await dl;
       F0 = R.F; TU = R.toolUnits;
       if (cw0) {
         if (!broken) { try { await store.put('_tokenizer', { bytes: tokBytes.slice() }); await cw0.finish(); } catch (e) { broken = String(e.message || e); } }

@@ -43,13 +43,27 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   const arenaWords = litBase + lpLen + al4(maxOut) + 64;
   if (arenaWords * 32 >= 2 ** 32) throw new Error('arena too large for u32 bit index');
   if (shared && arenaWords > shared.words) throw new Error('shared arena too small');
+  // 一般行按 (off, n, 行基址字内位 lo) 共用的分析（与行基址的字址无关）：各字是否对齐及相对字号、混合字的相对 B 与掩码。
+  // 对齐：rb + cm[c0] ≡ 0 (mod 32) ⟺ lo + cm[c0] ≡ 0；混合字候选 t = rb + cm[c] − (c − c0) 与 tr = lo + cm[c] − (c − c0) 一一对应（差 rb − lo），计数与取最先达到的最大值相同
+  const tpl2 = new Map(), tplOf = (off, n, lo) => { const sk = off * 1048576 + n; let a = tpl2.get(sk); if (!a) tpl2.set(sk, a = new Array(32)); let T = a[lo]; if (T) return T;
+    const nw = Math.ceil(n / 32), rel = new Int32Array(nw).fill(-1); let al = 0;
+    for (let w = 0; w < nw; w++) { const c0 = w * 32, c1 = Math.min(n, c0 + 32), v0 = cm2[off + c0]; let ok = (lo + v0) % 32 === 0;
+      for (let c = c0 + 1; ok && c < c1; c++) if (cm2[off + c] !== v0 + (c - c0)) ok = false;
+      if (ok) { rel[w] = (lo + v0) / 32; al++; } }
+    return a[lo] = { nw, rel, al, mix: new Array(nw) }; };
+  const mixOf = (T, off, n, lo, w) => { let m = T.mix[w]; if (m) return m; const c0 = w * 32, c1 = Math.min(n, c0 + 32), cnt = new Map(); let Brel = 0, best = 0;
+    for (let c = c0; c < c1; c++) { const tr = lo + cm2[off + c] - (c - c0); if (((tr % 32) + 32) % 32 === 0) { const v = (cnt.get(tr) || 0) + 1; cnt.set(tr, v); if (v > best) { best = v; Brel = tr / 32; } } }
+    let mask = 0; if (best >= 2) for (let c = c0; c < c1; c++) if (lo + cm2[off + c] === Brel * 32 + (c - c0)) mask |= 1 << (c - c0);
+    return T.mix[w] = { best, Brel, mask: mask >>> 0 }; };
   // gather4 行分类（同 loadLayer）
   const NR = rowsA.length / 3, R4 = new Uint32Array(NR * 8), nOfRow = new Uint32Array(NR);
   for (let i = 0; i < NC; i++) { const c = C(i); nOfRow.fill(c[1], c[5], c[5] + c[4]); }
+  const shape = new Map();                                // 列映射形状（与行基址无关）按 (off, n) 只算一次：1 连续、2 全同、0 其它
   for (let r = 0; r < NR; r++) {
-    const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2], n = nOfRow[r], c0 = cm2[off];
-    let ident = (rb + c0) % 32 === 0, bc = true;
-    for (let c = 1; c < n && (ident || bc); c++) { const v = cm2[off + c]; if (v !== c0 + c) ident = false; if (v !== c0) bc = false; }
+    const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2], n = nOfRow[r], c0 = cm2[off], sk = off * 1048576 + n;
+    let sh = shape.get(sk);
+    if (sh === undefined) { let id = true, b = true; for (let c = 1; c < n && (id || b); c++) { const v = cm2[off + c]; if (v !== c0 + c) id = false; if (v !== c0) b = false; } sh = id ? 1 : b ? 2 : 0; shape.set(sk, sh); }
+    const ident = sh === 1 && (rb + c0) % 32 === 0, bc = sh === 2 || n === 1;
     if (ident) R4.set([(rb + c0) / 32, 0xffffffff, 0, 0, rb, off, 0, 0], 8 * r); else if (bc) R4.set([0, 0, rb + c0, 0xffffffff, rb, off, 0, 0], 8 * r); else R4.set([0, 0, 0, 0, rb, off, 1, 0], 8 * r);
   }
   // 条目划分（段内核 v6 + 链内核）
@@ -60,7 +74,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   const rowMap = new Int32Array(NR).fill(-1), members5 = Uint32Array.from(members); let nNew = 0;
   for (let gi = 0; gi < NG; gi++) { if (!grpSet.has(gi)) continue; const q = GR(gi);
     for (let m = q[4]; m < q[4] + q[5]; m++) { const r0 = members[5 * m + 4]; if (rowMap[r0] < 0) for (let k = 0; k < q[3]; k++) rowMap[r0 + k] = nNew++; members5[5 * m + 4] = rowMap[r0]; } }
-  const R5g = new Uint32Array(Math.max(4, nNew * 4)), ccAppends = [], rowCache = new Map(), st5 = [0, 0, 0, 0], xCache = new Map(); let st5x = 0;
+  let mixedW = 0; const R5g = new Uint32Array(Math.max(4, nNew * 4)), ccAppends = [], rowCache = new Map(), st5 = [0, 0, 0, 0], xCache = new Map(); let st5x = 0;
   // 逐字映射表第 0 项固定为 (0, 0)：非逐字映射的行读它作占位
   let wtBuf = new Uint32Array(1 << 16), wtLen = 2; const wtPush = a => { if (wtLen + a.length > wtBuf.length) { let c = wtBuf.length; while (c < wtLen + a.length) c *= 2; const nb = new Uint32Array(c); nb.set(wtBuf.subarray(0, wtLen)); wtBuf = nb; } wtBuf.set(a, wtLen); wtLen += a.length; };
   for (let r = 0; r < NR; r++) {
@@ -68,16 +82,14 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
     const cls = R4[8 * r + 6] === 1 ? 2 : R4[8 * r + 1] ? 0 : 1, rr = rowMap[r];
     if (cls === 0) { R5g.set([R4[8 * r], 0xffffffff, 0, 0], 4 * rr); st5[0]++; continue; }                       // [地址, 对齐掩码字, 偏移|类别<<30, 广播掩码字]
     if (cls === 1) { R5g.set([R4[8 * r + 2], 0, 1 << 30, 0xffffffff], 4 * rr); st5[1]++; continue; }
-    const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2], n = nOfRow[r], ck = rb + ':' + off + ':' + n, hit = rowCache.get(ck);
+    const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2], n = nOfRow[r], ck = off * 1048576 + n; let rc = rowCache.get(ck); if (!rc) rowCache.set(ck, rc = new Map()); const hit = rc.get(rb);
     if (hit) { R5g.set(hit, 4 * rr); st5[hit[2] >>> 30]++; continue; }
-    const nw = Math.ceil(n / 32), words = new Uint32Array(nw * 2); let al = 0;
-    for (let w = 0; w < nw; w++) { const c0 = w * 32, c1 = Math.min(n, c0 + 32), g0 = rb + cm2[off + c0]; let ok = g0 % 32 === 0;
-      for (let c = c0 + 1; ok && c < c1; c++) if (rb + cm2[off + c] !== g0 + (c - c0)) ok = false;
-      if (ok) { words[2 * w] = g0 / 32; words[2 * w + 1] = 0xffffffff; al++; } else { words[2 * w] = 0; words[2 * w + 1] = 0; } }
+    const lo5 = rb & 31, wb = rb >>> 5, T = tplOf(off, n, lo5), nw = T.nw, words = new Uint32Array(nw * 2), al = T.al;
+    for (let w = 0; w < nw; w++) if (T.rel[w] >= 0) { words[2 * w] = wb + T.rel[w]; words[2 * w + 1] = 0xffffffff; }
     let ent;
     // 类别 X（逐字字节偏移）：每个 32 车道字内列号跨度 < 256 时，存 [字基址, 32 个字节偏移] 共 9 个 u32 于 wtab，不进全局列映射。
     // 记录与行基址无关（按 off:n 去重，同一选择的各位行共用）；GPU 地址 = 行基址 + 字基址 + 字节。
-    const xk = off + ':' + n; let xrec = xCache.get(xk);
+    const xk = ck; let xrec = xCache.get(xk);
     if (xrec === undefined && al * 2 < nw) {
       let ok = true; const rec = new Uint32Array(nw * 9);
       for (let w = 0; ok && w < nw; w++) { const c0 = w * 32, c1 = Math.min(n, c0 + 32); let lo = 0xffffffff, hi = 0;
@@ -90,10 +102,17 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
     }
     if (xrec !== undefined && xrec !== null) { ent = [rb, 0, xrec | (2 << 30), 1]; st5x++; }
     else if (al * 2 >= nw) {
-      for (let w = 0; w < nw; w++) if (!words[2 * w + 1]) { const c0 = w * 32, c1 = Math.min(n, c0 + 32), seg = new Uint32Array(c1 - c0); for (let c = c0; c < c1; c++) seg[c - c0] = rb + cm2[off + c]; words[2 * w] = ccPut(CC, seg, ccAppends); }   // 一般字：绝对位号进全局列映射，掩码 0
+      for (let w = 0; w < nw; w++) if (!words[2 * w + 1]) { const c0 = w * 32, c1 = Math.min(n, c0 + 32);
+        // 混合字：多数车道落在同一对齐字 B 的对应位上（例如例外改写过个别车道的累加值），整字读 B & 掩码，其余车道逐位补读；
+        // 列映射段 33 项：各车道绝对位号 + [32] = B。掩码非 0 且非全 1（全部车道都对上时已是对齐字）
+        const mx = mixOf(T, off, n, lo5, w);
+        if (mx.best >= 2) { const seg = new Uint32Array(33);
+          for (let c = c0; c < c1; c++) seg[c - c0] = rb + cm2[off + c];
+          seg[32] = wb + mx.Brel; words[2 * w] = ccPut(CC, seg, ccAppends); words[2 * w + 1] = mx.mask; mixedW++; continue; }
+        const seg = new Uint32Array(c1 - c0); for (let c = c0; c < c1; c++) seg[c - c0] = rb + cm2[off + c]; words[2 * w] = ccPut(CC, seg, ccAppends); }   // 一般字：绝对位号进全局列映射，掩码 0
       const base = wtLen / 2; if (base >= 2 ** 30) throw new Error('wtab too large'); wtPush(words); ent = [0, 0, base | (3 << 30), 0];
     } else { const o = ccPut(CC, cm2.subarray(off, off + n), ccAppends); if (o >= 2 ** 30) throw new Error('colmap offset too large'); ent = [rb, 0, o | (2 << 30), 0]; }
-    rowCache.set(ck, ent); R5g.set(ent, 4 * rr); st5[ent[2] >>> 30]++;
+    rc.set(rb, ent); R5g.set(ent, 4 * rr); st5[ent[2] >>> 30]++;
   }
   // X16（exec/layer_exec.mjs）：组内全部输入为 X 类、每 16 行一项、同项共用偏移记录（z 相同）、行基址按 stride 等距、各项同一源行基 rb0。
   // 源按 (rb0, stride) 去重；nt = 该源被读到的最大车道 + 1。dst 与 gather5 逐字相同，只是读法不同。
@@ -143,8 +162,13 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
   // 链内核
   const chains = Lp.items.filter(it => it.kind === 'chain'), consumed = new Uint8Array(arenaWords), carryRow = new Set();
   for (const it of chains) for (let gi = it.g0 + 1; gi < it.g1; gi++) { const r0 = members[5 * GR(gi)[4] + 4]; for (let k = 0; k < 32; k++) carryRow.add(r0 + k); }
+  // 被读的字：(off, n, rb 字内位) 相同的行读到的字相对 rb 字址是同一组，先求一次去重的相对字号再按行平移（与逐元素标记相同）
+  const relWords = new Map();
   for (let i = 0; i < NC; i++) { const c = C(i), n = c[1], r0 = c[5];
-    for (let k = 0; k < c[4]; k++) { const r = r0 + k; if (carryRow.has(r)) continue; const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2]; for (let x = 0; x < n; x++) consumed[Math.floor((rb + cm2[off + x]) / 32)] = 1; } }
+    for (let k = 0; k < c[4]; k++) { const r = r0 + k; if (carryRow.has(r)) continue; const rb = rowsA[3 * r + 1], off = rowsA[3 * r + 2], sk = off * 1048576 + n, lo = rb & 31;
+      let rs = relWords.get(sk); if (!rs) relWords.set(sk, rs = new Array(32)); let rel = rs[lo];
+      if (!rel) { const t = new Int32Array(n); let m = 0, prev = -1; for (let x = 0; x < n; x++) { const v = Math.floor((lo + cm2[off + x]) / 32); if (v !== prev) { t[m++] = prev = v; } } rel = rs[lo] = t.slice(0, m); }   // 只并相邻重复（标记可重复）
+      const wb = rb >>> 5; for (let t = 0; t < rel.length; t++) consumed[wb + rel[t]] = 1; } }
   for (const v of dtab) consumed[v >>> 5] = 1; for (const v of outtab) consumed[v >>> 5] = 1;
   const ct = buildChainTable(Lp, consumed);
   let chainCode = null; const CU = new Uint32Array(Math.max(1, chains.length) * 64);
@@ -157,7 +181,7 @@ export function preparePack(ir, { manifest, getBin, tmCache, strict = false, CC,
     litpool: shared ? null : Uint32Array.from(ir.litpool), R5g, wtab: wtBuf.slice(0, Math.max(4, wtLen)), ccAppends, UB, PQ, MU, stab: stb.stab, sbase: stb.sbase, ctab: ct.ctab, CU,
     items, megaCode, megaCodeE, MUE, // X16 的表放在顶层：本机缓存（core/pack_cache.mjs）只按顶层字段识别定型数组，嵌套对象会被当 JSON 存成普通对象，热启动时出错
     x16g: X16g, x16u: X16u, x16nt: Uint32Array.from(x16src.map(sr => sr.nt)), x16XPU: XPU, x16GXU: GXU, x16: { tAll, nGroups: x16uni.length }, chainCode, scalars: { litBase, arenaWords, maxIn, maxSlotsW, maxOut, nout, nNew, nSegs: segs.length, nChains: chains.length, chainSteps: ct.steps, chainSkippedStores: ct.skippedStores },
-    stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], wtabWords: wtLen }, prepMs: performance.now() - t0 },
+    stats: { gather5: { aligned: st5[0], broadcast: st5[1], general: st5[2] - st5x, bytemapped: st5x, wordmapped: st5[3], mixedWords: mixedW, wtabWords: wtLen }, prepMs: performance.now() - t0 },
   };
 }
 // GPU 一侧。SH：{ arena: { buffer, words } } 或 null；CCgpu：{ buf }（全局紧凑列映射 GPU 缓冲）
@@ -195,10 +219,11 @@ export async function uploadPack(g, P, { manifest, getBin, tmCache, SH = null, C
   const pipe = async (code, layout) => { const key = layout.__key + '\n' + code; if (g.onCode) g.onCode(KIND[layout.__key] || layout.__key, code, layout.__key.split(','));   // R9：ISA 审计导出钩子
     if (!g.plCache.has(key)) g.plCache.set(key, device.createComputePipelineAsync({ layout: device.createPipelineLayout({ bindGroupLayouts: [layout] }), compute: { module: device.createShaderModule({ code }), entryPoint: 'main' } })); return g.plCache.get(key); };
   const gL5 = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r']), pL = bgl(['ud', 'r', 'r', 'w']), sL = bgl(['ud', 'r', 'r', 'w', 'wd', 'w']);
-  L.gatherPipe = await pipe(GATHER5_WGSL, gL5); L.packPipe = await pipe(PACK_WGSL, pL);
+  const later = [], defer = (pr, set) => later.push(pr.then(set));     // 管线编译不逐个等待：全部发出后由调用方统一等 L.pipesReady（编译与后续单元的准备重叠）
+  defer(pipe(GATHER5_WGSL, gL5), p => L.gatherPipe = p); defer(pipe(PACK_WGSL, pL), p => L.packPipe = p);
   if (P.x16 && P.x16.nGroups) {                                         // X16 取数（exec/layer_exec.mjs）
     const xL = bgl(['ud', 'r', 'w']), gxL = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r', 'r', 'ud']);
-    L.xpackPipe = await pipe(XPACK_WGSL, xL); L.gx16Pipe = await pipe(GATHERX16_WGSL, gxL);
+    defer(pipe(XPACK_WGSL, xL), p => L.xpackPipe = p); defer(pipe(GATHERX16_WGSL, gxL), p => L.gx16Pipe = p);
     // 执行器自留拷贝：冷启动时准备包写缓存会把顶层定型数组转移给写入 worker（core/pack_cache.mjs 的 keep 之外）
     L.x16 = true; L.x16g = P.x16g.slice(); L.x16u = P.x16u.slice(); L.x16nt = P.x16nt.slice();
     L.x16T = device.createBuffer({ size: al4(Math.max(16, P.x16.tAll * 4)), usage: U.STORAGE });
@@ -215,29 +240,30 @@ export async function uploadPack(g, P, { manifest, getBin, tmCache, SH = null, C
   const outBind = al4(S.maxOut) * 4;
   for (const name of meta.templates) {
     const t = tm[name];
-    t.pipes = await Promise.all(t.gw.shaders.map(code => pipe(code, sL)));
+    defer(Promise.all(t.gw.shaders.map(code => pipe(code, sL))), ps => t.pipes = ps);
     t.bg = device.createBindGroup({ layout: sL, entries: [{ binding: 0, resource: { buffer: L.uni, size: 16 } }, { binding: 1, resource: { buffer: L.inp } }, { binding: 2, resource: { buffer: L.dummy } },
       { binding: 3, resource: { buffer: L.dummy2 } }, { binding: 4, resource: { buffer: L.arena, size: outBind } }, { binding: 5, resource: { buffer: L.sc } }] });
   }
   L.items = P.items.map(it => ({ ...it }));
   const mL = bgl(['ud', 'r', 'r', 'r', 'r', 'r', 'w', 'r', 'r']);
-  L.megaCode = P.megaCode; L.megaPipe = await pipe(P.megaCode, mL);
+  L.megaCode = P.megaCode; defer(pipe(P.megaCode, mL), p => L.megaPipe = p);
   L.megaUni = mk(P.MU, U.UNIFORM | U.COPY_DST); L.grp = mk(P.groups); L.stab = mk(P.stab); L.sbase = mk(P.sbase);
   L.megaBG = device.createBindGroup({ layout: mL, entries: [{ binding: 0, resource: { buffer: L.megaUni, size: 16 } }, { binding: 1, resource: { buffer: L.grp } }, { binding: 2, resource: { buffer: L.rows } },
     { binding: 3, resource: { buffer: L.colmap } }, { binding: 4, resource: { buffer: L.members } }, { binding: 5, resource: { buffer: L.wordmap } }, { binding: 6, resource: { buffer: L.arena } },
     { binding: 7, resource: { buffer: L.stab } }, { binding: 8, resource: { buffer: L.sbase } }] });
   if (P.megaCodeE) {
-    L.megaPipeE = await pipe(P.megaCodeE, mL); L.megaUniE = mk(P.MUE, U.UNIFORM | U.COPY_DST);
+    defer(pipe(P.megaCodeE, mL), p => L.megaPipeE = p); L.megaUniE = mk(P.MUE, U.UNIFORM | U.COPY_DST);
     L.megaBGE = device.createBindGroup({ layout: mL, entries: [{ binding: 0, resource: { buffer: L.megaUniE, size: 16 } }, { binding: 1, resource: { buffer: L.grp } }, { binding: 2, resource: { buffer: L.rows } },
       { binding: 3, resource: { buffer: L.colmap } }, { binding: 4, resource: { buffer: L.members } }, { binding: 5, resource: { buffer: L.wordmap } }, { binding: 6, resource: { buffer: L.arena } },
       { binding: 7, resource: { buffer: L.stab } }, { binding: 8, resource: { buffer: L.sbase } }] });
   }
   if (P.chainCode) {
-    const cL = bgl(['ud', 'r', 'w']); L.chainCode = P.chainCode; L.chainPipe = await pipe(P.chainCode, cL);
+    const cL = bgl(['ud', 'r', 'w']); L.chainCode = P.chainCode; defer(pipe(P.chainCode, cL), p => L.chainPipe = p);
     L.ctab = mk(P.ctab); L.chainUni = mk(P.CU, U.UNIFORM | U.COPY_DST);
     L.chainBG = device.createBindGroup({ layout: cL, entries: [{ binding: 0, resource: { buffer: L.chainUni, size: 32 } }, { binding: 1, resource: { buffer: L.ctab } }, { binding: 2, resource: { buffer: L.arena } }] });
   }
   L.nSegs = S.nSegs; L.nChains = S.nChains; L.nChainSteps = S.chainSteps; L.gather5Stats = P.stats.gather5;
+  L.pipesReady = Promise.all(later); L.pipesReady.catch(() => { });   // 失败留到统一等待处抛出（避免未处理拒绝）
   await device.queue.onSubmittedWorkDone();
   L.loadMs = performance.now() - t0; L.nDispatch = 0;
   return L;

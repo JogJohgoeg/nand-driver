@@ -17,7 +17,7 @@ const big = n => n >= 1e12 ? L(`${(n / 1e12).toFixed(0)} 万亿`, `${(n / 1e12).
 const WHAT_EN = { 'WebGPU 适配器': 'WebGPU adapter', '单个存储缓冲绑定上限': 'Max storage buffer binding', '单个缓冲大小上限': 'Max buffer size', '每阶段存储缓冲数': 'Storage buffers per stage', '工作组共享内存': 'Workgroup shared memory', '内存': 'Memory', '本机缓存空间': 'Local cache space' };
 const detailEn = d => d.replace(/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)').replace(/ 字节/g, ' bytes').replace(/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）。$/, 'Browser reports ≥ $1 GB (browsers report at most 8).').replace(/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB）$/, 'About $1 GB free (cache needs about $2 GB)');
 
-let mod = null, brain = null, ctrl = null, started = false, stageT0 = 0, stageName = '', lastRows = null;
+let mod = null, brain = null, ctrl = null, started = false, stageT0 = 0, stageD0 = 0, stageName = '', lastRows = null;
 // 动态文字登记：切换语言时按新语言重新生成（否则页面的片段翻译器会把中文拆开乱译，如「本机有之前Generation的电路缓存」）
 const live = new Map();
 const setLive = (id, fn) => { live.set(id, fn); $(id).textContent = fn(); };
@@ -59,11 +59,11 @@ function setStatus() {
 function onEvent(e) {
   if (e.type === 'precheck') renderChecks(e.rows);
   else if (e.type === 'progress' && e.stage !== 'prompt') {
-    if (e.stage !== stageName) { stageName = e.stage; stageT0 = performance.now(); }
+    if (e.stage !== stageName) { stageName = e.stage; stageT0 = performance.now(); stageD0 = e.done || 0; }   // 边下边生成：切到生成阶段时已有若干层完成，速率按本阶段新增的计
     const detailF = () => e.total ? (e.stage === 'download' ? `${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB` : e.stage === 'generate' ? L(`第 ${e.done} / ${e.total} 层`, `layer ${e.done} / ${e.total}`) : `${e.done} / ${e.total}`) : '';
     // 预计剩余：按本阶段已用时间与进度线性估计；下载阶段另加搭电路的大致时间
-    const el = performance.now() - stageT0, rest = e.total && e.done > 0 && el > 3000 ? el * (e.total - e.done) / e.done : null;
-    const etaF = () => rest === null ? '' : e.stage === 'download' ? L(`，还要约 ${dur(rest)}，之后在本机搭电路约 2–4 分钟`, `, about ${dur(rest)} left, then 2–4 min to build`) : L(`，还要约 ${dur(rest)}`, `, about ${dur(rest)} left`);
+    const el = performance.now() - stageT0, dd = (e.done || 0) - (e.stage === 'download' ? 0 : stageD0), rest = e.total && dd > 0 && el > 3000 ? el * (e.total - e.done) / dd : null;
+    const etaF = () => rest === null ? '' : e.stage === 'download' ? L(`，还要约 ${dur(rest)}（边下边在本机搭电路，下完后再等约 1–2 分钟）`, `, about ${dur(rest)} left (building while downloading; about 1–2 min more after)`) : L(`，还要约 ${dur(rest)}`, `, about ${dur(rest)} left`);
     setLive('gate-stage', () => { const d = detailF(); return (STAGE[e.stage] ? L(...STAGE[e.stage]) : L('准备中', 'Preparing')) + (d ? L('：', ': ') + d : '') + etaF(); });
     const bar = $('gate-progress'); bar.hidden = false;
     if (e.total) { bar.max = e.total; bar.value = e.done; } else bar.removeAttribute('value');
