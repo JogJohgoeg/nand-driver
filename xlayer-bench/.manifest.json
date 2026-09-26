@@ -93,8 +93,8 @@
     },
     {
       "path": "brain/bench-gate.js",
-      "bytes": 16201,
-      "sha256": "40232fbc66e4854ee9c33ac8c5225cbd5142328b43d7e0473c0966465b53e39b",
+      "bytes": 16444,
+      "sha256": "740f3565ff29164c37fe0c7d6ff117044197fdb91c109aad1329d1bbef515884",
       "chunks": 1
     },
     {
@@ -404,7 +404,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8407397,
+  "totalBytes": 8407640,
   "chunks": 401,
   "fileCap": 8400000
 }
