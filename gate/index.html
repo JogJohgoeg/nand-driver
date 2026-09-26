@@ -125,7 +125,7 @@ const STR = {
     stop: { eos: '模型结束', max_tokens: '达到 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' },
     done: (r, n) => `结束：${STR.zh.stop[r.stop] || r.stop}；首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}；本次约 ${n} 次 NAND 求值`,
     toolCall: '工具调用（门内 K6 生成，未执行）：', badJson: '工具定义不是合法 JSON：', promptIn: '读入提示',
-    startNote: e => `将下载约 580 MB 权重并在本机生成电路，需要几分钟；峰值内存约 ${e.ramGB} GB。`, blocked: '这台设备不满足硬性条件，未开始下载。',
+    startNote: e => `将下载约 580 MB 权重并在本机生成电路，需要几分钟；峰值内存约 ${e.ramGB} GB。`, warmNote: '这台电脑上有之前生成的电路：版本没变十几秒就能启动，否则重新下载约 580 MB 并生成。', blocked: '这台设备不满足硬性条件，未开始下载。',
     confirmLong: '浏览器不报告内存大小。长回答模式需要约 7.6 GB 内存与 6.4 GB 显存，确定这台设备足够吗？',
     chips: ['What is the capital of France?', '用一句话介绍你自己。', 'Write a haiku about logic gates.', '1+1 等于几？'] },
   en: { empty: 'The reply appears here one token at a time.', stage: { cache: 'Checking local cache', download: 'Downloading & verifying weights', generate: 'Building circuit', upload: 'Uploading from cache', prompt: 'Reading prompt' },
@@ -133,7 +133,7 @@ const STR = {
     stop: { eos: 'model finished', max_tokens: 'token limit reached', capacity: 'capacity full', stopped: 'stopped', tool_truncated: 'tool call truncated', tool_aborted: 'tool call aborted' },
     done: (r, n) => `Done: ${STR.en.stop[r.stop] || r.stop}; first token ${(r.firstTokenMs / 1e3).toFixed(1)} s, ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'} per token; ≈ ${n} NAND evaluations`,
     toolCall: 'Tool call (produced by in-circuit K6, not executed):', badJson: 'Tool definitions are not valid JSON: ', promptIn: 'Reading prompt',
-    startNote: e => `Downloads about 580 MB of weights and builds the circuit locally — a few minutes; peak memory about ${e.ramGB} GB.`, blocked: 'This device does not meet the hard requirements; nothing was downloaded.',
+    startNote: e => `Downloads about 580 MB of weights and builds the circuit locally — a few minutes; peak memory about ${e.ramGB} GB.`, warmNote: 'A circuit built earlier is saved on this computer: if the version matches it starts in seconds, otherwise about 580 MB is downloaded and rebuilt.', blocked: 'This device does not meet the hard requirements; nothing was downloaded.',
     confirmLong: 'Your browser does not report its memory size. Long mode needs about 7.6 GB RAM and 6.4 GB VRAM. Is this device big enough?',
     chips: ['What is the capital of France?', 'Introduce yourself in one sentence.', 'Write a haiku about logic gates.', 'What is 1+1?'] },
 };
@@ -208,10 +208,11 @@ function boot() {
   if (pc.hard) { status(() => { $('st').className = 'bad'; $('st').textContent = T().blocked; }); return; }
   let warm = false;
   try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) { warm = true; break; } } catch { }
-  if (warm || q.has('auto')) { boot(); return; }
+  // 只有显式 ?auto 才自动开始：本机缓存可能是旧版本代码生成的（用不上，会不经确认重新下载 580 MB），须由用户点按钮
+  if (q.has('auto')) { boot(); return; }
   status(() => { $('st').className = 'mute'; $('st').textContent = ''; });
   const est = { 128: { ramGB: 6 }, 512: { ramGB: 7.6 } }[C];
-  $('start').hidden = false; lastSt = () => { $('startNote').textContent = T().startNote(est); }; lastSt();
+  $('start').hidden = false; lastSt = () => { $('startNote').textContent = warm ? T().warmNote : T().startNote(est); }; lastSt();
   $('start').onclick = boot;
 })();
 
