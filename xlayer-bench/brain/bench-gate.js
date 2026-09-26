@@ -1,6 +1,6 @@
 // 门电路大脑视图：在工作台里直接用 BitCPM4-1B 的门电路版（/gate/ 同一份代码与权重）对话。
 // 它不接 Pi 代理：Pi 的系统提示约 2,560 token，而这颗电路的容量是 127 token（C128，提示 + 回答）。
-// 这里是一问一答；装得下就带上前几轮，装不下就从最早的一轮开始丢，并在消息下注明。
+// 带上文：装不下时先缩短之前的回答、再只留问题、最后才丢最早的轮次（fitTurns），并在消息下注明。
 // 代码从本站 ../gate/ 加载（Cloudflare 主站与 Pages 镜像都有），权重走 gate-brain.mjs 的默认地址。
 // 语言取 <html lang>（bench-i18n.js 切换时设置）；不静态导入它，免得它加载失败时连带整个工作台起不来
 const L = (zh, en) => document.documentElement.lang === 'en' ? en : zh;
@@ -9,13 +9,17 @@ const GATE = new URL('../../gate/gate-brain.mjs', import.meta.url).href;
 const NAND_PER_TOKEN = 282073428885;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
 const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' }, MIN_ANSWER = 48;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STAGE = { cache: ['检查本机缓存', 'Checking local cache'], download: ['下载并校验权重', 'Downloading & verifying weights'], generate: ['现场生成电路', 'Building circuit'], upload: ['从缓存上传', 'Uploading from cache'] };
-const STOP = { eos: ['模型结束', 'model finished'], max_tokens: ['达到 token 上限', 'token limit reached'], capacity: ['容量已满', 'capacity full'], stopped: ['已停止', 'stopped'], tool_truncated: ['工具调用截断', 'tool call truncated'], tool_aborted: ['工具调用中止', 'tool call aborted'] };
+// 面向新手的说法（不出现 C128、token、现场生成等术语）
+const STAGE = { cache: ['检查本机有没有之前搭好的电路', 'Looking for a circuit built earlier on this computer'], download: ['下载模型数据', 'Downloading model data'], generate: ['在你的电脑上搭电路', 'Building the circuit on your computer'], upload: ['从本机缓存装入电路', 'Loading the saved circuit'] };
+const STOP = { eos: ['回答完毕', 'Done'], max_tokens: ['到了长度上限', 'Reached the length limit'], capacity: ['写满了长度上限', 'Filled the length limit'], stopped: ['已停止', 'Stopped'], tool_truncated: ['工具调用截断', 'Tool call cut off'], tool_aborted: ['工具调用中止', 'Tool call aborted'] };
+const dur = ms => { const t = Math.round(ms / 1000); return t < 60 ? L(`${t} 秒`, `${t} s`) : L(`${Math.floor(t / 60)} 分 ${t % 60} 秒`, `${Math.floor(t / 60)} min ${t % 60} s`); };
+const big = n => n >= 1e12 ? L(`${(n / 1e12).toFixed(0)} 万亿`, `${(n / 1e12).toFixed(0)} trillion`) : L(`${(n / 1e8).toFixed(0)} 亿`, `${(n / 1e9).toFixed(0)} billion`);
 const WHAT_EN = { 'WebGPU 适配器': 'WebGPU adapter', '单个存储缓冲绑定上限': 'Max storage buffer binding', '单个缓冲大小上限': 'Max buffer size', '每阶段存储缓冲数': 'Storage buffers per stage', '工作组共享内存': 'Workgroup shared memory', '内存': 'Memory', '本机缓存空间': 'Local cache space' };
 const detailEn = d => d.replace(/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)').replace(/ 字节/g, ' bytes').replace(/^浏览器报告 ≥ (\d+) GB（浏览器最多报 8）。$/, 'Browser reports ≥ $1 GB (browsers report at most 8).').replace(/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB）$/, 'About $1 GB free (cache needs about $2 GB)');
 
-let mod = null, brain = null, ctrl = null, started = false;
+let mod = null, brain = null, ctrl = null, started = false, stageT0 = 0, stageName = '';
 const history = [];   // {role, content}
+const queued = [];    // 准备期间先发的问题：{ text, out, info }，就绪后依次回答
 
 async function gateModule() {
   if (mod) return mod;
@@ -43,15 +47,20 @@ const visible = () => !$('gate-view').hidden;
 function setStatus() {
   if (!visible()) return;
   $('status-brain').textContent = brain?.capabilities ? L('● 门电路大脑已就绪', '● Gate brain ready') : started ? L('◌ 门电路大脑准备中', '◌ Gate brain preparing') : L('○ 门电路大脑未加载', '○ Gate brain not loaded');
-  $('status-gates').textContent = '2.82 × 10¹¹ NAND / token';
+  $('status-gates').textContent = L('每个字约 2,821 亿次门运算', 'about 282 billion gate ops per token');
   $('status-flips').textContent = 'Δ —';
 }
 
 function onEvent(e) {
   if (e.type === 'precheck') renderChecks(e.rows);
   else if (e.type === 'progress' && e.stage !== 'prompt') {
-    const detail = e.total ? (e.stage === 'download' ? `${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB` : `${e.done} / ${e.total}`) : (e.unit || e.tag || '');
-    $('gate-stage').textContent = (STAGE[e.stage] ? L(...STAGE[e.stage]) : e.stage) + (detail ? '：' + detail : '');
+    if (e.stage !== stageName) { stageName = e.stage; stageT0 = performance.now(); }
+    const detail = e.total ? (e.stage === 'download' ? `${(e.done / 1e6).toFixed(0)} / ${(e.total / 1e6).toFixed(0)} MB` : e.stage === 'generate' ? L(`第 ${e.done} / ${e.total} 层`, `layer ${e.done} / ${e.total}`) : `${e.done} / ${e.total}`) : '';
+    // 预计剩余：按本阶段已用时间与进度线性估计；下载阶段另加搭电路的大致时间
+    let eta = ''; const el = performance.now() - stageT0;
+    if (e.total && e.done > 0 && el > 3000) { const rest = el * (e.total - e.done) / e.done;
+      eta = e.stage === 'download' ? L(`，还要约 ${dur(rest)}，之后在本机搭电路约 2–4 分钟`, `, about ${dur(rest)} left, then 2–4 min to build`) : L(`，还要约 ${dur(rest)}`, `, about ${dur(rest)} left`); }
+    $('gate-stage').textContent = (STAGE[e.stage] ? L(...STAGE[e.stage]) : L('准备中', 'Preparing')) + (detail ? L('：', ': ') + detail : '') + eta;
     const bar = $('gate-progress'); bar.hidden = false;
     if (e.total) { bar.max = e.total; bar.value = e.done; } else bar.removeAttribute('value');
     setStatus();
@@ -61,8 +70,10 @@ function onEvent(e) {
     $('gate-run').textContent = txt; const w = document.querySelector('#gate-log .gate-msg.assistant:last-of-type .gate-wait'); if (w) w.textContent = txt; }
   else if (e.type === 'ready') {
     $('gate-progress').hidden = true;
-    $('gate-stage').textContent = L(`就绪（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`, `Ready (C${e.C}, ${e.warm ? 'from local cache' : 'freshly built'}, ${(e.prepMs / 1e3).toFixed(0)} s)`);
+    $('gate-stage').textContent = e.warm ? L(`准备好了（用了本机缓存，${dur(e.prepMs)}）。`, `Ready (loaded the saved circuit in ${dur(e.prepMs)}).`)
+      : L(`准备好了（用时 ${dur(e.prepMs)}）。下次在这台电脑上打开会快很多（约十几秒）。`, `Ready (took ${dur(e.prepMs)}). Next time on this computer it starts in seconds.`);
     $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-load').hidden = true; $('gate-checks-box').hidden = true; $('gate-input').focus();
+    runQueued();
     document.querySelector('[data-gate-brain] .status-dot')?.classList.add('active');
     setStatus();
   }
@@ -84,6 +95,8 @@ async function start() {
   if (started) return; started = true;
   const m = await gateModule();
   $('gate-load').disabled = true; $('gate-load').textContent = L('准备中…', 'Preparing…'); $('gate-note').textContent = '';
+  // 准备期间就能提问：先排队，电路好了自动回答（首次准备要几分钟，不必干等）
+  $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-input').placeholder = L('可以先把问题写好发出，电路准备好后会自动回答。', 'You can send your question now; it will be answered as soon as the circuit is ready.');
   brain = m.createGateBrain({ C: 128, onEvent });
   brain.ready.catch(() => { });
   setStatus();
@@ -94,17 +107,40 @@ function bubble(role, html) {
   $('gate-log').append(div); div.scrollIntoView({ block: 'end' }); return div;
 }
 
-async function ask(text) {
-  if (!brain?.capabilities || !text.trim()) return;
-  $('gate-send').disabled = true; $('gate-stop').disabled = false; $('gate-input').value = '';
+// 上文取舍（电路一问一答合计 128 token，给回答至少留 MIN_ANSWER 个）：先把之前的回答缩成开头，再只留之前的问题，
+// 最后才从最早一轮整轮丢掉；每一步都用 promptTokens 实测。返回 { turns, note }。
+function fitTurns(text) {
+  const fits = t => brain.promptTokens([SYSTEM, ...t, { role: 'user', content: text }]) <= 128 - MIN_ANSWER;
+  const cut = (t, n) => t.map(m => m.role === 'assistant' && m.content.length > n ? { ...m, content: m.content.slice(0, n) + '…' } : m);
+  if (!brain.promptTokens || fits(history)) return { turns: history.slice(), note: '' };
+  for (const n of [40, 20, 10]) { const t = cut(history, n); if (fits(t)) return { turns: t, note: L('为装进长度上限，之前的回答只带了开头', 'to fit the length limit, earlier answers were shortened') }; }
+  let t = cut(history, 0); if (fits(t)) return { turns: t, note: L('为装进长度上限，只带了你之前的问题，没带之前的回答', 'to fit the length limit, only your earlier questions were kept') };
+  let dropped = 0; while (t.length && !fits(t)) { t = t.slice(2); dropped++; }
+  return { turns: t, note: L(`为装进长度上限，最早的 ${dropped} 轮对话没带`, `to fit the length limit, the earliest ${dropped} turn(s) were left out`) };
+}
+
+function ask(text) {
+  if (!text.trim() || !started) return;
+  $('gate-input').value = '';
   bubble('user', esc(text));
-  const out = bubble('assistant', '<span class="gate-wait">' + esc(L('正在读你的问题…（门电路逐位计算，首个字通常要等半分钟到一分钟）', 'Reading your question… (computed bit by bit in gates; the first word usually takes 30–60 s)')) + '</span>'), info = document.createElement('p');
-  info.className = 'gate-info'; out.after(info);
+  const out = bubble('assistant', ''), info = document.createElement('p'); info.className = 'gate-info'; out.after(info);
+  if (!brain?.capabilities) {             // 还在准备：排队
+    out.innerHTML = '<span class="gate-wait">' + esc(L('电路还在准备，好了会自动开始回答。', 'The circuit is still being prepared; the answer will start automatically.')) + '</span>';
+    queued.push({ text, out, info }); return;
+  }
+  queued.push({ text, out, info }); runQueued();
+}
+let running = false;
+async function runQueued() {
+  if (running || !brain?.capabilities) return; running = true;
+  while (queued.length) { const q = queued.shift(); await answer(q.text, q.out, q.info); }
+  running = false;
+}
+async function answer(text, out, info) {
+  $('gate-send').disabled = true; $('gate-stop').disabled = false;
+  out.innerHTML = '<span class="gate-wait">' + esc(L('正在读你的问题…（门电路逐位计算，首个字通常要等半分钟到一分钟）', 'Reading your question… (computed bit by bit in gates; the first word usually takes 30–60 s)')) + '</span>';
   ctrl = new AbortController();
-  // 电路容量 128 token（提示 + 回答）：上文按轮从早到晚丢，直到提示 ≤ 128 − 48，给回答至少留 48 个 token；
-  // 否则追问时上文塞满、回答只剩十几个 token 就被截断（实测「再写一首」只出两个字）
-  let turns = history.slice(), dropped = 0, r = null;
-  if (brain.promptTokens) while (turns.length && brain.promptTokens([SYSTEM, ...turns, { role: 'user', content: text }]) > 128 - MIN_ANSWER) { turns = turns.slice(2); dropped++; }
+  let { turns, note } = fitTurns(text), r = null; const t0 = performance.now();
   try {
     for (;;) {
       try {
@@ -114,21 +150,21 @@ async function ask(text) {
         });
         break;
       } catch (e) {
-        if (e.code === 'prompt_too_long' && turns.length) { turns = turns.slice(2); dropped += 1; continue; }
+        if (e.code === 'prompt_too_long' && turns.length) { turns = turns.slice(2); note = L('为装进长度上限，丢掉了较早的对话', 'to fit the length limit, earlier turns were left out'); continue; }
         throw e;
       }
     }
     history.push({ role: 'user', content: text }, { role: 'assistant', content: r.text });
     const n = ((r.promptIds?.length || 0) + (r.ids?.length || 0)) * NAND_PER_TOKEN;
-    const stop = STOP[r.stop] ? L(...STOP[r.stop]) : r.stop, per = r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—', nn = n.toExponential(2).replace('e+', ' × 10^');
-    info.textContent = L(`结束：${stop}；首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${per}；本次约 ${nn} 次 NAND 求值`,
-      `Done: ${stop}; first token ${(r.firstTokenMs / 1e3).toFixed(1)} s, ${per} per token; ≈ ${nn} NAND evaluations`);
-    if (dropped) info.textContent += L(`；为装进 127 token 容量，没带最早的 ${dropped} 轮对话`, `; to fit the 127-token capacity, the earliest ${dropped} turn(s) were left out`);
-    if (r.stop === 'capacity') info.textContent += L('。回答写满了电路容量（提示 + 回答 ≤ 128 token）；点「新对话」清空上文再问，能留出更多回答空间。', '. The reply filled the circuit capacity (prompt + reply ≤ 128 tokens); click “New chat” to clear context and leave more room.');
+    const stop = STOP[r.stop] ? L(...STOP[r.stop]) : r.stop, per = r.msPerToken ? L(`${(r.msPerToken / 1e3).toFixed(1)} 秒`, `${(r.msPerToken / 1e3).toFixed(1)} s`) : '—';
+    info.textContent = L(`${stop}，用时 ${dur(performance.now() - t0)}（开头等了 ${dur(r.firstTokenMs)}，之后每个字约 ${per}）；这次一共做了约 ${big(n)} 次门运算`,
+      `${stop} in ${dur(performance.now() - t0)} (first word after ${dur(r.firstTokenMs)}, then about ${per} per word); about ${big(n)} gate operations`);
+    if (note) info.textContent += L('；', '; ') + note;
+    if (r.stop === 'capacity') info.textContent += L('。回答写满了这颗电路一次能处理的长度，后面没写完：可以把问题问短一点，或点「新对话」后再问。', '. The answer filled the length this circuit can handle and was cut off: ask more briefly, or click “New chat” and ask again.');
     if (r.msPerToken && visible()) $('status-rate').textContent = `${(1000 / r.msPerToken).toFixed(2)} tok/s`;
   } catch (e) {
     if (e.name === 'AbortError' || ctrl.signal.aborted) info.textContent = L('已停止。', 'Stopped.');
-    else if (e.code === 'prompt_too_long') info.textContent = L('这句话本身就超过了电路容量（127 token），请说短一点。', 'This message alone exceeds the circuit capacity (127 tokens); please shorten it.');
+    else if (e.code === 'prompt_too_long') info.textContent = L('这句话太长了，超出了这颗电路一次能处理的长度，请说短一点。', 'This message is longer than the circuit can handle at once; please shorten it.');
     else info.textContent = e.message;
   }
   $('gate-run').textContent = ''; info.scrollIntoView({ block: 'end' });
@@ -137,9 +173,9 @@ async function ask(text) {
 
 $('gate-load').onclick = start;
 $('gate-form').onsubmit = e => { e.preventDefault(); ask($('gate-input').value); };
-$('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!$('gate-send').disabled) ask($('gate-input').value); } });
+$('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!$('gate-send').disabled || !brain?.capabilities) ask($('gate-input').value); } });
 $('gate-stop').onclick = () => { ctrl?.abort(); brain?.stop(); };
-$('gate-new').onclick = () => { if (!$('gate-stop').disabled) return; history.length = 0; $('gate-log').innerHTML = ''; };
+$('gate-new').onclick = () => { if (running) return; history.length = 0; queued.length = 0; $('gate-log').innerHTML = ''; };
 for (const chip of document.querySelectorAll('#gate-chips button')) chip.onclick = () => { $('gate-input').value = chip.textContent; $('gate-input').focus(); };
 
 // 状态栏只在本视图可见时显示门电路大脑；切回对话 / 工具时恢复 Pi 大脑原来的状态
