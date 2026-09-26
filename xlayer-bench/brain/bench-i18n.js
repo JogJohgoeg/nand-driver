@@ -132,10 +132,10 @@ const PAIRS = [
   // Gate brain view
   ['整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,821 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。',
     'The whole 1B-parameter BitCPM4-1B is compiled into about 282 billion NAND evaluations per token (plus 109 million LATCH state bits), executed bit by bit on your GPU with WebGPU; every token matches the reference implementation bit for bit.'],
-  ['它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 0.6 秒，笔记本集成显卡约 2.5 秒。提示加回答最多 128 个 token，装不下的上文会自动丢掉。',
-    'It answers questions directly, which the default brain cannot. The cost is speed, and it is not wired to the Pi agent: first download is about 580 MB and building the circuit locally takes 3–5 minutes; about 0.6 s per token on a discrete GPU, about 2.5 s on a laptop integrated GPU. Prompt plus reply is at most 128 tokens; earlier turns that do not fit are dropped automatically.'],
+  ['它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 0.6 秒，笔记本集成显卡约 1.5 秒。提示加回答最多 128 个 token，装不下的上文会自动丢掉。',
+    'It answers questions directly, which the default brain cannot. The cost is speed, and it is not wired to the Pi agent: first download is about 580 MB and building the circuit locally takes 3–5 minutes; about 0.6 s per token on a discrete GPU, about 1.5 s on a laptop integrated GPU. Prompt plus reply is at most 128 tokens; earlier turns that do not fit are dropped automatically.'],
   ['门电路大脑 · BitCPM4-1B', 'Gate brain · BitCPM4-1B'], ['BitCPM4-1B · 显卡逐位', 'BitCPM4-1B · bit by bit on GPU'], ['门电路大脑', 'Gate brain'],
-  ['下载并生成电路', 'Download & build circuit'], ['设备预检', 'Device checks'], ['门电路大脑准备进度', 'Gate brain preparation progress'],
+  ['下载并生成电路（约 580 MB）', 'Download & build circuit (about 580 MB)'], ['下载并生成电路', 'Download & build circuit'], ['设备检查中…', 'Checking device…'], ['设备预检', 'Device checks'], ['门电路大脑准备进度', 'Gate brain preparation progress'],
   ['问点什么，例如：用一句话介绍你自己。', 'Ask something, e.g. Introduce yourself in one sentence.'], ['给门电路大脑的消息', 'Message to the gate brain'],
   ['用一句话介绍你自己。', 'Introduce yourself in one sentence.'], ['1+1 等于几？', 'What is 1+1?'],
   // Brain switcher

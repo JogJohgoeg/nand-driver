@@ -89,7 +89,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
   <h2 data-t="s_how">它是怎么跑的</h2>
   <p data-t="h1">单元库（整数投影、int8 头、RMSNorm、softmax 等）是预综合好的固定网表；页面按权重在浏览器里现场生成「选哪些单元、怎么连线」，得到约 2,821 亿个 NAND，然后在 GPU 上按位切片执行。浮点运算按固定的 IEEE 舍入与求和顺序做成门电路，所以结果可复现、可逐位对拍。</p>
   <p data-t="h2">文字与 token 编号之间的转换由原版 tokenizer 在页面里完成，这是宿主 I/O，不参与计算。给了工具定义时，工具调用由门内的 K6 摘要机生成，页面只展示，不执行。</p>
-  <p data-t="h3">独立显卡上每个 token 约 0.6 秒，笔记本集成显卡（如 Apple M 系列）约 2.5 秒；先要读完整段提示，首个 token 通常要等 30–80 秒。C128 需要约 6 GB 内存；长回答模式 C512 约 7.6 GB。</p>
+  <p data-t="h3">独立显卡上每个 token 约 0.6 秒，笔记本集成显卡（如 Apple M 系列）约 1.5 秒；先要读完整段提示，首个 token 通常要等 30–80 秒。C128 需要约 6 GB 内存；长回答模式 C512 约 7.6 GB。</p>
   <p><a href="./PROVENANCE.json">PROVENANCE.json</a> · <a href="./LICENSES/NOTICE">NOTICE</a> · <a href="./LICENSES/Apache-2.0.txt">Apache-2.0</a> · <a href="./LICENSES/BitCPM4-1B-README.md" data-t="model_card">模型说明（OpenBMB BitCPM4-1B）</a> · <a href="./demo.html" data-t="plain">精简版页面</a></p>
 </section>
 </div>
@@ -114,7 +114,7 @@ const EN = {
   s_how: 'How it runs',
   h1: 'The cell library (integer projections, int8 head, RMSNorm, softmax, …) is a fixed pre-synthesized netlist. The page generates, in your browser, which cells to use and how to wire them from the weights — about 282 billion NANDs — and runs them bit-sliced on the GPU. Floating point is built as gates with fixed IEEE rounding and summation order, so results are reproducible and checked bit for bit.',
   h2: 'Text ↔ token-id conversion is done by the original tokenizer in the page; that is host I/O and computes nothing. When tools are given, the tool call is produced by the in-circuit K6 summarizer; the page only shows it and never executes it.',
-  h3: 'About 0.6 s per token on a discrete GPU, about 2.5 s on a laptop integrated GPU (e.g. Apple M-series); the whole prompt is read first, so the first token usually takes 30–80 s. C128 needs about 6 GB of memory; long mode C512 about 7.6 GB.',
+  h3: 'About 0.6 s per token on a discrete GPU, about 1.5 s on a laptop integrated GPU (e.g. Apple M-series); the whole prompt is read first, so the first token usually takes 30–80 s. C128 needs about 6 GB of memory; long mode C512 about 7.6 GB.',
   model_card: 'Model card (OpenBMB BitCPM4-1B)', plain: 'Plain page',
 };
 const ZH = {};

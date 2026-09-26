@@ -7,7 +7,7 @@ const L = (zh, en) => document.documentElement.lang === 'en' ? en : zh;
 const $ = id => document.getElementById(id);
 const GATE = new URL('../../gate/gate-brain.mjs', import.meta.url).href;
 const NAND_PER_TOKEN = 282073428885;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
-const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' };
+const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' }, MIN_ANSWER = 48;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const STAGE = { cache: ['检查本机缓存', 'Checking local cache'], download: ['下载并校验权重', 'Downloading & verifying weights'], generate: ['现场生成电路', 'Building circuit'], upload: ['从缓存上传', 'Uploading from cache'] };
 const STOP = { eos: ['模型结束', 'model finished'], max_tokens: ['达到 token 上限', 'token limit reached'], capacity: ['容量已满', 'capacity full'], stopped: ['已停止', 'stopped'], tool_truncated: ['工具调用截断', 'tool call truncated'], tool_aborted: ['工具调用中止', 'tool call aborted'] };
@@ -27,6 +27,12 @@ async function gateModule() {
 }
 
 function renderChecks(rows) {
+  // 默认折叠成一句结论；术语细节点开才看（新手只需要知道能不能跑）
+  const bad = rows.filter(r => r.ok !== true && r.ok !== 'warn').length, warn = rows.filter(r => r.ok === 'warn').length;
+  $('gate-checks-sum').textContent = bad ? L(`设备检查：${bad} 项不满足（点开看原因）`, `Device check: ${bad} requirement(s) not met (open for details)`)
+    : warn ? L(`设备检查：可以运行，${warn} 项需留意（点开看）`, `Device check: can run, ${warn} item(s) to note (open for details)`)
+    : L(`设备检查：${rows.length} 项全部通过`, `Device check: all ${rows.length} items passed`);
+  $('gate-checks-box').open = bad > 0;
   $('gate-checks').innerHTML = rows.map(r => {
     const mark = r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗';
     return `<li class="${r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad'}"><span>${mark}</span> ${esc(L(r.what, WHAT_EN[r.what] || r.what))}<small>${esc(L(r.detail, detailEn(r.detail)))}</small></li>`;
@@ -50,16 +56,18 @@ function onEvent(e) {
     if (e.total) { bar.max = e.total; bar.value = e.done; } else bar.removeAttribute('value');
     setStatus();
   }
-  else if (e.type === 'progress') $('gate-run').textContent = L('读入提示', 'Reading prompt') + `: ${e.done} / ${e.total}`;
+  else if (e.type === 'progress') {                                   // 读提示进度直接显示在回答气泡里（新手不会去看角落的小字）
+    const txt = L(`正在读你的问题：${e.done} / ${e.total}（读完才开始回答）`, `Reading your question: ${e.done} / ${e.total} (the answer starts after this)`);
+    $('gate-run').textContent = txt; const w = document.querySelector('#gate-log .gate-msg.assistant:last-of-type .gate-wait'); if (w) w.textContent = txt; }
   else if (e.type === 'ready') {
     $('gate-progress').hidden = true;
     $('gate-stage').textContent = L(`就绪（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`, `Ready (C${e.C}, ${e.warm ? 'from local cache' : 'freshly built'}, ${(e.prepMs / 1e3).toFixed(0)} s)`);
-    $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-load').hidden = true; $('gate-checks').hidden = true; $('gate-input').focus();
+    $('gate-form').hidden = false; $('gate-send').disabled = false; $('gate-load').hidden = true; $('gate-checks-box').hidden = true; $('gate-input').focus();
     document.querySelector('[data-gate-brain] .status-dot')?.classList.add('active');
     setStatus();
   }
   else if (e.type === 'warning') $('gate-note').textContent = e.message;
-  else if (e.type === 'error') { $('gate-stage').textContent = e.message; $('gate-load').hidden = false; $('gate-load').disabled = false; started = false; }
+  else if (e.type === 'error') { $('gate-stage').textContent = e.message; $('gate-load').hidden = false; $('gate-load').disabled = false; $('gate-load').textContent = L('重试', 'Retry'); started = false; }
 }
 
 async function precheckOnly() {
@@ -67,14 +75,15 @@ async function precheckOnly() {
   const pc = await m.precheck({ C: 128 });
   renderChecks(pc.rows);
   if (pc.hard) { $('gate-stage').textContent = L('这台设备不满足硬性条件，未开始下载。', 'This device does not meet the hard requirements; nothing was downloaded.'); $('gate-load').disabled = true; return; }
-  // 有本机缓存（/gate/ 或这里之前生成过）就直接启动，不必再点
-  try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) { start(); return; } } catch { }
+  // 不自动开始：本机缓存可能是旧版本代码生成的（用不上，会重新下载），下载几百兆须由用户点按钮
+  try { const root = await navigator.storage.getDirectory(); for await (const [n] of root.entries()) if (n.startsWith('gatesim-')) {
+    $('gate-note').textContent = L('本机有之前生成的电路缓存：版本相同会直接启动（十几秒），否则重新下载并生成。', 'A previously built circuit is cached here: if it matches this version it starts in seconds, otherwise it is downloaded and rebuilt.'); break; } } catch { }
 }
 
 async function start() {
   if (started) return; started = true;
   const m = await gateModule();
-  $('gate-load').disabled = true; $('gate-note').textContent = '';
+  $('gate-load').disabled = true; $('gate-load').textContent = L('准备中…', 'Preparing…'); $('gate-note').textContent = '';
   brain = m.createGateBrain({ C: 128, onEvent });
   brain.ready.catch(() => { });
   setStatus();
@@ -89,11 +98,13 @@ async function ask(text) {
   if (!brain?.capabilities || !text.trim()) return;
   $('gate-send').disabled = true; $('gate-stop').disabled = false; $('gate-input').value = '';
   bubble('user', esc(text));
-  const out = bubble('assistant', '<span class="gate-wait">' + esc(L('读入提示…', 'Reading prompt…')) + '</span>'), info = document.createElement('p');
+  const out = bubble('assistant', '<span class="gate-wait">' + esc(L('正在读你的问题…（门电路逐位计算，首个字通常要等半分钟到一分钟）', 'Reading your question… (computed bit by bit in gates; the first word usually takes 30–60 s)')) + '</span>'), info = document.createElement('p');
   info.className = 'gate-info'; out.after(info);
   ctrl = new AbortController();
-  // 电路容量 127 token：先带上全部历史，超了就从最早的一轮丢起（提示过长会在求值前直接报错，不浪费时间）
+  // 电路容量 128 token（提示 + 回答）：上文按轮从早到晚丢，直到提示 ≤ 128 − 48，给回答至少留 48 个 token；
+  // 否则追问时上文塞满、回答只剩十几个 token 就被截断（实测「再写一首」只出两个字）
   let turns = history.slice(), dropped = 0, r = null;
+  if (brain.promptTokens) while (turns.length && brain.promptTokens([SYSTEM, ...turns, { role: 'user', content: text }]) > 128 - MIN_ANSWER) { turns = turns.slice(2); dropped++; }
   try {
     for (;;) {
       try {

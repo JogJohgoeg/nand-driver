@@ -36,10 +36,14 @@ function inspector(open) {
   $('bench-inspector').hidden=!open;
   $('panel-toggle').setAttribute('aria-expanded',String(open));
 }
+let inspectorBeforeGate=null;
 function view(name) {
   $('chat-view').hidden=name!=='chat';$('tool-view').hidden=name!=='tools';$('gate-view').hidden=name!=='gate';
   for(const kind of ['chat','tools','gate'])$('tab-'+kind).setAttribute('aria-pressed',String(name===kind));
   if(name==='chat')window.dispatchEvent(new Event('resize'));
+  // 门电路视图不用右侧网表 / 链上面板：进入时收起，离开时恢复原状
+  if(name==='gate'){if(inspectorBeforeGate===null){inspectorBeforeGate=!$('bench-inspector').hidden;inspector(false);}}
+  else if(inspectorBeforeGate!==null){inspector(inspectorBeforeGate);inspectorBeforeGate=null;}
   window.dispatchEvent(new CustomEvent('bench-view',{detail:name}));
 }
 $('sidebar-toggle').onclick=()=>sidebar(!document.body.classList.contains('sidebar-open'));

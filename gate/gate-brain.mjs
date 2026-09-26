@@ -197,6 +197,8 @@ export function createGateBrain({ weightsBase = DEFAULT_WEIGHTS_BASE, C = 128, w
       return { text: clean, rawText: text, ids: out, promptIds: ids, stop, toolCall: owner ? parseToolCall(text, tools) : null, firstTokenMs: first, msPerToken: bm.length ? bm[bm.length >> 1] : null };
     } finally { busy = false; }
   };
+  // 只数提示 token（与 ask 同一套 adaptTools / renderChat / 分词），不求值；供调用方在容量内取舍上文
+  brain.promptTokens = (messages, tools = null) => { if (!S) return null; return S.tok.encode(renderChat(adaptTools(messages, tools && tools.length ? tools : null))).length; };
   brain.stop = () => { stopFlag = true; };
   brain.switchToLong = async () => {
     if (busy) throw fail('busy', '正在生成，请先 stop()。');
