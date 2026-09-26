@@ -102,9 +102,11 @@ async function start() {
   setStatus();
 }
 
+// 新消息后把视图滚到底：输入区是 sticky 贴底，scrollIntoView 停在中间时会被它挡住
+const toBottom = () => { const v = $('gate-view'); v.scrollTop = v.scrollHeight; };
 function bubble(role, html) {
   const div = document.createElement('div'); div.className = 'gate-msg ' + role; div.innerHTML = html;
-  $('gate-log').append(div); div.scrollIntoView({ block: 'end' }); return div;
+  $('gate-log').append(div); toBottom(); return div;
 }
 
 // 上文取舍（电路一问一答合计 128 token，给回答至少留 MIN_ANSWER 个）：先把之前的回答缩成开头，再只留之前的问题，
@@ -124,9 +126,9 @@ function ask(text) {
   $('gate-input').value = '';
   bubble('user', esc(text));
   const out = bubble('assistant', ''), info = document.createElement('p'); info.className = 'gate-info'; out.after(info);
-  if (!brain?.capabilities) {             // 还在准备：排队
-    out.innerHTML = '<span class="gate-wait">' + esc(L('电路还在准备，好了会自动开始回答。', 'The circuit is still being prepared; the answer will start automatically.')) + '</span>';
-    queued.push({ text, out, info }); return;
+  if (!brain?.capabilities || running) {  // 还在准备或正在回答上一个：排队
+    out.innerHTML = '<span class="gate-wait">' + esc(!brain?.capabilities ? L('电路还在准备，好了会自动开始回答。', 'The circuit is still being prepared; the answer will start automatically.') : L('排队中：答完上一个问题就开始。', 'Queued: starts after the current answer.')) + '</span>';
+    queued.push({ text, out, info }); runQueued(); return;
   }
   queued.push({ text, out, info }); runQueued();
 }
@@ -137,7 +139,7 @@ async function runQueued() {
   running = false;
 }
 async function answer(text, out, info) {
-  $('gate-send').disabled = true; $('gate-stop').disabled = false;
+  $('gate-stop').disabled = false;   // 发送键不禁用：回答进行中再发的问题排队，答完这一个接着答
   out.innerHTML = '<span class="gate-wait">' + esc(L('正在读你的问题…（门电路逐位计算，首个字通常要等半分钟到一分钟）', 'Reading your question… (computed bit by bit in gates; the first word usually takes 30–60 s)')) + '</span>';
   ctrl = new AbortController();
   let { turns, note } = fitTurns(text), r = null; const t0 = performance.now();
@@ -146,7 +148,7 @@ async function answer(text, out, info) {
       try {
         r = await brain.ask([SYSTEM, ...turns, { role: 'user', content: text }], null, {
           signal: ctrl.signal, maxTokens: 256,
-          onToken: tk => { out.textContent = tk.text.replace(/<\|im_end\|>$/, ''); out.scrollIntoView({ block: 'end' }); },
+          onToken: tk => { out.textContent = tk.text.replace(/<\|im_end\|>$/, ''); toBottom(); },
         });
         break;
       } catch (e) {
@@ -157,7 +159,7 @@ async function answer(text, out, info) {
     history.push({ role: 'user', content: text }, { role: 'assistant', content: r.text });
     const n = ((r.promptIds?.length || 0) + (r.ids?.length || 0)) * NAND_PER_TOKEN;
     const stop = STOP[r.stop] ? L(...STOP[r.stop]) : r.stop, per = r.msPerToken ? L(`${(r.msPerToken / 1e3).toFixed(1)} 秒`, `${(r.msPerToken / 1e3).toFixed(1)} s`) : '—';
-    info.textContent = L(`${stop}，用时 ${dur(performance.now() - t0)}（开头等了 ${dur(r.firstTokenMs)}，之后每个字约 ${per}）；这次一共做了约 ${big(n)} 次门运算`,
+    info.textContent = L(`${stop}，用时 ${dur(performance.now() - t0)}（开头等了 ${dur(r.firstTokenMs)}，之后每个字约 ${per}）；这次一共做了约 ${big(n)}次门运算`,
       `${stop} in ${dur(performance.now() - t0)} (first word after ${dur(r.firstTokenMs)}, then about ${per} per word); about ${big(n)} gate operations`);
     if (note) info.textContent += L('；', '; ') + note;
     if (r.stop === 'capacity') info.textContent += L('。回答写满了这颗电路一次能处理的长度，后面没写完：可以把问题问短一点，或点「新对话」后再问。', '. The answer filled the length this circuit can handle and was cut off: ask more briefly, or click “New chat” and ask again.');
@@ -167,13 +169,13 @@ async function answer(text, out, info) {
     else if (e.code === 'prompt_too_long') info.textContent = L('这句话太长了，超出了这颗电路一次能处理的长度，请说短一点。', 'This message is longer than the circuit can handle at once; please shorten it.');
     else info.textContent = e.message;
   }
-  $('gate-run').textContent = ''; info.scrollIntoView({ block: 'end' });
-  $('gate-send').disabled = false; $('gate-stop').disabled = true; $('gate-input').focus();
+  $('gate-run').textContent = ''; toBottom();
+  $('gate-stop').disabled = true; $('gate-input').focus();
 }
 
 $('gate-load').onclick = start;
 $('gate-form').onsubmit = e => { e.preventDefault(); ask($('gate-input').value); };
-$('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!$('gate-send').disabled || !brain?.capabilities) ask($('gate-input').value); } });
+$('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask($('gate-input').value); } });
 $('gate-stop').onclick = () => { ctrl?.abort(); brain?.stop(); };
 $('gate-new').onclick = () => { if (running) return; history.length = 0; queued.length = 0; $('gate-log').innerHTML = ''; };
 for (const chip of document.querySelectorAll('#gate-chips button')) chip.onclick = () => { $('gate-input').value = chip.textContent; $('gate-input').focus(); };
