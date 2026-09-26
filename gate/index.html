@@ -226,7 +226,7 @@ $('toolEx').onclick = () => { $('tools').value = JSON.stringify(EXAMPLE_TOOLS, n
 applyLang();
 
 // ---------- brain ----------
-const NAND_PER_TOKEN = 282073428885;   // C128 每拍（含 K6 工具旁路，count_all.mjs 实测）：原 1,440,324,606,564；等价替换单元见 cells/*.json
+const NAND_PER_TOKEN = 282106356845;   // C128 每拍（含 K6 工具旁路，count_all.mjs 实测）：原 1,440,324,606,564；等价替换单元见 cells/*.json
 let brain = null, ctrl = null, stageName = '', stageT0 = 0, stageD0 = 0, rd = null, sawLayers = false;
 
 function onEvent(e) {

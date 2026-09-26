@@ -49,12 +49,14 @@ export function genUnit(Wv, unit, opts = {}) {
     gen_ms: { trace: tTrace, total: performance.now() - t0 } };
   return { meta, files: { groups: tb.groups, members: tb.members, wordmap: tb.wordmap, calls: tb.calls, rows, colmap: E.cm.concat(), litpool: E.lp.concat(), dtab: tb.dtab, outtab: tb.outtab } };
 }
+// 层权重 + 单元网表读取（RoPE 查表改选择树时，层内按 rope_rom 网表求出常量表，见 layer.mjs ropeTable）
+const layerW = (Wv, L) => { const W = Wv.layer(L); W.cellBin = n => Wv.bytes(`cell.${n}.bin`); return W; };
 // 52 层（trace_multi 规则，跨层共享列映射池与常量池；按层号顺序生成与入池）
 export function newShared(cmCap = 535000000) { return { cm: new Pool(cmCap), lp: new Pool(1 << 27) }; }   // 列映射池预留 5.35 亿字（Chromium 单个 ArrayBuffer 实测上限约 2^31 − 2 MiB；未写入的页不驻留）
 export function genLayer(Wv, L, shared, C = 128) {
   const t0 = performance.now(), region = [2, 2 + LAYER_NIN, 2 + LAYER_NIN + layerDims(C).nst];
   const E = new Engine(Wv.meta, { mode: 'multi', region });
-  const R = traceLayer(E, Wv.layer(L), C); const tTrace = performance.now() - t0;
+  const R = traceLayer(E, layerW(Wv, L), C); const tTrace = performance.now() - t0;
   const Lo = layout(E, R.NIN, R.NST), { R: rows, stats } = emitRows(E, Lo, shared);
   const tb = emitTables(E, Lo, { outIds: R.outIds, dIds: R.dIds });
   const nand = Object.entries(E.counts).reduce((s, [k, v]) => s + Wv.meta[k].n_nand * v, 0);
@@ -68,7 +70,7 @@ export function genLayer(Wv, L, shared, C = 128) {
 export function traceLayerState(Wv, L, C = 128) {
   const t0 = performance.now(), region = [2, 2 + LAYER_NIN, 2 + LAYER_NIN + layerDims(C).nst];
   const E = new Engine(Wv.meta, { mode: 'multi', region });
-  const R = traceLayer(E, Wv.layer(L), C); const { st, transfer } = exportEngine(E);
+  const R = traceLayer(E, layerW(Wv, L), C); const { st, transfer } = exportEngine(E);
   st.R = { outIds: R.outIds, dIds: R.dIds, NIN: R.NIN, NST: R.NST }; transfer.push(R.outIds.buffer, R.dIds.buffer); st.traceMs = performance.now() - t0; st.L = L;
   return { st, transfer };
 }
