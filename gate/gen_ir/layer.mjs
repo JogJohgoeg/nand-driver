@@ -18,7 +18,9 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   // 输入、状态线号（与 R60 相同的线号命名空间）
   const x0 = new Bits([...Array(16).keys()].map(b => { const a = new Float64Array(1536); for (let i = 0; i < 1536; i++) a[i] = 2 + i * 16 + b; return genRow(a); }), 1536);
   const validb = new Bits([genRow(Float64Array.of(2 + 1536 * 16))], 1), resetb = new Bits([genRow(Float64Array.of(3 + 1536 * 16))], 1);
-  const oldkv = new Bits([...Array(16).keys()].map(b => { const a = new Float64Array(KV_COUNT); for (let c = 0; c < KV_COUNT; c++) a[c] = S + c * 16 + b; return genRow(a); }), KV_COUNT);
+  // KV 状态按位平面存放（第 b 位平面 = 全部条目的第 b 位，连续）：每行是对齐整字，取数一次读一字；原先条目优先（c·16 + b）
+  // 每行隔 16 位取一位，KV 写回的 mux16 取数占每层约 1.75 ms。只是锁存器的排列次序，功能不变（dIds 同步）。
+  const oldkv = new Bits([...Array(16).keys()].map(b => { const a = new Float64Array(KV_COUNT); for (let c = 0; c < KV_COUNT; c++) a[c] = S + b * KV_COUNT + c; return genRow(a); }), KV_COUNT);
   const count = new Bits([...Array(CB).keys()].map(r => genRow(Float64Array.of(S + nstate - (CB + 2) + r))), 1);
   const olderr = new Bits([...Array(2).keys()].map(r => genRow(Float64Array.of(S + nstate - 2 + r))), 1);
   const control_in = join([count, validb, resetb, olderr, literal(0, 28 - CB)]);
@@ -185,7 +187,7 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   e.set_scope('output'); result = e.select(final.bit(CB + 6), result, literal(0, 16));
   // D：newkv.ids.T.reshape(-1)（逐 KV 条目的 16 位），再 final 的 0..CB+1 位（计数 CB 位 + 2 个 error）
   const kvIds = e.ids(newkv), dIds = new Float64Array(nstate);
-  for (let c = 0; c < KV_COUNT; c++) for (let b = 0; b < 16; b++) dIds[c * 16 + b] = kvIds[b][c];
+  for (let b = 0; b < 16; b++) for (let c = 0; c < KV_COUNT; c++) dIds[b * KV_COUNT + c] = kvIds[b][c];   // 位平面次序，与 oldkv 一致
   const fin = e.ids(final); for (let r = 0; r < CB + 2; r++) dIds[KV_COUNT * 16 + r] = fin[r][0];
   // 输出表：og.T.reshape(-1)（第 i 个输出值的第 b 位）
   const rIds = e.ids(result), outIds = new Float64Array(16 * 1536);
