@@ -57,7 +57,7 @@
   <p class="bench-lead">一颗 4,850,702 个晶体管的门级语言大脑（4,850,059 NAND + 643 LATCH），在你的浏览器里逐门运行。</p>
   <p class="bench-sub">晶体管池规划发行在 X Layer 上的 TapeOut 处理器（待部署）；你也可以换上自己设计的网表。</p>
   <div class="bench-actions"><span id="bench-load-slot"></span><button id="bench-bit-run" class="primary" hidden>运行位电路</button></div>
-  <p id="bench-limit">默认大脑只会调用 nand_step 工具，不会自由问答，工具参数也可能不准确。想直接问问题，换左侧的「门电路大脑 · BitCPM4-1B」。</p>
+  <p id="bench-limit">默认大脑只会调用 nand_step 工具，不会自由问答，工具参数也可能不准确。想直接问问题，点上方的「门电路大脑」。</p>
   <div id="bench-try"><p>试试这些（默认大脑能跑通的工具调用）：</p>
     <div class="try-chips"><button type="button" data-example>Please run the NAND navigation tool.</button><button type="button" data-example>Use nand_step from (0,0) to (0,0).</button><button type="button" data-example>Hello. Use nand_step to move from (5,5) to (0,0).</button></div>
     <p class="try-hint">点一下填入输入框，再按 Enter 发送。</p></div>
@@ -66,7 +66,8 @@
   <div id="tool-view" hidden><h2>工具与工作区</h2><p>示例只填入真实终端，不自动执行。</p></div>
   <section id="gate-view" hidden aria-labelledby="gate-title">
     <h1 id="gate-title">门电路大脑 · BitCPM4-1B</h1>
-    <p class="bench-lead">整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,821 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。</p>
+    <p class="bench-lead">一个真正在你电脑上运行的 10 亿参数聊天模型。它不用任何 AI 推理库，而是被拆成几千亿个最简单的逻辑门，一位一位地算出每个字。需要一台电脑（手机一般跑不动）。</p>
+    <p class="bench-sub">整个 10 亿参数的 BitCPM4-1B 被编译成每个 token 约 2,821 亿次 NAND 求值（另有 1.09 亿个 LATCH 状态位），在你的显卡上用 WebGPU 一位一位地执行；每个 token 都与参照实现逐位一致。</p>
     <p class="bench-sub">它能直接问答，默认大脑不能。代价是慢，而且不接 Pi 代理：首次下载约 580 MB，在本机生成电路约 3–5 分钟；独立显卡每个 token 约 0.6 秒，笔记本集成显卡约 1.5 秒。一问一答合计最多 128 个 token（大约一百来个汉字），太长的上文会自动精简。</p>
     <details id="gate-checks-box"><summary id="gate-checks-sum">设备检查中…</summary><ul id="gate-checks" aria-label="设备预检"></ul></details>
     <div class="bench-actions"><button id="gate-load" class="primary" type="button">下载并生成电路（约 580 MB）</button></div>
