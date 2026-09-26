@@ -32,6 +32,10 @@ code{font-family:var(--mono);font-size:.92em}
 .wrap{max-width:1120px;margin:0 auto;padding:20px 24px 64px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.also{margin:-12px 0 24px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.6;color:var(--ink-2)}
+.also strong{color:var(--ink);font-weight:600}
+.also a{color:var(--accent);text-decoration:none;font-weight:600}
+.also a:hover{text-decoration:underline}
 .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .lang button{border:0;border-radius:0;padding:5px 12px;font-size:12.5px;background:transparent}
 .lang button.on{background:var(--ink);color:var(--bg)}
@@ -246,6 +250,7 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-fa
   <div class="eyebrow" data-i18n="eyebrow"></div>
   <div class="lang" role="group" aria-label="language"><button id="l-zh">中文</button><button id="l-en">EN</button></div>
 </div>
+<nav class="also" aria-label="site" data-i18n="also"></nav>
 
 <h1 data-i18n="h1"></h1>
 <p class="lede" data-i18n="lede"></p>
@@ -1058,6 +1063,7 @@ T.guide_car.en+=' <a href="#b-track" data-guide-v1>Watch v1 →</a>';
 T.guide_memory={zh:'<strong>#280 · 记住速度</strong>点击 <a href="#b-track">v2b 赛道</a>，看 3 个 LATCH 记忆位配合油门和刹车。',en:'<strong>#280 · Remember speed</strong>Switch to the <a href="#b-track">v2b track</a>: 3 LATCH bits support throttle and braking.'};
 T.guide_memory.zh+=' 传感器不含速度，记忆帮助判断何时刹车。';
 T.guide_memory.en+=' The sensors cannot see speed; memory helps decide when to brake.';
+T.also={zh:'<strong>本站还有</strong>　<a href="gate/">门电路大脑 →</a> 在你电脑上跑的 10 亿参数聊天模型，逐个逻辑门算出每个字　·　<a href="xlayer-bench/">Pi 工作台 →</a> 可换脑的浏览器代理，也能直接和门电路大脑对话',en:'<strong>Also on this site</strong>　<a href="gate/">Gate brain →</a> a 1-billion-parameter chat model that runs on your computer, gate by gate　·　<a href="xlayer-bench/">Pi Workbench →</a> a swappable-brain browser agent where you can also chat with the gate brain'};
 T.guide_duck={zh:'<strong>#281 + #282 · 给鸭子指路</strong><a href="duck/brain.html">打开 Microduck</a>：转向电路 + 记忆电路，另一个演示。',en:'<strong>#281 + #282 · Guide a duck</strong><a href="duck/brain.html">Open Microduck</a>: steering plus memory in a separate demo.'};
 T.guide_arena={zh:'观看不需要钱包。<a href="#arena">Arena v3</a> 是汽车赛季榜：付费报名，裁判评分；链上操作需另行签名。',en:'Watching needs no wallet. <a href="#arena">Arena v3</a> runs car seasons: paid entries, referee scores; on-chain actions require a separate signature.'};
 // Related controller: independent, published Microduck demo.
