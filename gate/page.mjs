@@ -94,7 +94,7 @@ const setLive = (id, f, cls) => { live.set(id, [f, cls]); const el = $(id); if (
 const redraws = new Set();   // 其它需要随语言重画的部件（消息元信息等）
 
 // ---------- 状态 ----------
-let brain = null, ready = false, curC = C, running = false, ctrl = null, history = [], lastPre = null, readyInfo = null;
+let rateMs = null, brain = null, ready = false, curC = C, running = false, ctrl = null, history = [], lastPre = null, readyInfo = null;
 let stageName = '', stageT0 = 0, stageD0 = 0, sawLayers = false, promptCb = null, cacheSaved = false, swOK = false, prepFailed = null;
 const TELKEY = 'gate-telemetry';
 const telLoad = () => { try { return JSON.parse(localStorage.getItem(TELKEY) || '[]'); } catch { return []; } };
@@ -294,7 +294,6 @@ function fitTurns(text) {
   while (t.length && !fits(t)) t = t.slice(2);
   return { turns: t, note: ['为装进长度上限，最早的几轮对话没带', 'to fit the length limit, the earliest turns were left out'] };
 }
-let rateMs = null;
 function setRate(ms) { rateMs = ms; const r = $('rate'); r.hidden = ms == null; r.textContent = ms == null ? '' : '● ' + L(`${(ms / 1e3).toFixed(1)} 秒/字`, `${(ms / 1e3).toFixed(1)} s/word`); }
 function cHint() { $('cHint').textContent = ready ? (history.length ? L(`对话里有 ${history.length / 2} 轮；装不下时会自动缩短之前的内容。右上角「＋」开新对话。`, `${history.length / 2} turn(s) so far; earlier parts are shortened automatically when needed. “＋” at the top starts over.`) : L('每个字都由显卡上的开关逐个算出来：第一个字要先读完你的问题，通常等半分钟到一分钟。', 'Every word is computed switch by switch on your graphics chip: the first word comes after it reads your whole question, usually 30–60 s.')) : ''; }
 
