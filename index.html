@@ -243,6 +243,24 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-fa
   .join .step{grid-template-columns:22px minmax(0,1fr)}
   .v2b-mode #gates{grid-template-columns:repeat(8,minmax(0,1fr))}
 }
+
+/* Newcomer layout (2026-09-27): how-to strip, circuit guide under the track, plain how-it-works, collapsed technical details */
+.howto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 16px;padding:0;list-style:none}
+.howto li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.55;color:var(--ink-2)}
+.howto li b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.driver-guide.after-stage{margin:16px 0 0}
+.guides-h{margin:0 0 6px;font-weight:600;color:var(--ink)}
+.works{margin-top:32px}
+.works ol{list-style:none;padding:0;margin:0}
+.works li{margin:0 0 10px}
+.works .limit{color:var(--ink-2)}
+details.tech{margin-top:40px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 18px}
+details.tech>summary{cursor:pointer;padding:14px 0;font-weight:600;color:var(--ink)}
+details.tech[open]{padding-bottom:20px}
+details.tech section{margin-top:28px}
+details.tech .chain-h{font-size:14px;margin:4px 0 8px;color:var(--ink-2)}
+.topbar .lang{flex:none}.topbar .lang button{white-space:nowrap}
+@media(max-width:720px){.howto{grid-template-columns:1fr}}
 </style>
 
 <div class="wrap">
@@ -254,23 +272,12 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-fa
 
 <h1 data-i18n="h1"></h1>
 <p class="lede" data-i18n="lede"></p>
-<div class="chain">
-  <span>CPU <b>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</b></span>
-  <span><span data-i18n="chain_builtin_circuit">circuit </span><b>#279</b></span>
-  <span><span data-i18n="chain_tapeout_tx">tx </span><b><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e">0xc6eaa661&hellip;754a6e</a></b></span>
-  <span>Witness <b><a href="https://bscscan.com/address/0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42">0x12a580c1&hellip;28ca42</a></b></span>
-  <span>Arena v2 <b><a href="https://bscscan.com/address/0x7520fe965751953101fb4410b36361026713209a">0x7520fe96&hellip;13209a</a></b> <small data-i18n="arena_history_badge"></small></span>
-</div>
+<ul class="howto" aria-label="怎么看 / How to watch">
+  <li data-i18n="how_1"></li>
+  <li data-i18n="how_2"></li>
+  <li data-i18n="how_3"></li>
+</ul>
 
-<nav class="panel driver-guide" aria-label="Controllers / 控制器">
-  <ul>
-    <li data-i18n="guide_car"></li>
-    <li data-i18n="guide_memory"></li>
-    <li data-i18n="guide_duck"></li>
-  </ul>
-  <p data-i18n="guide_view"></p>
-  <p data-i18n="guide_arena"></p>
-</nav>
 <div class="stage">
   <div class="panel scene">
     <svg id="scene" viewBox="0 0 760 620" aria-label="car on a loop track steered by the 21-NAND netlist">
@@ -329,6 +336,27 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-fa
   </div>
 </div>
 
+<nav class="panel driver-guide after-stage" aria-label="Controllers / 控制器">
+  <p class="guides-h" data-i18n="guides_h"></p>
+  <ul>
+    <li data-i18n="guide_car"></li>
+    <li data-i18n="guide_memory"></li>
+    <li data-i18n="guide_duck"></li>
+  </ul>
+  <p data-i18n="guide_view"></p>
+  <p data-i18n="guide_arena"></p>
+</nav>
+
+<section class="works" aria-labelledby="works-h">
+  <h2 id="works-h" data-i18n="works_h"></h2>
+  <ol>
+    <li data-i18n="works_1"></li>
+    <li data-i18n="works_2"></li>
+    <li data-i18n="works_3"></li>
+  </ol>
+  <p class="limit" data-i18n="works_limit"></p>
+</section>
+
 <div class="join" id="join">
   <div class="l">
     <div class="eyebrow" data-i18n="j_eyebrow"></div>
@@ -377,6 +405,16 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-fa
   </div>
 </div>
 
+<details class="tech">
+<summary data-i18n="tech_sum"></summary>
+<h3 class="chain-h" data-i18n="chain_h"></h3>
+<div class="chain">
+  <span>CPU <b>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</b></span>
+  <span><span data-i18n="chain_builtin_circuit">circuit </span><b>#279</b></span>
+  <span><span data-i18n="chain_tapeout_tx">tx </span><b><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e">0xc6eaa661&hellip;754a6e</a></b></span>
+  <span>Witness <b><a href="https://bscscan.com/address/0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42">0x12a580c1&hellip;28ca42</a></b></span>
+  <span>Arena v2 <b><a href="https://bscscan.com/address/0x7520fe965751953101fb4410b36361026713209a">0x7520fe96&hellip;13209a</a></b> <small data-i18n="arena_history_badge"></small></span>
+</div>
 <p class="method-scope" data-i18n="method_scope"></p>
 <div class="facts">
   <div class="fact"><div class="k" data-i18n="f1k"></div><div class="v">13</div><div class="s" data-i18n="f1s"></div></div>
@@ -429,6 +467,7 @@ cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
   <p data-i18n="s4p2"></p>
   <p data-i18n="s4p3"></p>
 </section>
+</details>
 
 <footer>
   <span>Petersen et al., Deep Differentiable Logic Gate Networks, NeurIPS 2022</span>
@@ -2379,5 +2418,89 @@ leaderboardPending=loadSnapshot().then(loadLeaderboard);
     splat.deferred=false;await loadSplat();if(splat.loaded){splat.autoReason=null;splatEnable(true);}
   };
   labels(); setMode(on);
+})();
+</script>
+<script>
+// ---- Newcomer copy (2026-09-27): plain-language overrides after every other patch. Keeps each functional link:
+// #b-track (track switch, handled on .driver-guide), #b-3d (3D view, handled on .driver-guide), #arena, duck/brain.html.
+(function(){
+  const set=(k,zh,en)=>{T[k]={zh,en};};
+  set('eyebrow','TapeOut · BNB Chain 上的一个小实验','TapeOut · a small experiment on BNB Chain');
+  set('h1','一辆只靠 <em>21 个开关</em>开车的小车，开关写在区块链上','A little car driven by <em>21 switches</em> that live on a blockchain');
+  set('lede','这 21 个开关叫 NAND 门，是计算机里最基础的逻辑开关。我们先在电脑上教会一个很小的神经网络开车，再把它压缩成 21 个 NAND 门，写进 BNB Chain。赛道上每辆车都由它自己写在链上的那组门驾驶：页面默认在你的浏览器里按同一份电路计算，点「让区块链来算」就改由 BNB Chain 亲自计算。',
+    'These 21 switches are NAND gates, the most basic logic switch in a computer. We taught a tiny neural network to drive, squeezed it into 21 NAND gates and wrote them onto BNB Chain. Every car on this track is driven by its own gates stored on chain: by default your browser runs the same circuit, and “Let the blockchain compute” hands the job to BNB Chain itself.');
+  set('how_1','<b>① 看它开</b>小车自己在跑。右边面板实时显示它看到了什么、哪些门亮了、决定往哪边转。',
+    '<b>① Watch it drive</b>The car drives itself. The panel on the right shows what it sees, which gates light up and which way it decides to turn.');
+  set('how_2','<b>② 换着看</b>点赛道下方的车名，切换要跟随的车；「3D 海岸」按钮换成追车视角。',
+    '<b>② Look around</b>Click a car’s name below the track to follow it; the “3D coast” button switches to a chase view.');
+  set('how_3','<b>③ 让区块链验证</b>点「让区块链来算」，之后选中车的每一步都由 BNB Chain 计算，不用钱包、不花钱。',
+    '<b>③ Let the chain check it</b>Press “Let the blockchain compute” and every step of the selected car is computed by BNB Chain — no wallet, no cost.');
+  set('st_local','现在：你的浏览器按链上同一份电路计算','Now: your browser runs the same circuit that is on chain');
+  set('st_live','现在：BNB Chain 在计算选中的车','Now: BNB Chain computes the selected car');
+  set('st_blocked','这里连不上区块链节点，改由浏览器计算','Can’t reach a blockchain node here; the browser computes instead');
+  set('hud_step','步数','steps'); set('hud_prog','本圈进度','lap progress'); set('hud_laps','完成圈数','laps'); set('hud_crash','出界次数','off track');
+  set('net_h','它此刻在想什么','What it is thinking right now');
+  set('net_read_help','从上往下看：它看到的（5 个方向离路边多远）→ 哪些门亮了 → 决定怎么转。亮 = 1，灰 = 0。',
+    'Read top to bottom: what it sees (how far the road edge is in 5 directions) → which gates light up → how it steers. Lit = 1, grey = 0.');
+  set('net_in','看到的：5 个方向 × 3 档距离 = 15 个输入','What it sees: 5 directions × 3 distances = 15 inputs');
+  set('net_g','NAND 门 · 亮 = 1 · 带圈的是输出','NAND gates · lit = 1 · circled = outputs');
+  set('net_out','决定：2 个输出（左 / 右）','Decision: 2 outputs (left / right)');
+  set('guides_h','三个电路，三种本事','Three circuits, three skills');
+  set('guide_car','<strong>看见就转向</strong>这辆默认的车只看 5 个方向离路边多远，21 个门决定左转还是右转（链上电路 #279）。 <a href="#b-track" data-guide-v1>看这辆 →</a>',
+    '<strong>Steer by sight</strong>The default car only looks at how far the road edge is in 5 directions; 21 gates choose left or right (on-chain circuit #279). <a href="#b-track" data-guide-v1>Watch this one →</a>');
+  set('guide_memory','<strong>记住速度</strong>这辆车会加速和刹车，却看不到自己的速度，要靠 3 个记忆位帮它判断什么时候该刹车（87 个门，电路 #280）。 <a href="#b-track">换成这辆 →</a>',
+    '<strong>Remember speed</strong>This car can speed up and brake but cannot see its own speed, so 3 memory bits help it decide when to brake (87 gates, circuit #280). <a href="#b-track">Switch to it →</a>');
+  set('guide_duck','<strong>给鸭子指路</strong>一个电路管转向，一个电路记路，带一只模拟的鸭子走到目标点（电路 #281 + #282）。 <a href="duck/brain.html">打开 Microduck →</a>',
+    '<strong>Guide a duck</strong>One circuit steers and another remembers the way, leading a simulated duck to its goals (circuits #281 + #282). <a href="duck/brain.html">Open Microduck →</a>');
+  set('guide_view','点 <a href="#b-3d">3D 海岸</a> 看追车视角，按 C 键切换镜头；声音默认关闭。',
+    'Try the <a href="#b-3d">3D coast</a> chase view (press C to switch cameras); sound is off by default.');
+  set('guide_arena','想拿自己训练的电路来比？看下面的 <a href="#arena">竞技场</a>。','Want to race a circuit you trained yourself? See the <a href="#arena">arena</a> below.');
+  set('works_h','它是怎么做到的','How it works');
+  set('works_1','<b>1. 学开车。</b>先在电脑上训练一个特殊的小神经网络：它的每个“神经元”不是一串乘法，而是一个逻辑门。它照着一个只看 5 个方向距离的“老司机”规则学。',
+    '<b>1. Learn to drive.</b> A special tiny neural network is trained on a computer: each “neuron” is a logic gate instead of a pile of multiplications. It learns by imitating a simple rule-based driver that only looks at distances in 5 directions.');
+  set('works_2','<b>2. 压成 21 个开关。</b>学好之后网络只剩 13 个门，再全部翻译成最基础的 NAND 门，一共 21 个。翻译前后在全部 32,768 种可能的输入上逐一对比，结果完全一样。',
+    '<b>2. Squeeze it into 21 switches.</b> After training only 13 gates remain; they are translated into the most basic NAND gates, 21 in total. Before and after were compared on all 32,768 possible inputs: identical every time.');
+  set('works_3','<b>3. 写进区块链。</b>用 TapeOut 把这 21 个门“流片”到 BNB Chain，成为 279 号电路。之后任何人都能免费让链上的节点算它的任何一步，结果和你浏览器里看到的一模一样。',
+    '<b>3. Write it onto a blockchain.</b> TapeOut “tapes out” these 21 gates onto BNB Chain as circuit #279. From then on anyone can ask the chain to compute any step for free, and the result matches what your browser shows.');
+  set('works_limit','<b>它做不到的：</b>它只学会了这一类赛道，不是通用司机；它也没有记忆，记不住速度和上一个弯——“记住速度”那辆车就是为此做的。',
+    '<b>What it can’t do:</b> it only learned this family of tracks and is no general driver; it also has no memory, so it can’t track its speed or the last bend — the “Remember speed” car was built for exactly that.');
+  set('j_eyebrow','想亲手参与？ · 需要钱包','Want to take part? · needs a wallet');
+  set('j_p','只看不需要钱包。想亲自参与的话：按下按钮，你的钱包会发一笔交易，由 BNB Chain 算出选中的车下一步怎么转，车就照链上的结果走一步。这一步付 0.005 BEM 进比赛奖池（第一次要先授权额度），你的地址和这一步的输入、输出会永久公开记在链上。',
+    'Watching needs no wallet. To take part: press the button and your wallet sends one transaction; BNB Chain computes the selected car’s next move and the car follows the chain’s answer. The step pays 0.005 BEM into the race prize pool (the first time needs an allowance), and your address plus the step’s inputs and outputs stay public on chain.');
+  set('j_s1','页面暂停，把选中的车此刻看到的 15 位信息打包好。','The page pauses and packs what the selected car sees right now (15 bits).');
+  set('j_s2','钱包签一笔交易：付 0.005 BEM 进奖池（第一次要先授权 0.5 BEM 额度），手续费约 17 万 gas。','Your wallet signs one transaction: 0.005 BEM goes to the prize pool (the first time approves a 0.5 BEM allowance); about 170k gas.');
+  set('j_s3','交易上链后，页面读取链上算出的结果，车照这个结果走一步。','Once it is on chain, the page reads the chain’s answer and moves the car one step.');
+  set('j_fine','需要：浏览器钱包（如 MetaMask、OKX Wallet）、BNB Chain 上一点 BNB 付手续费，以及一点 BEM。','You need a browser wallet (such as MetaMask or OKX Wallet), a little BNB on BNB Chain for fees, and a little BEM.');
+  set('a_eyebrow','竞技场 · 给想参赛的人','Arena · for people who want to compete');
+  set('a_h','训练你自己的开车电路，写上链，在同一条赛道上比','Train your own driving circuit, put it on chain, race on the same track');
+  const ap=T.a_p;
+  set('a_p','你可以训练自己的开车电路，用 TapeOut 写上链后报名参赛：裁判从链上读出每个电路，在同样的 24 个起点上跑，按成绩排名。<br><small>'+ap.zh+'</small>',
+    'You can train your own driving circuit, put it on chain with TapeOut and enter a season: the judge reads every circuit from the chain, runs it from the same 24 starts and ranks the results.<br><small>'+ap.en+'</small>');
+  set('tech_sum','技术细节：训练方法、怎么翻译成 NAND、自己验证、链上地址','Technical details: training, the NAND translation, verifying it yourself, on-chain addresses');
+  set('chain_h','链上地址','On-chain addresses');
+  set('trk_h1','一辆会记住速度的车<br>87 个门 + 3 个记忆位','A car that remembers its speed<br>87 gates + 3 memory bits');
+  set('trk_lede','这辆车（链上电路 #280）会加速、刹车，但它的“眼睛”看不到自己的速度，要靠 3 个记忆位帮它判断什么时候该刹车。连续两步踩同一个踏板才换一档。在下面选一个起点，看它怎么开。',
+    'This car (on-chain circuit #280) can speed up and brake, but its “eyes” cannot see its own speed; 3 memory bits help it decide when to brake. It changes speed only after two presses of the same pedal in a row. Pick a start below and watch it drive.');
+  set('trk_v3','这辆车只能观看，不能用钱包开。想亲手开一步，请换回 21 个门的小车。比赛里两种车分开排名。',
+    'This car is view-only. To drive a step with your wallet, switch back to the 21-gate car. The two kinds of car are ranked separately in the races.');
+  set('trk_watch','这辆车只能观看，不能用钱包开；下面的钱包驾驶和排行榜属于 21 个门的小车。',
+    'This car is view-only; the wallet driving and leaderboard below belong to the 21-gate car.');
+  set('trk_memory','记忆位（当前状态）','Memory bits (current state)');
+  set('trk_gates','87 个 NAND 门 + 3 个记忆位 · 亮 = 1 · 带圈的是 4 个输出','87 NAND gates + 3 memory bits · lit = 1 · circled = the 4 outputs');
+  set('trk_outputs','决定：4 个输出（左 / 右 / 油门 / 刹车）','Decision: 4 outputs (left / right / throttle / brake)');
+  set('trk_memory_help','Q0–Q2 是它的 3 个记忆位，不是速度表；每次重新起跑都会清零。','Q0–Q2 are its 3 memory bits, not a speedometer; they reset at every restart.');
+  set('trk_sensor_range','这辆车看得没那么远（2.4 个单位），所以每个方向“最远”那一格总是 0。','This car cannot see as far (2.4 units), so the “farthest” cell in each direction is always 0.');
+  // Both buttons already toggle their own labels; only the words change.
+  set('btn_live','让区块链来算','Let the blockchain compute');
+  set('btn_local','改回浏览器计算','Back to the browser');
+  set('trk_v1','换成会记住速度的车','Switch to the car that remembers speed');
+  set('trk_v2b','换回 21 个门的小车','Back to the 21-gate car');
+  set('trk_to_v2b','这辆车有 3 个记忆位，会变速','This one has 3 memory bits and changes speed');
+  set('trk_to_v1','只看眼前、匀速开的那辆','The one that only looks ahead, at a steady speed');
+  // The memory-car note and its entry list belong next to the track, not above the wallet block.
+  const note=document.getElementById('v2b-note'),list=document.getElementById('v2b-entries'),guide=document.querySelector('.driver-guide');
+  if(note&&guide){guide.after(note);if(list)note.after(list);}
+  applyLang();
+  if(typeof trackLabels==='function')trackLabels();
 })();
 </script>
