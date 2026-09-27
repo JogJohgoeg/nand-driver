@@ -169,8 +169,9 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
   let cur = scores, len = C;
   while (len > 1) { const half = len / 2, at = d => map(range(0, 24 * half), j => Math.floor(j / half) * len + 2 * (j % half) + d);
     cur = e.op('bmax', cur.cols(at(0)), cur.cols(at(1))); len = half; }
-  const m = unbf(e.op('bmax', literal(new Float64Array(24).fill(0xff80), 16), cur));
-  let weights = e.op('exp', e.op('sub', unbf(scores), m.cols(heads)));
+  const m16 = e.op('bmax', literal(new Float64Array(24).fill(0xff80), 16), cur);
+  // expsub ≡ exp(sub(unbf(a), unbf(b)))：由已验证单元 sub、exp 原样串接（a、b 低 16 位接 0）后 ABC 再综合，cec 证明（cells/expsub.json）
+  let weights = e.op('expsub', scores, m16.cols(heads));
   weights = e.select(active.cols(pos), weights, literal(0, 32)); let total = literal(zeros(24), 32);
   // 未激活位置的权重是字面 +0，而 total 自 +0 起、只经 add 更新，永不为 −0、NaN 恒为规范值，故 add(total, +0) = total（cells/bmax.py verify
   // 对全部 2^32 个 t 核对），原先的 select(active_p, …, total) 可省。

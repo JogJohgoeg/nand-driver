@@ -11,21 +11,21 @@
       "ram": "32 GB",
       "browser": "Chromium · Linux",
       "c128": {
-        "cold": 86,
+        "cold": 84,
         "warm": 13,
         "perWord": 0.55,
         "firstWord": 17
       },
       "c512": {
-        "cold": 123,
-        "warm": 15,
+        "cold": 120,
+        "warm": 16,
         "perWord": 0.81
       },
       "note": {
         "zh": "权重从本机网络下载",
         "en": "weights served on the local network"
       },
-      "evidence": "evidence/2026-09-26-b30/check-cold.json"
+      "evidence": "evidence/2026-09-26-b31/check-cold.json"
     },
     {
       "device": {
