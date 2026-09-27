@@ -1,9 +1,9 @@
 # Arena v1 — Rules / 竞技场 v1 规则
 
-> Undeployed v3.1 extension: [V3_1.md](V3_1.md) specifies composite admission,
+> Undeployed v3.1 extension: [V3_1.md](https://nand.aihashrate.stream/rules/V3_1.md) specifies composite admission,
 > duck track 2 (14 inputs, 2 outputs, 0–8 state bits), exact goals/collision/step
 > ordering, and season-0 migration. Existing deployed rules below are unchanged.
-> 未部署的 v3.1 扩展见 [V3_1.md](V3_1.md)：组合报名、鸭子赛道及迁移细则；
+> 未部署的 v3.1 扩展见 [V3_1.md](https://nand.aihashrate.stream/rules/V3_1.md)：组合报名、鸭子赛道及迁移细则；
 > 下文已部署版本规则不变。
 
 These rules are fixed for v1.  The on-chain part is enforced by `Arena.sol`; the physics
@@ -158,7 +158,7 @@ If none holds, no settlement: the pool keeps accumulating. / 三条都不满足�
 | v1 | 0 | 15 inputs, 2 outputs, **0** latches | Original `env.py`, 24 starts / 原环境 |
 | v2b | 1 | 15 inputs, 4 outputs, **0–8** latches | `v2/env2b.py`, 24 starts, 1200 steps, no blackout / 无传感器黑屏 |
 
-Both tracks allow 1–256 total elements, including LATCHes. `Entry.nState` stores the official circuitInfo value. The reference v2b circuit #280 uses **87 NAND + 3 LATCH = 90 elements**, not 87 total. v2b outputs are `[left,right,throttle,brake]`; speeds 0.10/0.20/0.30/0.40/0.50, two consecutive pedal commands per notch, 10°→3° steering, 2.4-unit rays. See [RULES_v2b.md](../v2/RULES_v2b.md) for exact bilingual constants and update order. 两赛道总门数均为 1–256（含锁存器）；v2b 基准电路为 3 位状态，但允许 0–8 位参赛。
+Both tracks allow 1–256 total elements, including LATCHes. `Entry.nState` stores the official circuitInfo value. The reference v2b circuit #280 uses **87 NAND + 3 LATCH = 90 elements**, not 87 total. v2b outputs are `[left,right,throttle,brake]`; speeds 0.10/0.20/0.30/0.40/0.50, two consecutive pedal commands per notch, 10°→3° steering, 2.4-unit rays. See [RULES_v2b.md](https://nand.aihashrate.stream/rules/RULES_v2b.md) for exact bilingual constants and update order. 两赛道总门数均为 1–256（含锁存器）；v2b 基准电路为 3 位状态，但允许 0–8 位参赛。
 
 **Stateful driving / 有状态驾驶.** Paid `drive` calls Witness `evaluate` for zero-state circuits and `beat` for stateful circuits. Witness sees the Arena as caller; all visitors driving the same entry share its heart. `Drove.driver` identifies the actual visitor. Re-entering a stateful circuit resets its Arena-owned Witness heart so state does not leak between seasons. The referee separately resets state to zero at **each of the 24 starts**, carrying it between steps within that run. 有状态调用使用 `beat`，同一报名电路由访客共享 Arena 的 Witness 状态；新季重报会清零。裁判评分独立于付费驾驶演示，每个固定起点重新清零。
 
