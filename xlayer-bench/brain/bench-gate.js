@@ -6,7 +6,7 @@
 const L = (zh, en) => document.documentElement.lang === 'en' ? en : zh;
 const $ = id => document.getElementById(id);
 const GATE = new URL('../../gate/gate-brain.mjs', import.meta.url).href;
-const NAND_PER_TOKEN = 261022627596;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
+const NAND_PER_TOKEN = 258259535628;   // 与 /gate/ 页面相同：C128 每拍 NAND（count_all.mjs 实测）
 const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' }, MIN_ANSWER = 48;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // 面向新手的说法（不出现 C128、token、现场生成等术语）
@@ -52,7 +52,7 @@ const visible = () => !$('gate-view').hidden;
 function setStatus() {
   if (!visible()) return;
   $('status-brain').textContent = brain?.capabilities ? L('● 门电路大脑已就绪', '● Gate brain ready') : started ? L('◌ 门电路大脑准备中', '◌ Gate brain preparing') : L('○ 门电路大脑未加载', '○ Gate brain not loaded');
-  $('status-gates').textContent = L('每个字约 2,610 亿次门运算', 'about 261 billion gate ops per token');
+  $('status-gates').textContent = L('每个字约 2,583 亿次门运算', 'about 258 billion gate ops per token');
   $('status-flips').textContent = 'Δ —';
 }
 

@@ -640,5 +640,19 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 2137
+ },
+ {
+  "name": "u-expsub",
+  "unit": "expsub",
+  "n_in": 32,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs",
+   "cut": "live",
+   "R": 96,
+   "Kmin": 512
+  },
+  "n_nand": 93887
  }
 ]
