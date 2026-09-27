@@ -5,3 +5,7 @@
 /gate-weights/*
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=31536000, immutable
+
+# Cloudflare 不给 .md 带字符集，浏览器会按 GBK 猜成乱码
+/*.md
+  Content-Type: text/markdown; charset=utf-8
