@@ -6,7 +6,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 2521
+  "n_nand": 2464
  },
  {
   "name": "u-and",
@@ -468,7 +468,7 @@
   "opts": {
    "order": "dfs"
   },
-  "n_nand": 2271
+  "n_nand": 1756
  },
  {
   "name": "u-silu_b",
@@ -502,7 +502,7 @@
   "n_out": 16,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 921
+  "n_nand": 727
  },
  {
   "name": "u-sum8",
@@ -511,7 +511,7 @@
   "n_out": 16,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 719
+  "n_nand": 715
  },
  {
   "name": "u-mul8",
@@ -520,7 +520,7 @@
   "n_out": 16,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 620
+  "n_nand": 589
  },
  {
   "name": "u-sum32",
@@ -538,7 +538,7 @@
   "n_out": 32,
   "n_latch": 0,
   "opts": {},
-  "n_nand": 1889
+  "n_nand": 1883
  },
  {
   "name": "u-facce",
@@ -611,5 +611,34 @@
   "n_latch": 0,
   "opts": {},
   "n_nand": 2321
+ },
+ {
+  "name": "u-mul_bl",
+  "unit": "mul_bl",
+  "n_in": 64,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {
+   "order": "dfs"
+  },
+  "n_nand": 4474
+ },
+ {
+  "name": "u-div8",
+  "unit": "div8",
+  "n_in": 16,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 435
+ },
+ {
+  "name": "u-mulk",
+  "unit": "mulk",
+  "n_in": 16,
+  "n_out": 32,
+  "n_latch": 0,
+  "opts": {},
+  "n_nand": 2137
  }
 ]

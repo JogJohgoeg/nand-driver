@@ -94,13 +94,13 @@
     {
       "path": "brain/bench-gate.js",
       "bytes": 17660,
-      "sha256": "1ead2a0029de970ad0b5fd6a04e541ebc10ed35c079212f6980d93438ace8f9a",
+      "sha256": "2536c58652ef2023ce441d2a1dcba2a96f6f7ac723c8fc23306ca371a655b017",
       "chunks": 1
     },
     {
       "path": "brain/bench-i18n.js",
       "bytes": 35986,
-      "sha256": "86eb965633f6f2ca5d58445fc874ec603f245c5264ba853df98ce990dbf3c9cb",
+      "sha256": "4c06e61608eb17b0a0067c9480b11442394a9688f66ddc4316b7e3619fa23d30",
       "chunks": 2
     },
     {
@@ -286,7 +286,7 @@
     {
       "path": "index.html",
       "bytes": 22013,
-      "sha256": "c70da4e82ffb9a88a4293ca885c45b57da8804863651aeb700721a446fccd0a4",
+      "sha256": "d98986d418fc1d648b87960eaf80e7694061da65a1922b04023af19f00441040",
       "chunks": 1
     },
     {

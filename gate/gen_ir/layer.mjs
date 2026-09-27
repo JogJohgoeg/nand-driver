@@ -158,7 +158,7 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     const p = e.op('mul', unbf(q.cols(map(heads, hh => hh * 64 + d))), unbf(kc.cols(map(pos, (pp, i) => pp * 512 + Math.floor(heads[i] / 3) * 64 + d))));
     s = e.op('add', s, p);
   }
-  let scores = bf(e.op('div', unbf(bf(s)), literal(0x41000000, 32)).low(32));
+  let scores = bf(e.op('div8', bf(s)));   // ≡ div(unbf(bf(s)), 8.0).low(32)：div8 由 div 把 a 低 16 位接 0、b 接常数 8.0 机械派生（cells/div8.json）
   const countf = e.op('i2f', join([count, literal(0, 32 - CB)]));
   const active = e.op('not', e.op('gt', literal([...Array(C).keys()].map(f32bits), 32), countf).low(1));
   scores = mark('qk', e.select(active.cols(pos), scores, literal(0xff80, 16)));
@@ -190,14 +190,14 @@ export function traceLayer(e, W, C = 128) {                      // W: { norms: 
     acc = e.op('addsel', acc, product, active.cols(p));   // ≡ select(active_p, add(acc, product), acc)（cells/addsel.py），每位置少一个条目
   }
   let out = mark('av', bf(acc)); [out] = projectMany(out, [['self_attn.o_proj', 'o']]);
-  e.set_scope('residual1'); let scaled = mark('attention_scaled', bf(e.op('mul', unbf(out), literal(0x3e46cdf7, 32))));
+  e.set_scope('residual1'); let scaled = mark('attention_scaled', bf(e.op('mulk', out)))   /* ≡ mul(unbf(out), 0x3e46cdf7)：mulk 由 mul 接常数机械派生 */;
   x = mark('residual1', bf(e.op('add', unbf(x), unbf(scaled))));
   const h2 = norm(x, 'post_attention_layernorm', 'norm2');
   const [gate, up] = projectMany(h2, [['mlp.gate_proj', 'gate'], ['mlp.up_proj', 'up']]);
   e.set_scope('silu'); const silu = mark('silu', e.op('silu', unbf(gate)).low(16));
   e.set_scope('hadamard'); const gated = mark('gated', bf(e.op('mul', unbf(silu), unbf(up))));
   [out] = projectMany(gated, [['mlp.down_proj', 'down']]);
-  e.set_scope('residual2'); scaled = mark('ffn_scaled', bf(e.op('mul', unbf(out), literal(0x3e46cdf7, 32))));
+  e.set_scope('residual2'); scaled = mark('ffn_scaled', bf(e.op('mulk', out)));
   let result = mark('output', bf(e.op('add', unbf(x), unbf(scaled))));
   e.set_scope('control'); const final = e.op(CTL, control_in, join([st.err0, st.err1, literal(0, 30)]));
   e.set_scope('kv'); let newkv = e.select(final.bit(CB + 2), provisional, oldkv); newkv = e.select(resetb, literal(0, 16), newkv);
