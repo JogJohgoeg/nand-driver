@@ -54,7 +54,7 @@ const packLit = (r) => {                               // 常量行 → packbits
 const colIds = new WeakMap(); let colSeq = 0;
 const colId = a => { let v = colIds.get(a); if (v === undefined) { v = ++colSeq; colIds.set(a, v); } return v; };
 const range16 = o => Array.from({ length: 16 }, (_, i) => o + i);
-const SPECIAL = [['mul', 'mul_bb', [...range16(0), ...range16(32)]], ['silu', 'silu_b', range16(0)]];
+const SPECIAL = [['mul', 'mul_bb', [...range16(0), ...range16(32)]], ['mul', 'mul_bl', range16(0)], ['silu', 'silu_b', range16(0)]];   // 按顺序取第一个满足的：两个操作数都是 bf16 → mul_bb，只有 a 是 → mul_bl
 const zeroLit = r => r.t === 'L' && (r.a.length === 1 ? r.a[0] === 0 : r.a.every(v => v === 0));
 export class Engine {
   constructor(meta, { mode, base = 0, region }) {

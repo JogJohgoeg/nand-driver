@@ -8,7 +8,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const q = new URLSearchParams(location.search);
 const C = q.get('C') === '512' ? 512 : 128;
 const SYSTEM = { role: 'system', content: 'You are a helpful assistant.' }, MIN_ANSWER = 48;
-const NAND_PER_TOKEN = 282106356845;   // C128 每拍（含 K6 工具旁路，count_all.mjs 实测；RoPE 查表改选择树后 +3,293 万）：原 1,440,324,606,564；等价替换单元见 cells/*.json
+const NAND_PER_TOKEN = 261022627596;   // C128 每拍（含 K6 工具旁路，count_all.mjs 实测；09-26 专用单元 mul_bl/div8/mulk + 手工 bf16 乘法器 + 重综合后）：原 1,440,324,606,564；等价替换单元见 cells/*.json
 const REPO_ISSUES = 'https://github.com/JogJohgoeg/nand-driver/issues/new';
 
 // ---------- 文字 ----------
@@ -22,7 +22,7 @@ const D = {
   title: ['门电路大脑', 'Gate brain'], back: ['← 工作台', '← Workbench'],
   lead: ['这是一个能回答问题的小型 AI（BitCPM4-1B）。特别的地方是：它被拆成了几千亿个最简单的电子开关，就在你电脑的显卡上一个开关一个开关地算出每个字，算出来的回答和原版模型一字不差。准备好一次之后，断网也能用，你的问题不会发到任何服务器。',
     'A small AI that answers questions (BitCPM4-1B). What makes it unusual: it has been broken down into hundreds of billions of the simplest electronic switches, and your computer’s graphics chip works out every word switch by switch — the answers match the original model word for word. Once it is set up, it works offline too, and your questions never go to any server.'],
-  f1v: ['2,821 亿次', '282 billion'], f1: ['每写一个字要拨动的开关次数', 'switch flips to write one word'],
+  f1v: ['2,610 亿次', '261 billion'], f1: ['每写一个字要拨动的开关次数', 'switch flips to write one word'],
   f2v: ['1.09 亿个', '109 million'], f2: ['记住上下文用的「记忆开关」', '“memory switches” holding the conversation'],
   f3: ['一次对话最多多少个词（问题 + 回答）', 'words per conversation at most (question + answer)'],
   f4v: ['580 MB', '580 MB'], f4: ['只在第一次下载，之后断网也能用', 'downloaded once; works offline afterwards'],
@@ -42,7 +42,7 @@ const D = {
   board_help: ['都是真机实测，不是估算。用「设置 → 测一测你的电脑」量出你的数字，点「提交到速度榜」就能加进来。', 'All measured on real machines, not estimated. Use “Settings → Test your computer” to measure yours and press “Submit to the speed board” to add it.'],
   proofLabel: ['证据', 'Evidence'], s_proof: ['怎么知道它算得对？', 'How do we know it computes correctly?'],
   s_how: ['它是怎么做到的？（想了解再看）', 'How does it work? (optional reading)'],
-  h1: ['电脑和手机里的芯片，归根结底都是由大量「与非门」组成的——这是最简单的一种电子开关：两个输入都是 1 时输出 0，否则输出 1。我们把整个 AI 模型拆成了这样的开关网络，每写一个字要拨动约 2,821 亿次开关。', 'The chips in computers and phones are ultimately made of huge numbers of “NAND gates” — the simplest electronic switch: if both inputs are 1 the output is 0, otherwise 1. We turned the whole AI model into a network of such switches; writing one word takes about 282 billion switch flips.'],
+  h1: ['电脑和手机里的芯片，归根结底都是由大量「与非门」组成的——这是最简单的一种电子开关：两个输入都是 1 时输出 0，否则输出 1。我们把整个 AI 模型拆成了这样的开关网络，每写一个字要拨动约 2,610 亿次开关。', 'The chips in computers and phones are ultimately made of huge numbers of “NAND gates” — the simplest electronic switch: if both inputs are 1 the output is 0, otherwise 1. We turned the whole AI model into a network of such switches; writing one word takes about 261 billion switch flips.'],
   h2: ['你的浏览器先下载模型的参数（约 580 MB），在你电脑上把开关网络搭出来并存下，再交给显卡去算。每一步都按固定的规则计算，所以回答和原版模型一字不差，任何人都可以重复验证。', 'Your browser downloads the model’s numbers (about 580 MB), builds the switch network on your computer and saves it, then hands it to the graphics chip. Every step follows fixed rules, so the answer matches the original model word for word and anyone can check it.'],
   h3: ['为什么准备好之后断网也能用：搭好的电路存在浏览器的本机存储里，页面本身也会存一份；下次打开（包括开着飞行模式）直接从这台电脑读出来。', 'Why it works offline once set up: the built circuit is saved in the browser’s local storage and the page keeps a copy of itself; next time (even in airplane mode) everything is read from this computer.'],
   h4: ['文字和编号之间的转换是页面自己做的，不算在开关里。', 'Turning text into numbers and back is done by the page itself and is not part of the switches.'],
@@ -108,7 +108,7 @@ function applyLang() {
   for (const el of document.querySelectorAll('[data-tip]')) { const t = TIP[el.dataset.tip]; el.title = t[EN_() ? 1 : 0]; el.setAttribute('aria-label', el.title); }
   $('lang').textContent = EN_() ? '中文' : 'EN';
   $('fC').textContent = String(curC);
-  $('sub').textContent = L(`BitCPM4-1B · 每字 2,821 亿次开关 · 一次最多 ${curC} 词`, `BitCPM4-1B · 282B switch flips per word · up to ${curC} words`);
+  $('sub').textContent = L(`BitCPM4-1B · 每字 2,610 亿次开关 · 一次最多 ${curC} 词`, `BitCPM4-1B · 261B switch flips per word · up to ${curC} words`);
   $('msg').placeholder = ready ? L('问它点什么……（Enter 发送，Shift+Enter 换行）', 'Ask it something… (Enter to send, Shift+Enter for a new line)') : L('准备好之后就能在这里提问', 'You can ask here once it is ready');
   if (lastPre) renderPre(lastPre);
   renderIdeas(); renderPill(); renderBoard(); renderProof(); renderTelemetry(); renderData();
@@ -165,7 +165,7 @@ function renderBoard() {
     `<p class="note">${esc(L(`更新于 ${BOARD.updated}。第一个字：一句二三十个词的短问题，先要读完整个问题。`, `Updated ${BOARD.updated}. First word: a short question of 20–30 words, which is read in full first.`))}</p>`;
 }
 function renderProof() {
-  const ev = './evidence/2026-09-26-b28/';
+  const ev = './evidence/2026-09-26-b30/';
   $('proof').innerHTML = `<ul style="margin:0;padding-left:1.2em;font-size:14px">
 <li>${L('用三道标准测试题（两道问答、一道工具调用）对照参考实现：<b>每一个字的编号都相同</b>，第一次打开和再次打开各测一遍。', 'Three standard test questions (two Q&amp;A, one tool call) against the reference implementation: <b>every single word id matches</b>, both on first open and on reopening.')}
  <a href="${ev}check-cold.json">${L('第一次打开', 'first open')}</a> · <a href="${ev}check-warm.json">${L('再次打开', 'reopen')}</a></li>
