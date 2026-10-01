@@ -172,7 +172,7 @@ const fillTargets=()=>{ const sel=$('target'); sel.innerHTML='';
 fillTargets();
 window.addEventListener('message',ev=>{ if(ev.source===window&&ev.data&&ev.data.source==='web2tape-ext'&&ev.data.type==='hello') $('extState').innerHTML='<span class="ok">✓ 插件已就绪</span>'; });
 setTimeout(()=>{ if(hasExt()) $('extState').innerHTML='<span class="ok">✓ 插件已就绪</span>'; else if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) $('install').hidden=false; },300);
-try{ const q=new URLSearchParams(location.search); if(q.get('url')) $('url').value=q.get('url');
+try{ const q=new URLSearchParams(location.search); if(q.get('url')) $('url').value=q.get('url'); if(['1','30','100','300'].includes(q.get('scope'))) $('scope').value=q.get('scope');
   if(q.get('auto')==='1'&&q.get('url')) addEventListener('load',()=>setTimeout(()=>$('grabOnly').click(),400)); }catch{}
 
 let G=null;                      // 抓取结果
