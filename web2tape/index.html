@@ -1,0 +1,469 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>web2tape</title>
+<style>
+  :root{--fg:#1d2420;--mute:#5d6b63;--line:#d6ddd8;--bg:#fff;--soft:#f3f6f4;--accent:#006B35;--warn:#9a5b00;--bad:#b3261e}
+  @media (prefers-color-scheme:dark){:root{--fg:#e3e9e5;--mute:#9aa8a0;--line:#33403a;--bg:#121614;--soft:#1b211e;--accent:#3fbf7f;--warn:#e0a640;--bad:#ff8a80}}
+  *{box-sizing:border-box}
+  body{font:15px/1.55 -apple-system,system-ui,"PingFang SC",sans-serif;max-width:820px;margin:28px auto;padding:0 16px;color:var(--fg);background:var(--bg)}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.5px;color:var(--accent)}
+  .lead{font-size:16.5px;margin:0 0 22px}
+  .step{display:flex;gap:14px;margin:18px 0;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .num{flex:0 0 32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center}
+  .step .body{flex:1;min-width:0}
+  .step h2{font-size:17px;margin:3px 0 2px}
+  .grow{flex:1 1 260px} .grow select{width:100%;margin-top:4px}
+  details.more summary,details.tech summary{cursor:pointer;color:var(--mute);font-size:13.5px;margin-top:6px}
+  details.tech{margin:26px 0 10px}
+  code{font:12.5px ui-monospace,Menlo,monospace;background:var(--soft);padding:1px 4px;border-radius:4px}
+  #status{margin:6px 0 0}
+  .msg{margin:6px 0 0;font-size:14px;min-height:0} .msg:empty{display:none}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-1px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .card h3{font-size:15px;margin:0 0 4px}
+  .note{color:var(--mute);font-size:13.5px;margin:4px 0}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  input[type=text],select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+  #url{flex:1 1 320px;min-width:0}
+  button{font:inherit;padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--fg);cursor:pointer}
+  button.main{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  button:disabled{opacity:.5;cursor:default}
+  label{font-size:13.5px;color:var(--mute)}
+  .card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:14px 0;background:var(--soft)}
+  .card h2{font-size:15px;margin:0 0 6px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  td{padding:3px 6px;border-top:1px solid var(--line);word-break:break-all}
+  td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ok{color:var(--accent)} .skip{color:var(--mute)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  progress{width:100%;height:10px}
+  iframe{width:100%;height:420px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  #log{margin-top:8px;white-space:pre-wrap;background:#111;color:#ddd;padding:10px 12px;border-radius:8px;max-height:260px;overflow:auto;font:12.5px/1.45 ui-monospace,Menlo,monospace}
+  #done a{color:var(--accent);font-weight:600;word-break:break-all;font-size:16px}
+  [hidden]{display:none!important}
+</style>
+
+<header>
+  <h1>web2tape</h1>
+  <p class="lead">把一个网站存到区块链上，生成一个永久的新网址。原网站以后改版或关掉，链上这份也还在。</p>
+</header>
+
+<section class="step">
+  <div class="num">1</div>
+  <div class="body">
+    <h2>选存放位置 <span class="note">（可跳过，第 3 步会自动连钱包、自动选）</span></h2>
+    <p class="note">找出你名下能存网站的空间（和你的身份验证器用的是同一个钱包）；没有的话，存的时候会顺便开一个新的。</p>
+    <div class="row">
+      <button id="mine">一键连接身份验证器</button>
+      <label class="grow">存到 <select id="target"></select></label>
+    </div>
+    <p class="msg" id="msg1"></p>
+  </div>
+</section>
+
+<section class="step">
+  <div class="num">2</div>
+  <div class="body">
+    <h2>填网址，先预览</h2>
+    <p class="note">预览不花钱。默认会顺着网站里的链接，把整个网站一起存下来。 <span id="extState"></span></p>
+    <div class="row">
+      <input id="url" type="text" placeholder="例如 https://example.com" autofocus>
+      <button id="grabOnly">预览</button>
+    </div>
+    <p class="msg" id="msg2"></p>
+    <div id="install" class="card" hidden>
+      <h3>先装 web2tape 插件（只要一次）</h3>
+      <p class="note">web2tape 用你自己的浏览器读网页，需要一个小插件（Chrome / Edge）：</p>
+      <ol class="note">
+        <li>下载 <a href="web2tape-extension.zip" download>web2tape-extension.zip</a>，解压成一个文件夹</li>
+        <li>浏览器地址栏打开 <code>chrome://extensions</code>，右上角打开「开发者模式」</li>
+        <li>点「加载已解压的扩展程序」，选中解压出来的文件夹</li>
+        <li>回到这里刷新页面</li>
+      </ol>
+      <p class="note">插件只在 web2tape 页面上工作；读网页时不带你的登录状态，不会把你的私人页面存上去。</p>
+    </div>
+    <details class="more"><summary>更多选项</summary>
+      <div class="row">
+        <label>存多少 <select id="scope"><option value="30" selected>整个网站（最多 30 页）</option><option value="100">整个网站（最多 100 页）</option><option value="300">整个网站（最多 300 页）</option><option value="1">只存这一页</option></select></label>
+        <label>最大容量 <select id="cap"><option value="3000000">3 MB（省钱）</option><option value="8000000" selected>8 MB</option><option value="20000000">20 MB</option></select></label>
+      </div>
+      <label><input type="checkbox" id="keep"> 保留网页里的程序（一般不需要；存下来的是网页的样子，按钮、搜索这类功能本来就用不了）</label>
+    </details>
+  </div>
+</section>
+
+<div id="plan" class="card" hidden>
+  <h3 id="planTitle"></h3>
+  <p class="note" id="planSum"></p>
+  <iframe id="preview" sandbox="allow-same-origin" loading="lazy" title="预览"></iframe>
+  <details><summary class="note">包含哪些文件</summary><table id="files"></table><p class="note warn" id="warns"></p></details>
+</div>
+
+<section class="step">
+  <div class="num">3</div>
+  <div class="body">
+    <h2>存上链</h2>
+    <p class="note">按下后连上你的钱包，先告诉你大概花多少钱；同意后在钱包里确认（多数钱包 1～2 次），之后自动完成，剩下的钱会退回你的钱包。中途别关这个页面。</p>
+    <div class="row"><button id="go" class="main">连接钱包，存上链</button></div>
+    <p class="msg" id="msg3"></p>
+  </div>
+</section>
+
+<div id="run" class="card" hidden>
+  <progress id="bar" value="0" max="1"></progress>
+  <p id="status"></p>
+</div>
+
+<div id="done" class="card" hidden></div>
+<div class="row"><button id="revoke" hidden>收回本页的上传权限（可不按，3 小时后自动收回）</button><button id="refund" hidden>把没用完的钱退回钱包</button></div>
+
+<details class="tech"><summary>技术细节</summary>
+<p class="note">读网页靠 web2tape 浏览器插件（在你自己的浏览器里读，不带登录状态；开发时也可以用本机的 <code>python3 web2tape/server.py</code>）。网站存成静态快照：脚本去掉，图片、样式、字体一起存；
+站内链接改成指向链上的副本。上传用本页临时生成的钥匙（存在这台电脑的浏览器里）：你的钱包授权它 3 小时、给它转手续费，它逐块写入你的 TapeOut 容器（SiteRegistry），
+写完逐个核对 SHA-256，余额退回。没有空间时由开户合约（Web2TapeOpener）一笔交易开好，电路直接在你名下。若容器里有身份验证器的设备钥匙在用，会被临时顶掉，传完再请你签名恢复。
+<a href="privacy.html">隐私说明</a></p>
+<div id="log">就绪。</div>
+</details>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js" integrity="sha384-gpR0Q6Hx/O+uevlbpbANbS0LWjbejPV1sqD/8w422l/fW8whGY0EPmKw3uG7ACYP" crossorigin="anonymous"></script>
+<script>
+// 容器：连钱包前先给 sites.json 里的两个；按「一键连接身份验证器」后换成钱包在三条链上持有的容器（authenticator/tapeout.js findCircuits）
+let TARGETS=[{key:'',chain:'xlayer',name:'',label:'连接钱包后自动选择',disabled:true}];
+const AIHASH=['282-732','288-732','1-2-245'];      // aihashrate.stream 上已开子域的；其余走官方网关 tapekit.org
+const CHAINS={
+  bsc:{chainId:56,hex:'0x38',name:'BNB Chain',symbol:'BNB',registry:'0xd006ffdd5ae313b17729621a00999cd3c71ce5e6',minGwei:'0.05',explorer:'https://bscscan.com/tx/',
+       add:{chainId:'0x38',chainName:'BNB Smart Chain',nativeCurrency:{name:'BNB',symbol:'BNB',decimals:18},rpcUrls:['https://bsc-dataseed.bnbchain.org'],blockExplorerUrls:['https://bscscan.com']}},
+  xlayer:{chainId:196,hex:'0xc4',name:'X Layer',symbol:'OKB',registry:'0xd6efb7adcc9c83dc4924ad56f6a8e4e969b9adb6',minGwei:'0.02',explorer:'https://www.oklink.com/xlayer/tx/',
+       add:{chainId:'0xc4',chainName:'X Layer',nativeCurrency:{name:'OKB',symbol:'OKB',decimals:18},rpcUrls:['https://rpc.xlayer.tech'],blockExplorerUrls:['https://www.oklink.com/xlayer']}},
+  base:{chainId:8453,hex:'0x2105',name:'Base',symbol:'ETH',registry:'0xd6efb7adcc9c83dc4924ad56f6a8e4e969b9adb6',minGwei:'0.001',explorer:'https://basescan.org/tx/',
+       add:{chainId:'0x2105',chainName:'Base',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}}};
+const CHEAP={xlayer:0,base:1,bsc:2};
+const RPC={bsc:'https://bsc-dataseed.bnbchain.org',xlayer:'https://rpc.xlayer.tech',base:'https://mainnet.base.org'};   // 公共节点，浏览器直连
+const REG_ABI=['function putFile(address container,string path,string contentType,bytes32 sha256Hash,bytes data)',
+  'function appendChunk(address container,string path,uint256 expectIndex,bytes data)',
+  'function fileInfo(address container,string path) view returns (uint32 size,string contentType,bytes32 sha256Hash,uint40 updatedAt,uint256 chunkCount)',
+  'function setOperator(address container,address op,uint256 ttl)',
+  'function operatorOf(address container) view returns (address)','function operatorUntil(address container) view returns (uint256)'];
+const CHUNK=24000, TTL_HOURS=3;
+const gasFor=n=>Math.min(16_500_000,400_000+n*260);          // 与 site_upload.py 同一个上限公式；实际按 estimateGas×1.15
+
+const $=id=>document.getElementById(id);
+const log=(...a)=>{const l=$('log');l.textContent+='\n'+a.join(' ');l.scrollTop=l.scrollHeight;};
+const plainErr=m=>/user (rejected|denied)|ACTION_REJECTED/i.test(m)?'你在钱包里点了取消。想继续就再按一次。'
+  :/insufficient funds/i.test(m)?'钱包里的钱不够付手续费。'
+  :/HTTP Error 40[13]/.test(m)?'这个网站不让程序读取（拒绝访问），换一个网址试试。'
+  :/HTTP Error 404/.test(m)?'这个网址不存在（404），检查一下有没有打错。'
+  :/HTTP Error 5\d\d/.test(m)?'这个网站自己出错了，过会儿再试。'
+  :/nodename|not known|getaddrinfo|Errno 8|Failed to fetch|ERR_NAME/i.test(m)?'找不到这个网站，检查一下网址有没有打错。'
+  :/timed out|timeout/i.test(m)?'这个网站太久没响应，过会儿再试或换一个。'
+  :/CERTIFICATE|SSL/i.test(m)?'这个网站的安全证书有问题，读不了。'
+  :/不是网页/.test(m)?'这个网址不是网页（可能是图片或文件下载）。'
+  :/没读到任何网页/.test(m)?'没读到网页内容，这个网站可能挡掉了程序访问。'
+  :m;
+let step='msg2';                                  // 当前在哪一步：提示和报错显示在那一步的按钮下面
+const msg=(html,where=step)=>{ for(const id of ['msg1','msg2','msg3']) if(id!==where) $(id).innerHTML=''; $(where).innerHTML=html; };
+const err=e=>{const m=e.shortMessage||e.reason||e.message||String(e); log('错误：',m); msg('<span class="bad">✗ '+esc(plainErr(m))+'</span>');
+  if(step==='msg3'){ $('run').hidden=false; $('status').innerHTML='<span class="bad">没完成</span>'; }};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kb=n=>n>=1e6?(n/1e6).toFixed(2)+' MB':(n/1e3).toFixed(1)+' KB';
+const fillTargets=()=>{ const sel=$('target'); sel.innerHTML='';
+  for(const t of TARGETS){ const o=new Option(t.label,t.key); o.disabled=!!t.disabled; sel.add(o); }
+  const best=TARGETS.find(t=>!t.disabled); if(best) sel.value=best.key; };
+fillTargets();
+window.addEventListener('message',ev=>{ if(ev.source===window&&ev.data&&ev.data.source==='web2tape-ext'&&ev.data.type==='hello') $('extState').innerHTML='<span class="ok">✓ 插件已就绪</span>'; });
+setTimeout(()=>{ if(hasExt()) $('extState').innerHTML='<span class="ok">✓ 插件已就绪</span>'; else if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) $('install').hidden=false; },300);
+try{ const q=new URLSearchParams(location.search); if(q.get('url')) $('url').value=q.get('url');
+  if(q.get('auto')==='1'&&q.get('url')) addEventListener('load',()=>setTimeout(()=>$('grabOnly').click(),400)); }catch{}
+
+let G=null;                      // 抓取结果
+const T=()=>TARGETS.find(t=>t.key===$('target').value);
+const labelOf=t=>t.name.replace(/\.tape$/,'').replace(/\./g,'-');
+const siteUrl=(t,page)=>`https://${labelOf(t)}.${AIHASH.includes(labelOf(t))?'aihashrate.stream':'tapekit.org'}/${page}`;
+
+// 一键连接身份验证器：用它的读链模块三条链并行查，列出持有的容器，标出备份和设备钥匙，自动选最合适的
+async function connectAuthenticator(){
+  const as=new URLSearchParams(location.search).get('as');            // ?as=地址：只读查看，不连钱包（测试用）
+  if(!as&&!window.ethereum) throw new Error('这个浏览器没装钱包，先装一个钱包插件（如 MetaMask、OKX Wallet）');
+  const me=ethers.getAddress(as||(await ethereum.request({method:'eth_requestAccounts'}))[0]);
+  const TP=await import(new URL('auth/tapeout.js',location.href).href);
+  log('连接身份验证器：查',me,'在 BNB Chain、X Layer、Base 上的容器…');
+  const found=(await Promise.all(TP.NETS.filter(n=>CHAINS[n.key]).map(async net=>{
+    try{ const cs=await TP.findCircuits(net,me,m=>log(m));
+      return await Promise.all(cs.map(async c=>{
+        if(!c.opened||!c.container) return {...c,net};
+        const [bk,op,n]=await Promise.all([TP.fileInfo(net,c.container).catch(()=>({size:0})),
+          TP.currentOperator(net,c.container).catch(()=>({op:null})),TP.listFiles(net,c.container).then(f=>f.length).catch(()=>0)]);
+        return {...c,net,backup:bk.size>0,op:op.op?op:null,n};
+      }));
+    }catch(e){ log(net.name,'查询失败：',e.message); return []; } }))).flat();
+  const shut=found.filter(c=>!c.opened||!c.container).length, open=found.filter(c=>c.opened&&c.container);   // 没开通的电路可能上百个，不进下拉框
+  const newOpt=OPENER[NEW_SPACE.chain]?[{key:'new:'+NEW_SPACE.chain,chain:NEW_SPACE.chain,isNew:true,name:'新空间',label:'新开一个空间（X Layer，约 0.11 OKB，含第一个月）'}]:[];
+  connected=true; $('mine').textContent='✓ 已连接 '+me.slice(0,6)+'…'+me.slice(-4);
+  if(!open.length){
+    TARGETS=newOpt; fillTargets();
+    if(newOpt.length){ msg('<span class="ok">✓ 已连接。你还没有存放空间，存的时候会顺便开一个新的。</span>'); return; }
+    msg('<span class="warn">这个钱包名下还没有能存网站的空间（新开空间的功能还没上线）。</span>'); return log(`没有已开通的容器（未开通的电路 ${shut} 个）`); }
+  const rank=c=>(c.backup?10:0)+(c.op?5:0)+CHEAP[c.net.key];
+  found.length=0; found.push(...open);
+  TARGETS=found.sort((a,b)=>rank(a)-rank(b)).map(c=>({key:c.net.key+':'+(c.container||c.tapeId).toLowerCase(),chain:c.net.key,
+    name:c.tapeId+'.tape',container:c.container,disabled:!c.opened,backup:!!c.backup,op:c.op,
+    label:`${c.tapeId}.tape（${c.net.name}${c.net.key==='xlayer'?'，费用最低':''}）`+(c.backup?' · 放着你的身份验证器备份':'')+(c.op?' · 手机正在用':'')+(!c.backup&&!c.op?(c.n?' · 已有内容':' · 空的'):'')})).concat(newOpt);
+  fillTargets();
+  $('mine').textContent='✓ 已连接 '+me.slice(0,6)+'…'+me.slice(-4);
+  msg(`<span class="ok">✓ 找到 ${open.length} 个可以存网站的空间，已选好最合适的</span>`);
+  log(`找到 ${TARGETS.length} 个已开通容器（另有 ${shut} 个电路没开通容器）；已选 ${T().name}`);
+}
+const bytesOf=f=>f._b;
+
+// 读网页：装了 web2tape 插件就用插件（在你自己的浏览器里读）；没装但本机开着 server.py 就用它；都没有就请你装插件
+const hasExt=()=>!!document.documentElement.dataset.web2tapeExt;
+const sayStatus=t=>msg('<span class="spin"></span>'+esc(t.replace(/^抓页面 (\d+)\/(\d+)：.*/,'正在读取网页（第 $1 页）…').replace(/^改写 (\d+)\/(\d+)：.*/,'正在整理（$1/$2）…').replace(/^抓取中$/,'正在打开网址…')));
+function grabViaExt(req){
+  return new Promise((resolve,reject)=>{
+    const id=Math.random().toString(36).slice(2), files=[];
+    const on=ev=>{ const m=ev.data; if(ev.source!==window||!m||m.source!=='web2tape-ext'||m.id!==id) return;
+      if(m.type==='progress') sayStatus(m.text);
+      else if(m.type==='file') files.push({path:m.path,contentType:m.contentType,_b:Uint8Array.from(atob(m.b64),c=>c.charCodeAt(0))});
+      else if(m.type==='done'){ window.removeEventListener('message',on); resolve({...m,files}); }
+      else if(m.type==='error'){ window.removeEventListener('message',on); reject(new Error(m.message)); }
+      else if(m.type==='closed'){ window.removeEventListener('message',on); reject(new Error('插件中途断开了，再试一次')); } };
+    window.addEventListener('message',on);
+    window.postMessage({source:'web2tape-page',id,type:'grab',req},location.origin);
+  });
+}
+async function grabViaServer(req){
+  const r=await fetch('/grab',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(req)});
+  const {job}=await r.json(); let j, last='';
+  for(;;){ await new Promise(f=>setTimeout(f,800)); j=await (await fetch('/grab/'+job)).json();
+    if(j.status&&j.status!==last){ last=j.status; sayStatus(last); }
+    if(j.done) break; }
+  if(j.error) throw new Error(j.error);
+  return {...j.result,files:j.result.files.map(f=>({path:f.path,contentType:f.contentType,_b:Uint8Array.from(atob(f.b64),c=>c.charCodeAt(0))}))};
+}
+const hasServer=async()=>{ if(!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) return false;
+  try{ return !!(await (await fetch('/health')).json()).web2tape; }catch{ return false; } };
+function previewOf(j){                              // 用 blob 网址拼出第一页的预览（资源在内存里，不经服务器）
+  const urls={}, name=p=>p.split('/').pop();
+  for(const f of j.files) if(f.path.includes('/_assets/')&&!/\.css$/.test(f.path)) urls[name(f.path)]=URL.createObjectURL(new Blob([f._b],{type:f.contentType}));
+  const sub=t=>t.replace(/(?:\.\.\/)*_assets\/([0-9a-f]{16}\.\w+)|"([0-9a-f]{16}\.\w+)"/g,(m,a,b)=>{ const n=a||b; return urls[n]?(b?`"${urls[n]}"`:urls[n]):m; });
+  for(const f of j.files) if(f.path.includes('/_assets/')&&/\.css$/.test(f.path)) urls[name(f.path)]=URL.createObjectURL(new Blob([sub(new TextDecoder().decode(f._b))],{type:'text/css'}));
+  const start=j.files.find(f=>f.path===j.page+'index.html')||j.files[0];
+  return URL.createObjectURL(new Blob([sub(new TextDecoder().decode(start._b))],{type:'text/html'}));
+}
+
+async function grab(){
+  const url=$('url').value.trim(); if(!url) throw new Error('先在第 2 步填一个网址');
+  const n=+$('scope').value; log('抓取',url,n>1?`（整站，最多 ${n} 页）`:'（只这一页）','…', hasExt()?'经插件':'经本机服务');
+  const req={url,whole:n>1,maxPages:n,keepScripts:$('keep').checked,maxBytes:+$('cap').value};
+  sayStatus('正在打开网址…');
+  let j;
+  try{
+    if(hasExt()) j=await grabViaExt(req);
+    else if(await hasServer()) j=await grabViaServer(req);
+    else { $('install').hidden=false; throw new Error('先装 web2tape 插件（见下方说明），装好后刷新本页'); }
+  }catch(e){ throw new Error(/插件|^先/.test(e.message)?e.message:'这个网址打不开：'+e.message); }
+  for(const f of j.files){ f.size=f._b.length; f.sha256='0x'+[...new Uint8Array(await crypto.subtle.digest('SHA-256',f._b))].map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  msg('<span class="ok">✓ 预览好了，看看下面的效果</span>'); $('bar').value=0; G=j; G._for=url+'|'+n; const total=j.files.reduce((s,f)=>s+f.size,0);
+  $('plan').hidden=false;
+  $('planTitle').textContent='预览：'+(j.title||j.url);
+  $('planSum').textContent=`${j.pages} 个页面，共 ${kb(total)}。下面就是存上链后的样子。`;
+  $('files').innerHTML=j.files.map(f=>`<tr><td>${esc(f.path)}</td><td class="n">${kb(f.size)}</td><td class="n" data-p="${esc(f.path)}"></td></tr>`).join('');
+  $('warns').textContent=j.warnings.length?'有些东西没存进来（会照常从原网站显示，或点了回原网站）：\n'+j.warnings.join('\n'):'';
+  $('preview').src=previewOf(j);
+  log('抓到',j.pages,'个页面、',j.files.length,'个文件',kb(total),j.warnings.length?`，${j.warnings.length} 条提示`:'');
+  return j;
+}
+
+// 临时上传钥匙：存在本页的 localStorage（只在这台电脑），中途关页面也能回来退款
+function opKey(chain){
+  const k='web2tape-op-'+chain; let pk=null;
+  try{ pk=localStorage.getItem(k); }catch{}
+  if(!pk){ pk=ethers.Wallet.createRandom().privateKey; try{ localStorage.setItem(k,pk); }catch{} }
+  return new ethers.Wallet(pk,new ethers.JsonRpcProvider(RPC[chain],CHAINS[chain].chainId,{staticNetwork:true}));
+}
+
+let holder=null, holderAddr=null;
+async function connect(ch){
+  if(!window.ethereum) throw new Error('这个浏览器没装钱包，先装一个钱包插件（如 MetaMask、OKX Wallet）');
+  try{ await ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:ch.hex}]}); }
+  catch(e){ if(e.code===4902) await ethereum.request({method:'wallet_addEthereumChain',params:[ch.add]}); else throw e; }
+  const bp=new ethers.BrowserProvider(window.ethereum); await bp.send('eth_requestAccounts',[]);
+  holder=await bp.getSigner(); holderAddr=await holder.getAddress(); return bp;
+}
+
+async function gasPrice(p,ch){ const fd=await p.getFeeData(); const min=ethers.parseUnits(ch.minGwei,'gwei'); const g=fd.gasPrice||min; return g>min?g:min; }
+
+// 开户合约（web2tape/contracts/src/Web2TapeOpener.sol）：没有空间的人一笔交易开好一个。部署后把地址填进来；测试时 ?opener=0x… 覆盖
+const OPENER={xlayer:null};
+const NEW_SPACE={chain:'xlayer',cpuIndex:245,months:1};      // 新空间开在 X Layer 第 245 台处理器上（费用最低），名字先付 1 个月
+const OPENER_ABI=['function create(uint256 cpuIndex,uint256 months,address op) payable returns (uint256,address,string)','function price(uint256,uint256) view returns (uint256)',
+  'event SiteCreated(address indexed owner,address indexed circuits,uint256 circuitId,address container,string name,address op,uint256 opFund)'];
+const XL={factory:'0x1f09daefa827f02cbb40967cc91b259763760761',opener:'0x536add8f30f03b69f6fbf29d425a816a0dc50106',binding:'0x68809fd2fb343aa57d0aeb7f33defe477c9666f9'};
+try{ const q=new URLSearchParams(location.search); if(q.get('opener')) OPENER.xlayer=ethers.getAddress(q.get('opener')); if(q.get('rpc')) RPC.xlayer=q.get('rpc'); }catch{}
+let connected=false;
+
+// 钱包能不能把几笔交易合成一次确认（EIP-5792 wallet_sendCalls，原子执行）
+async function canBatch(ch){
+  try{ const caps=await ethereum.request({method:'wallet_getCapabilities',params:[holderAddr,[ch.hex]]});
+    const c=caps&&(caps[ch.hex]||caps[String(ch.chainId)]); const a=c&&(c.atomic&&c.atomic.status||c.atomicBatch&&c.atomicBatch.supported);
+    return a==='supported'||a==='ready'||a===true; }catch{ return false; }
+}
+async function sendBatch(ch,calls,label){
+  const res=await ethereum.request({method:'wallet_sendCalls',params:[{version:'2.0.0',chainId:ch.hex,from:holderAddr,atomicRequired:true,
+    calls:calls.map(c=>({to:c.to,data:c.data||'0x',value:'0x'+(c.value||0n).toString(16)}))}]});
+  const id=typeof res==='string'?res:res.id; log(label,'已交给钱包（一次确认）',id);
+  for(let i=0;i<400;i++){ await new Promise(f=>setTimeout(f,1500));
+    const st=await ethereum.request({method:'wallet_getCallsStatus',params:[id]});
+    const code=typeof st.status==='number'?st.status:({CONFIRMED:200,PENDING:100}[st.status]||0);
+    if(code>=400) throw new Error(label+' 失败');
+    if(code===200){ if((st.receipts||[]).some(r=>r.status!=='0x1'&&r.status!==1)) throw new Error(label+' 回滚'); log(label,'完成'); return st; } }
+  throw new Error(label+' 等太久了');
+}
+
+async function run(){
+  if(!connected) await connectAuthenticator();
+  const t=T(); if(!t) throw new Error('没有可用的存放空间');
+  const ch=CHAINS[t.chain];
+  if(!G||G._for!==$('url').value.trim()+'|'+$('scope').value) await grab();
+  $('run').hidden=false; const st=$('status'), bar=$('bar');
+  st.textContent='正在连接钱包…'; await connect(ch);
+  const op=opKey(t.chain), rp=op.provider, regR=new ethers.Contract(ch.registry,REG_ABI,rp);
+  // 新空间：先算价钱、预测会拿到的电路号和容器地址（按顺序编号；批量交易里若被别人抢先，整批回滚，再按一次就行）
+  let price=0n, monthly=0n;
+  if(t.isNew){
+    price=await new ethers.Contract(OPENER[t.chain],OPENER_ABI,rp).price(NEW_SPACE.cpuIndex,NEW_SPACE.months);
+    monthly=await new ethers.Contract(XL.binding,['function monthlyFee() view returns (uint256)'],rp).monthlyFee();
+    const cpu=await new ethers.Contract(XL.factory,['function cpuAt(uint256) view returns (address)'],rp).cpuAt(NEW_SPACE.cpuIndex);
+    const newId=Number(await new ethers.Contract(cpu,['function nextId() view returns (uint256)'],rp).nextId())+1;
+    t.container=await new ethers.Contract(XL.opener,['function accountOf(address,uint256) view returns (address)'],rp).accountOf(cpu,newId);
+    t.name=`${newId}.2.${NEW_SPACE.cpuIndex}.tape`;
+  } else {
+    const owner=await new ethers.Contract(t.container,['function owner() view returns (address)'],rp).owner();
+    if(owner.toLowerCase()!==holderAddr.toLowerCase()) throw new Error(`现在连着的钱包不是 ${t.name} 的主人，请在钱包里切换到 ${owner.slice(0,6)}…${owner.slice(-4)}`);
+  }
+  // 1. 对照链上：同路径同 SHA-256 的跳过（同一网站的图片、字体会重复用到）
+  log('对照链上已有文件…');
+  const todo=[];
+  for(const f of G.files){
+    const info=t.isNew?{sha256Hash:'',size:0}:await regR.fileInfo(t.container,f.path);
+    const cell=document.querySelector(`[data-p="${CSS.escape(f.path)}"]`);
+    if(info.sha256Hash.toLowerCase()===f.sha256 && Number(info.size)===f.size){ if(cell) cell.innerHTML='<span class="skip">之前存过</span>'; continue; }
+    todo.push(f);
+  }
+  const txs=[]; for(const f of todo){ const b=bytesOf(f); for(let i=0;i*CHUNK<Math.max(b.length,1);i++) txs.push({f,i,data:b.slice(i*CHUNK,(i+1)*CHUNK)}); }
+  const gp=await gasPrice(rp,ch);
+  const gasSum=txs.reduce((s,x)=>s+BigInt(gasFor(x.data.length)),0n)+21000n;
+  const need=gasSum*gp*12n/10n, have=await rp.getBalance(op.address);
+  const fund=need>have?need-have:0n;
+  const bytes=todo.reduce((s,f)=>s+f.size,0);
+  log(`要写 ${todo.length} 个文件 ${kb(bytes)}，${txs.length} 笔交易，估计最多 ${ethers.formatEther(gasSum*gp)} ${ch.symbol}（gas 价 ${ethers.formatUnits(gp,'gwei')} gwei）`);
+  if(!txs.length){ log('全部之前存过，不用再花钱'); return finish(t,ch,op,true); }
+  // 同一容器同一时间只有一个操作员：有别的钥匙（身份验证器的设备钥匙等）在用，就会被顶掉，传完再签名恢复
+  let other=null, hasBackup=false;
+  if(!t.isNew){
+    const prevOp=await regR.operatorOf(t.container).catch(()=>ethers.ZeroAddress), prevUntil=Number(await regR.operatorUntil(t.container).catch(()=>0n));
+    other=prevOp!==ethers.ZeroAddress&&prevOp.toLowerCase()!==op.address.toLowerCase()&&prevUntil*1000>Date.now()+120000?{op:prevOp,until:prevUntil}:null;
+    hasBackup=Number((await regR.fileInfo(t.container,'.authenticator/backup.bin')).size)>0;
+  }
+  const batch=await canBatch(ch), f3=x=>(+ethers.formatEther(x)).toPrecision(3);
+  const steps=batch?['确认 1 次就行（钱包会把几步合在一起）']
+    :t.isNew?['① 开一个新空间（含上传手续费）','② 允许本页替你上传，3 小时内有效']
+    :['① 允许本页替你上传，3 小时内有效',`② 转 ${f3(fund)} ${ch.symbol} 手续费给本页`];
+  if(!confirm(`把「${G.title||G.url}」${G.pages>1?`（${G.pages} 个页面）`:''}存到 ${t.isNew?'你的新空间 '+t.name:t.name}\n\n`
+    +(t.isNew?`开新空间：${f3(price)} ${ch.symbol}（含第一个月；之后每月 ${f3(monthly)} ${ch.symbol} 续网址，不续只是网址停用，内容还在链上）\n`:'')
+    +`上传手续费：最多 ${f3(gasSum*gp)} ${ch.symbol}（用不完的退回）\n\n`
+    +`钱包会请你确认：\n  ${steps.join('\n  ')}\n之后自动完成，大约 ${Math.max(1,Math.ceil(txs.length*4/60))} 分钟。`
+    +(hasBackup?'\n\n注意：这个空间里放着你的身份验证器备份。本页不会动它，但建议换一个空间。':'')
+    +(other?`\n\n注意：你的手机（身份验证器）现在用着这个空间的上传权限，存的时候会暂停；存完钱包会再请你确认一次，把权限还给手机。`:'')
+    +'\n\n继续吗？')) return log('已取消');
+  bar.max=txs.length+2; bar.value=0;
+  // 2. 钱包确认：开空间 / 授权临时钥匙 / 转手续费
+  const regH=new ethers.Contract(ch.registry,REG_ABI,holder), ttl=BigInt(TTL_HOURS*3600);
+  const setOpData=regH.interface.encodeFunctionData('setOperator',[t.container,op.address,ttl]);
+  if(t.isNew){
+    const openerH=new ethers.Contract(OPENER[t.chain],OPENER_ABI,holder);
+    const createData=openerH.interface.encodeFunctionData('create',[NEW_SPACE.cpuIndex,NEW_SPACE.months,op.address]);
+    if(batch){ st.textContent='请在钱包里确认（1 次）：开新空间并允许本页上传';
+      await sendBatch(ch,[{to:OPENER[t.chain],data:createData,value:price+fund},{to:ch.registry,data:setOpData}],'开空间 + 授权'); }
+    else {
+      st.textContent='请在钱包里确认（1/2）：开一个新空间';
+      const r=await wait(openerH.create(NEW_SPACE.cpuIndex,NEW_SPACE.months,op.address,{value:price+fund}),'开空间');
+      const ev=r.logs.map(l=>{try{return openerH.interface.parseLog(l)}catch{return null}}).find(e=>e&&e.name==='SiteCreated');
+      if(ev){ t.container=ev.args.container; t.name=ev.args.name; }
+      st.textContent='请在钱包里确认（2/2）：允许本页替你上传';
+      await wait(regH.setOperator(t.container,op.address,ttl),'授权');
+    }
+    log('新空间',t.name,t.container);
+    t.isNew=false; t.key=t.chain+':'+t.container.toLowerCase(); t.label=t.name+'（'+ch.name+'）· 新开的';
+    fillTargets(); $('target').value=t.key;
+  } else if(batch){
+    st.textContent='请在钱包里确认（1 次）：允许本页上传并转手续费';
+    await sendBatch(ch,[{to:ch.registry,data:setOpData},...(fund>0n?[{to:op.address,value:fund}]:[])],'授权 + 转手续费');
+  } else {
+    st.textContent='请在钱包里确认（1/2）：允许本页替你上传';
+    await regH.setOperator.staticCall(t.container,op.address,ttl);
+    await wait(regH.setOperator(t.container,op.address,ttl),'授权'); bar.value=1;
+    if(fund>0n){ st.textContent=`请在钱包里确认（2/2）：转 ${f3(fund)} ${ch.symbol} 手续费`; await wait(holder.sendTransaction({to:op.address,value:fund}),'转 gas'); }
+  }
+  bar.value=2; $('refund').hidden=false; $('revoke').hidden=false;
+  // 3. 临时钥匙自动上传（不再弹钱包）
+  const regO=new ethers.Contract(ch.registry,REG_ABI,op);
+  let nonce=await rp.getTransactionCount(op.address,'pending');
+  for(const [k,x] of txs.entries()){
+    st.textContent=`正在存上链…（${k+1}/${txs.length}）不用操作，别关页面`;
+    const call=x.i===0?['putFile',[t.container,x.f.path,x.f.contentType,x.f.sha256,x.data]]:['appendChunk',[t.container,x.f.path,x.i,x.data]];
+    let gl; try{ gl=await regO[call[0]].estimateGas(...call[1]); gl=gl*115n/100n+50_000n; }catch(e){ throw new Error(`${call[0]} ${x.f.path} 模拟失败：${e.shortMessage||e.message}`); }
+    if(gl>16_500_000n) gl=16_500_000n;
+    await wait(regO[call[0]](...call[1],{nonce:nonce++,gasPrice:gp,gasLimit:gl}),`${call[0]} ${x.f.path} #${x.i}`);
+    bar.value=k+3;
+  }
+  await finish(t,ch,op,false);
+  if(other){
+    const left=BigInt(other.until-Math.floor(Date.now()/1000));
+    if(left>60n){ st.textContent='请在钱包里确认：把上传权限还给你的手机（身份验证器）';
+      await wait(regH.setOperator(t.container,other.op,left),'恢复原操作员（身份验证器设备钥匙）');
+      log('原操作员已恢复，临时钥匙的写权限随之失效'); $('revoke').hidden=true; }
+  }
+}
+
+async function wait(p,label){ const tx=await p; log(label,'已发送',tx.hash); const r=await tx.wait(); if(r.status!==1) throw new Error(label+' 回滚'); log(label,'确认 块',r.blockNumber,'gas',String(r.gasUsed)); return r; }
+
+async function finish(t,ch,op,nothing){
+  // 4. 逐个核对链上 size + SHA-256
+  const regR=new ethers.Contract(ch.registry,REG_ABI,op.provider); let bad=0;
+  for(const f of G.files){
+    const i=await regR.fileInfo(t.container,f.path); const ok=i.sha256Hash.toLowerCase()===f.sha256&&Number(i.size)===f.size;
+    const cell=document.querySelector(`[data-p="${CSS.escape(f.path)}"]`); if(cell) cell.innerHTML=ok?'<span class="ok">✓ 链上一致</span>':'<span class="bad">✗ 不一致</span>';
+    if(!ok) bad++;
+  }
+  if(bad) throw new Error(`有 ${bad} 个文件没存好，再按一次「存上链」会接着存（存好的不会重复花钱）`);
+  log('核对通过：',G.files.length,'个文件链上 size 与 SHA-256 全部一致');
+  if(!nothing) await refund(t.chain);
+  const link=siteUrl(t,G.page+'index.html');
+  $('done').hidden=false;
+  $('done').innerHTML=`<h3 class="ok">✓ 存好了！新网址：</h3><p><a href="${esc(link)}" target="_blank" rel="noopener">${esc(link)}</a> <button id="copy">复制</button></p>
+    <p class="note">原网站：${esc(G.url)}。用电脑或手机浏览器打开都行；在微信、X 里直接点开可能要过一阵子才看得到。</p>`;
+  $('copy').onclick=()=>{ navigator.clipboard.writeText(link).then(()=>$('copy').textContent='已复制'); };
+  $('status').innerHTML='<span class="ok">完成</span>';
+}
+
+async function refund(chain){
+  const ch=CHAINS[chain], op=opKey(chain), rp=op.provider;
+  const to=holderAddr||(await connect(ch), holderAddr);
+  const bal=await rp.getBalance(op.address), gp=await gasPrice(rp,ch), fee=21000n*gp;
+  if(bal<=fee*2n) return log('临时钥匙余额',ethers.formatEther(bal),ch.symbol,'，不值得退');
+  await wait(op.sendTransaction({to,value:bal-fee,gasLimit:21000n,gasPrice:gp}),`退回 ${ethers.formatEther(bal-fee)} ${ch.symbol}`);
+}
+
+const busy=b=>{for(const id of ['go','grabOnly','scope','cap','keep','target','mine']) $(id).disabled=b;};
+$('mine').onclick=async()=>{step='msg1';msg('<span class="spin"></span>正在查找你名下的空间…（约 15 秒）');busy(true);try{await connectAuthenticator();}catch(e){err(e);}finally{busy(false);}};
+$('go').onclick=async()=>{step='msg3';msg('');busy(true);try{await run();}catch(e){err(e);}finally{busy(false);}};
+$('grabOnly').onclick=async()=>{step='msg2';busy(true);try{G=null;await grab();}catch(e){err(e);}finally{busy(false);}};
+$('url').onkeydown=e=>{if(e.key==='Enter')$('grabOnly').click();};
+$('refund').onclick=async()=>{try{await refund(T().chain);}catch(e){err(e);}};
+$('revoke').onclick=async()=>{try{const t=T(),ch=CHAINS[t.chain];await connect(ch);
+  await wait(new ethers.Contract(ch.registry,REG_ABI,holder).setOperator(t.container,opKey(t.chain).address,0n),'撤销');}catch(e){err(e);}};
+// 上次中途停下、临时钥匙里还有钱：提示退款
+(async()=>{ for(const t of Object.keys(CHAINS).map(chain=>({chain}))){ try{ if(!localStorage.getItem('web2tape-op-'+t.chain)) continue; const op=opKey(t.chain); const b=await op.provider.getBalance(op.address);
+  if(b>0n){ log(`${CHAINS[t.chain].name} 临时钥匙 ${op.address} 里还有 ${ethers.formatEther(b)} ${CHAINS[t.chain].symbol}`); $('run').hidden=false; $('status').innerHTML=`<span class="warn">上次没存完，本页还留着 ${(+ethers.formatEther(b)).toPrecision(3)} ${CHAINS[t.chain].symbol} 手续费：再按「存上链」会接着用，或按下面的按钮退回钱包。</span>`; $('refund').hidden=false; } }catch{} } })();
+</script>

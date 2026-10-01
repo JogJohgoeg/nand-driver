@@ -4,8 +4,8 @@
 <link rel="modulepreload" crossorigin href="./bundle/rolldown-runtime-W7wSyTde.js">
 <link rel="modulepreload" crossorigin href="./bundle/vendor-BqXY5Q1H.js">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="duck-build" content="0e98fb766d2b99951d144db12235ca722c153d77a7ac8a6c2eeecbcb03005458"><title>Microduck · TapeOut</title><link rel="icon" href="data:,">
-<style>
+<meta name="duck-build" content="c8a9eaba3b4f569c29f8b40c09fd2f16cfc493d2fb0bc11595ee1d50252cd202"><title>Microduck · TapeOut</title><link rel="icon" href="data:,">
+<!--duck-green--><meta name="theme-color" content="#006B35"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&amp;family=Archivo:wdth,wght@62..125,100..900&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Noto+Sans+SC:wght@200..700&amp;display=swap" media="print" onload="this.media='all'"><!--/duck-green--><style>
 :root{color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;background:#101a24;color:#edf3fa;font:14px system-ui}main{display:grid;grid-template-columns:1fr 350px;height:100vh}#view{min-width:0;position:relative}canvas{display:block;width:100%;height:100%}aside{overflow-wrap:anywhere;padding:20px;overflow:auto;background:#182533}h1{font-size:23px;margin:0 0 8px}p{line-height:1.4;color:#b8c9d9;margin:10px 0}button,select{font:inherit;padding:10px;background:#31485e;color:white;border:1px solid #66849e;border-radius:6px;margin:4px 4px 4px 0}label{display:block;margin-top:5px}#bits,#gates,#bGates{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}.bit,.gate{display:grid;place-items:center;background:#283b4d;border:1px solid #63819b;border-radius:4px;width:26px;height:26px;font:11px monospace}.on{background:#ffcf55;color:#202b31}#depth{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:120px;margin-top:10px}#depth i{height:13px;background:#233}.sensors{display:grid;grid-template-columns:130px 1fr;gap:12px}#status{white-space:pre-wrap;font:13px/1.5 monospace}small{color:#b8c9d9}#loading{position:absolute;inset:30px auto auto 30px;padding:15px;background:#182533}#cameraLabel{position:absolute;top:15px;left:20px;background:#182533;padding:5px 12px;border-radius:8px}@media(max-width:700px){main{height:auto;grid-template-columns:1fr}#view{height:55vh}aside{padding:18px}}
 button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #ffcf55;outline-offset:3px}input[type="number"]{font:inherit;padding:8px;background:#263b4d;color:#edf3fa;border:1px solid #66849e;border-radius:6px}button:disabled{opacity:.5;cursor:wait}@media(max-width:700px){button,select{min-height:44px}select{max-width:100%}}
@@ -43,7 +43,235 @@ aside:has(#onchain:checked) #batch:disabled{cursor:not-allowed}
 #resetCamera{position:absolute;top:88px;left:20px;margin:0;font-size:12px}
 #resultsDownloads a{display:inline-flex;align-items:center;min-height:44px;margin-right:12px;color:#a8d8f1}
 @media(max-width:700px){aside summary{min-height:44px;align-content:center}label:has(>#onchain){display:flex;align-items:center;gap:6px;min-height:44px}}
-</style>
+</style><!--duck-green--><style id="duck-green">
+/* Microduck · 主站绿色版式（2026-10-01）。规范：../hashport/theme/README.md；样板：首页 ../dlgn_ctrl/showcase.html。
+   build_pages.py 把本文件内联在页面原有 <style> 之后（后加载覆盖），并非阻塞地加载规范里的 Google Fonts（只在主站；连不上时退回系统字体，不挡启动）。
+   只换皮和排版：id、类名、脚本都不动。脚本或文案点名的颜色照旧：深度格红 / 黄斜纹 / 暗绿（脚本内联）、输出门青边、结果表蓝色行、3D 场景。
+   右栏自上而下：绿带（标题、说明）→ 纸面（场地、大脑、运行等控件）→ 绿带（记忆、状态、传感器、门）→ 纸面（三个折叠项）。画面上的小牌用首页的深绿半透明底。 */
+:root{
+  --g:#006B35;--g-deep:#005C2B;--g-deeper:#004A22;--frame:#1E8C4E;--lime:#E4F53C;
+  --bg:#F2F3EF;--panel:#FFFFFF;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;
+  --line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);--hi:#006B35;--on-hi:#F2F3EF;--err:#B3261E;
+  --field:rgba(0,107,53,.72);--hover:rgba(0,107,53,.08); /* 输入框边线（对纸面 ≥3:1）、按钮悬停底 */
+  --sel:#2A6496;--sel-bg:rgba(42,100,150,.12);           /* 结果表「蓝色行」 */
+  --hud:rgba(0,40,18,.86);--hud-line:rgba(242,243,239,.22); /* 画面上的小牌 */
+  --disp:"Antonio","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:16px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --g:#006A34;--g-deep:#00522A;--g-deeper:#00401F;
+  --bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;
+  --line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);--hi:#5BE08F;--on-hi:#0D1A12;--err:#FF8A80;
+  --field:rgba(91,224,143,.5);--hover:rgba(91,224,143,.1);
+  --sel:#A8D8F1;--sel-bg:rgba(168,216,241,.12);
+  color-scheme:dark}}
+
+/* ---- 底子 ---- */
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:14px/1.5 var(--sans);font-variation-settings:"wdth" 96;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+::selection{background:var(--lime);color:#0B2A18}
+a{color:var(--hi);text-decoration-color:var(--line2);text-underline-offset:2px}
+a:hover{text-decoration-color:currentColor}
+p{color:var(--ink2)}
+small{color:var(--ink3)}
+strong{color:var(--ink);font-weight:600}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+
+/* ---- 控件：方角；主按钮绿底，次按钮描边；窄体字，英文大写 ---- */
+aside button,#view button{min-height:30px;margin:0;padding:0 12px;border:1px solid var(--hi);border-radius:0;background:transparent;color:var(--hi);
+  font:400 15px/1.1 var(--disp);letter-spacing:.03em;cursor:pointer;vertical-align:middle;text-align:center}
+aside button{display:inline-flex;align-items:center;justify-content:center;gap:6px} /* 画面上的按钮不设 display：#sceneRun 靠页面原样式在桌面隐藏 */
+html[lang="en"] aside button,html[lang="en"] #view button{text-transform:uppercase;letter-spacing:.06em}
+aside button:hover:not(:disabled){background-color:var(--hover)}
+#run{background:var(--hi);border-color:var(--hi);color:var(--on-hi)}
+#run:hover:not(:disabled){filter:brightness(1.08)}
+aside select,#view select{-webkit-appearance:none;appearance:none;min-height:28px;max-width:100%;margin:0;padding:4px 28px 4px 8px;
+  border:1px solid var(--field);border-radius:0;background-color:var(--panel);color:var(--ink);font:13px/1.25 var(--sans);cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:right 14px center,right 9px center;background-size:5px 5px;background-repeat:no-repeat}
+aside select:hover:not(:disabled),#view select:hover:not(:disabled){border-color:var(--hi)}
+select option,select optgroup{background-color:var(--panel);color:var(--ink)}
+aside input[type="number"],#shareLink{min-height:28px;padding:4px 8px;border:1px solid var(--field);border-radius:0;background:var(--panel);color:var(--ink);font:13px/1.25 var(--mono)}
+
+/* ---- 右栏 ---- */
+aside{background:var(--bg);color:var(--ink);padding:0 var(--gut) 16px;font-size:12.5px;line-height:1.45;scrollbar-color:var(--line2) transparent}
+/* 绿带：重设同一组语义色（同首页），各块左右出血到栏边，上下相接成一整块 */
+.panelHeading,#explanation,#memoryPanel,#status,.sensors,#gateTitle,#gates,#bGateTitle,#bGates{
+  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--line2:rgba(242,243,239,.6);
+  --hi:var(--lime);--on-hi:#0B2A18;--panel:var(--g-deeper);--field:rgba(242,243,239,.7);
+  background:var(--g);color:var(--ink);margin-left:calc(-1*var(--gut));margin-right:calc(-1*var(--gut));padding-left:var(--gut);padding-right:var(--gut)}
+/* 栏头：窄体细体标题 + 语言 */
+.panelHeading{margin-top:0;margin-bottom:0;padding-top:14px;padding-bottom:4px;align-items:flex-start;gap:12px}
+.panelHeading h1{flex:1 1 auto;min-width:0;margin:2px 0 0;font:300 23px/1.12 var(--disp);color:var(--ink);letter-spacing:0;word-break:keep-all;overflow-wrap:anywhere;text-wrap:balance}
+html[lang="en"] .panelHeading h1{font-weight:200;font-size:29px;line-height:1;letter-spacing:.01em;text-transform:uppercase}
+.panelHeading label{flex:none;margin:0}
+#language{min-height:28px;padding:3px 24px 3px 8px;font:500 12px/1.2 var(--mono);background-position:right 12px center,right 7px center}
+#explanation{margin-top:0;margin-bottom:0;padding-top:5px;padding-bottom:12px;color:var(--ink2);font-size:11.5px;line-height:1.45}
+/* 纸面：标签在左（等宽小字），控件在右 */
+aside>label{margin-top:6px;color:var(--ink)}
+aside>label:has(>select),.seedRow label{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;column-gap:8px}
+aside>label>span:first-child,.seedRow label>span:first-child{font:500 11px/1.3 var(--mono);color:var(--ink3)}
+html[lang="en"] aside>label>span:first-child,html[lang="en"] .seedRow label>span:first-child{text-transform:uppercase;letter-spacing:.1em}
+aside>label:has(>select):first-of-type{margin-top:12px}
+aside>label:has(>#onchain){display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;line-height:1.35}
+#onchain{flex:none;width:16px;height:16px;margin:0;accent-color:var(--hi)}
+#chainStatus{margin:2px 0 0 24px;font:11px/1.4 var(--mono);color:var(--ink3)}
+#run,#reset,#batch{margin:8px 6px 0 0}
+.seedRow{margin-top:8px;gap:8px;flex-wrap:nowrap}
+.seedRow label{flex:1 1 auto;min-width:0;margin:0;white-space:nowrap}
+#seed{width:100%!important;min-width:0;padding:4px 8px}
+#randomStart{flex:none}
+
+/* ---- 绿带：记忆、状态、传感器、门（亮起 = 黄绿底深色字，同首页） ---- */
+#memoryPanel{margin-top:14px;margin-bottom:0;padding-top:11px;padding-bottom:2px;border:0;border-radius:0}
+.memoryHeading strong,.sensors strong,#gateTitle,#bGateTitle{font:500 11px/1.35 var(--mono);color:var(--ink3)}
+html[lang="en"] .memoryHeading strong,html[lang="en"] .sensors strong,html[lang="en"] #gateTitle,html[lang="en"] #bGateTitle{text-transform:uppercase;letter-spacing:.06em}
+#memoryPanel #memoryEffect{display:block;font:11px/1.35 var(--mono);color:var(--ink3)}
+#memoryBits{gap:5px;margin:6px 0 4px}
+.memoryBit{border:1px solid var(--line);border-radius:0;padding:3px;background:transparent;color:var(--ink);font:11.5px/1.35 var(--sans)}
+.memoryBit.on{background:var(--lime);border-color:var(--lime);color:#0B2A18}
+#status{margin-top:14px;margin-bottom:0;padding-top:11px;padding-bottom:4px;color:var(--ink2);font:12px/1.5 var(--mono)}
+#memoryPanel:not([hidden])+#status{margin-top:0;padding-top:4px}
+.sensors{margin-top:0;margin-bottom:0;padding-top:6px;padding-bottom:4px}
+.sensors small,.sensors #depthReadout{display:block;margin-top:3px;font:10.5px/1.35 var(--mono);color:var(--ink3)}
+#showInputMap{color:inherit;text-decoration:underline dotted var(--line2);text-underline-offset:3px}
+#depth i[data-range="far"]{background-image:repeating-linear-gradient(135deg,transparent 0 2px,rgba(11,42,24,.6) 2px 3px)}
+#depth i.selected{outline:2px solid var(--lime);outline-offset:-1px}
+#depth:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.bit,.gate{border:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink2);font:500 10px/1 var(--mono)}
+.bit.on,.gate.on{background:var(--lime);border-color:var(--lime);color:#0B2A18}
+.gate.outputGate{border:2px solid #A8D8F1} /* 文案「青边门 = 输出位」 */
+#gateTitle{display:block;margin-top:0;margin-bottom:0;padding-top:8px}
+#gates{margin-top:0;margin-bottom:0;padding-top:5px;padding-bottom:8px}
+#bGateTitle{display:block;margin-top:0;margin-bottom:0;padding-top:2px}
+#bGates{margin-top:0;margin-bottom:0;padding-top:5px;padding-bottom:14px}
+#bGates:empty{padding-top:0;padding-bottom:6px}
+
+/* ---- 纸面：折叠项（上下虚线，右侧「+」，展开转 45°） ---- */
+#resultsPanel,#aboutPanel,#inputMapping{margin:0;padding:0;border:0;border-top:1px dashed var(--line2);border-radius:0}
+#resultsPanel{margin-top:14px}
+#inputMapping{border-bottom:1px dashed var(--line2)}
+aside details[open]{padding-bottom:12px}
+aside summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px;padding:5px 0;
+  font:300 17px/1.2 var(--disp);color:var(--hi);cursor:pointer}
+aside summary::-webkit-details-marker{display:none}
+aside summary::after{content:"+";flex:none;font:300 28px/1 var(--disp);transition:transform .2s}
+aside details[open]>summary::after{transform:rotate(45deg)}
+/* 评估与重放 */
+#courseInfo,#resultsContent p,#resultsStatus{margin:6px 0;color:var(--ink2);font-size:12px;line-height:1.45}
+#resultsContent .resultsCoverage{color:var(--ink);font-weight:600}
+#resultsContent .resultsSelection{color:var(--sel)}
+#jumpReplay{margin:4px 0 2px}
+#resultsContent table{margin:14px 0 10px;font-size:12px}
+#resultsContent caption{margin-bottom:6px;font:500 11px/1.3 var(--mono);color:var(--hi)}
+html[lang="en"] #resultsContent caption{text-transform:uppercase;letter-spacing:.08em}
+#resultsContent th,#resultsContent td{padding:6px 3px;border-bottom:0;border-top:1px dashed var(--line);color:var(--ink)}
+#resultsContent thead th{border-top:0;border-bottom:1px solid var(--line2);vertical-align:bottom;font:500 10.5px/1.3 var(--mono);color:var(--ink3)}
+html[lang="en"] #resultsContent thead th{text-transform:uppercase;letter-spacing:.04em}
+#resultsContent td{font-family:var(--mono)}
+#resultsContent tbody tr:nth-child(even){background:transparent}
+#resultsContent tbody tr.selectedBrain{background:var(--sel-bg)}
+#resultsContent tbody tr.selectedBrain th{box-shadow:inset 3px 0 var(--sel)}
+#replayExample a,#resultsDownloads a{color:var(--hi)}
+/* 原理与操作 */
+#aboutPanel p{margin:6px 0;color:var(--ink2);font-size:12px;line-height:1.5}
+#aboutPanel small{color:var(--ink2);font-size:11.5px;line-height:1.5}
+#aboutPanel a{color:var(--hi)!important} /* 页面里写的是行内 color:inherit */
+#brainStory{margin:4px 0 10px;padding-left:22px;font-size:12px;line-height:1.5}
+#brainStory li{margin:6px 0;color:var(--ink2)}
+#brainStory li::marker{color:var(--hi);font-family:var(--mono)}
+#buildInfo,#shareStatus{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+#exportTrial,#shareStart{margin:6px 6px 2px 0}
+/* 14 位输入对照 */
+#inputMapping table{margin-top:4px;font-size:12px}
+#inputMapping th,#inputMapping td{padding:6px 4px;border-bottom:0;border-top:1px dashed var(--line);color:var(--ink2)}
+#inputMapping thead th{border-top:0;border-bottom:1px solid var(--line2);font:500 10.5px/1.3 var(--mono);color:var(--ink3)}
+html[lang="en"] #inputMapping thead th{text-transform:uppercase;letter-spacing:.04em}
+#inputMapping tbody th{font:12px/1.4 var(--mono);color:var(--ink)}
+#inputMapping p{color:var(--ink2);font-size:12px}
+
+/* ---- 画面上的小牌：首页那种深绿半透明底、米白字、黄绿强调 ---- */
+#view{background:#101a24; /* 与 3D 场景底色一致，画布出来前不闪 */
+  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--ink3:rgba(242,243,239,.82);--line:var(--hud-line);--line2:rgba(242,243,239,.4);
+  --hi:var(--lime);--on-hi:#0B2A18;--panel:var(--g-deeper);--field:rgba(242,243,239,.45)}
+#view:focus-visible{outline:2px solid var(--lime);outline-offset:-2px}
+#cameraLabel{display:flex;align-items:center;gap:8px;margin:0;padding:6px 6px 6px 10px;border:1px solid var(--hud-line);border-radius:0;background:var(--hud);color:var(--ink);font:500 11px/1.2 var(--mono)}
+html[lang="en"] #cameraLabel>span{text-transform:uppercase;letter-spacing:.1em}
+#view button{background:var(--hud);border-color:rgba(242,243,239,.32);color:var(--ink)}
+#view button:hover:not(:disabled){border-color:var(--ink)}
+#view #sceneRun,#view #retryBoot{background:#F2F3EF;border-color:#F2F3EF;color:#006B35}
+#view #resetCamera{font-size:13px}
+#loading,#sceneStatus,#outcome,#sceneSource{border:1px solid var(--hud-line);border-radius:0;background:var(--hud);color:var(--ink)}
+#loading{font:12.5px/1.45 var(--sans)}
+#loading::before{border-color:rgba(242,243,239,.35);border-top-color:var(--lime)}
+#loading.failed{border-color:#FF8A80}
+#loading.failed::before{border-color:#FF8A80}
+#outcome{border-color:#FF8A80;font:12.5px/1.5 var(--sans)}
+#outcome[data-phase="goal"]{border-color:var(--lime)}
+#outcome::first-line{font-family:var(--disp);font-size:19px;font-weight:300;letter-spacing:.02em}
+html[lang="en"] #outcome::first-line{text-transform:uppercase}
+#sceneStatus{font:12.5px/1.5 var(--sans)}
+#sceneStatus::first-line{color:var(--lime)}
+#sceneStatus[data-phase="goal"]{border-color:var(--lime)}
+#sceneStatus[data-phase="fallen"],#sceneStatus[data-phase="nonfinite"],#sceneStatus[data-phase="timeout"]{border-color:#FF8A80}
+#sceneSource{padding:5px 8px;font:500 11.5px/1.3 var(--sans);color:var(--ink2)}
+#sceneSource[data-source="chain"]{border-color:rgba(228,245,60,.55);color:var(--lime)}
+#sceneSource[data-source="fallback"]{border-color:rgba(255,138,128,.6);color:#FF8A80}
+
+/* ---- 桌面：右栏紧凑，一屏放下控件和整块绿带 ---- */
+@media (min-width:701px){
+  #status{font-size:11.5px;line-height:1.4}
+  .sensors{gap:12px}
+}
+/* ---- 手机：控件至少 44px，输入框 16px（iOS 不放大） ---- */
+@media (max-width:700px){
+  body::after{border-width:3px}
+  aside{padding-bottom:28px;font-size:14px;line-height:1.5}
+  .panelHeading{padding-top:18px}
+  .panelHeading h1{font-size:24px}
+  html[lang="en"] .panelHeading h1{font-size:32px}
+  #explanation{padding-bottom:16px;font-size:14px;line-height:1.5}
+  aside button,#view button{min-height:44px;padding:0 14px;font-size:16px}
+  #view #resetCamera{font-size:14px}
+  aside select,#view select,aside input[type="number"],#shareLink{min-height:44px;font-size:16px}
+  #language{min-height:44px;font-size:16px}
+  aside>label{margin-top:10px}
+  aside>label:has(>select),.seedRow label{grid-template-columns:84px minmax(0,1fr)}
+  aside>label>span:first-child,.seedRow label>span:first-child{font-size:12px}
+  aside>label:has(>#onchain){min-height:44px;margin-top:6px;font-size:14px}
+  #onchain{width:20px;height:20px}
+  #chainStatus{margin-left:28px;font-size:12px}
+  #run,#reset,#batch{margin:12px 8px 0 0}
+  .seedRow{margin-top:12px}
+  #memoryPanel,#status{margin-top:20px}
+  .memoryHeading strong,.sensors strong,#gateTitle,#bGateTitle{font-size:12px}
+  #memoryPanel #memoryEffect{font-size:12px}
+  .memoryBit{font-size:13px}
+  #status{font-size:13px}
+  .sensors small,.sensors #depthReadout{font-size:11.5px}
+  .bit,.gate{font-size:11px}
+  #resultsPanel{margin-top:20px}
+  aside summary{min-height:52px;font-size:21px}
+  aside summary::after{font-size:32px}
+  #courseInfo,#resultsContent p,#resultsStatus,#aboutPanel p,#brainStory,#inputMapping p{font-size:14px}
+  #aboutPanel small{font-size:13px}
+  #resultsContent table,#inputMapping table{font-size:13px}
+  #cameraLabel{padding-left:8px;font-size:11px}
+  html[lang="en"] #cameraLabel>span{letter-spacing:.08em}
+  #view #camera{padding-right:26px;background-position:right 12px center,right 7px center}
+  #sceneSource{top:88px} /* 视角框变宽了：来源小牌挪到「重置镜头」那一行的右侧，长文案（RPC 等待、本地回退）不再压住视角框 */
+}
+@media (pointer:coarse){
+  aside button,#view button,aside select,#view select,aside input[type="number"]{min-height:44px}
+  aside>label:has(>#onchain){min-height:44px}
+}
+@media (prefers-reduced-motion:reduce){aside summary::after{transition:none}}
+</style><!--/duck-green-->
 <main><div id="view" tabindex="-1" role="region" aria-labelledby="demoTitle"><label id="cameraLabel"><span data-i18n="camera"></span> <select id="camera"><option value="follow" data-i18n="follow"></option><option value="course" data-i18n="course"></option></select></label><button id="resetCamera" type="button" hidden disabled data-i18n="resetCamera"></button><small id="sceneSource" hidden aria-hidden="true"></small><p id="sceneStatus" data-i18n="booting" aria-hidden="true"></p><button id="sceneRun" type="button" hidden disabled aria-controls="view" data-i18n="run"></button><div id="outcome" hidden role="status"></div><div id="loading" role="status" data-i18n="loading">正在载入页面 / Loading page…</div><button id="retryBoot" hidden onclick="const url=new window.URL(location.href);url.searchParams.set('brain',document.getElementById('brain').value);history.replaceState(history.state,'',url);location.reload()" data-i18n="retryLoad">重试 / Retry</button></div><aside>
 <div class="panelHeading"><h1 id="demoTitle" data-i18n="title"></h1><label><select id="language" aria-label="语言 / Language"><option value="zh">中文</option><option value="en">EN</option></select></label></div><p id="explanation" data-i18n="explanation"></p>
 <label><span data-i18n="courseSelect"></span> <select id="courseSelect"><option value="1" data-i18n="course1"></option><option value="2" data-i18n="course2"></option></select></label>

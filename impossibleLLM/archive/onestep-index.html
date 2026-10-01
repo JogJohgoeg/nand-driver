@@ -1,24 +1,75 @@
 <!doctype html><html lang="zh-CN" data-lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>impossible LLM · 一步模型</title>
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap">
 <style>
-:root{--bg:#0f1115;--fg:#e6e6e6;--mut:#9aa0a6;--card:#171a21;--line:#2a2f3a;--acc:#4f8cff;--ok:#3ddc84;--warn:#f5a623}
-@media(prefers-color-scheme:light){:root{--bg:#fafafa;--fg:#111;--mut:#555;--card:#fff;--line:#ddd}}
+/* 全站绿色版式（2026-10-01，规范见 circuits/_scratch/hashport/theme/README.md）。存档页只做轻量统一：配色、字体、方角、页头；内容与脚本不动。
+   图里写死的颜色（fill / stroke 属性）用文末的属性选择器换成同一套颜色，深浅色下都看得清。 */
+:root{--g:#006B35;--frame:#1E8C4E;--lime:#E4F53C;
+  --bg:#F2F3EF;--fg:#0B2A18;--mut:#3C5446;--mut3:#5A6E62;--card:#fff;--line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);
+  --acc:#006B35;--on-acc:#F2F3EF;--ok:#006B35;--warn:#B3261E;--soft:rgba(0,107,53,.07);--chart2:#E8622D;
+  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--g:#006A34;
+  --bg:#0D1A12;--fg:#E6EFE8;--mut:#A9BCB0;--mut3:#7E9386;--card:#13241A;--line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);
+  --acc:#5BE08F;--on-acc:#0D1A12;--ok:#5BE08F;--warn:#FF8A80;--soft:rgba(91,224,143,.07)}}
 html[data-lang=zh] .en{display:none} html[data-lang=en] .zh{display:none}
-html{scroll-behavior:auto} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Noto Sans CJK SC",sans-serif}
-main{max-width:1120px;margin:0 auto;padding:24px 16px 64px} h1{font-size:28px;margin:0 0 4px} h2{font-size:19px;margin:36px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px} .lang{background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;white-space:nowrap}
-.sub{color:var(--mut);margin-bottom:14px} .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px} .box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
-.box h3{margin:0 0 6px;font-size:14px;color:var(--mut)} .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0} .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
-.kpi .v{font-size:24px;font-weight:600} .kpi .l{color:var(--mut);font-size:13px} .tag{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:11px;color:var(--mut)}
-table{border-collapse:collapse;width:100%;font-size:14px} th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top} .num{text-align:right;font-variant-numeric:tabular-nums} .tw{overflow-x:auto}
-textarea,input,select,button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px} button{background:var(--acc);color:#fff;border:0;cursor:pointer}
-.chat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;min-height:140px;display:flex;flex-direction:column;gap:8px} .b{max-width:85%;padding:8px 12px;border-radius:12px;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:14px}
-.me{align-self:flex-end;background:#2b3a55} .net{align-self:flex-start;background:#1f2a24;border:1px solid #2e4a3a} .meta{font-size:12px;color:var(--mut);align-self:flex-start;margin-top:-4px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0} code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 4px} .small{font-size:13px;color:var(--mut)} .hl{border-left:3px solid var(--ok);padding-left:10px} .warn{border-left:3px solid var(--warn);padding-left:10px}
-</style></head><body><main>
+html{scroll-behavior:auto} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+a{color:var(--acc)} :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.site{background:var(--g);color:#F2F3EF;border-bottom:1px solid rgba(242,243,239,.28)}
+.site .in{max-width:1120px;margin:0 auto;padding:9px 16px;min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.mark{display:grid;flex:none;line-height:.92;color:#F2F3EF;text-decoration:none}
+.mark b{font:200 23px/.92 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:rgba(242,243,239,.82);margin-top:5px}
+.site :focus-visible{outline-color:var(--lime)}
+main{max-width:1120px;margin:0 auto;padding:clamp(24px,4vw,44px) 16px 64px}
+h1{margin:0 0 10px;font:300 clamp(30px,4vw,50px)/1.1 var(--disp);color:var(--acc);letter-spacing:-.005em;word-break:keep-all;overflow-wrap:anywhere}
+html[data-lang=en] h1{font-weight:200;text-transform:uppercase}
+h2{margin:48px 0 12px;font:300 clamp(23px,2.4vw,30px)/1.2 var(--disp);color:var(--acc);border-bottom:1px dashed var(--line2);padding-bottom:8px;word-break:keep-all;overflow-wrap:anywhere}
+h3{font:400 19px/1.3 var(--disp);letter-spacing:.01em;margin:22px 0 8px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.lang{background:transparent;color:#F2F3EF;border:1px solid rgba(242,243,239,.6);border-radius:0;padding:6px 14px;min-height:34px;cursor:pointer;white-space:nowrap;font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:none}
+.lang:hover{background:rgba(242,243,239,.14);filter:none}
+.sub{color:var(--mut);margin-bottom:18px}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:0;padding:16px}
+.box h3{margin:0 0 8px;font:500 12px/1.4 var(--mono);letter-spacing:.04em;color:var(--mut3)}
+html[data-lang=en] .box h3{text-transform:uppercase;letter-spacing:.12em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:16px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:0;padding:14px}
+.kpi .v{font:200 clamp(28px,2.8vw,36px)/1.1 var(--disp);color:var(--acc);font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--mut);font-size:13px;margin-top:4px}
+.tag{display:inline-block;border:1px dashed var(--line2);border-radius:0;padding:0 6px;font:11px/1.6 var(--mono);color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-top:1px dashed var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{font:500 11px/1.4 var(--mono);letter-spacing:.04em;color:var(--mut3);border-top:0;border-bottom:1px solid var(--line2)}
+html[data-lang=en] th{text-transform:uppercase;letter-spacing:.08em}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px} .tw{overflow-x:auto}
+textarea,input,select,button{font:inherit;color:var(--fg);background:var(--card);border:1px solid var(--line2);border-radius:0;padding:8px 10px}
+button{background:var(--acc);color:var(--on-acc);border-color:var(--acc);cursor:pointer;font-family:var(--disp);letter-spacing:.05em;text-transform:uppercase}
+button:hover{filter:brightness(1.06)} button:disabled{opacity:.55;cursor:default;filter:none}
+.chat{background:var(--card);border:1px solid var(--line);border-radius:0;padding:12px;min-height:140px;display:flex;flex-direction:column;gap:8px}
+.b{max-width:85%;padding:8px 12px;border-radius:0;white-space:pre-wrap;font-family:var(--mono);font-size:14px}
+.me{align-self:flex-end;background:var(--g);color:#F2F3EF} .net{align-self:flex-start;background:var(--soft);border:1px solid var(--line)} .meta{font-size:12px;color:var(--mut);align-self:flex-start;margin-top:-4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0} code{font-family:var(--mono);font-size:.88em;background:var(--soft);border:1px solid var(--line);border-radius:0;padding:0 4px} .small{font-size:13px;color:var(--mut)} .hl{border-left:3px solid var(--ok);padding-left:10px} .warn{border-left:3px solid var(--warn);padding-left:10px}
+.box.hl{border-left:1px solid var(--line);border-top:4px solid var(--ok);padding-left:16px}
+pre{font-family:var(--mono)} li::marker{color:var(--acc)}
+svg [fill="#e6e6e6"]{fill:var(--fg)} svg [fill="#9aa0a6"]{fill:var(--mut)} svg [fill="#3ddc84"]{fill:var(--acc)} svg rect{rx:0}
+svg [stroke="#4f8cff"]{stroke:var(--acc)} svg [stroke="#f5a623"]{stroke:var(--chart2)} svg [stroke="#666"]{stroke:var(--line2)} svg [stroke="#2a2f3a"]{stroke:var(--line)}
+@media (max-width:620px){body::after{border-width:3px}.site .in{min-height:64px}}
+@media (pointer:coarse),(max-width:600px){button,input,select{min-height:44px;touch-action:manipulation}.lang{min-height:44px;min-width:44px}ul.small a{display:inline-flex;align-items:center;min-height:44px}}
+</style></head><body>
+<header class="site"><div class="in"><a class="mark" href="../../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
+<button class="lang" id="langBtn">EN</button></div></header>
+<main>
 <div class="top"><div><h1>impossible LLM — <span class="zh">链上一步模型</span><span class="en">the on-chain one-step model</span></h1>
 <div class="sub"><span class="zh">纯组合 TapeOut 网表：输入 32 个字符，一次 <code>step()</code>，输出下一个字符，0 个 latch。网表在本页浏览器里逐门求值；电路流片在我们自建的 TapeOut CPU 上（BSC 0x6Fb4…5B38，不参与挖矿）；链上数字来自本地部署的同一 CPU 字节码的交易收据。</span><span class="en">A purely combinational TapeOut netlist: 32 characters in, one <code>step()</code>, the next character out, zero latches. The netlist is evaluated gate by gate in this browser; the circuits tape out on our own TapeOut CPU (BSC 0x6Fb4…5B38, non-mining); on-chain numbers are transaction receipts from the same CPU bytecode deployed locally.</span> 页面 v2 · 2026-09-14 · <span class="zh">维护：Claude · 网表与实测：H</span><span class="en">maintained by Claude · netlists and measurements by H</span></div></div>
-<button class="lang" id="langBtn">EN</button></div>
+</div>
 
 <div class="three">
 <div class="box hl"><h3><span class="zh">主信息（先看这个）</span><span class="en">Primary information</span></h3><span class="zh"><b>一步可达性与门数无关。</b>61,646 NAND 的网表（held-out 下一字符 0.4985）在放宽区块上限的官方 TapeOut CPU 上一步执行成功——烧 183.2M gas、步 187.1M gas，各 2.7 个区块，交易收据实测。唯一挡住它上主网的是 BSC 68,444,479 的区块上限；这是链进化的问题，不是模型的。但主网还有第二道限制：CPU 用 SSTORE2 存网表，一次流片最多 40,061 字节 ≈ 5,723 NAND（用你钱包对主网只读 estimateGas 二分测得）。今天能真实流片的最强档：5,583 NAND 贪心（0.388，主网 estimateGas 16.5M）和 5,069 NAND 采样（0.354，15.0M）；19,567 NAND 档（0.434）gas 装得下（烧 57.0M、步 45.7M）但网表超字节上限，要靠多电路拆分或改 CPU。</span><span class="en"><b>One-step reachability does not depend on gate count.</b> A 61,646-NAND netlist (held-out next-char top-1 0.4985) executed in ONE step on the official TapeOut CPU with a raised block cap: burn 183.2M gas, step 187.1M gas, 2.7 blocks each, from transaction receipts. The only thing keeping it off mainnet is the BSC block limit of 68,444,479 — a chain-evolution question, not a model one. Mainnet adds a second limit: the CPU stores netlists with SSTORE2, so one tape-out takes at most 40,061 bytes ≈ 5,723 NAND (bisected with read-only estimateGas from the owner wallet). The strongest rungs that tape out today: 5,583 NAND greedy (0.388, mainnet estimateGas 16.5M) and 5,069 NAND sampled (0.354, 15.0M); the 19,567-NAND rung (0.434) fits the gas (burn 57.0M, step 45.7M) but exceeds the byte cap — it needs a multi-circuit split or a CPU change.</span></div>

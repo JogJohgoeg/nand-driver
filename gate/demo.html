@@ -1,27 +1,91 @@
 <!doctype html>
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>门电路 BitCPM4 对话</title>
+<meta name="theme-color" content="#006B35">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Cpath d='M8 9h8a7 7 0 0 1 0 14H8z' fill='none' stroke='%23F2F3EF' stroke-width='2.4'/%3E%3Ccircle cx='24.5' cy='16' r='2.2' fill='none' stroke='%23F2F3EF' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap" media="print" onload="this.media='all'">
 <style>
-:root { --bg: #fff; --fg: #1a1a1a; --mute: #666; --ok: #0a7d32; --bad: #b3261e; --warn: #8a5a00; --line: #ddd; --tool: #0b57d0; --box: #f6f6f6; }
-@media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --mute: #999; --ok: #5bd17f; --bad: #ff8a80; --warn: #e0b060; --line: #333; --tool: #8ab4f8; --box: #1c1c1c; } }
-body { background: var(--bg); color: var(--fg); font: 14px/1.55 system-ui, sans-serif; margin: 0 auto; padding: 16px; max-width: 860px; }
-h1 { font-size: 18px; margin: 0 0 6px; } .mute { color: var(--mute); } .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); } .tool { color: var(--tool); }
-textarea { width: 100%; box-sizing: border-box; font: 13px/1.4 ui-monospace, monospace; background: var(--box); color: var(--fg); border: 1px solid var(--line); padding: 6px; border-radius: 4px; }
-button { font: inherit; padding: 4px 14px; margin-right: 6px; } #out { background: var(--box); padding: 10px; min-height: 2.5em; white-space: pre-wrap; border-radius: 4px; }
-.stage { border-top: 1px solid var(--line); padding: 8px 0; } table { border-collapse: collapse; font-size: 13px; } td { padding: 2px 8px 2px 0; vertical-align: top; }
-details summary { cursor: pointer; }
+/* 门电路大脑 · 精简版页面，绿色版式（2026-10-01；规范见 hashport/theme/README.md）。脚本与 id、类名（mute ok warn bad tool）不变。 */
+:root{color-scheme:light;
+  --g:#006B35;--frame:#1E8C4E;--lime:#E4F53C;--paper-c:#F2F3EF;
+  --bg:#F2F3EF;--panel:#FFFFFF;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;
+  --line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);--hi:#006B35;--hi-soft:rgba(0,107,53,.08);--on-hi:#F2F3EF;--err:#B3261E;
+  --disp:"Antonio","Avenir Next Condensed","Bahnschrift","Roboto Condensed","Arial Narrow","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --gut:clamp(16px,4vw,40px)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;
+  --g:#006A34;--bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;
+  --line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);--hi:#5BE08F;--hi-soft:rgba(91,224,143,.1);--on-hi:#0D1A12;--err:#FF8A80}}
+.g{--ink:#F2F3EF;--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--hi:var(--lime);background:var(--g);color:var(--ink)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.62 var(--sans);font-variation-settings:"wdth" 96;-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+.w{max-width:900px;margin:0 auto;padding:0 var(--gut)}
+/* 页头：绿带 + 字标（回主站首页） */
+.top{border-bottom:1px solid var(--line)}
+.top .w{display:flex;align-items:center;min-height:72px;padding-top:7px;padding-bottom:7px}
+.mark{display:grid;line-height:.92;color:var(--ink);text-decoration:none}
+.mark b{font:200 23px/.92 var(--disp);font-stretch:condensed;letter-spacing:.02em;text-transform:uppercase}
+.mark small{margin-top:5px;font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;white-space:nowrap;color:var(--ink3)}
+main.w{padding-top:clamp(28px,5vw,56px);padding-bottom:64px}
+h1{margin:0 0 16px;font:200 clamp(36px,5.4vw,60px)/1.05 var(--disp);font-stretch:condensed;letter-spacing:-.005em;color:var(--hi);word-break:keep-all;overflow-wrap:anywhere}
+.mute{color:var(--ink3)}.ok{color:var(--hi)}.bad,.warn{color:var(--err)}.tool{color:var(--hi)}
+h1+.mute{max-width:46em;line-height:1.75;color:var(--ink2)}
+.stage{margin-top:28px;padding:18px 0 4px;border-top:1px dashed var(--line2)}
+.stage>b:first-child{font:300 22px/1.2 var(--disp);font-stretch:condensed;color:var(--hi)}
+label{display:block;margin:0 0 8px;font:500 12px/1.4 var(--mono);letter-spacing:.04em}
+textarea{display:block;width:100%;padding:10px 12px;font:13.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:0;resize:vertical}
+textarea::placeholder{color:var(--ink3);opacity:1}
+textarea:focus{outline:2px solid var(--hi);outline-offset:1px;border-color:var(--hi)}
+/* 折叠项：上下虚线，右侧「+」 */
+details{margin-top:14px;border-top:1px dashed var(--line2);border-bottom:1px dashed var(--line2)}
+details>summary,details>summary.mute{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px;padding:8px 0;list-style:none;cursor:pointer;
+  font:300 17px/1.3 var(--disp);font-stretch:condensed;color:var(--hi)}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"+";flex:none;font:300 26px/1 var(--disp);transition:transform .2s}
+details[open]>summary::after{transform:rotate(45deg)}
+details[open]{padding-bottom:12px}
+/* 按钮：方角、窄体字；「生成」是主按钮 */
+button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:0;padding:0 16px;
+  font:400 15px/1.1 var(--disp);font-stretch:condensed;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
+  color:var(--ink);background:transparent;border:1px solid var(--line2);border-radius:0;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--hi);color:var(--hi);background:var(--hi-soft)}
+button:disabled{opacity:.45;cursor:default}
+#go{background:var(--hi);border-color:var(--hi);color:var(--on-hi)}
+#go:hover:not(:disabled){background:var(--hi);color:var(--on-hi);filter:brightness(1.08)}
+/* 按钮行：放不下时整段说明换到下一行，不在字中间断开 */
+.stage p{display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px;margin:16px 0 10px}
+#info{min-width:0}
+#out{min-height:2.5em;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hi)}
+pre{margin:8px 0 0;padding:10px 12px;font:12.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line);overflow:auto;white-space:pre-wrap}
+#call{margin-top:10px}
+table{border-collapse:collapse;margin-top:10px;font-size:13.5px}
+td{padding:7px 12px 7px 0;vertical-align:top}
+tr+tr td{border-top:1px dashed var(--line)}
+@media (max-width:640px){body::after{border-width:3px}}
+@media (pointer:coarse),(max-width:600px){button{min-height:44px;touch-action:manipulation}textarea{font-size:16px}}
+@media (prefers-reduced-motion:reduce){details>summary::after{transition:none}}
 </style></head>
 <body>
+<header class="top g"><div class="w"><a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a></div></header>
+<main class="w">
 <h1>门电路版 BitCPM4-1B</h1>
 <div class="mute">整个语言模型被现场生成为 NAND / LATCH 门电路网表，在你的显卡上用 WebGPU 逐位执行；每个 token 约需 1.4 万亿次 NAND。
 单元库是预综合的固定资产；「按权重选单元与连线」由本页在浏览器里现场生成。文字 ↔ 编号由原 tokenizer 在页面里完成（宿主 I/O，不参与计算）。
 带工具定义时，工具调用由门内的 K6 摘要机生成（工具不会被执行）。首次打开需下载约 750 MB 并生成电路（几分钟）；之后从本机缓存启动。</div>
 <div class="stage"><b>设备与准备</b>：<span id="st">检查中…</span><div id="pre"></div></div>
 <div class="stage">
-  <label class="mute">你的消息</label><textarea id="msg" rows="3">What is the capital of France?</textarea>
+  <label class="mute" for="msg">你的消息</label><textarea id="msg" rows="3">What is the capital of France?</textarea>
   <details><summary class="mute">工具定义（可选，JSON 数组，OpenAI function 格式）</summary><textarea id="tools" rows="6" placeholder='[{"type":"function","function":{"name":"read_file","description":"…","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}]'></textarea></details>
   <p><button id="go" disabled>生成</button><button id="stop" disabled>停止</button><button id="long" hidden>改用长回答模式重来</button> <span id="info" class="mute"></span></p>
   <div id="out"></div><div id="call"></div>
 </div>
+</main>
 <script type="module">
 import { createGateBrain } from './gate-brain.mjs';
 const q = new URLSearchParams(location.search), $ = id => document.getElementById(id), esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);

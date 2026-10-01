@@ -2,66 +2,76 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#006B35">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ncd2net 弦图网表台</title>
 <style>
+/* 绿色版式（2026-10-01，全站统一；规范见 tapeout 仓库 circuits/_scratch/hashport/theme/README.md）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
 :root{
-  --bg:#F2F4F6; --panel:#FFFFFF; --ink:#151A21; --ink2:#4B5563; --line:#D5DAE1; --line2:#E8EBEF;
-  --acc:#B3541E; --acc-soft:#F6E7DC; --wire:#1F4FBF; --wire-soft:#E3EAFB;
-  --ok:#1E7A3C; --ok-soft:#DFF2E4; --bad:#B42323; --bad-soft:#F9E0E0;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --disp:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
+  --g:#006B35; --lime:#E4F53C; --frame:#1E8C4E;
+  --bg:#F2F3EF; --panel:#FFFFFF; --ink:#0B2A18; --ink2:#3C5446; --line:rgba(0,107,53,.3); --line2:rgba(0,107,53,.16);
+  --acc:#006B35; --acc-soft:#E2EEE5; --wire:#006B35; --wire-soft:#E9F1EB;
+  --ok:#1E7A3C; --ok-soft:#DFF2E4; --bad:#B3261E; --bad-soft:#F9E0E0;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif;
+  --disp:"Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1216; --panel:#171B21; --ink:#E4E7EB; --ink2:#A2A9B4; --line:#2C333D; --line2:#222830;
-  --acc:#E08A4C; --acc-soft:#3A2417; --wire:#7FA3F5; --wire-soft:#1B2740;
-  --ok:#5CC57E; --ok-soft:#173222; --bad:#F08383; --bad-soft:#3B1A1A;}}
+  --g:#006A34; --bg:#0D1A12; --panel:#13241A; --ink:#E6EFE8; --ink2:#A9BCB0; --line:rgba(91,224,143,.24); --line2:rgba(91,224,143,.14);
+  --acc:#5BE08F; --acc-soft:#1C3A28; --wire:#5BE08F; --wire-soft:#16301F;
+  --ok:#5CC57E; --ok-soft:#173222; --bad:#FF8A80; --bad-soft:#3B1A1A;}}
 :root[data-theme="dark"]{
-  --bg:#0F1216; --panel:#171B21; --ink:#E4E7EB; --ink2:#A2A9B4; --line:#2C333D; --line2:#222830;
-  --acc:#E08A4C; --acc-soft:#3A2417; --wire:#7FA3F5; --wire-soft:#1B2740;
-  --ok:#5CC57E; --ok-soft:#173222; --bad:#F08383; --bad-soft:#3B1A1A;}
+  --g:#006A34; --bg:#0D1A12; --panel:#13241A; --ink:#E6EFE8; --ink2:#A9BCB0; --line:rgba(91,224,143,.24); --line2:rgba(91,224,143,.14);
+  --acc:#5BE08F; --acc-soft:#1C3A28; --wire:#5BE08F; --wire-soft:#16301F;
+  --ok:#5CC57E; --ok-soft:#173222; --bad:#FF8A80; --bad-soft:#3B1A1A;}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:0 32px;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:0 32px;margin:0}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+@media (max-width:620px){body::after{border-width:3px}}
 .wrap{max-width:1180px;margin:0 auto}
-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px;padding-block:18px 10px;border-bottom:1px solid var(--line);position:relative}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 24px;padding-block:18px 30px;position:relative;background:var(--g);box-shadow:0 0 0 100vmax var(--g);clip-path:inset(0 -100vmax);color:#F2F3EF;
+  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--line:rgba(242,243,239,.28);--panel:#005C2B;--acc:var(--lime)}
+.mark{flex-basis:100%;display:grid;line-height:.92;color:#F2F3EF;text-decoration:none;padding-bottom:22px;margin-bottom:12px;border-bottom:1px solid rgba(242,243,239,.28)}
+.mark b{font:200 23px/.92 var(--disp);font-stretch:condensed;text-transform:uppercase;letter-spacing:.02em}
+.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:rgba(242,243,239,.82);margin-top:5px}
+header a{color:var(--lime)}
 header .sub{flex:1 1 420px}
-button.lang{margin-left:auto;font-family:var(--mono);font-size:12px;padding:3px 9px;letter-spacing:.06em}
-h1{font-family:var(--disp);font-weight:600;font-size:26px;margin:0;letter-spacing:.01em}
+button.lang{margin-left:auto;font-family:var(--mono);font-size:12px;padding:5px 12px;letter-spacing:.06em;background:#F2F3EF;color:#006B35;border-color:#F2F3EF;text-transform:none}
+h1{font-family:var(--disp);font-stretch:condensed;font-weight:200;font-size:clamp(36px,5vw,58px);line-height:1.02;margin:0;letter-spacing:0;word-break:keep-all;overflow-wrap:anywhere}
 header .sub{color:var(--ink2)}
 header .sub code{font-family:var(--mono);font-size:12.5px}
-.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:14px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-top:4px solid var(--acc);margin-top:22px}
 .three>div{background:var(--panel);padding:10px 12px}
-.three .k{font-family:var(--disp);text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--ink2);margin-bottom:3px}
+.three .k{font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--acc);margin-bottom:4px}
 .three b{font-weight:500}
 main{display:grid;grid-template-columns:230px 1fr;gap:16px;margin-top:16px}
 nav ul{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--panel)}
-nav li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 10px;border-bottom:1px solid var(--line2);cursor:pointer}
+nav li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 10px;border-bottom:1px dashed var(--line);cursor:pointer}
 nav li:last-child{border-bottom:0}
 nav li[aria-selected="true"]{background:var(--acc-soft);box-shadow:inset 3px 0 0 var(--acc)}
 nav li:focus-visible{outline:2px solid var(--wire);outline-offset:-2px}
-nav .n{font-weight:500}
+nav .n{font-family:var(--disp);font-stretch:condensed;font-size:16px;font-weight:400}
 nav .g{font-family:var(--mono);font-size:12px;color:var(--ink2);text-align:right;font-variant-numeric:tabular-nums}
 nav .f{grid-column:1/3;font-family:var(--mono);font-size:11.5px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-section.demo{border:1px solid var(--line);background:var(--panel);padding:12px 14px}
+section.demo{border:1px solid var(--line);border-top:4px solid var(--acc);background:var(--panel);padding:12px 14px}
 .formula{font-family:var(--mono);font-size:13px;padding:8px 10px;background:var(--wire-soft);border-left:3px solid var(--wire);overflow-x:auto;white-space:nowrap}
 .stats{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 0 2px;font-size:13px;color:var(--ink2)}
 .stats b{color:var(--ink);font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums}
-.pill{display:inline-block;padding:1px 7px;border-radius:2px;font-family:var(--mono);font-size:12px}
+.pill{display:inline-block;padding:1px 7px;border-radius:0;font-family:var(--mono);font-size:12px}
 .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
-h2{font-family:var(--disp);font-size:15px;font-weight:600;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+h2{font-family:var(--disp);font-stretch:condensed;font-size:20px;font-weight:300;margin:16px 0 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--acc)}
 .io{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid{display:grid;gap:4px 8px;align-items:center}
 .grid .lab{font-family:var(--mono);font-size:12px;color:var(--ink2);white-space:nowrap}
-input[type=number]{width:74px;font-family:var(--mono);font-size:13px;padding:3px 5px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:2px}
+input[type=number]{width:74px;font-family:var(--mono);font-size:13px;padding:4px 6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:0}
 input[type=number]:focus-visible{outline:2px solid var(--wire);outline-offset:0}
 .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-button{font-family:var(--sans);font-size:13px;padding:5px 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:2px;cursor:pointer}
-button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button{font-family:var(--disp);font-stretch:condensed;font-size:15px;letter-spacing:.05em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:0;cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:var(--bg)}
 button:focus-visible{outline:2px solid var(--wire);outline-offset:1px}
 table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:4px 8px;border-bottom:1px solid var(--line2);text-align:right;font-variant-numeric:tabular-nums}
-th{font-weight:500;color:var(--ink2);font-family:var(--disp);letter-spacing:.04em;font-size:12px;text-transform:uppercase}
+th,td{padding:5px 8px;border-bottom:1px dashed var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th{font-weight:500;color:var(--ink2);font-family:var(--mono);letter-spacing:.08em;font-size:11px;text-transform:uppercase;border-bottom:1px solid var(--line)}
 td:first-child,th:first-child{text-align:left;font-family:var(--mono);font-size:12px}
 td.num{font-family:var(--mono)}
 .tw{overflow-x:auto}
@@ -70,7 +80,7 @@ td.num{font-family:var(--mono)}
 details{margin-top:8px} summary{cursor:pointer;color:var(--ink2);font-size:13px}
 pre{font-family:var(--mono);font-size:12px;background:var(--bg);border:1px solid var(--line2);padding:8px;overflow-x:auto;margin:6px 0 0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.box{border:1px solid var(--line);background:var(--panel);padding:12px 14px}
+.box{border:1px solid var(--line);border-top:4px solid var(--acc);background:var(--panel);padding:12px 14px}
 .box h2{margin-top:0}
 .box p{margin:6px 0;max-width:68ch}
 .box code{font-family:var(--mono);font-size:12.5px}
@@ -85,6 +95,7 @@ ol,ul.plain{margin:4px 0;padding-left:18px} ol li,ul.plain li{margin:3px 0}
 
 <div class="wrap">
 <header>
+  <a class="mark" href="https://nand.aihashrate.stream/" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
   <h1>ncd2net <span data-i18n="h1"></span></h1>
   <div class="sub" data-i18n-html="sub"></div>
   <button id="lang" class="lang" aria-label="语言 / Language">EN</button>
