@@ -294,7 +294,7 @@ async function connect(ch){
 async function gasPrice(p,ch){ const fd=await p.getFeeData(); const min=ethers.parseUnits(ch.minGwei,'gwei'); const g=fd.gasPrice||min; return g>min?g:min; }
 
 // 开户合约（web2tape/contracts/src/Web2TapeOpener.sol）：没有空间的人一笔交易开好一个。部署后把地址填进来；测试时 ?opener=0x… 覆盖
-const OPENER={xlayer:null};
+const OPENER={xlayer:'0xF1a62B003bee4AFe15E2A6300eBf86ad9301fF33'};   // 2026-10-01 部署，链上代码与 forge 测过的字节码逐字节相同
 const NEW_SPACE={chain:'xlayer',cpuIndex:245,months:1};      // 新空间开在 X Layer 第 245 台处理器上（费用最低），名字先付 1 个月
 const OPENER_ABI=['function create(uint256 cpuIndex,uint256 months,address op) payable returns (uint256,address,string)','function price(uint256,uint256) view returns (uint256)',
   'event SiteCreated(address indexed owner,address indexed circuits,uint256 circuitId,address container,string name,address op,uint256 opFund)'];
