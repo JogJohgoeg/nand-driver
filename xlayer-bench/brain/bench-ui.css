@@ -1,6 +1,20 @@
-/* One accent, neutral surfaces, two weights. Keep upstream DOM and licenses. */
-:root{color-scheme:light;--background:#fafafa;--surface:#fafafa;--panel:#fafafa;--control:#f2f2f2;--hover:#eaeaea;--selected:#dedede;--line:#d6d6d6;--line-strong:#858585;--text:#222222;--muted:#626262;--accent:#256b62;--content-width:960px;--content-gutter:24px;--radius-small:4px;--radius:4px;--radius-large:4px;font-size:15px;font-weight:400}
-@media(prefers-color-scheme:dark){:root{color-scheme:dark;--background:#181818;--surface:#181818;--panel:#181818;--control:#242424;--hover:#303030;--selected:#363636;--line:#494949;--line-strong:#8c8c8c;--text:#e6e6e6;--muted:#aaaaaa;--accent:#83b6ad}}
+/* Keep upstream DOM and licenses. 配色、字体、方角按全站绿色版式（2026-10-01，规范与色值见 hashport/theme/README.md）。
+   终端配色（bench-ui.js）和门级状态图（bench-lab.js）从 :root 读 --background/--text/--muted/--accent/--line/--selected，
+   所以这几个必须定义在 :root 上；--background 是卡片色（终端、弹窗），页面底色用 --gk-bg。 */
+:root{color-scheme:light;
+  --gk-g:#006B35;--gk-g-deep:#005C2B;--gk-g-deeper:#004A22;--gk-frame:#1E8C4E;--gk-lime:#E4F53C;--gk-paper:#F2F3EF;
+  --gk-bg:#F2F3EF;--gk-ink:#0B2A18;--gk-ink2:#3C5446;--gk-ink3:#5A6E62;--gk-hi:#006B35;--gk-on-hi:#F2F3EF;--gk-err:#B3261E;--gk-err-bg:#F7E4E2;--gk-sel:rgba(0,107,53,.2);
+  --gk-disp:"Antonio","Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --gk-sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --gk-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --background:#FFFFFF;--surface:#F2F3EF;--panel:#FFFFFF;--control:#E6EDE7;--hover:#E2EDE5;--selected:#E2EDE5;
+  --line:rgba(0,107,53,.26);--line-strong:rgba(0,107,53,.55);--text:#0B2A18;--muted:#5A6E62;--accent:#006B35;
+  --content-width:960px;--content-gutter:24px;--radius-small:0;--radius:0;--radius-large:0;font-size:15px;font-weight:400}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;
+  --gk-g:#006A34;--gk-g-deep:#00522A;--gk-g-deeper:#00401F;
+  --gk-bg:#0D1A12;--gk-ink:#E6EFE8;--gk-ink2:#A9BCB0;--gk-ink3:#7E9386;--gk-hi:#5BE08F;--gk-on-hi:#0D1A12;--gk-err:#FF8A80;--gk-err-bg:#3A1F1C;--gk-sel:rgba(91,224,143,.28);
+  --background:#13241A;--surface:#0D1A12;--panel:#13241A;--control:#172B1E;--hover:#1C3A28;--selected:#24452F;
+  --line:rgba(91,224,143,.22);--line-strong:rgba(91,224,143,.5);--text:#E6EFE8;--muted:#A9BCB0;--accent:#5BE08F}}
 body{margin:0;background:var(--background);color:var(--text);line-height:1.6}
 body :is(button,input,select,textarea,.primary,.quiet){font-weight:400;font-family:inherit}
 body :is(h1,h2,h3,strong,b,summary){font-weight:600}
@@ -203,3 +217,258 @@ html,body{height:100%;overflow:hidden}
 #gate-input{box-sizing:border-box;width:100%;min-height:72px;resize:vertical;background:transparent;color:var(--text);border:1px solid var(--line);padding:10px;font:inherit}
 .gate-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
 .gate-row .tab-spacer{flex:1}
+
+/* ==== 全站绿色版式（2026-10-01）====
+   左侧导航和底部状态栏是绿带（米白字、黄绿强调）；中间和右侧是纸面；终端、工作区、弹窗是卡片（白底 / 深色 --panel）。
+   方角、无阴影、无毛玻璃；标题和按钮用窄体（英文大写），标签和数字用等宽。只换皮，不动 id、类名和脚本。 */
+*,*::before,*::after{border-radius:0!important}
+:root{font-family:var(--gk-sans);font-variation-settings:"wdth" 96;-webkit-font-smoothing:antialiased;scrollbar-color:var(--line-strong) transparent}
+body,#bench-shell{background:var(--gk-bg);color:var(--gk-ink)}
+::selection{background:var(--gk-sel);color:inherit}
+/* 视口细框；外层留出同宽内边距，框不压住内容 */
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--gk-frame);pointer-events:none;z-index:1000}
+#bench-shell{padding:5px}
+a{color:var(--gk-hi);text-underline-offset:3px;text-decoration-thickness:1px}
+/* 标题：窄体细体，纸面上用主绿；中文只在标点处断行 */
+#bench-intro h1,#gate-view h1,#tool-view>h2,.workspace-heading h2,.inspector-heading strong,.sidebar-heading strong,#brain-dialog .dialog-heading strong,#model-title{
+  font-family:var(--gk-disp);font-weight:300;letter-spacing:0;color:var(--gk-hi);word-break:keep-all;overflow-wrap:anywhere}
+html[lang="en"] :is(#bench-intro h1,#gate-view h1,#tool-view>h2,.workspace-heading h2,.inspector-heading strong,.sidebar-heading strong,#brain-dialog .dialog-heading strong,#model-title){font-weight:200;text-transform:uppercase;letter-spacing:.01em}
+#bench-intro h1,#gate-view h1{font-size:clamp(28px,2.4vw,36px);line-height:1.08}
+#tool-view>h2{font-size:28px;line-height:1.1;margin:28px 0 6px}
+
+/* 按钮：方角、窄体；次按钮透明底 + 1px 线，主按钮主绿底米白字（深色模式亮绿底深字） */
+body :is(button,.button){font-family:var(--gk-disp);font-size:15px;line-height:1.2;letter-spacing:.03em;color:var(--gk-ink);background:transparent;border:1px solid var(--line-strong)}
+body :is(button,.button):hover{background:var(--control);border-color:var(--gk-hi)}
+body :is(button,.button):disabled{color:var(--muted);background:transparent;border-color:var(--line)}
+body :is(button,.button).quiet{border-color:transparent}
+body :is(button,.button).quiet:hover:not(:disabled){border-color:var(--line-strong)}
+html[lang="en"] :is(#bench-tabs button,.bench-actions button,.terminal-controls button,.gate-row button,#gate-load,.dialog-actions button,#brain-picker button,#chain-read,.workspace-heading :is(button,.button),.editor-heading button,.shell-toolbar button,#shell-run,#bench-fill,#bench-retry,#model-confirm,a.button){text-transform:uppercase;letter-spacing:.07em}
+body :is(#load:not(.is-loaded),#bench-bit-run,#send,#gate-load,#gate-send,#shell-run,#model-confirm,#bench-dialog .primary):not(:disabled){background:var(--gk-hi);border-color:var(--gk-hi);color:var(--gk-on-hi)}
+body :is(#load:not(.is-loaded),#bench-bit-run,#send,#gate-load,#gate-send,#shell-run,#model-confirm,#bench-dialog .primary):not(:disabled):hover{filter:brightness(1.07)}
+body #load.is-loaded{border-color:transparent;background:transparent;color:var(--gk-ink3);font-family:var(--gk-mono);font-size:12.5px;letter-spacing:0;text-transform:none}
+body .terminal-controls :is(#new-chat,#newline){border-color:transparent;color:var(--gk-ink2)}
+body .terminal-controls :is(#new-chat,#newline):hover{border-color:var(--line-strong)}
+/* 示例：等宽小号、虚线框 */
+body .try-chips button{max-width:100%;white-space:normal;overflow-wrap:anywhere;font:400 12.5px/1.4 var(--gk-mono);letter-spacing:0;text-transform:none;border:1px dashed var(--line-strong);background:transparent;color:var(--gk-ink2);padding:5px 10px;min-height:32px}
+body .try-chips button:hover{border-style:solid;border-color:var(--gk-hi);background:var(--panel);color:var(--gk-ink)}
+
+/* 折叠项：右侧「+」，展开转 45° */
+:is(#bench-shell,dialog) summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;min-height:44px;padding-block:9px;
+  font:400 16px/1.25 var(--gk-disp);letter-spacing:.02em;color:var(--gk-ink)}
+html[lang="en"] :is(#bench-shell,dialog) summary{text-transform:uppercase;letter-spacing:.06em}
+:is(#bench-shell,dialog) summary::-webkit-details-marker{display:none}
+:is(#bench-shell,dialog) summary::after{content:"+";flex:none;font:300 24px/1 var(--gk-disp);color:var(--gk-hi);transition:transform .2s}
+:is(#bench-shell,dialog) details[open]>summary::after{transform:rotate(45deg)}
+
+/* ---- 左侧导航：绿带 ---- */
+#bench-sidebar{background:var(--gk-g);color:var(--gk-paper);border-right:0;padding:18px 14px 16px;
+  --text:#F2F3EF;--muted:rgba(242,243,239,.82);--line:rgba(242,243,239,.26);--line-strong:rgba(242,243,239,.6);
+  --control:var(--gk-g-deeper);--hover:rgba(242,243,239,.1);--selected:var(--gk-g-deep);--accent:var(--gk-lime);
+  --gk-hi:var(--gk-lime);--gk-on-hi:#0B2A18;--gk-ink:#F2F3EF;--gk-ink2:rgba(242,243,239,.9);--gk-ink3:rgba(242,243,239,.82);
+  scrollbar-color:rgba(242,243,239,.35) transparent}
+#bench-sidebar ::selection{background:rgba(242,243,239,.3)}
+.sidebar-heading{align-items:flex-start;padding:0 4px 16px;min-height:0}
+.sidebar-heading strong{font-size:30px;line-height:.95;color:var(--gk-paper)}
+.sidebar-search input{min-height:40px;padding:6px 10px;background:var(--gk-g-deeper);border:1px solid rgba(242,243,239,.28);color:var(--gk-paper);font-size:14px}
+.sidebar-search input::placeholder{color:rgba(242,243,239,.82)}
+.tree-heading{margin:24px 4px 8px;font:500 11px/1.2 var(--gk-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--gk-ink3)}
+html[lang="en"] .tree-heading{letter-spacing:.14em}
+.brain-heading{margin-top:24px}
+#bench-sidebar .brain-heading button{width:36px;min-height:32px;border:0;color:var(--gk-paper);font:300 20px/1 var(--gk-sans)}
+.brain-tree{padding-left:0}
+#bench-sidebar :is(.brain-tree button,#side-session){min-height:44px;padding:7px 10px;gap:10px;border:0;background:transparent;color:var(--gk-paper);
+  font:400 14px/1.35 var(--gk-sans);letter-spacing:0;text-transform:none}
+#bench-sidebar :is(.brain-tree button,#side-session):hover{background:rgba(242,243,239,.1)}
+#bench-sidebar .brain-tree button.selected{background:var(--gk-g-deep);box-shadow:inset 3px 0 var(--gk-lime)}
+#bench-sidebar :is(.brain-tree button,#side-session)>span:not(.status-dot){flex:1 1 auto;min-width:0;overflow:hidden}
+.brain-tree small,#side-session small{margin-top:1px;font:400 11px/1.4 var(--gk-mono);color:rgba(242,243,239,.82)}
+.brain-tree .row-time{font-family:var(--gk-mono);font-size:10.5px;color:rgba(242,243,239,.82)}
+.status-dot{width:7px;height:7px;background:rgba(242,243,239,.45)}
+.status-dot.active{background:var(--gk-lime)}
+#bench-sidebar .sidebar-heading button{border:0;color:var(--gk-paper);font:300 22px/1 var(--gk-sans);min-width:36px}
+#bench-secondary{margin:22px 0 8px;padding-top:0;border-top:1px dashed var(--line)}
+#bench-secondary>summary{font:500 11px/1.2 var(--gk-mono);letter-spacing:.04em;color:var(--gk-ink3)}
+html[lang="en"] #bench-secondary>summary{letter-spacing:.14em}
+#bench-secondary>details{border-top:1px dashed var(--line)}
+#bench-secondary #nt-scope>summary{font-size:15px}
+#bench-secondary p,#nt-scope footer,#nt-scope .setup-credits{font-size:12.5px;line-height:1.6;color:rgba(242,243,239,.82)}
+#nt-scope footer span{color:inherit}
+#nt-badge{display:flex;align-items:baseline;gap:8px;font:12px/1.5 var(--gk-mono);color:rgba(242,243,239,.9)}
+#nt-dot{flex:none;width:7px;height:7px;background:rgba(242,243,239,.45)}
+#nt-badge[data-state=ok] #nt-dot{background:var(--gk-lime)}
+#nt-badge[data-state=err] #nt-dot{background:#FF8A80}
+#nt-credit{font-size:12.5px;line-height:1.6;color:rgba(242,243,239,.82)}
+#nt-credit b{color:var(--gk-paper)}
+
+/* ---- 底部状态栏：绿带、等宽 ---- */
+#bench-statusbar{background:var(--gk-g);color:rgba(242,243,239,.9);border-top:0;gap:22px;font:400 11.5px/1 var(--gk-mono);font-variant-numeric:tabular-nums}
+
+/* ---- 视图标签栏（纸面） ---- */
+#bench-tabs{flex-shrink:0;min-height:52px;padding:0 10px 0 14px;gap:2px;align-items:stretch;background:var(--gk-bg);border-bottom:1px solid var(--line)}
+#bench-tabs button{min-height:0;padding:0 12px;border:0;border-block:3px solid transparent;background:transparent;color:var(--gk-ink2);font:400 16px/1 var(--gk-disp);letter-spacing:.03em}
+#bench-tabs button[aria-pressed="true"]{color:var(--gk-ink);border-bottom-color:var(--gk-hi)}
+#bench-tabs button:hover{background:var(--control);color:var(--gk-ink)}
+#bench-tabs :is(#tab-new,#panel-toggle,#sidebar-toggle){font:400 18px/1 var(--gk-sans);padding:0 10px}
+/* 语言切换：外框画在两个字上，整格高度都可点 */
+#bench-tabs #lang-toggle{align-self:stretch;align-items:center;gap:0;padding:0 8px;border:0;border-block:3px solid transparent;font:500 12px/1 var(--gk-mono);letter-spacing:.04em}
+#bench-tabs #lang-toggle:hover{background:transparent}
+#lang-toggle span{padding:6px 9px;border:1px solid var(--line-strong);color:var(--gk-ink2)}
+#lang-toggle span+span{border-left:0}
+#lang-toggle span.on{background:var(--gk-hi);border-color:var(--gk-hi);color:var(--gk-on-hi)}
+#lang-toggle:hover span:not(.on){color:var(--gk-ink);background:var(--control)}
+
+/* ---- 中间：纸面 ---- */
+#chat-view,#tool-view,#gate-view{background:var(--gk-bg)}
+#bench-intro{padding:24px 0 14px}
+.bench-lead{max-width:none;margin:10px 0 4px;font-size:15px;line-height:1.55;color:var(--gk-ink2)}
+.bench-sub{max-width:none;margin:0 0 18px;font-size:13.5px;color:var(--gk-ink3)}
+#bench-limit{max-width:none;margin:10px 0 0;font-size:12.5px;color:var(--gk-ink3)}
+#bench-try{margin-top:16px;color:var(--gk-ink2)}
+#bench-try>p:first-child{margin:0 0 10px;font:500 11px/1.4 var(--gk-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--gk-ink3)}
+html[lang="en"] #bench-try>p:first-child{letter-spacing:.12em}
+#bench-try .try-hint{font-size:12px;color:var(--gk-ink3)}
+/* 终端：卡片，顶部 4px 主绿 */
+.terminal-panel{background:var(--background);border:1px solid var(--line);border-top:4px solid var(--gk-hi);padding:10px 12px 6px}
+.terminal-controls{padding-block:10px 4px}
+#notice{background:var(--gk-bg);border-left:3px solid var(--gk-hi);font-size:12.5px;color:var(--gk-ink)}
+#bench-loading{margin-top:18px;border-top:1px dashed var(--line-strong)}
+#bench-stage,#bench-bytes{font-size:13px;color:var(--gk-ink2)}
+#bench-error,#brain-status[data-error=true]{border-left:3px solid var(--gk-err);padding:8px 12px;background:var(--gk-err-bg);color:var(--gk-ink)}
+
+/* 工具与工作区 */
+#tool-view>p,.field-note{font-size:12.5px;color:var(--gk-ink3)}
+#tool-view>details{border-top:1px dashed var(--line-strong);padding:2px 0}
+#bench-example,#brain-frame{min-height:40px;background:var(--panel);color:var(--gk-ink);border:1px solid var(--line-strong);font:12.5px var(--gk-mono)}
+#bench-run-status{font-size:13px;color:var(--gk-ink2)}
+#bench-tool-result,#brain-output,#gate-raw{font-family:var(--gk-mono);background:var(--gk-bg);border:1px solid var(--line);padding:10px 12px}
+#workspace-panel{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--gk-hi)}
+.workspace-heading{flex-shrink:0;padding:8px 10px 8px 14px;border-bottom:1px dashed var(--line)}
+.workspace-heading h2{font-size:20px;line-height:1.1}
+body .workspace-heading :is(button,.button){min-height:36px;padding:6px 10px;font-size:14px}
+#files button{border:0;color:var(--gk-ink2);font:400 12px/1.45 var(--gk-mono);letter-spacing:0;text-transform:none}
+#files button:hover{background:var(--control);color:var(--gk-ink)}
+#files button.selected{background:var(--selected);color:var(--gk-ink);box-shadow:inset 3px 0 var(--gk-hi)}
+.editor-area{background:var(--surface);border:1px solid var(--line)}
+.editor-heading{border-bottom:1px dashed var(--line)}
+.editor-area:focus-within .editor-heading{background:var(--control);box-shadow:inset 0 -2px var(--gk-hi)}
+#filename{font-family:var(--gk-mono);font-size:12px}
+#editor,#editor-highlight{font:12.5px/1.6 var(--gk-mono)}
+#editor::selection,#command::selection{background:var(--gk-sel)}
+.workspace>.terminal{border-top:1px dashed var(--line);margin:0;padding:0 12px 10px}
+.workspace>.terminal>summary{justify-content:flex-start}
+.workspace>.terminal>summary span{float:none;margin-left:auto;font:400 11px var(--gk-mono);letter-spacing:0;text-transform:none;color:var(--gk-ink3)}
+.shell-toolbar{font-family:var(--gk-mono);color:var(--gk-hi)}
+#terminal-output{font-family:var(--gk-mono)}
+.shell-entry{background:var(--gk-bg);border-left:2px solid var(--line-strong)}
+.shell-empty code,.shell-prompt{color:var(--gk-hi)}
+.shell-status{font-family:var(--gk-mono)}
+.shell-status.success{color:var(--gk-hi)}
+.shell-status.error,.shell-stderr{color:var(--gk-err)}
+#terminal-output .shell-code .token{color:var(--gk-ink)}
+#terminal-output .shell-code :is(.token.function,.token.builtin,.token.keyword){color:var(--gk-hi)}
+#terminal-output .shell-code :is(.token.comment,.token.operator,.token.punctuation){color:var(--gk-ink3)}
+#terminal-output .shell-code .token.string{color:var(--gk-ink2)}
+#shell-form{background:var(--gk-bg);border:1px solid var(--line-strong);font-family:var(--gk-mono)}
+#shell-form:focus-within{border-color:var(--gk-hi)}
+#command,#command-highlight{font:12.5px/20px var(--gk-mono)}
+#shell-hint,.workspace-note{font-family:var(--gk-mono);font-size:10.5px;color:var(--gk-ink3)}
+
+/* 门电路大脑 */
+#gate-checks{font:12.5px/1.5 var(--gk-mono)}
+#gate-checks .ok>span:first-child{color:var(--gk-hi)}
+#gate-checks .bad{color:var(--gk-err)}
+#gate-checks li small{color:var(--gk-ink3)}
+#gate-stage{color:var(--gk-ink)}
+.gate-msg{border:1px solid var(--line);background:var(--panel);color:var(--gk-ink);font-size:14.5px;line-height:1.6}
+.gate-msg.user{background:var(--gk-g);border-color:var(--gk-g);color:var(--gk-paper)}
+.gate-wait{color:var(--gk-ink3)}
+.gate-info{font-family:var(--gk-mono);font-size:11.5px;color:var(--gk-ink3)}
+#gate-form{background:var(--gk-bg);border-top:1px dashed var(--line);padding-top:10px}
+#gate-input{background:var(--panel);color:var(--gk-ink);border:1px solid var(--line-strong);font:15px/1.5 var(--gk-sans)}
+
+/* ---- 右侧网表与链上信息（纸面） ---- */
+#bench-inspector{background:var(--gk-bg);border-left:1px solid var(--line);padding:18px 16px}
+.inspector-heading{padding:2px 0 12px;min-height:0}
+.inspector-heading strong{font-size:24px;line-height:1}
+#bench-inspector .inspector-heading button{border:0;color:var(--gk-ink2);font:300 22px/1 var(--gk-sans);min-width:36px}
+.netlist-fields{gap:0;margin:12px 0}
+:is(.netlist-fields,#bench-inspector .chain-fields) dt{margin-top:12px;font:500 10.5px/1.3 var(--gk-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--gk-ink3)}
+html[lang="en"] :is(.netlist-fields,#bench-inspector .chain-fields) dt{letter-spacing:.1em}
+:is(.netlist-fields,#bench-inspector .chain-fields) dd{padding:2px 0 6px;border-bottom:1px dashed var(--line);font:12.5px/1.45 var(--gk-mono);font-variant-numeric:tabular-nums;color:var(--gk-ink)}
+#gate-panel,#bench-inspector #chain-identity{border-top:1px dashed var(--line-strong);padding-top:0}
+#bench-inspector #chain-identity summary,#gate-panel>summary{font-size:17px}
+.gate-metrics{font-family:var(--gk-mono)}
+#gate-details summary{min-height:36px;font:400 12px/1.4 var(--gk-mono);letter-spacing:0;text-transform:none;color:var(--gk-ink2)}
+#gate-details summary::after{font-size:18px}
+#bench-inspector :is(p,li){color:var(--gk-ink2)}
+#bench-inspector #chain-status{color:var(--gk-ink)}
+
+/* ---- 弹窗：卡片，顶部 4px 主绿 ---- */
+dialog{background:var(--background);color:var(--gk-ink);border:1px solid var(--line-strong);border-top:4px solid var(--gk-hi);box-shadow:none}
+dialog::backdrop,#model-dialog::backdrop{background:rgb(5 20 11 / .55);-webkit-backdrop-filter:none;backdrop-filter:none}
+#brain-dialog .dialog-heading{padding:14px 0 10px;margin-bottom:4px;border-bottom:1px dashed var(--line)}
+#brain-dialog .dialog-heading strong{font-size:26px;line-height:1}
+body :is(#brain-dialog .dialog-heading button,#model-cancel){border:0;color:var(--gk-ink2);font:300 22px/1 var(--gk-sans);min-width:36px}
+#brain-picker fieldset{border:0;border-top:1px dashed var(--line-strong);padding:12px 0 4px;margin:16px 0 8px}
+#brain-picker legend{float:left;width:100%;padding:0;margin-bottom:8px;font:300 20px/1.2 var(--gk-disp);color:var(--gk-hi)}
+#brain-picker legend+*{clear:both}
+#brain-picker label{font-size:14px;color:var(--gk-ink)}
+#brain-picker input{background:var(--panel);color:var(--gk-ink);border:1px solid var(--line-strong);font:13px var(--gk-mono)}
+#brain-picker input[type=file]{padding:4px}
+input[type=file]::file-selector-button{margin-right:10px;padding:7px 12px;border:1px solid var(--line-strong);background:var(--gk-bg);color:var(--gk-ink);font:400 14px/1 var(--gk-disp);letter-spacing:.03em;cursor:pointer}
+#brain-dialog p{color:var(--gk-ink2)}
+#bench-dialog p{font-size:15px}
+#model-dialog{padding:26px 26px 22px}
+#model-title{margin:0 0 10px;font-size:32px;line-height:1.05}
+#model-description{font-size:14.5px;color:var(--gk-ink2)}
+.setup-runtime>div{background:var(--gk-bg);border:1px solid var(--line)}
+.setup-runtime dt{font:500 10.5px/1.3 var(--gk-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gk-hi)}
+.setup-runtime dd{font-size:12.5px;color:var(--gk-ink)}
+.setup-facts{background:transparent;border:1px dashed var(--line-strong)}
+.setup-facts span{color:var(--gk-ink3)}
+.setup-label{font:500 10.5px/1.3 var(--gk-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gk-ink3)}
+#model-preview{background:var(--gk-bg);border:1px solid var(--line);font:12.5px/1.5 var(--gk-mono)}
+#model-error{background:var(--gk-err-bg);border-left:3px solid var(--gk-err);color:var(--gk-ink)}
+body #model-confirm{font-size:17px;letter-spacing:.05em}
+#sidebar-backdrop{background:rgb(5 20 11 / .55)}
+
+/* ---- 窄屏、触屏 ---- */
+/* 平板宽度：三栏都在时中间只剩两三百像素，标签栏折成两行，语言切换和面板开关不被右栏盖住 */
+@media(min-width:761px) and (max-width:1180px){
+  #bench-tabs{flex-wrap:wrap;padding:0 6px}
+  #bench-tabs button{min-height:46px;padding:0 8px;font-size:15px}
+  #bench-tabs :is(#tab-new,#panel-toggle){padding:0 8px}
+  #bench-tabs #lang-toggle{padding:0 4px}
+}
+@media(max-width:760px){
+  #bench-sidebar{box-shadow:none;padding:16px 14px}
+  #bench-inspector{top:55px;bottom:43px;box-shadow:none;border-left:1px solid var(--line-strong)}
+  #bench-tabs{min-height:50px;padding:0 4px;gap:0}
+  #bench-tabs button{padding:0 8px;font-size:15px}
+  #bench-tabs :is(#tab-new,#panel-toggle,#sidebar-toggle){padding:0 8px}
+  #bench-tabs #lang-toggle{padding:0 4px}
+  #lang-toggle span{padding:6px 7px}
+  #bench-intro h1,#gate-view h1{font-size:28px}
+  #bench-statusbar{gap:10px;font-size:10.5px}
+}
+@media(max-width:620px){
+  body::after{border-width:3px}
+  #bench-shell{padding:3px}
+  #bench-inspector{top:53px;bottom:41px}
+}
+@media(max-width:420px){
+  #bench-statusbar{gap:9px;font:400 11px/1 var(--gk-sans);font-variation-settings:"wdth" 78;letter-spacing:0}
+}
+@media(max-width:400px){
+  #bench-tabs button{padding:0 6px}
+  #bench-tabs :is(#tab-new,#panel-toggle,#sidebar-toggle){padding:0 6px}
+}
+@media(pointer:coarse){
+  body :is(button,.button){min-height:44px}
+  body .try-chips button{min-height:44px}
+  body .workspace-heading :is(button,.button),#files button,#shell-run,.sidebar-search input,#bench-example,#brain-frame,#brain-picker input:not([type=file]),#brain-picker input[type=file]{min-height:44px}
+  #command,#command-highlight{padding-block:12px}
+  #command{min-height:44px}
+  #shell-form>.shell-prompt{padding-top:12px}
+  #bench-sidebar .brain-heading button,body :is(.sidebar-heading button,.inspector-heading button,#brain-dialog .dialog-heading button,#model-cancel){min-width:44px;min-height:44px}
+}

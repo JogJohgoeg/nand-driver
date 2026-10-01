@@ -1,0 +1,237 @@
+/* nandtool（Pi · impossible LLM，旧版工作台）· 全站绿色版式覆盖样式（2026-10-01）。
+   规范与色值见 circuits/_scratch/hashport/theme/README.md；工作台（xlayer-bench）的同款样式在 llm_src/bench-ui.css。
+   只换皮：不改 id、类名和脚本。上游应用只有深色，这里按系统深浅色两套都给：页头是绿带，正文纸面，终端与工作区是卡片。
+   原先悬浮在页面角上的说明、署名和自检状态（#nt-credit / #nt-badge / #nt-scope）会盖住按钮，改成页面底部的绿带。 */
+:root{color-scheme:light;
+  --gk-g:#006B35;--gk-g-deep:#005C2B;--gk-g-deeper:#004A22;--gk-frame:#1E8C4E;--gk-lime:#E4F53C;--gk-paper:#F2F3EF;
+  --gk-bg:#F2F3EF;--gk-ink:#0B2A18;--gk-ink2:#3C5446;--gk-ink3:#5A6E62;--gk-hi:#006B35;--gk-on-hi:#F2F3EF;--gk-err:#B3261E;--gk-err-bg:#F7E4E2;--gk-sel:rgba(0,107,53,.2);
+  --gk-disp:"Antonio","Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --gk-sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --gk-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --background:#FFFFFF;--surface:#F2F3EF;--panel:#FFFFFF;--control:#E6EDE7;--hover:#E2EDE5;--selected:#E2EDE5;
+  --line:rgba(0,107,53,.26);--line-strong:rgba(0,107,53,.55);--text:#0B2A18;--muted:#5A6E62;--accent:#006B35;
+  --radius-small:0px;--radius:0px;--radius-large:0px;--header-inset:0px;--surface-inset:10px;
+  /* 终端（Pi 主题的各角色） */
+  --t-text:#0B2A18;--t-text2:#3C5446;--t-muted:#5A6E62;--t-dim:#5A6E62;--t-accent:#006B35;--t-err:#B3261E;--t-page:#FFFFFF;
+  --t-sel:#E2EDE5;--t-user:#E6EDE7;--t-pending:#F2F3EF;--t-success:#E6EDE7;--t-errbg:#FAEBE9;
+  font-family:var(--gk-sans);font-variation-settings:"wdth" 96;-webkit-font-smoothing:antialiased;
+  color:var(--text);background:var(--gk-bg);scrollbar-color:var(--line-strong) var(--gk-bg)}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;
+  --gk-g:#006A34;--gk-g-deep:#00522A;--gk-g-deeper:#00401F;
+  --gk-bg:#0D1A12;--gk-ink:#E6EFE8;--gk-ink2:#A9BCB0;--gk-ink3:#7E9386;--gk-hi:#5BE08F;--gk-on-hi:#0D1A12;--gk-err:#FF8A80;--gk-err-bg:#3A1F1C;--gk-sel:rgba(91,224,143,.28);
+  --background:#13241A;--surface:#0D1A12;--panel:#13241A;--control:#172B1E;--hover:#1C3A28;--selected:#24452F;
+  --line:rgba(91,224,143,.22);--line-strong:rgba(91,224,143,.5);--text:#E6EFE8;--muted:#A9BCB0;--accent:#5BE08F;
+  --t-text:#E6EFE8;--t-text2:#A9BCB0;--t-muted:#A9BCB0;--t-dim:#93A99B;--t-accent:#5BE08F;--t-err:#FF8A80;--t-page:#13241A;
+  --t-sel:#203D2A;--t-user:#172B1E;--t-pending:#172B1E;--t-success:#1C3A28;--t-errbg:#3A1F1C}}
+*,*::before,*::after{border-radius:0!important}
+html,body{background:var(--gk-bg);color:var(--gk-ink)}
+::selection{background:var(--gk-sel);color:inherit}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--gk-frame);pointer-events:none;z-index:1000}
+a{color:var(--gk-hi);text-underline-offset:3px}
+:is(a,button,.button,summary,select,input,textarea):focus-visible{outline:2px solid var(--gk-hi);outline-offset:2px}
+input:focus,textarea:focus{box-shadow:inset 0 0 0 1px var(--gk-hi)}
+
+/* 按钮：方角、窄体（英文大写）；次按钮透明底 + 1px 线，主按钮主绿底米白字 */
+button,.button{font-family:var(--gk-disp);font-size:14px;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gk-ink);background:transparent;border:1px solid var(--line-strong);min-height:32px;padding:5px 12px}
+button:hover,.button:hover{background:var(--control);border-color:var(--gk-hi)}
+button:disabled{opacity:1;color:var(--muted);border-color:var(--line);background:transparent}
+.quiet,.quiet:disabled{border-color:transparent}
+.quiet:hover:not(:disabled){border-color:var(--line-strong)}
+.primary:not(:disabled),#send:not(:disabled),#send.has-input:not(:disabled),#model-confirm,#shell-run:not(:disabled){background:var(--gk-hi);border-color:var(--gk-hi);color:var(--gk-on-hi)}
+.primary:not(:disabled):hover,#send.has-input:not(:disabled):hover,#model-confirm:hover{background:var(--gk-hi);filter:brightness(1.07)}
+#newline:not(:hover){background:transparent;border-color:transparent}
+#new-chat{border-color:transparent}
+
+/* ---- 页头：绿带 ---- */
+header{width:100%;max-width:none;margin:0;padding:var(--surface-inset) clamp(14px,2vw,24px);background:var(--gk-g);color:var(--gk-paper);
+  border-bottom:1px solid rgba(242,243,239,.26);--line:rgba(242,243,239,.28);--control:rgba(242,243,239,.12);--accent:var(--gk-lime)}
+header :focus-visible{outline-color:var(--gk-lime)}
+.brand{color:var(--gk-paper)}
+.runtime-meter{background:var(--gk-g-deep);color:var(--gk-paper);font-family:var(--gk-mono);font-size:11.5px}
+.runtime-dot{background:rgba(242,243,239,.6)}
+.runtime-meter[data-state=generating] .runtime-dot,.runtime-meter[data-state=tool] .runtime-dot{background:var(--gk-lime)}
+.runtime-meter[data-state=error] .runtime-dot{background:#FF8A80}
+.runtime-divider{background:rgba(242,243,239,.28)}
+.runtime-sparkline,.runtime-meter[data-state=generating] .runtime-value{color:var(--gk-lime)}
+.runtime-value{color:var(--gk-paper)}
+.model-panel{background:transparent}
+.model-heading strong{font:300 19px/1 var(--gk-disp);letter-spacing:.02em;text-transform:uppercase}
+.header-model-source{color:var(--gk-paper)}
+.header-model-source:hover{color:var(--gk-lime)}
+.badge{background:transparent;color:rgba(242,243,239,.9);border:1px dashed rgba(242,243,239,.6);font:400 10.5px/1.3 var(--gk-mono);padding:3px 7px}
+header #load:not(:disabled):not(.is-loaded){background:var(--gk-paper);border-color:var(--gk-paper);color:var(--gk-g);font-size:15px}
+header #load:not(:disabled):not(.is-loaded):hover{filter:brightness(1.05)}
+header #load.is-loaded{background:transparent;border:1px solid rgba(242,243,239,.28);color:var(--gk-lime);font:400 11.5px/1 var(--gk-mono);letter-spacing:0;text-transform:none}
+header #progress,header #progress::-webkit-progress-bar{background:rgba(242,243,239,.25)}
+header #progress::-webkit-progress-value{background:var(--gk-lime)}
+header #progress::-moz-progress-bar{background:var(--gk-lime)}
+header #progress:indeterminate{background:linear-gradient(90deg,transparent,var(--gk-lime),transparent) 0 0/35% 100% no-repeat rgba(242,243,239,.25)}
+
+/* ---- 对话终端：卡片，顶部 4px 主绿 ---- */
+.terminal-panel{background:var(--background);border:1px solid var(--line);border-top:4px solid var(--gk-hi);padding:10px 12px 8px}
+.terminal-controls{padding-top:8px}
+.terminal-panel>footer,footer{font-family:var(--gk-mono);font-size:10.5px;color:var(--gk-ink3)}
+#notice{background:var(--gk-bg);border-left:3px solid var(--gk-hi);color:var(--gk-ink)}
+#open-tab,#model-open-tab{color:var(--gk-hi)}
+.column-resizer:after{width:3px;background:var(--line-strong)}
+.column-resizer:hover:after{background:var(--gk-hi)}
+#pi-terminal :is(.xterm-viewport,.xterm-scrollable-element){background-color:var(--t-page)!important}
+#pi-terminal .xterm-rows .xterm-cursor.xterm-cursor-block{background-color:var(--t-accent)!important;color:var(--t-page)!important}
+#pi-terminal .xterm-rows .xterm-cursor.xterm-cursor-outline{outline-color:var(--t-accent)!important}
+#pi-terminal .xterm-rows .xterm-cursor.xterm-cursor-bar{box-shadow:2px 0 0 var(--t-accent) inset!important}
+#pi-terminal .xterm-rows .xterm-cursor.xterm-cursor-underline{border-bottom-color:var(--t-accent)!important}
+#pi-terminal .xterm-selection div{background-color:var(--gk-sel)!important}
+#pi-terminal .xterm-scrollable-element>.scrollbar>.slider{background:var(--line-strong)!important}
+.xterm .composition-view{background:var(--gk-g);color:var(--gk-paper)}
+/* 终端逐色重映射（先兜底，再逐色；同等特异性，后写的覆盖先写的） */
+#pi-terminal .xterm-rows{color:var(--t-text)!important}
+#pi-terminal .xterm-rows span[style*="color"]{color:var(--t-text)!important}
+#pi-terminal .xterm-rows span[style*="background-color"]{background-color:var(--t-pending)!important}
+/* 16 色调色板与反显（Pi 用反显画光标）：按类名 */
+#pi-terminal .xterm-rows [class*="xterm-fg-"]{color:var(--t-text)!important}
+#pi-terminal .xterm-rows :is(.xterm-fg-8,.xterm-fg-7){color:var(--t-muted)!important}
+#pi-terminal .xterm-rows [class*="xterm-bg-"]{background-color:var(--t-sel)!important}
+#pi-terminal .xterm-rows .xterm-fg-257{color:var(--t-page)!important}
+#pi-terminal .xterm-rows .xterm-bg-257{background-color:var(--t-text)!important}
+#pi-terminal .xterm-rows span[style^="color:#d4d4d4"],#pi-terminal .xterm-rows span[style*=";color:#d4d4d4"],#pi-terminal .xterm-rows span[style^="color: rgb(212, 212, 212)"],#pi-terminal .xterm-rows span[style*="; color: rgb(212, 212, 212)"],
+#pi-terminal .xterm-rows span[style^="color:#f2f2f4"],#pi-terminal .xterm-rows span[style*=";color:#f2f2f4"],#pi-terminal .xterm-rows span[style^="color: rgb(242, 242, 244)"],#pi-terminal .xterm-rows span[style*="; color: rgb(242, 242, 244)"],
+#pi-terminal .xterm-rows span[style^="color:#dcdcaa"],#pi-terminal .xterm-rows span[style*=";color:#dcdcaa"],#pi-terminal .xterm-rows span[style^="color: rgb(220, 220, 170)"],#pi-terminal .xterm-rows span[style*="; color: rgb(220, 220, 170)"]{color:var(--t-text)!important}
+#pi-terminal .xterm-rows span[style^="color:#b0b0bd"],#pi-terminal .xterm-rows span[style*=";color:#b0b0bd"],#pi-terminal .xterm-rows span[style^="color: rgb(176, 176, 189)"],#pi-terminal .xterm-rows span[style*="; color: rgb(176, 176, 189)"],
+#pi-terminal .xterm-rows span[style^="color:#9696a4"],#pi-terminal .xterm-rows span[style*=";color:#9696a4"],#pi-terminal .xterm-rows span[style^="color: rgb(150, 150, 164)"],#pi-terminal .xterm-rows span[style*="; color: rgb(150, 150, 164)"]{color:var(--t-muted)!important}
+#pi-terminal .xterm-rows span[style^="color:#aaaab7"],#pi-terminal .xterm-rows span[style*=";color:#aaaab7"],#pi-terminal .xterm-rows span[style^="color: rgb(170, 170, 183)"],#pi-terminal .xterm-rows span[style*="; color: rgb(170, 170, 183)"],
+#pi-terminal .xterm-rows span[style^="color:#808080"],#pi-terminal .xterm-rows span[style*=";color:#808080"],#pi-terminal .xterm-rows span[style^="color: rgb(128, 128, 128)"],#pi-terminal .xterm-rows span[style*="; color: rgb(128, 128, 128)"],
+#pi-terminal .xterm-rows span[style^="color:#666666"],#pi-terminal .xterm-rows span[style*=";color:#666666"],#pi-terminal .xterm-rows span[style^="color: rgb(102, 102, 102)"],#pi-terminal .xterm-rows span[style*="; color: rgb(102, 102, 102)"],
+#pi-terminal .xterm-rows span[style^="color:#6e6e6e"],#pi-terminal .xterm-rows span[style*=";color:#6e6e6e"],#pi-terminal .xterm-rows span[style^="color: rgb(110, 110, 110)"],#pi-terminal .xterm-rows span[style*="; color: rgb(110, 110, 110)"],
+#pi-terminal .xterm-rows span[style^="color:#6a9955"],#pi-terminal .xterm-rows span[style*=";color:#6a9955"],#pi-terminal .xterm-rows span[style^="color: rgb(106, 153, 85)"],#pi-terminal .xterm-rows span[style*="; color: rgb(106, 153, 85)"],
+#pi-terminal .xterm-rows span[style^="color:#505050"],#pi-terminal .xterm-rows span[style*=";color:#505050"],#pi-terminal .xterm-rows span[style^="color: rgb(80, 80, 80)"],#pi-terminal .xterm-rows span[style*="; color: rgb(80, 80, 80)"],
+#pi-terminal .xterm-rows span[style^="color:#5f87ff"],#pi-terminal .xterm-rows span[style*=";color:#5f87ff"],#pi-terminal .xterm-rows span[style^="color: rgb(95, 135, 255)"],#pi-terminal .xterm-rows span[style*="; color: rgb(95, 135, 255)"]{color:var(--t-dim)!important}
+#pi-terminal .xterm-rows span[style^="color:#9cdcfe"],#pi-terminal .xterm-rows span[style*=";color:#9cdcfe"],#pi-terminal .xterm-rows span[style^="color: rgb(156, 220, 254)"],#pi-terminal .xterm-rows span[style*="; color: rgb(156, 220, 254)"],
+#pi-terminal .xterm-rows span[style^="color:#ce9178"],#pi-terminal .xterm-rows span[style*=";color:#ce9178"],#pi-terminal .xterm-rows span[style^="color: rgb(206, 145, 120)"],#pi-terminal .xterm-rows span[style*="; color: rgb(206, 145, 120)"]{color:var(--t-text2)!important}
+#pi-terminal .xterm-rows span[style^="color:#8abeb7"],#pi-terminal .xterm-rows span[style*=";color:#8abeb7"],#pi-terminal .xterm-rows span[style^="color: rgb(138, 190, 183)"],#pi-terminal .xterm-rows span[style*="; color: rgb(138, 190, 183)"],
+#pi-terminal .xterm-rows span[style^="color:#00d7ff"],#pi-terminal .xterm-rows span[style*=";color:#00d7ff"],#pi-terminal .xterm-rows span[style^="color: rgb(0, 215, 255)"],#pi-terminal .xterm-rows span[style*="; color: rgb(0, 215, 255)"],
+#pi-terminal .xterm-rows span[style^="color:#b5bd68"],#pi-terminal .xterm-rows span[style*=";color:#b5bd68"],#pi-terminal .xterm-rows span[style^="color: rgb(181, 189, 104)"],#pi-terminal .xterm-rows span[style*="; color: rgb(181, 189, 104)"],
+#pi-terminal .xterm-rows span[style^="color:#f0c674"],#pi-terminal .xterm-rows span[style*=";color:#f0c674"],#pi-terminal .xterm-rows span[style^="color: rgb(240, 198, 116)"],#pi-terminal .xterm-rows span[style*="; color: rgb(240, 198, 116)"],
+#pi-terminal .xterm-rows span[style^="color:#81a2be"],#pi-terminal .xterm-rows span[style*=";color:#81a2be"],#pi-terminal .xterm-rows span[style^="color: rgb(129, 162, 190)"],#pi-terminal .xterm-rows span[style*="; color: rgb(129, 162, 190)"],
+#pi-terminal .xterm-rows span[style^="color:#9575cd"],#pi-terminal .xterm-rows span[style*=";color:#9575cd"],#pi-terminal .xterm-rows span[style^="color: rgb(149, 117, 205)"],#pi-terminal .xterm-rows span[style*="; color: rgb(149, 117, 205)"],
+#pi-terminal .xterm-rows span[style^="color:#569cd6"],#pi-terminal .xterm-rows span[style*=";color:#569cd6"],#pi-terminal .xterm-rows span[style^="color: rgb(86, 156, 214)"],#pi-terminal .xterm-rows span[style*="; color: rgb(86, 156, 214)"],
+#pi-terminal .xterm-rows span[style^="color:#b5cea8"],#pi-terminal .xterm-rows span[style*=";color:#b5cea8"],#pi-terminal .xterm-rows span[style^="color: rgb(181, 206, 168)"],#pi-terminal .xterm-rows span[style*="; color: rgb(181, 206, 168)"],
+#pi-terminal .xterm-rows span[style^="color:#4ec9b0"],#pi-terminal .xterm-rows span[style*=";color:#4ec9b0"],#pi-terminal .xterm-rows span[style^="color: rgb(78, 201, 176)"],#pi-terminal .xterm-rows span[style*="; color: rgb(78, 201, 176)"],
+#pi-terminal .xterm-rows span[style^="color:#5f87af"],#pi-terminal .xterm-rows span[style*=";color:#5f87af"],#pi-terminal .xterm-rows span[style^="color: rgb(95, 135, 175)"],#pi-terminal .xterm-rows span[style*="; color: rgb(95, 135, 175)"],
+#pi-terminal .xterm-rows span[style^="color:#b294bb"],#pi-terminal .xterm-rows span[style*=";color:#b294bb"],#pi-terminal .xterm-rows span[style^="color: rgb(178, 148, 187)"],#pi-terminal .xterm-rows span[style*="; color: rgb(178, 148, 187)"],
+#pi-terminal .xterm-rows span[style^="color:#d183e8"],#pi-terminal .xterm-rows span[style*=";color:#d183e8"],#pi-terminal .xterm-rows span[style^="color: rgb(209, 131, 232)"],#pi-terminal .xterm-rows span[style*="; color: rgb(209, 131, 232)"],
+#pi-terminal .xterm-rows span[style^="color:#ff5fff"],#pi-terminal .xterm-rows span[style*=";color:#ff5fff"],#pi-terminal .xterm-rows span[style^="color: rgb(255, 95, 255)"],#pi-terminal .xterm-rows span[style*="; color: rgb(255, 95, 255)"]{color:var(--t-accent)!important}
+#pi-terminal .xterm-rows span[style^="color:#cc6666"],#pi-terminal .xterm-rows span[style*=";color:#cc6666"],#pi-terminal .xterm-rows span[style^="color: rgb(204, 102, 102)"],#pi-terminal .xterm-rows span[style*="; color: rgb(204, 102, 102)"],
+#pi-terminal .xterm-rows span[style^="color:#ffff00"],#pi-terminal .xterm-rows span[style*=";color:#ffff00"],#pi-terminal .xterm-rows span[style^="color: rgb(255, 255, 0)"],#pi-terminal .xterm-rows span[style*="; color: rgb(255, 255, 0)"]{color:var(--t-err)!important}
+#pi-terminal .xterm-rows span[style^="color:#18181e"],#pi-terminal .xterm-rows span[style*=";color:#18181e"],#pi-terminal .xterm-rows span[style^="color: rgb(24, 24, 30)"],#pi-terminal .xterm-rows span[style*="; color: rgb(24, 24, 30)"]{color:var(--t-page)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#3a3a4a"],#pi-terminal .xterm-rows span[style*="background-color: rgb(58, 58, 74)"]{background-color:var(--t-sel)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#343541"],#pi-terminal .xterm-rows span[style*="background-color: rgb(52, 53, 65)"],
+#pi-terminal .xterm-rows span[style*="background-color:#2d2838"],#pi-terminal .xterm-rows span[style*="background-color: rgb(45, 40, 56)"]{background-color:var(--t-user)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#282832"],#pi-terminal .xterm-rows span[style*="background-color: rgb(40, 40, 50)"],
+#pi-terminal .xterm-rows span[style*="background-color:#1e1e24"],#pi-terminal .xterm-rows span[style*="background-color: rgb(30, 30, 36)"],
+#pi-terminal .xterm-rows span[style*="background-color:#3c3728"],#pi-terminal .xterm-rows span[style*="background-color: rgb(60, 55, 40)"]{background-color:var(--t-pending)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#283228"],#pi-terminal .xterm-rows span[style*="background-color: rgb(40, 50, 40)"]{background-color:var(--t-success)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#3c2828"],#pi-terminal .xterm-rows span[style*="background-color: rgb(60, 40, 40)"]{background-color:var(--t-errbg)!important}
+#pi-terminal .xterm-rows span[style*="background-color:#18181e"],#pi-terminal .xterm-rows span[style*="background-color: rgb(24, 24, 30)"]{background-color:var(--t-page)!important}
+/* 吉祥物：猫图是黑底 RGB，靠「变亮」混合去黑底；浅色时放在一块绿色方砖上 */
+.mascot-suggestion{background:var(--gk-g);color:var(--gk-paper);box-shadow:none;font:12px/1.45 var(--gk-mono);letter-spacing:0;text-transform:none;border:0}
+.mascot-suggestion:hover{background:var(--gk-g-deep)}
+.mascot-eyelids:before,.mascot-eyelids:after{background:linear-gradient(to bottom,#f6f0e1 70%,#080709 70%,#080709 86%,#f6f0e1 86%)}
+@media (prefers-color-scheme:light){
+  .mascot-cat{mix-blend-mode:normal;isolation:isolate;background:var(--gk-g)}
+  .mascot-cat>img{mix-blend-mode:lighten}
+}
+
+/* ---- 工作区：卡片 ---- */
+.workspace{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--gk-hi)}
+.workspace-heading{border-bottom:1px dashed var(--line)}
+.workspace-heading h2{font:300 18px/1 var(--gk-disp);letter-spacing:.04em;text-transform:uppercase;color:var(--gk-hi)}
+#files button{font-family:var(--gk-mono);text-transform:none;letter-spacing:0;color:var(--gk-ink2);border:0;min-height:0}
+#files button:hover{background:var(--control);color:var(--gk-ink)}
+#files button.selected{background:var(--selected);color:var(--gk-ink);box-shadow:inset 3px 0 var(--gk-hi)}
+.editor-area{background:var(--surface);border:1px solid var(--line)}
+.editor-heading{background:transparent;border-bottom:1px dashed var(--line)}
+.editor-area:focus-within .editor-heading{background:var(--control);box-shadow:inset 0 -2px var(--gk-hi)}
+#filename{font-family:var(--gk-mono)}
+#editor,#editor-highlight{font-family:var(--gk-mono)}
+#editor::selection,#command::selection{background:var(--gk-sel)}
+#editor-highlight .token.punctuation,.shell-code .token.punctuation{color:var(--gk-ink2)}
+#editor-highlight .token:is(.comment,.prolog,.doctype),:is(.shell-code,#command-highlight) .token.comment{color:var(--gk-ink3)}
+#editor-highlight .token:is(.tag,.deleted){color:var(--gk-err)}
+#editor-highlight .token:is(.keyword,.selector,.important,.function,.builtin,.class-name,.number,.boolean,.constant,.operator,.entity,.url),
+:is(.shell-code,#command-highlight) .token:is(.function,.builtin,.keyword,.operator,.number){color:var(--gk-hi)}
+#editor-highlight .token:is(.string,.attr-value,.inserted,.attr-name,.property,.variable),
+:is(.shell-code,#command-highlight) .token:is(.string,.variable,.assign-left,.parameter){color:var(--gk-ink2)}
+.workspace>.terminal{background:var(--background);border-top:1px dashed var(--line);margin:0;padding:0 10px 8px}
+.terminal summary{display:flex;align-items:center;gap:10px;list-style:none;font:400 14px/1.2 var(--gk-disp);letter-spacing:.06em;text-transform:uppercase;color:var(--gk-ink)}
+.terminal summary::-webkit-details-marker{display:none}
+.terminal summary span{float:none;margin-left:auto;font:400 10.5px var(--gk-mono);letter-spacing:0;text-transform:none;color:var(--gk-ink3)}
+.terminal summary::after{content:"+";flex:none;font:300 22px/1 var(--gk-disp);color:var(--gk-hi);transition:transform .2s}
+.terminal[open] summary::after{transform:rotate(45deg)}
+.shell-toolbar{font-family:var(--gk-mono);color:var(--gk-hi)}
+#terminal-output{font-family:var(--gk-mono)}
+.shell-entry{background:var(--surface);border-left:2px solid var(--line-strong)}
+.shell-empty code,.shell-prompt{color:var(--gk-hi)}
+.shell-status.success{color:var(--gk-hi)}
+.shell-status.error,.shell-stderr{color:var(--gk-err)}
+#shell-form{background:var(--surface);border:1px solid var(--line-strong)}
+#shell-form:focus-within{box-shadow:none;border-color:var(--gk-hi)}
+#command,#command-highlight{font-family:var(--gk-mono)}
+#shell-hint,.workspace-note{font-family:var(--gk-mono);color:var(--gk-ink3)}
+
+/* ---- 加载弹窗：卡片，顶部 4px 主绿；猫从顶边探出来 ---- */
+#model-dialog{background:var(--background);color:var(--gk-ink);border:1px solid var(--line-strong);border-top:4px solid var(--gk-hi);box-shadow:none}
+#model-dialog::backdrop{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgb(5 20 11 / .6)}
+#model-title{font:300 32px/1.05 var(--gk-disp);letter-spacing:.01em;text-transform:uppercase;color:var(--gk-hi)}
+#model-cancel{border-color:transparent;color:var(--gk-ink2);min-height:32px}
+#model-description{color:var(--gk-ink2)}
+.setup-runtime>div{background:var(--gk-bg);border:1px solid var(--line)}
+.setup-runtime dt{font:500 10.5px/1.3 var(--gk-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gk-hi)}
+.setup-facts{background:transparent;border:1px dashed var(--line-strong)}
+.setup-facts span,.setup-label{color:var(--gk-ink3)}
+.setup-label{font:500 10.5px/1.3 var(--gk-mono);letter-spacing:.1em;text-transform:uppercase}
+#model-preview{background:var(--gk-bg);border:1px solid var(--line);font-family:var(--gk-mono)}
+#model-error{background:var(--gk-err-bg);border-left:3px solid var(--gk-err);color:var(--gk-ink)}
+.setup-credits{color:var(--gk-ink3)}
+.setup-credits a:hover{color:var(--gk-hi)}
+#model-confirm{font-size:17px}
+
+/* ---- 页面底部绿带：自检状态、署名、说明（原来悬浮在角上，会盖住按钮） ---- */
+html body :is(#nt-badge,#nt-credit,#nt-scope){position:static;inset:auto;z-index:auto;max-width:none;max-height:none;overflow:visible;margin:0;box-shadow:none;
+  border:0;background:var(--gk-g);color:rgba(242,243,239,.9);font:13.5px/1.6 var(--gk-sans);padding:0 clamp(16px,4vw,48px)}
+html body #nt-badge{display:flex;align-items:baseline;gap:10px;padding-top:clamp(28px,4vw,44px);padding-bottom:14px;font:12.5px/1.5 var(--gk-mono);cursor:pointer;border-top:1px solid rgba(242,243,239,.26)}
+html body #nt-badge #nt-dot{flex:none;width:8px;height:8px;background:rgba(242,243,239,.45);transform:translateY(-1px)}
+html body #nt-badge[data-state=ok] #nt-dot{background:var(--gk-lime)}
+html body #nt-badge[data-state=err] #nt-dot{background:#FF8A80}
+html body #nt-credit{padding-bottom:18px;color:rgba(242,243,239,.82)}
+html body #nt-credit a,html body #nt-scope a{color:var(--gk-lime)}
+html body #nt-credit b{color:var(--gk-paper);font-weight:600}
+html body #nt-scope{padding-bottom:clamp(28px,4vw,48px)}
+html body #nt-scope>*{max-width:900px}
+html body #nt-scope summary{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;cursor:pointer;min-height:44px;padding:14px 0;
+  border-top:1px dashed rgba(242,243,239,.6);border-bottom:1px dashed rgba(242,243,239,.6);font:300 clamp(20px,2.2vw,26px)/1.2 var(--gk-disp);letter-spacing:.02em;text-transform:uppercase;color:var(--gk-paper)}
+html body #nt-scope summary::-webkit-details-marker{display:none}
+html body #nt-scope summary::after{content:"+";flex:none;font:300 30px/1 var(--gk-disp);color:var(--gk-lime);transition:transform .2s}
+html body #nt-scope[open] summary::after{transform:rotate(45deg)}
+html body #nt-scope h4{margin:22px 0 6px;font:500 11px/1.3 var(--gk-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gk-lime)}
+html body #nt-scope code{background:var(--gk-g-deeper);color:var(--gk-paper);padding:1px 5px;font:12px var(--gk-mono)}
+html body #nt-scope b{color:var(--gk-paper)}
+html body #nt-scope :focus-visible,html body #nt-credit :focus-visible{outline-color:var(--gk-lime)}
+html body #nt-scope .nt-warn{color:var(--gk-lime)}
+html body #nt-scope .nt-ok{color:var(--gk-lime)}
+
+/* ---- 窄屏、触屏 ---- */
+@media (width<=850px){
+  header{padding-inline:12px}
+  .model-heading strong{font-size:17px}
+}
+@media (max-width:620px){body::after{border-width:3px}}
+@media (pointer:coarse){
+  button,.button{min-height:44px}
+  #files button,#shell-run,.terminal summary{min-height:44px}
+  #model-cancel{min-width:44px;min-height:44px}
+  #command,#command-highlight{padding-block:12px}
+  #command{min-height:44px}
+  #shell-form>.shell-prompt{padding-top:12px}
+}
+@media (prefers-reduced-motion:reduce){html body #nt-scope summary::after,.terminal summary::after{transition:none}}

@@ -2,35 +2,107 @@
 <html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>impossible LLM v2</title>
 <meta name="description" content="一个 5,142,875 门的 NAND 网表语言模型：读最近 6 个 MiniCPM5 token 和 4 个随机位，输出下一个 token，在浏览器里逐门求值。">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap">
 <style>
-:root{--bg:#0b0d10;--fg:#e8eaed;--dim:#98a2ad;--line:#232a33;--card:#12161b;--acc:#3ddc97;--warn:#f5a623}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif;padding:24px 16px 48px}
-.wrap{max-width:1180px;margin:0 auto}h1{font-size:21px;margin:0 0 6px}h2{font-size:15px;margin:0 0 12px}
-.sub{color:var(--dim);margin:0 0 22px}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:18px}@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
-textarea{width:100%;min-height:84px;background:#0e1216;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;resize:vertical}
-button{background:#1b2229;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:inherit;cursor:pointer}
-button:hover:not(:disabled){border-color:var(--acc)}button:disabled{opacity:.45;cursor:not-allowed}
-.out{background:#0e1216;border:1px solid var(--line);border-radius:8px;padding:12px;min-height:140px;white-space:pre-wrap;word-break:break-word}
-.gen{color:var(--acc)}.muted{color:var(--dim)}.warn{color:var(--warn)}
-table{width:100%;border-collapse:collapse}td,th{padding:5px 6px 5px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
-th{color:var(--dim);font-weight:500}td.k{color:var(--dim);white-space:nowrap;padding-right:12px}
+/* 全站绿色版式（2026-10-01，规范见 circuits/_scratch/hashport/theme/README.md）：米白纸面、绿带页头与首屏、方角卡片、
+   窄体细体标题、等宽小标签、虚线分隔。旧变量名 --fg --dim --card --acc --warn 映射到新色：行内样式和脚本生成的元素还在用它们。 */
+:root{--g:#006B35;--g-deep:#005C2B;--g-deeper:#004A22;--frame:#1E8C4E;--lime:#E4F53C;--paper-c:#F2F3EF;
+  --bg:#F2F3EF;--panel:#fff;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;--line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);
+  --hi:#006B35;--hi-soft:rgba(0,107,53,.18);--head:#006B35;--err:#B3261E;
+  --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err);
+  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:clamp(16px,4vw,40px);color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--g:#006A34;--g-deep:#00522A;--g-deeper:#00401F;
+  --bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;--line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);
+  --hi:#5BE08F;--hi-soft:rgba(91,224,143,.2);--head:#5BE08F;--err:#FF8A80}}
+/* 绿带（页头、首屏、续写卡片）：米白字，强调换成黄绿 */
+.g{background:var(--g);color:var(--paper-c);
+  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--line2:rgba(242,243,239,.6);
+  --hi:var(--lime);--hi-soft:rgba(228,245,60,.4);--head:#F2F3EF;--err:#FFD2CC;--panel:var(--g-deep);
+  --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+a{color:var(--hi);text-decoration:none;border-bottom:1px solid var(--hi-soft)}
+a:hover{border-bottom-color:var(--hi)}
+:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+b{font-weight:600}
+.in,.wrap{max-width:calc(1180px + 2*var(--gut));margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
+/* 页头：字标链回主站首页 */
+.site{border-bottom:1px solid var(--line)}
+.site .in{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:9px;padding-bottom:9px}
+.mark{display:grid;flex:none;line-height:.92;color:var(--ink);border:0}
+.mark b{font:200 23px/.92 var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-top:5px}
+.crumb{font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);text-align:right;word-break:keep-all}
+/* 首屏 */
+.hero{padding:clamp(28px,4.5vw,56px) 0 clamp(32px,5vw,60px)}
+h1{margin:0 0 16px;font:300 clamp(32px,4.4vw,58px)/1.1 var(--disp);letter-spacing:-.005em;color:var(--head);max-width:22em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty}
+.sub{margin:0;max-width:62em;color:var(--ink2);font-size:16px;line-height:1.7}
+.hero .sub b{color:var(--lime);font-weight:500}
+/* 纸面 */
+.wrap{padding-top:clamp(24px,4vw,44px);padding-bottom:72px}
+.grid{display:grid;gap:20px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)!important}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:0;padding:22px;min-width:0}
+.card.g{background:var(--g);border-color:var(--g)}
+h2{margin:0 0 12px;font:300 clamp(22px,2.2vw,28px)/1.15 var(--disp);letter-spacing:.005em;color:var(--head);word-break:keep-all;overflow-wrap:anywhere}
+.out{background:var(--g-deep);border:1px solid var(--line);border-radius:0;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font:14px/1.65 var(--mono);color:var(--ink)}
+.gen{color:var(--hi)}.muted{color:var(--ink3)}.warn{color:var(--err)}
+.g .muted{color:var(--ink2)}.g .out .muted{color:var(--ink3)}
+textarea{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:0;padding:10px 12px;font:15px/1.5 var(--sans);resize:vertical}
+.g textarea{background:var(--g-deeper);border-color:var(--line)}
+button{font:400 15px/1.1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--line2);border-radius:0;padding:10px 18px;min-height:40px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--ink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+#go{background:var(--ink);color:var(--g);border-color:var(--ink)}
+#go:hover:not(:disabled){filter:brightness(1.06)}
+.row{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin-top:12px}
+#stat{font:12.5px/1.4 var(--mono)}
+code{font:12.5px var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:1px 5px;overflow-wrap:anywhere}
+.g code{background:var(--g-deeper)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 10px 8px 0;border-top:1px dashed var(--line);vertical-align:top;text-align:left}
+th{font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);border-top:0;border-bottom:1px solid var(--line2)}
 .num{font-variant-numeric:tabular-nums}
-code{background:#0e1216;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;word-break:break-all}
 ul{margin:8px 0 0;padding-left:18px}li{margin:6px 0}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
-label{display:flex;gap:6px;align-items:center;color:var(--dim)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chips button{padding:4px 9px;font-size:12px}
-a{color:var(--acc)}
-</style></head><body><div class="wrap">
+li::marker{color:var(--hi)}
+@media (max-width:620px){body::after{border-width:3px}.site .in{min-height:64px}.crumb{font-size:11px;letter-spacing:.08em}.card{padding:16px}.sub{font-size:15px}}
+@media (pointer:coarse),(max-width:600px){button{min-height:44px;touch-action:manipulation}}
+.grid{grid-template-columns:minmax(0,1fr) 440px}
+.out{min-height:140px}
+textarea{min-height:84px}
+td.k{color:var(--ink3);white-space:nowrap;padding-right:14px;font-size:13.5px}
+td.warn{color:var(--err)}
+table.num td:not(.k){font-family:var(--mono);font-size:13px}
+label{display:flex;gap:8px;align-items:center;color:var(--ink2);font-size:14px;cursor:pointer}
+input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--hi)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chips button{font:400 12.5px/1.3 var(--mono);letter-spacing:0;text-transform:none;color:var(--ink);padding:6px 10px;min-height:32px;border:1px dashed var(--line2)}
+.chips button:hover:not(:disabled){background:rgba(242,243,239,.14);border-style:solid}
+@media (pointer:coarse),(max-width:600px){.chips button,label{min-height:44px}}
+</style></head><body>
+<header class="site g"><div class="in">
+<a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
+<span class="crumb">impossible LLM · v2</span>
+</div></header>
+<section class="hero g"><div class="in">
 <h1>impossible LLM v2 — 5,142,875 个 NAND 门的语言模型</h1>
 <p class="sub">它读最近 6 个 MiniCPM5 token 和 4 个随机位，一次求值输出下一个 token；这一页在你的浏览器里逐门计算，没有后端。
 v2 相比 v1：<b>不再掉进 “the 2008 , the 2008” 这类死循环</b>（采样时 0%），在对话、网页、中文文本上的一致率分别是 v1 的 4.1、2.1、53 倍。
 它仍然写不出连贯的句子，也<b>没有上链</b>。</p>
+</div></section>
+<div class="wrap">
 
 <div class="grid">
-<div class="card">
+<div class="card g">
   <h2>续写</h2>
   <div id="out" class="out"><span class="muted">正在读取网表（压缩后 7.9 MB，解开 36 MB）和分词器（约 2 MB）…</span></div>
   <div class="row"><textarea id="msg" aria-label="要续写的文字">I like cats because</textarea></div>

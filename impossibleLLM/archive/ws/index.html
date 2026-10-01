@@ -4,39 +4,68 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>impossible LLM · 链上续写演示 on-chain continuation demo</title>
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap">
 <style>
-:root { color-scheme: dark; --bg:#101418; --panel:#171c22; --ink:#e8edf2; --dim:#9fb0c0; --acc:#36d0a8; --line:#2a343f; --bad:#ff6b6b; }
+/* 全站绿色版式（2026-10-01，规范见 circuits/_scratch/hashport/theme/README.md）。存档页只做轻量统一：配色、字体、方角、页头；内容与脚本不动。 */
+:root { color-scheme:light dark; --g:#006B35; --frame:#1E8C4E; --lime:#E4F53C;
+  --bg:#F2F3EF; --panel:#fff; --ink:#0B2A18; --dim:#3C5446; --acc:#006B35; --on-acc:#F2F3EF; --line:rgba(0,107,53,.26); --line2:rgba(0,107,53,.55); --bad:#B3261E; --soft:rgba(0,107,53,.07);
+  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+@media (prefers-color-scheme:dark) { :root { --g:#006A34; --bg:#0D1A12; --panel:#13241A; --ink:#E6EFE8; --dim:#A9BCB0; --acc:#5BE08F; --on-acc:#0D1A12; --line:rgba(91,224,143,.22); --line2:rgba(91,224,143,.5); --bad:#FF8A80; --soft:rgba(91,224,143,.07); } }
 * { box-sizing:border-box; }
-body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif; }
-header { max-width:1120px; margin:0 auto; padding:20px 24px 6px; }
-h1 { font-size:20px; margin:0 0 4px; }
-header p { margin:0; color:var(--dim); }
-.wrap { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:16px; padding:14px 24px 20px; max-width:1120px; margin:0 auto; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14.5px/1.6 var(--sans); -webkit-font-smoothing:antialiased; }
+body::after { content:""; position:fixed; inset:0; border:5px solid var(--frame); pointer-events:none; z-index:1000; }
+a { color:var(--acc); }
+:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+.site { background:var(--g); color:#F2F3EF; border-bottom:1px solid rgba(242,243,239,.28); }
+.site .in { max-width:1120px; margin:0 auto; padding:9px 24px; min-height:76px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.mark { display:grid; flex:none; line-height:.92; color:#F2F3EF; text-decoration:none; }
+.mark b { font:200 23px/.92 var(--disp); text-transform:uppercase; letter-spacing:.02em; }
+.mark small { font:400 9.5px/1 var(--mono); letter-spacing:.22em; text-transform:uppercase; color:rgba(242,243,239,.82); margin-top:5px; }
+.crumb { font:400 12px/1.4 var(--mono); letter-spacing:.14em; text-transform:uppercase; color:rgba(242,243,239,.9); text-align:right; word-break:keep-all; }
+.site :focus-visible { outline-color:var(--lime); }
+header { max-width:1120px; margin:0 auto; padding:clamp(22px,3.5vw,40px) 24px 6px; }
+h1 { margin:0 0 8px; font:300 clamp(28px,3.6vw,46px)/1.12 var(--disp); color:var(--acc); letter-spacing:-.005em; word-break:keep-all; overflow-wrap:anywhere; }
+header p { margin:0; color:var(--dim); max-width:62em; }
+.wrap { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:16px; padding:20px 24px 56px; max-width:1120px; margin:0 auto; }
 @media (max-width:820px) { .wrap { grid-template-columns:1fr; } }
-section, aside { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
-h2 { font-size:15px; margin:0 0 10px; }
+section, aside { background:var(--panel); border:1px solid var(--line); border-radius:0; padding:18px; min-width:0; }
+section { border-top:4px solid var(--acc); }
+h2 { margin:0 0 10px; font:300 22px/1.2 var(--disp); color:var(--acc); letter-spacing:.005em; }
+aside ul+h2 { margin-top:20px; }
 #chat { min-height:320px; max-height:56vh; overflow:auto; display:flex; flex-direction:column; gap:8px; }
-.b { padding:8px 12px; border-radius:10px; max-width:90%; white-space:pre-wrap; word-break:break-word; }
-.b.me { align-self:flex-end; background:#1f2831; }
-.b.net { align-self:flex-start; background:#0f2824; }
-.meta { font-size:12px; color:var(--dim); margin:2px 0 8px; }
-.composer textarea { width:100%; background:#0b0f13; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; min-height:56px; font:inherit; }
-.composer .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:8px; }
-button { background:#1f2831; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:7px 12px; cursor:pointer; }
-button:hover { border-color:var(--acc); }
-button:disabled { opacity:.5; cursor:not-allowed; }
-select { background:#0b0f13; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:6px; }
-.suggest { margin-top:8px; color:var(--acc); font-size:13px; cursor:pointer; }
+.b { padding:8px 12px; border-radius:0; max-width:90%; white-space:pre-wrap; word-break:break-word; font:14px/1.6 var(--mono); }
+.b.me { align-self:flex-end; background:var(--g); color:#F2F3EF; }
+.b.net { align-self:flex-start; background:var(--soft); border:1px solid var(--line); }
+.meta { font:12px/1.5 var(--mono); color:var(--dim); margin:2px 0 8px; }
+.composer textarea { width:100%; background:var(--panel); color:var(--ink); border:1px solid var(--line2); border-radius:0; padding:10px; resize:vertical; min-height:56px; font:inherit; }
+.composer .row { display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin-top:10px; }
+button { background:var(--acc); color:var(--on-acc); border:1px solid var(--acc); border-radius:0; padding:8px 16px; min-height:40px; cursor:pointer; font:400 15px/1.1 var(--disp); letter-spacing:.06em; text-transform:uppercase; }
+button:hover { filter:brightness(1.06); }
+button:disabled { opacity:.5; cursor:not-allowed; filter:none; }
+select { background:var(--panel); color:var(--ink); border:1px solid var(--line2); border-radius:0; padding:6px 8px; font:13px var(--mono); }
+input[type=checkbox] { accent-color:var(--acc); }
+.suggest { margin-top:6px; padding:6px 0; color:var(--acc); font-size:13px; cursor:pointer; }
 ul { margin:0; padding-left:18px; }
 li { margin:5px 0; }
+li::marker { color:var(--acc); }
 .ok { color:var(--acc); }
 .bad { color:var(--bad); }
-code { background:#0b0f13; padding:1px 5px; border-radius:5px; font-size:12px; word-break:break-all; }
+code { font-family:var(--mono); background:var(--soft); border:1px solid var(--line); padding:1px 5px; border-radius:0; font-size:12px; word-break:break-all; }
 .scope p { color:var(--dim); font-size:13px; margin:0; }
+.scope p+p { margin-top:8px; }
 .spin { display:inline-block; animation:sp 1s linear infinite; } @keyframes sp { to { transform:rotate(360deg); } }
+@media (max-width:620px) { body::after { border-width:3px; } .site .in { min-height:64px; padding:9px 16px; } .crumb { font-size:11px; letter-spacing:.08em; } header, .wrap { padding-left:16px; padding-right:16px; } }
+@media (pointer:coarse), (max-width:600px) { button, select { min-height:44px; touch-action:manipulation; } label { display:inline-flex; align-items:center; gap:6px; min-height:44px; } }
 </style>
 </head>
 <body>
+<div class="site"><div class="in"><a class="mark" href="../../../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a><span class="crumb">impossible LLM · 存档 archive</span></div></div>
 <header>
   <h1>impossible LLM · 链上续写演示 on-chain continuation demo</h1>
   <p>烧在 BSC 上的一步语言模型（cid 285 / 286）在这页里逐字符生成文本：一个专用 Web Worker 按位求值同一份 NAND 网表，链上开关用只读 eth_call 跑同一字符并逐字对照。</p>

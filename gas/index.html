@@ -2,86 +2,96 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TapeOut Gas 账本</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<meta name="theme-color" content="#006B35">
 <style>
+/* 绿色版式（2026-10-01，全站统一；规范见 tapeout 仓库 circuits/_scratch/hashport/theme/README.md）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
 :root{
   color-scheme:light;
-  --ground:#F4F6F5; --surface:#FFFFFF; --ink:#16201E; --ink-2:#566662; --ink-3:#7E8B87;
-  --rule:#D5DDDA; --rule-strong:#B9C5C0; --accent:#0E6B55; --accent-soft:#DCEFE8; --cost:#B45F16; --cost-soft:#F6E7D9;
-  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:"IBM Plex Sans","Noto Sans SC",-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;
-  --display:"Bricolage Grotesque","IBM Plex Sans","Noto Sans SC",sans-serif;
+  --g:#006B35; --lime:#E4F53C; --frame:#1E8C4E;
+  --ground:#F2F3EF; --surface:#FFFFFF; --ink:#0B2A18; --ink-2:#3C5446; --ink-3:#5A6E62;
+  --rule:rgba(0,107,53,.26); --rule-strong:rgba(0,107,53,.55); --accent:#006B35; --accent-soft:#E2EEE5; --cost:#A8520F; --cost-soft:#F6E9DC;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#006B35; --s4:#b07a00;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif;
+  --display:"Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --ground:#0E1413; --surface:#151C1B; --ink:#E4EBE8; --ink-2:#A5B3AE; --ink-3:#7F8E89;
-    --rule:#26312E; --rule-strong:#3A4844; --accent:#4FBF9B; --accent-soft:#163129; --cost:#E39A55; --cost-soft:#3A2A1B;
-    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --g:#006A34; --ground:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#8FA597;
+    --rule:rgba(91,224,143,.22); --rule-strong:rgba(91,224,143,.5); --accent:#5BE08F; --accent-soft:#1C3A28; --cost:#E39A55; --cost-soft:#3A2A1B;
+    --s1:#3987e5; --s2:#d95926; --s3:#2FB56A; --s4:#c98500;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --ground:#0E1413; --surface:#151C1B; --ink:#E4EBE8; --ink-2:#A5B3AE; --ink-3:#7F8E89;
-  --rule:#26312E; --rule-strong:#3A4844; --accent:#4FBF9B; --accent-soft:#163129; --cost:#E39A55; --cost-soft:#3A2A1B;
-  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --g:#006A34; --ground:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#8FA597;
+  --rule:rgba(91,224,143,.22); --rule-strong:rgba(91,224,143,.5); --accent:#5BE08F; --accent-soft:#1C3A28; --cost:#E39A55; --cost-soft:#3A2A1B;
+  --s1:#3987e5; --s2:#d95926; --s3:#2FB56A; --s4:#c98500;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 96px}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+@media (max-width:620px){body::after{border-width:3px}}
 .wrap{max-width:76ch;margin:0 auto}
-header{padding-block:56px 28px;border-bottom:2px solid var(--ink)}
+/* 页头：通栏绿带（背景用阴影铺满整行，不改结构） */
+header{padding-block:22px 40px;background:var(--g);box-shadow:0 0 0 100vmax var(--g);clip-path:inset(0 -100vmax);color:#F2F3EF;
+  --ink:#F2F3EF;--ink-2:rgba(242,243,239,.9);--ink-3:rgba(242,243,239,.82);--rule:rgba(242,243,239,.28);--rule-strong:rgba(242,243,239,.6);--surface:#005C2B;--accent:var(--lime)}
+.mark{display:inline-grid;line-height:.92;color:#F2F3EF;text-decoration:none;padding-bottom:26px;margin-bottom:34px;border-bottom:1px solid rgba(242,243,239,.28);width:100%}
+.mark b{font:200 23px/.92 var(--display);font-stretch:condensed;text-transform:uppercase;letter-spacing:.02em}
+.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:rgba(242,243,239,.82);margin-top:5px}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
 .eyebrow .live{color:var(--accent)}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,54px);line-height:1.05;margin:14px 0 10px;letter-spacing:-.01em;text-wrap:balance}
+h1{font-family:var(--display);font-stretch:condensed;font-weight:200;font-size:clamp(40px,7vw,72px);line-height:1;margin:16px 0 14px;letter-spacing:-.005em;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
 .sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
-.threeq{margin-top:22px;font-size:14px}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
-.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule-strong);margin-top:28px;background:var(--surface)}
-.thesis div{padding:16px 18px;border-right:1px solid var(--rule)}
+.threeq{margin-top:22px;font-size:14px;background:transparent}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
+.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:28px;background:var(--surface)}
+.thesis div{padding:16px 18px;border-right:1px dashed var(--rule)}
 .thesis div:last-child{border-right:0}
-.thesis .n{font-family:var(--mono);font-size:26px;font-weight:500;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--ink)}
-.thesis .l{font-size:13px;color:var(--ink-2);margin-top:2px}
+.thesis .n{font-family:var(--display);font-stretch:condensed;font-size:40px;font-weight:200;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--ink)}
+.thesis .l{font-size:13px;color:var(--ink-2);margin-top:4px}
 .thesis .l span{display:block;color:var(--ink-3);font-size:12px}
-h2{font-family:var(--display);font-weight:700;font-size:24px;margin:52px 0 6px;letter-spacing:-.005em;text-wrap:balance}
-h2 small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+h2{font-family:var(--display);font-stretch:condensed;font-weight:200;font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:64px 0 10px;letter-spacing:0;text-wrap:balance;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere}
+h2 small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
 p{margin:10px 0;max-width:68ch}
 .note{border-left:3px solid var(--accent);padding:8px 14px;background:var(--accent-soft);color:var(--ink);margin:16px 0;font-size:15px}
 .warn{border-left:3px solid var(--cost);background:var(--cost-soft)}
 table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0 6px;background:var(--surface)}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px dashed var(--rule);vertical-align:top}
 th{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--rule-strong)}
 td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 td.k{font-weight:500}
 .tw{overflow-x:auto}
-.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 7px;border:1px solid var(--rule-strong);border-radius:3px;color:var(--ink-2);vertical-align:middle}
-.tag.m{color:var(--accent);border-color:var(--accent)}
-.tag.e{color:var(--cost);border-color:var(--cost)}
-code{font-family:var(--mono);font-size:.92em;background:var(--surface);border:1px solid var(--rule);padding:0 5px;border-radius:3px}
-pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);padding:14px 16px;overflow-x:auto;margin:14px 0}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 7px;border:1px dashed var(--rule-strong);border-radius:0;color:var(--ink-2);vertical-align:middle}
+.tag.m{color:var(--accent);border:1px solid var(--accent)}
+.tag.e{color:var(--cost);border:1px solid var(--cost)}
+code{font-family:var(--mono);font-size:.92em;background:var(--surface);border:1px solid var(--rule);padding:0 5px;border-radius:0}
+pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);padding:14px 16px;overflow-x:auto;margin:14px 0}
 figure{margin:18px 0 8px}
 figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:0;margin-right:6px;vertical-align:-1px}
 .bar{display:flex;height:34px;gap:2px;background:var(--surface);border:1px solid var(--rule)}
 .bar span{display:block;height:100%;position:relative;min-width:2px}
 .bar span[data-l]::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#fff;font-variant-numeric:tabular-nums}
 .hbars{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 12px;align-items:center;font-size:14px}
 .hbars .lbl{font-family:var(--mono);color:var(--ink-2);font-size:13px;white-space:nowrap}
 .hbars .trk{height:14px;background:var(--surface);border:1px solid var(--rule);position:relative}
-.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:0 3px 3px 0}
+.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:0}
 .hbars .trk i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--cost)}
 .hbars .v{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .hbars .v small{color:var(--ink-3)}
 ol,ul{padding-left:1.3em}
 li{margin:6px 0}
-footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--rule-strong);font-size:13px;color:var(--ink-2)}
+footer{margin-top:72px;padding-top:16px;border-top:1px solid var(--rule-strong);font-size:13px;color:var(--ink-2)}
 footer a,p a{color:var(--accent)}
-@media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px solid var(--rule)}.thesis div:last-child{border-bottom:0}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px dashed var(--rule)}.thesis div:last-child{border-bottom:0}}
 @media (prefers-reduced-motion:no-preference){.bar span{transition:flex-basis .3s}}
 </style>
 <div class="wrap">
 <header>
+  <a class="mark" href="https://nand.aihashrate.stream/" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
   <div class="eyebrow"><span>TapeOut · BNB Smart Chain</span><span>2026-09-13</span><span class="live">实测 + 估算 · 只读链访问 · 零交易</span></div>
   <h1>TapeOut Gas 账本</h1>
   <p class="sub">面向 agent 的参考页：把一个 NAND 门、一条 RISC-V 指令、一个内存页在 BSC 上的真实价格记清楚，再看哪里能省。所有数字来自链上收据、只读估算和逐字节精确的离线复现。</p>

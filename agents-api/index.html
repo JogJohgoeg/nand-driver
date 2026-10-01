@@ -6,101 +6,116 @@
 <meta name="description" content="Agents API harness control loop burned as TapeOut circuit #283 (152 NAND + 10 LATCH) on BSC: interface, live simulator, how to drive it.">
 <style>img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Circuit 283</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="theme-color" content="#006B35">
 <style>
+/* 绿色版式（2026-10-01，全站统一；规范见 tapeout 仓库 circuits/_scratch/hashport/theme/README.md）。链上页面：只用系统字体、不连链外资源。 */
 :root{
-  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#172033; --muted:#5B6577; --rule:#D7DDE6;
-  --copper:#B4611F; --copper-ink:#8F4A12; --signal:#157F7C; --signal-bg:#DDF1EF; --off:#E9EDF2;
-  --code-bg:#EEF1F5; --done:#6B3A8C;
+  --g:#006B35; --lime:#E4F53C; --frame:#1E8C4E;
+  --bg:#F2F3EF; --surface:#FFFFFF; --ink:#0B2A18; --muted:#5A6E62; --rule:rgba(0,107,53,.26); --rule2:rgba(0,107,53,.55);
+  --copper:#006B35; --copper-ink:#006B35; --on-copper:#F2F3EF; --signal:#006B35; --signal-bg:#D3E5D8; --off:#EEF2EC;
+  --code-bg:#E9EFE9; --done:#3C5446;
+  --disp:"Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0F141B; --surface:#161D27; --ink:#E4E9F1; --muted:#93A0B4; --rule:#2A3442;
-  --copper:#D9884A; --copper-ink:#F0A66A; --signal:#3FB8B2; --signal-bg:#173B3A; --off:#1E2833;
-  --code-bg:#1B2430; --done:#B389D1;
+  --g:#006A34; --bg:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --muted:#8FA597; --rule:rgba(91,224,143,.22); --rule2:rgba(91,224,143,.5);
+  --copper:#5BE08F; --copper-ink:#5BE08F; --on-copper:#0D1A12; --signal:#5BE08F; --signal-bg:#1C3A28; --off:#18301F;
+  --code-bg:#13241A; --done:#A9BCB0;
 }}
 :root[data-theme="dark"]{
-  --bg:#0F141B; --surface:#161D27; --ink:#E4E9F1; --muted:#93A0B4; --rule:#2A3442;
-  --copper:#D9884A; --copper-ink:#F0A66A; --signal:#3FB8B2; --signal-bg:#173B3A; --off:#1E2833;
-  --code-bg:#1B2430; --done:#B389D1;
+  --g:#006A34; --bg:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --muted:#8FA597; --rule:rgba(91,224,143,.22); --rule2:rgba(91,224,143,.5);
+  --copper:#5BE08F; --copper-ink:#5BE08F; --on-copper:#0D1A12; --signal:#5BE08F; --signal-bg:#1C3A28; --off:#18301F;
+  --code-bg:#13241A; --done:#A9BCB0;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 "IBM Plex Sans","PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;padding-block:0 64px;padding-inline:20px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--sans);padding-block:0 64px;padding-inline:20px}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+@media (max-width:620px){body::after{border-width:3px}}
 .wrap{max-width:1040px;margin:0 auto}
 .prose{max-width:72ch}
-h1,h2,h3{font-family:"Instrument Serif","Songti SC","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-weight:400;text-wrap:balance;margin:0}
-h1{font-size:clamp(44px,7vw,76px);line-height:1;letter-spacing:-.01em}
-h1 em{font-style:italic;color:var(--copper)}
-h2{font-size:32px;margin-top:64px;margin-bottom:14px}
+h1,h2,h3{font-family:var(--disp);font-stretch:condensed;font-weight:200;text-wrap:balance;margin:0;word-break:keep-all;overflow-wrap:anywhere}
+h1{font-size:clamp(52px,8vw,96px);line-height:.95;letter-spacing:-.005em;text-transform:uppercase}
+h1 em{font-style:normal;color:var(--lime)}
+h2{font-size:clamp(30px,4vw,46px);line-height:1.05;margin-top:72px;margin-bottom:16px;color:var(--copper-ink)}
 h2+.prose>p:first-child,h2+.ctx{margin-top:4px}
-h3{font-size:22px;margin-top:28px;margin-bottom:8px}
+h3{font-size:24px;font-weight:300;margin-top:28px;margin-bottom:8px}
 p{margin:0 0 14px}
-.eyebrow{font:500 12px/1 "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-header{padding-block:56px 32px;border-bottom:1px solid var(--rule)}
-header .lede{font-size:19px;line-height:1.65;color:var(--ink);margin-top:22px;max-width:64ch}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--rule);background:var(--rule);margin-top:28px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+/* 页头：通栏绿带（背景用阴影铺满整行，不改结构） */
+header{padding-block:22px 44px;background:var(--g);box-shadow:0 0 0 100vmax var(--g);clip-path:inset(0 -100vmax);color:#F2F3EF;
+  --ink:#F2F3EF;--muted:rgba(242,243,239,.82);--rule:rgba(242,243,239,.28);--surface:#005C2B;--copper-ink:var(--lime);--copper:var(--lime);--on-copper:#0B2A18}
+header .topbar{padding-bottom:30px;margin-bottom:38px;border-bottom:1px solid rgba(242,243,239,.28)}
+header a{color:var(--lime)}
+header .lede{font-size:19px;line-height:1.65;color:rgba(242,243,239,.9);margin-top:22px;max-width:64ch}
+header .lede strong{color:#F2F3EF}
+.mark{display:grid;line-height:.92;color:#F2F3EF;text-decoration:none}
+.mark b{font:200 23px/.92 var(--disp);font-stretch:condensed;text-transform:uppercase;letter-spacing:.02em}
+.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:rgba(242,243,239,.82);margin-top:5px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--rule);background:var(--rule);margin-top:30px}
 .facts div{padding:14px 16px;background:var(--surface)}
 .facts .wide{grid-column:1/-1}
-@media (max-width:640px){.facts{grid-template-columns:1fr 1fr}}
-.facts b{display:block;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.facts span{font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.5;word-break:break-all;font-variant-numeric:tabular-nums}
-code,pre,.mono{font-family:"IBM Plex Mono",monospace}
-code{background:var(--code-bg);padding:1px 5px;border-radius:3px;font-size:.92em}
+.facts div:nth-child(2){grid-column:span 2}.facts div:last-child{grid-column:1/-1}
+@media (max-width:640px){.facts{grid-template-columns:1fr 1fr}.facts div:nth-child(2){grid-column:auto}}
+.facts b{display:block;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.facts span{font-family:var(--mono);font-size:13px;line-height:1.5;word-break:break-all;font-variant-numeric:tabular-nums}
+code,pre,.mono{font-family:var(--mono)}
+code{background:var(--code-bg);padding:1px 5px;font-size:.92em}
 pre{background:var(--code-bg);padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5;border-left:3px solid var(--copper);margin:12px 0 18px}
 pre code{background:none;padding:0}
 a{color:var(--copper-ink)}
-/* simulator */
-.sim{background:var(--surface);border:1px solid var(--rule);margin-top:20px}
-.sim-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--rule)}
+/* 模拟器 */
+.sim{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--copper);margin-top:20px}
+.sim-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px dashed var(--rule)}
 .sim-head .eyebrow{color:var(--copper-ink)}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
-button{font:500 13px "IBM Plex Sans",sans-serif;padding:8px 14px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer;border-radius:3px}
-button.primary{background:var(--copper);border-color:var(--copper);color:#fff}
-button:hover{filter:brightness(1.05)}
-button:focus-visible,.bit:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+button{font:400 15px/1 var(--disp);font-stretch:condensed;letter-spacing:.05em;text-transform:uppercase;padding:9px 14px;border:1px solid var(--rule2,var(--rule));background:transparent;color:var(--ink);cursor:pointer;border-radius:0}
+button.primary{background:var(--copper);border-color:var(--copper);color:var(--on-copper)}
+button:hover{filter:brightness(1.05);border-color:var(--copper)}
+button:focus-visible,.bit:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
 .panels{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:0}
-.panel{padding:16px 18px;border-right:1px solid var(--rule)}
+.panel{padding:16px 18px;border-right:1px dashed var(--rule)}
 .panel:last-child{border-right:0}
-.panel h4{margin:0 0 10px;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.panel h4{margin:0 0 10px;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .group{margin-bottom:12px}
 .group .g{font-size:11px;color:var(--muted);margin-bottom:4px}
 .bits{display:flex;flex-wrap:wrap;gap:6px}
-.bit{font:400 12px/1 "IBM Plex Mono",monospace;padding:7px 9px;border:1px solid var(--rule);background:var(--off);border-radius:3px;cursor:pointer;user-select:none;color:var(--ink)}
+.bit{font:400 12px/1 var(--mono);padding:7px 9px;border:1px solid var(--rule);background:var(--off);border-radius:0;cursor:pointer;user-select:none;color:var(--ink)}
 .bit.on{background:var(--signal-bg);border-color:var(--signal);color:var(--signal);font-weight:500}
 .bit.out{cursor:default}
-.bit.out.on{background:var(--copper);border-color:var(--copper);color:#fff}
+.bit.out.on{background:var(--copper);border-color:var(--copper);color:var(--on-copper)}
 .reg{display:grid;gap:8px}
 .reg .r{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--rule);padding-bottom:6px}
 .reg .r b{font-weight:500;font-size:13px}
-.reg .r span{font-family:"IBM Plex Mono",monospace;font-size:14px;font-variant-numeric:tabular-nums}
-.phase{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:40px;line-height:1;margin:2px 0 10px}
+.reg .r span{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.phase{font-family:var(--disp);font-stretch:condensed;font-weight:200;font-size:44px;line-height:1;margin:2px 0 10px;text-transform:uppercase;color:var(--ink)}
 .phase.DONE{color:var(--done)} .phase.TOOL,.phase.SUB{color:var(--copper-ink)}
-.latch{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.06em}
-.log{border-top:1px solid var(--rule);padding:0 18px 12px;overflow-x:auto}
+.latch{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.log{border-top:1px dashed var(--rule);padding:0 18px 12px;overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13px}
-th{text-align:left;white-space:nowrap;font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule)}
-td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-variant-numeric:tabular-nums;line-height:1.55}
+th{text-align:left;white-space:nowrap;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule2,var(--rule))}
+td{padding:8px 10px;border-bottom:1px dashed var(--rule);vertical-align:top;font-variant-numeric:tabular-nums;line-height:1.55}
 td.mono{font-size:12px}
 .spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:8px}
-.spec table td:first-child{font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:nowrap}
-.rules{padding-left:0;list-style:none;margin:8px 0 0}
-.rules li{padding:9px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:120px 1fr;gap:14px;line-height:1.6}
-.rules li b{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:13px;color:var(--copper-ink)}
-.note{border-left:3px solid var(--signal);padding:6px 14px;color:var(--muted);font-size:15px;margin:14px 0}
+.spec table td:first-child{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.rules{padding-left:0;list-style:none;margin:8px 0 0;border-top:1px solid var(--rule2,var(--rule))}
+.rules li{padding:10px 0;border-bottom:1px dashed var(--rule);display:grid;grid-template-columns:120px 1fr;gap:14px;line-height:1.6}
+.rules li b{font-family:var(--mono);font-weight:500;font-size:13px;color:var(--copper-ink)}
+.note{border-left:3px solid var(--copper);padding:6px 14px;color:var(--muted);font-size:15px;margin:14px 0}
 html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{display:none!important}
-.lang{display:flex;gap:0;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
-.lang button{border:0;border-radius:0;padding:6px 12px;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em}
-.lang button.on{background:var(--copper);color:#fff}
+.lang{display:flex;gap:0;border:1px solid rgba(242,243,239,.28);overflow:hidden}
+.lang button{border:0;padding:6px 12px;font:500 12px/1.4 var(--mono);letter-spacing:.08em;color:rgba(242,243,239,.9);text-transform:none}
+.lang button.on{background:#F2F3EF;color:#006B35}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.ctx{border:1px solid var(--rule);background:var(--surface);margin:18px 0 26px;max-width:72ch}
-.ctx .hd{padding:10px 16px;border-bottom:1px solid var(--rule);font:500 11px/1 "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink)}
+.ctx{border:1px solid var(--rule);border-top:4px solid var(--copper);background:var(--surface);margin:18px 0 26px;max-width:72ch}
+.ctx .hd{padding:10px 16px;border-bottom:1px dashed var(--rule);font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--copper-ink)}
 .ctx ol{list-style:none;margin:0;padding:0}
-.ctx li{display:grid;grid-template-columns:72px 1fr;gap:14px;padding:11px 16px;border-bottom:1px solid var(--rule);font-size:14.5px;line-height:1.6}
+.ctx li{display:grid;grid-template-columns:72px 1fr;gap:14px;padding:11px 16px;border-bottom:1px dashed var(--rule);font-size:14.5px;line-height:1.6}
 .ctx li:last-child{border-bottom:0}
-.ctx time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.ctx time{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
 .ctx a{color:var(--copper-ink);text-decoration-color:var(--rule)}
 @media (max-width:520px){.ctx li{grid-template-columns:1fr}}
-@media (max-width:760px){.panels{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--rule)}.rules li{grid-template-columns:1fr}}
+@media (max-width:760px){.panels{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px dashed var(--rule)}.rules li{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.bit{transition:background .15s,border-color .15s}}
 </style>
 
@@ -108,8 +123,9 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 <body>
 <div class="wrap">
 <header>
-  <div class="topbar"><div class="eyebrow">TapeOut · BSC · CPU 0x6Fb4…5B38</div>
+  <div class="topbar"><a class="mark" href="https://nand.aihashrate.stream/" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
     <div class="lang" role="group" aria-label="language"><button type="button" id="langZh">中文</button><button type="button" id="langEn">EN</button></div></div>
+  <div class="eyebrow" style="margin-bottom:14px">TapeOut · BSC · CPU 0x6Fb4…5B38</div>
   <h1>Circuit <em>283</em></h1>
   <p class="lede zh">OpenAI 在 2026‑09‑10 发布的 <a href="https://openai.com/index/introducing-the-agents-api/">Agents API</a>，其 harness 控制回路被写成一份 <strong>152 NAND + 10 LATCH</strong> 的网表，于次日烧在链上。模型、工具、子 agent 都在链下；这块电路只负责"下一步该做什么"，而且每一步都可以被任何人逐门重算。本页把链上那 1104 字节原样装进浏览器，你可以直接拨动观测位看它动作。</p>
   <p class="lede en">The harness control loop of OpenAI's <a href="https://openai.com/index/introducing-the-agents-api/">Agents API</a> (announced 2026‑09‑10) written as a <strong>152 NAND + 10 LATCH</strong> netlist and burned on chain the next day. Model, tools and subagents stay off‑chain; this circuit only decides "what to do next", and every step can be recomputed gate by gate by anyone. This page loads the exact 1104 on‑chain bytes into your browser so you can flip observation bits and watch it act.</p>

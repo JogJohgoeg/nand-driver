@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>web2tape 隐私说明</title>
+<style>
+  :root{--fg:#1d2420;--mute:#5d6b63;--bg:#fff;--accent:#006B35}
+  @media (prefers-color-scheme:dark){:root{--fg:#e3e9e5;--mute:#9aa8a0;--bg:#121614;--accent:#3fbf7f}}
+  body{font:15px/1.65 -apple-system,system-ui,"PingFang SC",sans-serif;max-width:720px;margin:28px auto;padding:0 16px;color:var(--fg);background:var(--bg)}
+  h1{color:var(--accent);font-size:24px} h2{font-size:17px;margin-top:22px} .note{color:var(--mute);font-size:13.5px}
+</style>
+<h1>web2tape 隐私说明 / Privacy</h1>
+<p class="note">更新于 2026-10-01</p>
+
+<h2>插件做什么</h2>
+<p>只有一件事：你在 web2tape 页面上要求存某个网站时，插件用你的浏览器把这个网站的网页、图片、样式、字体读下来，交给 web2tape 页面，由你决定是否存到区块链上。
+你在任何网站上点插件按钮时，插件只读取当前标签页的网址，用来打开 web2tape 并填好网址。</p>
+
+<h2>不收集任何数据</h2>
+<ul>
+  <li>插件和 web2tape 页面没有自己的服务器，不收集、不上传、不出售任何个人数据，也没有统计或追踪代码。</li>
+  <li>读网页时<strong>不带你的登录状态</strong>（不发送 Cookie），所以只能读到任何人都能看的公开内容。</li>
+  <li>插件不读取你的浏览记录、表单、密码，也不在别的网站上运行任何代码；只在 web2tape 页面上与页面通信。</li>
+  <li>为了读出靠脚本画出的网页，插件可能临时在后台打开那个网页的标签页，读完立即关闭。</li>
+</ul>
+
+<h2>存上链的内容是公开、永久的</h2>
+<p>你选择存上链的网页会写进你自己的 TapeOut 存放空间（区块链上的文件），任何人都能看到，且无法删除。请只存你有权公开的内容。
+上链需要你的钱包签名；钱包地址和交易本来就公开在区块链上。上传用的临时钥匙只存在你这台电脑的浏览器里，用剩的手续费会退回你的钱包。</p>
+
+<h2>Summary (English)</h2>
+<p>The web2tape extension fetches the public pages of a website you ask it to save, without cookies, and hands them to the web2tape page so you can store them on-chain.
+It collects no personal data, has no server, no analytics, and runs only on the web2tape page. Content you choose to store on-chain is public and permanent.</p>
+<p class="note">问题反馈：<a href="https://github.com/JogJohgoeg/nand-driver/issues">github.com/JogJohgoeg/nand-driver/issues</a> · 源码 MIT</p>
