@@ -1,481 +1,655 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>21 NAND Driver</title>
+<meta name="theme-color" content="#006B35">
 <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.min.js">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap">
 <style>
+/* 21 NAND Driver · 绿色版（2026-10-01）。版式参考 hermes-agent.nousresearch.com：整块主色带 + 纸面带交替、超窄细体大标题、
+   等宽小标签、方角按钮、视口细框。颜色只在这里定义；每种色带重设同一组语义变量，脚本里写死的 var(--ink-2) 等会跟着所在色带走。 */
 :root{
-  --bg:#EEF1F5; --paper:#FFFFFF; --ink:#12203A; --ink-2:#4A5670; --ink-3:#8A93A6;
-  --line:#D3D9E3; --accent:#E0592A; --accent-soft:#F8DDD2; --track:#1C7C74; --track-soft:#D6ECEA;
-  --on:#E0592A; --off:#C9D0DC; --good:#1C7C74;
+  --g:#006B35; --g-deep:#005C2B; --g-deeper:#004A22; --g-frame:#1E8C4E; --lime:#E4F53C; --orange:#E8622D;
+  --accent:#E8622D; /* 279 号车的车漆：2D 赛道、3D 场景（脚本从根上读）、图例都用它；界面强调色用 --hi */
+  --paper-c:#F2F3EF; --white:#FFFFFF;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:"IBM Plex Sans","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --disp:"Bricolage Grotesque","Noto Sans SC","PingFang SC","IBM Plex Sans",system-ui,sans-serif;
+  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --in:1240px; --gut:clamp(16px,4vw,48px); --head-h:68px;
+  /* 纸面（默认） */
+  --bg:var(--paper-c); --paper:var(--white); --ink:#0B2A18; --ink-2:#3C5446; --ink-3:#5A6E62;
+  --line:rgba(0,107,53,.26); --line-strong:rgba(0,107,53,.55); --head:var(--g);
+  --hi:var(--g); --hi-soft:rgba(0,107,53,.14); --track:var(--g); --track-soft:#D3E5D8;
+  --on:var(--g); --on-ink:var(--paper-c); --off:#D5DDD7; --good:var(--g); --focus:var(--g);
+  --btn-bg:var(--g); --btn-ink:var(--paper-c); --btn2-bg:transparent; --btn2-ink:var(--g); --btn2-line:var(--g);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0F1522; --paper:#161D2C; --ink:#E8ECF4; --ink-2:#AEB7C9; --ink-3:#71809A;
-    --line:#2A3448; --accent:#FF7A4D; --accent-soft:#3A2218; --track:#4FB8AE; --track-soft:#173634;
-    --on:#FF7A4D; --off:#2E3A50; --good:#4FB8AE;
+    --g:#006A34; --g-deep:#00522A; --g-deeper:#00401F;
+    --bg:#0D1A12; --paper:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#7E9386;
+    --line:rgba(91,224,143,.22); --line-strong:rgba(91,224,143,.5); --head:#5BE08F;
+    --hi:#5BE08F; --hi-soft:rgba(91,224,143,.14); --track:#5BE08F; --track-soft:#1C3A28;
+    --on:#5BE08F; --on-ink:#0D1A12; --off:#24392C; --good:#5BE08F; --focus:#5BE08F;
+    --btn-bg:#5BE08F; --btn-ink:#0D1A12; --btn2-ink:#5BE08F; --btn2-line:#5BE08F;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0F1522; --paper:#161D2C; --ink:#E8ECF4; --ink-2:#AEB7C9; --ink-3:#71809A;
-  --line:#2A3448; --accent:#FF7A4D; --accent-soft:#3A2218; --track:#4FB8AE; --track-soft:#173634;
-  --on:#FF7A4D; --off:#2E3A50; --good:#4FB8AE;
+  --g:#006A34; --g-deep:#00522A; --g-deeper:#00401F;
+  --bg:#0D1A12; --paper:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#7E9386;
+  --line:rgba(91,224,143,.22); --line-strong:rgba(91,224,143,.5); --head:#5BE08F;
+  --hi:#5BE08F; --hi-soft:rgba(91,224,143,.14); --track:#5BE08F; --track-soft:#1C3A28;
+  --on:#5BE08F; --on-ink:#0D1A12; --off:#24392C; --good:#5BE08F; --focus:#5BE08F;
+  --btn-bg:#5BE08F; --btn-ink:#0D1A12; --btn2-ink:#5BE08F; --btn2-line:#5BE08F;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
-a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-soft)}
-a:hover{border-bottom-color:var(--accent)}
-code{font-family:var(--mono);font-size:.92em}
-.wrap{max-width:1120px;margin:0 auto;padding:20px 24px 64px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
-.also{margin:-12px 0 24px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.6;color:var(--ink-2)}
-.also strong{color:var(--ink);font-weight:600}
-.also a{color:var(--accent);text-decoration:none;font-weight:600}
-.also a:hover{text-decoration:underline}
-.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.lang button{border:0;border-radius:0;padding:5px 12px;font-size:12.5px;background:transparent}
-.lang button.on{background:var(--ink);color:var(--bg)}
-h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.4vw,50px);line-height:1.08;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance;max-width:18ch}
-h1 em{font-style:normal;color:var(--accent)}
-.lede{max-width:60ch;color:var(--ink-2);margin:0 0 14px;font-size:16px}
-.chain{display:flex;flex-wrap:wrap;gap:6px 22px;font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:26px}
-.chain b{color:var(--ink);font-weight:500}
+/* 绿带：米白字，强调色换成黄绿 */
+.band.g,.site,.foot{
+  --bg:var(--g); --paper:var(--g-deep); --ink:var(--paper-c); --ink-2:rgba(242,243,239,.9); --ink-3:rgba(242,243,239,.82);
+  --line:rgba(242,243,239,.26); --line-strong:rgba(242,243,239,.6); --head:var(--paper-c);
+  --hi:var(--lime); --hi-soft:rgba(228,245,60,.22); --track:var(--lime); --track-soft:rgba(242,243,239,.12);
+  --on:var(--lime); --on-ink:#0B2A18; --off:rgba(242,243,239,.14); --good:var(--lime); --focus:var(--lime);
+  --btn-bg:var(--paper-c); --btn-ink:var(--g); --btn2-bg:rgba(242,243,239,.14); --btn2-ink:var(--paper-c); --btn2-line:transparent;
+  background:var(--g); color:var(--ink);
+}
 
-.stage{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:16px}
-@media (max-width:860px){.stage{grid-template-columns:1fr}}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px}
-.scene{position:relative;padding:10px}
-svg#scene{width:100%;height:auto;display:block;border-radius:8px;background:var(--paper)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--head-h) + 12px)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased;font-variation-settings:"wdth" 96}
+body::after{content:"";position:fixed;inset:0;border:5px solid var(--g-frame);pointer-events:none;z-index:1000}
+@media (max-width:620px){body::after{border-width:3px}}
+a{color:var(--hi);text-decoration:none;border-bottom:1px solid var(--hi-soft)}
+a:hover{border-bottom-color:var(--hi)}
+code{font-family:var(--mono);font-size:.92em}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.zh,.en{display:contents}
+html[lang="en"] .zh,html:not([lang="en"]) .en{display:none}
+.in{max-width:var(--in);margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
+.eyebrow,.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+/* 方角按钮：绿带上白底绿字 / 半透明；纸面上绿底 / 描边 */
+button{font:500 13px var(--sans);color:var(--btn2-ink);background:var(--btn2-bg);border:1px solid var(--line);border-radius:0;padding:7px 12px;cursor:pointer;letter-spacing:.01em}
+button:hover{border-color:var(--line-strong)}
+button:disabled{opacity:.55;cursor:default}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 18px;border:1px solid var(--btn2-line);border-radius:0;font:400 15px/1 var(--disp);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--btn2-ink);background:var(--btn2-bg)}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--btn-bg);color:var(--btn-ink);border-color:var(--btn-bg)}
+.btn.pri:hover{filter:brightness(1.06)}
+
+/* ---- 页头：左右导航、居中字标 ---- */
+.site{position:sticky;top:0;z-index:60;border-bottom:1px solid var(--line)}
+.site .in{height:var(--head-h);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px}
+.site nav{display:flex;align-items:center;gap:clamp(14px,2.6vw,40px)}
+.site nav.r{justify-content:flex-end}
+.site nav a{font:400 15px/1 var(--disp);letter-spacing:.04em;color:var(--ink);border:0;white-space:nowrap}
+.site nav a .en,.foot ul a .en,.menu a .en{letter-spacing:.1em;text-transform:uppercase}
+.nm{letter-spacing:.04em!important;text-transform:none!important}
+.site nav a:hover{color:var(--hi)}
+.site nav a.btn{color:var(--btn-ink);letter-spacing:.08em;min-height:34px;padding:0 14px}
+.logo{display:grid;justify-items:center;line-height:.92;border:0;color:var(--ink);text-decoration:none}
+.logo b{font:200 23px/0.92 var(--disp);letter-spacing:.02em;text-transform:uppercase}
+.logo small{font:400 9.5px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-3);margin-top:5px}
+.lang{display:inline-flex;border:1px solid var(--line);overflow:hidden;flex:none}
+.lang button{border:0;padding:5px 10px;font:500 12px var(--mono);background:transparent;color:var(--ink-2);white-space:nowrap}
+.lang button.on{background:var(--ink);color:var(--g)}
+.menu{display:none}
+@media (max-width:980px){
+  .site .in{grid-template-columns:auto 1fr auto}
+  .site nav.l{display:none}
+  .site nav.r a:not(.btn){display:none}
+  .logo{justify-items:start;order:-1}
+  .menu{display:block;position:relative}
+  .menu>summary{list-style:none;cursor:pointer;font:400 15px/1 var(--disp);letter-spacing:.06em;padding:10px 4px;min-height:44px;display:flex;align-items:center}
+  .menu>summary::-webkit-details-marker{display:none}
+  .menu[open]>div{position:absolute;right:0;top:calc(100% + 10px);min-width:220px;background:var(--g-deep);border:1px solid var(--line);padding:8px 0;display:grid}
+  .menu[open]>div a{padding:12px 18px;font:400 16px/1.2 var(--disp);letter-spacing:.04em;color:var(--ink);border:0}
+}
+@media (max-width:520px){.site nav.r a.btn{display:none}}
+
+/* ---- 首屏：大标题 + 实时赛道 ---- */
+.hero{padding:clamp(28px,5vw,64px) 0 28px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,13fr);gap:clamp(24px,4vw,56px);align-items:start}
+@media (max-width:1100px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
+.hero-copy{display:grid;gap:18px;align-content:start;padding-top:6px}
+h1{margin:0;font-family:var(--disp);font-weight:300;font-size:clamp(34px,3.9vw,54px);line-height:1.12;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.01em;text-wrap:balance;color:var(--head)}
+html[lang="en"] h1{font-weight:200;text-transform:uppercase;font-size:clamp(46px,6.6vw,104px);line-height:.95;letter-spacing:-.015em}
+h1 em{font-style:normal;color:var(--hi)}
+.lede{margin:0;max-width:52ch;color:var(--ink-2);font-size:16.5px}
+.cta{display:flex;flex-wrap:wrap;gap:10px}
+.howto{list-style:none;margin:6px 0 0;padding:0;border:1px solid var(--line);background:var(--g-deep);counter-reset:how}
+.howto li{counter-increment:how;position:relative;padding:12px 16px 12px 52px;font-size:14px;line-height:1.55;color:var(--ink-2)}
+.howto li+li{border-top:1px dashed var(--line)}
+.howto li::before{content:"0" counter(how);position:absolute;left:16px;top:14px;font:400 12px/1.6 var(--mono);letter-spacing:.1em;color:var(--hi)}
+.howto li b{display:block;color:var(--ink);font-weight:600;font-size:15px}
+
+/* 赛道面板：深绿底，画面内的标签统一用深色小牌，2D 俯视和 3D 下都看得清 */
+.panel{background:var(--paper);border:1px solid var(--line)}
+.scene{position:relative;padding:10px;background:var(--g-deep)}
+svg#scene{width:100%;height:auto;display:block;background:#EEF2EC;--paper:#EEF2EC;--ink:#0B2A18;--ink-3:#5A6E62;--track:#006B35;--track-soft:#D3E5D8}
 svg#scene[hidden]{display:none}
-canvas#scene3d{width:100%;aspect-ratio:760/620;display:block;border-radius:8px;background:#f5c9a0}
+canvas#scene3d{width:100%;aspect-ratio:760/620;display:block;background:#f5c9a0}
 canvas#scene3d[hidden]{display:none}
 #b-cam[hidden]{display:none}
-.controls .hint{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
-.controls .hint[hidden]{display:none}
-.ign{position:absolute;left:10px;top:10px;right:10px;aspect-ratio:760/620;border-radius:8px;display:grid;place-items:center;text-align:center;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 60%,rgba(18,20,30,.35),rgba(10,12,20,.82));color:#FFF3E2;opacity:1;transition:opacity .7s ease}
+.ign{position:absolute;left:10px;top:10px;right:10px;aspect-ratio:760/620;display:grid;place-items:center;text-align:center;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 60%,rgba(0,40,18,.3),rgba(0,30,14,.86));color:var(--paper-c);opacity:1;transition:opacity .7s ease}
 .ign.out{opacity:0}
 .ign[hidden]{display:none}
-.ign .t{font-family:var(--disp);font-weight:700;font-size:clamp(34px,6vw,64px);letter-spacing:-.02em;line-height:1;text-shadow:0 2px 24px rgba(0,0,0,.45);animation:ignin .9s cubic-bezier(.2,.8,.2,1) both}
-.ign .s{margin-top:12px;font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:#FFD9B0;animation:ignin .9s .15s cubic-bezier(.2,.8,.2,1) both}
+.ign .t{font-family:var(--disp);font-weight:200;font-size:clamp(40px,7vw,88px);letter-spacing:.02em;line-height:1;text-transform:uppercase;animation:ignin .9s cubic-bezier(.2,.8,.2,1) both}
+.ign .s{margin-top:14px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);animation:ignin .9s .15s cubic-bezier(.2,.8,.2,1) both}
 @keyframes ignin{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
-.hud3d{position:absolute;left:20px;top:0;font-family:var(--mono);font-size:12px;color:#FFF3E2;background:rgba(12,16,26,.55);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:8px 12px;display:grid;gap:2px;pointer-events:none;backdrop-filter:blur(4px)}
-.hud3d .v{font-family:var(--disp);font-weight:700;font-size:28px;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
-.hud3d .v small{font-family:var(--mono);font-size:11px;font-weight:400;color:#FFD9B0;margin-left:4px}
-.hud3d .l{color:#FFD9B0;font-variant-numeric:tabular-nums}
+.hud3d{position:absolute;left:20px;top:20px;font-family:var(--mono);font-size:12px;color:var(--paper-c);background:rgba(0,40,18,.62);border:1px solid rgba(242,243,239,.18);padding:8px 12px;display:grid;gap:2px;pointer-events:none;backdrop-filter:blur(4px)}
+.hud3d .v{font-family:var(--disp);font-weight:300;font-size:32px;line-height:1;font-variant-numeric:tabular-nums;color:#fff}
+.hud3d .v small{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--lime);margin-left:4px}
+.hud3d .l{color:var(--lime);font-variant-numeric:tabular-nums}
 .hud3d[hidden]{display:none}
 .hud3d .notch-meter{display:flex;gap:4px;width:100px;margin-top:3px}
 .hud3d .notch-meter[hidden]{display:none}
-.notch-meter i{height:5px;flex:1;border-radius:1px;background:rgba(255,217,176,.18)}
-.notch-meter i.on{background:#ffd9b0}
+.notch-meter i{height:5px;flex:1;background:rgba(228,245,60,.2)}
+.notch-meter i.on{background:var(--lime)}
 @media (prefers-reduced-motion:reduce){.ign .t,.ign .s{animation:none}}
-.hud{position:absolute;left:20px;top:18px;font-family:var(--mono);font-size:12px;color:var(--ink-2);display:grid;gap:2px}
-.hud b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
-.legend{position:absolute;right:20px;top:18px;display:grid;gap:4px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.hud{position:absolute;left:20px;top:20px;font-family:var(--mono);font-size:12px;display:grid;gap:2px;padding:6px 9px;background:rgba(0,40,18,.72);border:1px solid rgba(242,243,239,.16);color:rgba(242,243,239,.8);max-width:calc(100% - 40px);overflow-wrap:anywhere}
+.hud b{color:#fff;font-weight:500;font-variant-numeric:tabular-nums}
+.scene.is-3d>.hud{color:rgba(242,243,239,.8)}
+.scene.is-3d>.hud b{color:#fff}
+.scene.is-3d #v2b-inertia{color:var(--lime)!important}
+.legend{position:absolute;right:20px;top:20px;display:grid;gap:3px;font-family:var(--mono);font-size:11.5px;padding:6px 8px;background:rgba(0,40,18,.72);border:1px solid rgba(242,243,239,.16);color:rgba(242,243,239,.8)}
 .legend span{display:flex;align-items:center;gap:6px;cursor:pointer}
-.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
-.legend span.on{color:var(--ink);font-weight:500}
-.lbtable .dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
-.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:2px 10px 10px}
-button{font:500 13px var(--sans);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
-button:hover{border-color:var(--ink-3)}
-button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.legend i{width:10px;height:10px;display:inline-block}
+.legend span.on{color:#fff;font-weight:500}
+.legend:empty{display:none}
+#legend>span:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.lbtable .dot{width:9px;height:9px;display:inline-block;margin-right:5px;vertical-align:middle}
+.controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 0 0}
+.controls button{background:rgba(242,243,239,.1);border-color:rgba(242,243,239,.18);color:var(--paper-c);font:400 14px/1.1 var(--disp);letter-spacing:.05em;text-transform:uppercase;padding:9px 12px}
+.controls button:hover{background:rgba(242,243,239,.18);border-color:rgba(242,243,239,.4)}
+#b-live{background:var(--paper-c);color:var(--g);border-color:var(--paper-c)}
+#b-live:hover{filter:brightness(1.05)}
+.controls .hint{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.controls .hint[hidden]{display:none}
+.controls label{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.controls input[type=range]{accent-color:var(--lime)}
+.controls select,#v2b-start{background:var(--g-deeper);color:var(--paper-c);border:1px solid rgba(242,243,239,.25);border-radius:0;padding:4px 6px}
 .status{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-left:auto}
-.status.live{color:var(--good)}
+.status.live{color:var(--lime)}
+#scene-status,.controls [role="status"]{min-width:0;overflow-wrap:anywhere}
 
-.net{padding:16px 18px;display:grid;grid-template-rows:auto auto 1fr auto;gap:14px}
-.net h2{margin:0;font-family:var(--disp);font-size:17px;font-weight:700}
-.lab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-.rays{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.ray{border:1px solid var(--line);border-radius:8px;padding:8px 4px;text-align:center}
+/* 「它此刻在想什么」：首屏下方一条横向仪表 */
+.console{margin-top:clamp(18px,3vw,28px)}
+.net{background:var(--g-deep);padding:18px 20px;display:grid;grid-template-columns:minmax(200px,.9fr) minmax(250px,1.25fr) minmax(250px,1.3fr) minmax(190px,.85fr);gap:18px 26px;align-items:start}
+.net>h2{grid-column:1/-1;margin:0;font-family:var(--disp);font-weight:300;font-size:clamp(22px,2.2vw,30px);letter-spacing:.01em;line-height:1.1;color:var(--ink);display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+@media (max-width:1100px){.net{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:620px){.net{grid-template-columns:minmax(0,1fr);padding:16px}}
+.lab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.rays{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.ray{border:1px solid var(--line);padding:8px 4px;text-align:center}
 .ray .n{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
-.ray .d{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;margin:2px 0 6px}
+.ray .d{font-family:var(--disp);font-size:18px;font-weight:300;font-variant-numeric:tabular-nums;margin:2px 0 6px}
 .bits{display:flex;justify-content:center;gap:4px}
-.bit{width:13px;height:13px;border-radius:3px;background:var(--off);transition:background .12s}
+.bit{width:13px;height:13px;background:var(--off);transition:background .12s}
 .bit.on{background:var(--on)}
-.gates{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.gate{aspect-ratio:1;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3);transition:background .12s,color .12s}
-.gate.on{background:var(--on);color:#fff;border-color:transparent}
-.gate.out{outline:2px solid var(--track);outline-offset:1px}
-.out{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.actbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:13px}
-.actbox .bit{width:18px;height:18px}
-.actbox .bit{display:grid;place-items:center;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink)}
-.actbox .bit.on{color:#101827}
-.act{font-family:var(--disp);font-weight:700;font-size:22px;text-align:center;padding-top:6px}
-
-/* participate: the prominent block */
-.join{margin-top:18px;border:2px solid var(--accent);border-radius:14px;background:var(--paper);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);overflow:hidden}
-@media (max-width:860px){.join{grid-template-columns:1fr}}
-.join .l{padding:24px 26px;display:grid;gap:12px;align-content:start}
-.join .r{padding:20px 22px;border-left:1px solid var(--line)}
-@media (max-width:860px){.join .r{border-left:0;border-top:1px solid var(--line)}}
-.join h2{font-family:var(--disp);font-size:clamp(22px,2.6vw,30px);font-weight:700;letter-spacing:-.01em;margin:0;text-wrap:balance}
-.join p{margin:0;color:var(--ink-2);max-width:52ch}
-.join .big{font:600 16px var(--sans);background:var(--accent);border-color:var(--accent);color:#fff;padding:13px 20px;border-radius:10px;justify-self:start}
-.join .big:disabled{opacity:.6;cursor:default}
-.join .steps{display:grid;gap:8px;margin-top:4px}
-.join .step{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:14px;color:var(--ink-2)}
-.join .step i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent);padding-top:3px}
-.join .fine{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
-.join .r h3{font-family:var(--disp);font-size:16px;font-weight:700;margin:0 0 8px}
-.join .wstatus{font-family:var(--mono);font-size:13px;color:var(--good);min-height:20px}
-
-.facts{margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
-@media (max-width:860px){.facts{grid-template-columns:repeat(2,1fr)}}
-.fact{padding:14px 16px;border-right:1px solid var(--line)}
-.fact:last-child{border-right:0}
-@media (max-width:860px){.fact:nth-child(2){border-right:0}.fact:nth-child(-n+2){border-bottom:1px solid var(--line)}}
-.fact .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
-.fact .v{font-family:var(--disp);font-size:26px;font-weight:700;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
-.fact .s{font-size:12.5px;color:var(--ink-2);margin-top:2px}
-
-section{margin-top:48px;max-width:72ch}
-section.wide{max-width:none}
-section h2{font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:-.01em;margin:0 0 10px;text-wrap:balance}
-section h3{font-family:var(--disp);font-size:16px;font-weight:700;margin:22px 0 4px}
-section p{color:var(--ink-2);margin:6px 0}
-section p b{color:var(--ink);font-weight:600}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
-@media (max-width:860px){.two{grid-template-columns:1fr}}
-table{border-collapse:collapse;width:100%;font-size:13.5px}
-td,th{padding:7px 10px;border-top:1px solid var(--line);text-align:left;vertical-align:top}
-th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
-td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-.tablebox{overflow-x:auto;margin-top:8px}
-pre{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:12.5px/1.5 var(--mono);overflow-x:auto;color:var(--ink);margin:8px 0}
-pre .c{color:var(--ink-3)}
-pre .h{color:var(--accent)}
-.hex{word-break:break-all;white-space:pre-wrap}
-.gatetable tr.lit td{color:var(--accent)}
-
-/* arena */
-.arena{margin-top:18px;border:1px solid var(--line);border-radius:14px;background:var(--paper);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);overflow:hidden}
-@media (max-width:860px){.arena{grid-template-columns:1fr}}
-.arena .l{padding:24px 26px;display:grid;gap:12px;align-content:start}
-.arena .r{padding:20px 22px;border-left:1px solid var(--line)}
-@media (max-width:860px){.arena .r{border-left:0;border-top:1px solid var(--line)}}
-.arena h2{font-family:var(--disp);font-size:clamp(22px,2.6vw,30px);font-weight:700;letter-spacing:-.01em;margin:0;text-wrap:balance}
-.arena p{margin:0;color:var(--ink-2);max-width:52ch}
-.arena .steps{display:grid;gap:8px;margin-top:4px}
-.arena .step{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:14px;color:var(--ink-2)}
-.arena .step i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--track);padding-top:3px}
-.arena .fine{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
-.arena .r h3{font-family:var(--disp);font-size:16px;font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;align-items:baseline}
-.arena .r h3 span{font-family:var(--mono);font-size:12px;color:var(--ink-3);font-weight:400}
-.arena td.me{color:var(--accent)}
-footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:8px 24px}
-@media (prefers-reduced-motion:reduce){.bit,.gate{transition:none}}
-/* Touch targets stay usable without changing any control behavior. */
-@media (pointer:coarse),(max-width:600px){
-  button{min-height:44px;touch-action:manipulation}
-  .lang button{min-width:44px}
-  .controls{gap:10px}
-}
-/* Secondary circuit labels must remain readable in both themes. */
-.net .lab,.net .ray .n,.net .gate:not(.on){color:var(--ink-2);font-size:12px}
-#legend>span:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
-/* On narrow screens, car choices sit below the track rather than covering it. */
-@media (max-width:600px),(pointer:coarse){
-  .legend{position:static;display:flex;flex-wrap:wrap;gap:6px;padding:8px 0}
-  .legend span{min-height:44px;min-width:64px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
-  .legend span.on{border-color:var(--accent)}
-}
-
-/* v2b state/output panel stays compact; v1 layout is unchanged. */
+.gates{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.gate{aspect-ratio:1;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3);transition:background .12s,color .12s}
+.gate.on{background:var(--on);color:var(--on-ink);border-color:transparent}
+.gate.out{outline:2px solid var(--paper-c);outline-offset:1px}
+.out{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.actbox{border:1px solid var(--line);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:13px}
+.actbox .bit{width:18px;height:18px;display:grid;place-items:center;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.actbox .bit.on{color:var(--on-ink)}
+.act{font-family:var(--disp);font-weight:300;font-size:clamp(30px,3vw,40px);line-height:1;text-align:left;padding-top:12px;color:var(--hi);text-transform:uppercase}
+.net .lab,.net .ray .n,.net .gate:not(.on){color:var(--ink-2);font-size:11.5px}
+/* 记忆车（v2b）：门多，格子更密，输出 4 个 */
 #v2b-speed[hidden],#v2b-memory[hidden],#v2b-start[hidden],#v2b-note[hidden],#v2b-entries[hidden],.out .actbox[hidden]{display:none}
-.v2b-mode .net{grid-template-rows:auto auto auto auto auto;align-content:start}
+.v2b-mode .net{align-content:start;grid-template-columns:minmax(190px,.9fr) minmax(150px,.6fr) minmax(330px,1.9fr) minmax(190px,.8fr)}
+@media (max-width:1100px){.v2b-mode .net{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.v2b-mode .net>div:has(#gates){grid-column:1/-1}}
+@media (max-width:620px){.v2b-mode .net{grid-template-columns:minmax(0,1fr)}}
 .v2b-mode #gates{grid-template-columns:repeat(15,minmax(0,1fr));gap:3px;padding:2px;max-height:184px;overflow:auto}
-.v2b-mode #gates .gate{aspect-ratio:auto;height:23px;font-size:9px;border-radius:4px}
-#v2b-memory .bits{justify-content:flex-start}
-#v2b-memory .bit{width:24px;height:22px;display:grid;place-items:center;font:12px var(--mono);color:var(--ink)}
-#v2b-memory .bits{gap:10px;padding-top:16px}
-#v2b-memory .bit{position:relative;font-variant-numeric:tabular-nums}
+.v2b-mode #gates .gate{aspect-ratio:auto;height:23px;font-size:9px}
+#v2b-memory .bits{justify-content:flex-start;gap:10px;padding-top:16px}
+#v2b-memory .bit{position:relative;width:24px;height:22px;display:grid;place-items:center;font:12px var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+#v2b-memory .bit.on{color:var(--on-ink)}
 #v2b-memory .bit::before{content:attr(data-register);position:absolute;bottom:100%;left:0;right:0;font-size:10px;color:var(--ink-2);text-align:center}
 #v2b-memory .memory-help{font-size:12px;line-height:1.4;color:var(--ink-2);margin:4px 0 0}
-#v2b-start{max-width:180px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:4px}
-#v2b-note{font-size:13px;color:var(--ink-2)}
-#arena-v2-history{margin:14px 0;font-size:13px;color:var(--ink-2)}
-@media(max-width:520px){.v2b-mode #gates{grid-template-columns:repeat(10,minmax(0,1fr))}}
-.driver-guide{margin:0 0 18px;padding:12px 16px}
-.driver-guide ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;list-style:none;margin:0;padding:0}
-.driver-guide li{font-size:13px;color:var(--ink-2)}
-.driver-guide strong{display:block;color:var(--ink);font-size:14px}
-.driver-guide p{font-size:12px;color:var(--ink-2);margin:10px 0 0;padding-top:8px;border-top:1px solid var(--line)}
-@media(max-width:620px){.driver-guide ul{grid-template-columns:1fr;gap:8px}}
-@media(max-width:620px){#v2b-start{min-height:44px!important;font-size:16px!important}}
-@media(max-width:620px){.hud3d{backdrop-filter:none;background:rgba(12,16,26,.8)}}
-/* Keep the long method/netlist sections in the DOM; lay them out as they approach view. */
-.wrap>section{content-visibility:auto;contain-intrinsic-size:auto 500px}
-@media print{.wrap>section{content-visibility:visible;contain-intrinsic-size:none}}
-/* Give controller shortcuts the same touch height as the driving controls. */
-@media(pointer:coarse),(max-width:620px){.driver-guide a{display:flex;align-items:center;min-height:44px}}
-.method-scope{font-size:13px;color:var(--ink-2);margin:28px 0 10px;max-width:80ch}
-@media(max-width:520px){.v2b-mode #gates .gate{font-size:11px}}
-@media(pointer:coarse) and (max-height:500px){canvas#scene3d,.ign{max-height:calc(100vh - 110px);max-height:calc(100svh - 110px)}}
-.scene.is-3d>.hud{max-width:calc(100% - 40px);box-sizing:border-box;overflow-wrap:anywhere;padding:6px 9px;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(12,16,26,.8);color:#fff3e2}
-.scene.is-3d>.hud b{color:#fff3e2}
-.scene.is-3d #v2b-inertia{color:#ffd9b0!important}
-@media(pointer:coarse){.hud3d{backdrop-filter:none;background:rgba(12,16,26,.8)}}
-#scene-status,.controls [role="status"]{min-width:0;overflow-wrap:anywhere}
-/* Keep circuit identities visible while reading a wide score table. */
-#lbtable th:nth-child(2),#lbtable td:nth-child(2){position:sticky;left:0;background:var(--paper);z-index:1;box-shadow:1px 0 var(--line)}
-.arena>.r,.join>.r{min-width:0}
-@media(max-width:860px){.arena,.join{grid-template-columns:minmax(0,1fr)}}
-@media(pointer:coarse),(max-width:620px){.driver-guide p a{display:inline-flex;align-items:center;vertical-align:middle;min-width:44px}}
-.v2b-mode .ray .bit{display:grid;place-items:center;font:10px/1 var(--mono);color:var(--ink)}
-.v2b-mode .ray .bit.on{color:#101827}
-@media(pointer:coarse){#v2b-start{min-height:44px!important;font-size:16px!important}}
-.arena-rules-link{display:inline-flex;align-items:center;min-height:44px}
 #v2b-start{max-width:min(260px,100%)}
-/* Longer touch sliders improve fine volume adjustment. */
-@media(pointer:coarse){#engine-level,#music-level{width:144px!important;max-width:100%}}
-/* Compact phones keep sensor cards and circuit labels inside the viewport. */
-@media(max-width:360px){
-  .topbar{flex-wrap:wrap}.chain span{min-width:0;overflow-wrap:anywhere}
-  .stage{grid-template-columns:minmax(0,1fr)}.stage>.panel{min-width:0}
-  .rays{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .arena>.l,.join>.l{min-width:0;overflow-wrap:anywhere}
-  .join .step{grid-template-columns:22px minmax(0,1fr)}
-  .v2b-mode #gates{grid-template-columns:repeat(8,minmax(0,1fr))}
-}
+#v2b-note{font-size:13px;color:var(--ink-2)}
+@media(max-width:520px){.v2b-mode #gates{grid-template-columns:repeat(10,minmax(0,1fr))}.v2b-mode #gates .gate{font-size:11px}}
+.v2b-mode .ray .bit{display:grid;place-items:center;font:10px/1 var(--mono);color:var(--ink)}
+.v2b-mode .ray .bit.on{color:var(--on-ink)}
 
-/* Newcomer layout (2026-09-27): how-to strip, circuit guide under the track, plain how-it-works, collapsed technical details */
-.howto{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 16px;padding:0;list-style:none}
-.howto li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.55;color:var(--ink-2)}
-.howto li b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
-.driver-guide.after-stage{margin:16px 0 0}
-.guides-h{margin:0 0 6px;font-weight:600;color:var(--ink)}
-.works{margin-top:32px}
-.works ol{list-style:none;padding:0;margin:0}
-.works li{margin:0 0 10px}
-.works .limit{color:var(--ink-2)}
-details.tech{margin-top:40px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 18px}
-details.tech>summary{cursor:pointer;padding:14px 0;font-weight:600;color:var(--ink)}
-details.tech[open]{padding-bottom:20px}
-details.tech section{margin-top:28px}
-details.tech .chain-h{font-size:14px;margin:4px 0 8px;color:var(--ink-2)}
-.topbar .lang{flex:none}.topbar .lang button{white-space:nowrap}
-@media(max-width:720px){.howto{grid-template-columns:1fr}}
+/* 中文大标题只在标点、空格处断行（不把「开车」拆成两行）；太长时再退回任意断行，防止溢出 */
+.sec-h h2,.guides-h,.works h2,.join h2,.arena h2,details.tech section h2,.driver-guide li strong,.works li b,.net>h2{word-break:keep-all;overflow-wrap:anywhere}
+/* ---- 纸面带：大号窄体标题 + 三栏特性卡 ---- */
+.band{position:relative}
+.band.p{padding:clamp(56px,8vw,104px) 0}
+.sec-h{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px;margin:0 0 clamp(26px,4vw,44px)}
+.sec-h h2,.guides-h,.works h2,.big-h{margin:0;font-family:var(--disp);font-weight:300;font-size:clamp(40px,5.4vw,78px);line-height:1;letter-spacing:-.01em;color:var(--head)}
+html[lang="en"] .sec-h h2,html[lang="en"] .guides-h,html[lang="en"] .works h2{font-weight:200;text-transform:uppercase}
+.sec-h p{margin:0;max-width:46ch;color:var(--ink-2)}
+.driver-guide{background:none;border:0;padding:0;margin:0}
+.driver-guide .guides-h{margin-bottom:clamp(26px,4vw,44px)}
+.driver-guide ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,32px);list-style:none;margin:0;padding:0;counter-reset:gd}
+.driver-guide li{counter-increment:gd;font-size:14.5px;color:var(--ink-2)}
+.driver-guide li::before{content:attr(data-stat);display:grid;place-items:end start;aspect-ratio:16/10;padding:16px 18px;margin-bottom:16px;background:var(--g);color:var(--paper-c);
+  font:200 clamp(30px,3.4vw,46px)/1 var(--disp);letter-spacing:.01em;text-transform:uppercase;white-space:pre-line;
+  background-image:radial-gradient(rgba(242,243,239,.13) 1px,transparent 1.4px),radial-gradient(rgba(0,0,0,.18) 1px,transparent 1.4px);background-size:7px 7px,11px 11px;background-position:0 0,3px 5px}
+.driver-guide li strong{display:block;font:300 clamp(24px,2.3vw,32px)/1.1 var(--disp);color:var(--head);margin:6px 0 8px;letter-spacing:0}
+html[lang="en"] .driver-guide li strong{font-weight:300}
+.driver-guide li a{font:400 14px/1 var(--disp);letter-spacing:.06em;text-transform:uppercase;border:0;color:var(--hi);display:block;width:max-content;margin-top:10px}
+.driver-guide li a:hover{text-decoration:underline}
+.driver-guide>p:not(.guides-h){font-size:14px;color:var(--ink-2);margin:20px 0 0;padding-top:14px;border-top:1px dashed var(--line)}
+.driver-guide>p:not(.guides-h)+p{margin-top:6px;padding-top:0;border:0}
+@media(max-width:860px){.driver-guide ul{grid-template-columns:1fr}.driver-guide li::before{aspect-ratio:auto;min-height:120px}}
+#v2b-note,#v2b-entries{margin-top:18px}
+.works{margin-top:clamp(64px,9vw,120px)}
+.works ol{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,32px);counter-reset:wk}
+.works li{counter-increment:wk;border-top:1px solid var(--line-strong);padding-top:14px;color:var(--ink-2);font-size:14.5px}
+.works li::before{content:"0" counter(wk);display:block;font:200 clamp(56px,6vw,88px)/1 var(--disp);color:var(--head);margin-bottom:10px}
+.works li b{display:block;font:300 clamp(22px,2.1vw,28px)/1.15 var(--disp);color:var(--ink);margin-bottom:6px}
+.works .limit{margin:28px 0 0;padding:14px 16px;border:1px dashed var(--line-strong);color:var(--ink-2);max-width:none}
+.works .limit b{color:var(--ink)}
+@media(max-width:860px){.works ol{grid-template-columns:1fr}}
+
+/* ---- 钱包参与（绿带）与竞技场（纸面）：左文右表 ---- */
+.band.g.mid{padding:clamp(56px,8vw,96px) 0}
+.join,.arena{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,56px);align-items:start}
+.join .l,.arena .l{display:grid;gap:14px;align-content:start;min-width:0}
+.join h2,.arena h2{margin:0;font-family:var(--disp);font-weight:300;font-size:clamp(30px,3.2vw,46px);line-height:1.05;letter-spacing:-.005em;text-wrap:balance;color:var(--head)}
+html[lang="en"] .join h2,html[lang="en"] .arena h2{font-weight:200;text-transform:uppercase}
+.join p,.arena p{margin:0;color:var(--ink-2);max-width:56ch}
+.join .big{justify-self:start;min-height:46px;padding:0 22px;background:var(--btn-bg);color:var(--btn-ink);border:1px solid var(--btn-bg);font:400 17px/1 var(--disp);letter-spacing:.08em;text-transform:uppercase}
+.join .wstatus{font-family:var(--mono);font-size:13px;color:var(--good);min-height:20px}
+.join .steps,.arena .steps{display:grid;gap:0;border-top:1px dashed var(--line)}
+.join .step,.arena .step{display:grid;grid-template-columns:34px 1fr;gap:8px;font-size:14px;color:var(--ink-2);padding:10px 0;border-bottom:1px dashed var(--line)}
+.join .step i,.arena .step i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--hi);padding-top:3px}
+.join .fine,.arena .fine{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.join .r{background:var(--g-deep);border:1px solid var(--line);padding:18px 20px;min-width:0}
+.arena .r{background:var(--paper);border:1px solid var(--line);padding:18px 20px;min-width:0}
+.join .r h3,.arena .r h3{margin:0 0 10px;font-family:var(--disp);font-weight:300;font-size:24px;line-height:1.1;color:var(--head);display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.arena .r h3 span{font-family:var(--mono);font-size:12px;color:var(--ink-3);font-weight:400}
+.arena td.me{color:var(--hi)}
+.arena-rules-link{display:inline-flex;align-items:center;min-height:44px}
+#arena-v2-history{margin:14px 0;font-size:13px;color:var(--ink-2)}
+@media(max-width:860px){.join,.arena{grid-template-columns:minmax(0,1fr)}}
+#duck-brain-card{display:flex!important;flex-wrap:wrap;gap:4px 14px;align-items:baseline;justify-content:space-between;background:var(--g)!important;color:var(--paper-c);border:0;padding:16px 20px!important;margin:0 0 clamp(32px,5vw,56px)!important}
+#duck-brain-card b{font:300 22px/1.1 var(--disp);color:var(--paper-c)}
+#duck-brain-card small{font-family:var(--mono);font-size:12px;color:rgba(242,243,239,.8)}
+#duck-brain-card br{display:none}
+#duck-brain-card:hover{background:var(--g-deep)!important}
+
+/* 表格：等宽数字、虚线分隔 */
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+td,th{padding:8px 10px;border-top:1px dashed var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:500;border-top:0;border-bottom:1px solid var(--line-strong)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tablebox{overflow-x:auto;margin-top:8px}
+#lbtable th:nth-child(2),#lbtable td:nth-child(2){position:sticky;left:0;background:var(--paper);z-index:1;box-shadow:1px 0 var(--line)}
+
+/* ---- 技术细节：常见问题式折叠，虚线、右侧加号 ---- */
+details.tech{margin-top:clamp(64px,9vw,112px);border-top:1px dashed var(--line-strong);border-bottom:1px dashed var(--line-strong)}
+details.tech>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;font:300 clamp(24px,2.6vw,34px)/1.15 var(--disp);color:var(--head)}
+details.tech>summary::-webkit-details-marker{display:none}
+details.tech>summary::after{content:"+";font:300 34px/1 var(--disp);color:var(--head);transition:transform .2s}
+details.tech[open]>summary::after{transform:rotate(45deg)}
+details.tech[open]{padding-bottom:32px}
+details.tech .chain-h{font:400 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:8px 0 10px;color:var(--ink-3)}
+.chain{display:flex;flex-wrap:wrap;gap:6px 22px;font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-bottom:22px}
+.chain b{color:var(--ink);font-weight:500}
+.chain span{min-width:0;overflow-wrap:anywhere}
+.method-scope{font-size:13px;color:var(--ink-2);margin:20px 0 12px;max-width:80ch}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong)}
+@media (max-width:860px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fact{padding:16px 18px 18px 0}
+.fact+.fact{padding-left:18px;border-left:1px dashed var(--line)}
+@media (max-width:860px){.fact:nth-child(3){padding-left:0;border-left:0}.fact:nth-child(-n+2){border-bottom:1px dashed var(--line)}}
+.fact .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.fact .v{font-family:var(--disp);font-size:clamp(30px,3.2vw,44px);font-weight:200;line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums;color:var(--head)}
+.fact .s{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+details.tech section{margin-top:40px;max-width:76ch}
+details.tech section.wide{max-width:none}
+details.tech section h2{font-family:var(--disp);font-weight:300;font-size:clamp(26px,2.6vw,36px);line-height:1.1;margin:0 0 12px;color:var(--head)}
+html[lang="en"] details.tech section h2{text-transform:uppercase;font-weight:200}
+details.tech section h3{font-family:var(--disp);font-weight:400;font-size:18px;margin:22px 0 4px}
+details.tech section p{color:var(--ink-2);margin:6px 0}
+details.tech section p b{color:var(--ink);font-weight:600}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+pre{background:var(--paper);border:1px solid var(--line);padding:12px 14px;font:12.5px/1.5 var(--mono);overflow-x:auto;color:var(--ink);margin:8px 0}
+pre .c{color:var(--ink-3)}
+pre .h{color:var(--hi)}
+.hex{word-break:break-all;white-space:pre-wrap}
+.gatetable tr.lit td{color:var(--hi)}
+
+/* ---- 页脚：大号淡色字标 + 链接列 ---- */
+.foot{position:relative;overflow:hidden;padding:clamp(56px,8vw,96px) 0 40px}
+.foot .mark{position:absolute;left:50%;top:-.08em;transform:translateX(-50%);white-space:nowrap;pointer-events:none;font:100 clamp(90px,17vw,250px)/1 var(--disp);letter-spacing:-.01em;text-transform:uppercase;color:rgba(242,243,239,.07)}
+.foot .cols{position:relative;display:grid;grid-template-columns:minmax(200px,1.2fr) repeat(3,minmax(0,1fr));gap:32px}
+@media (max-width:860px){.foot .cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.foot .brand b{display:block;font:200 34px/0.95 var(--disp);text-transform:uppercase}
+.foot .brand p{margin:10px 0 0;font-family:var(--mono);font-size:12px;color:var(--ink-3);max-width:30ch}
+.foot h4{margin:0 0 12px;font:400 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.foot ul a{font:400 15px/1.2 var(--disp);letter-spacing:.03em;color:var(--ink);border:0}
+.foot ul a:hover{color:var(--hi)}
+.foot .prov{position:relative;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px 26px}
+
+/* 触屏：控件至少 44px 高 */
+@media (pointer:coarse),(max-width:600px){
+  button,.btn{min-height:44px;touch-action:manipulation}
+  .lang button{min-width:44px}
+  .controls{gap:8px}
+  .driver-guide a,.foot ul a{display:inline-flex;align-items:center;min-height:44px}
+}
+@media(pointer:coarse){#engine-level,#music-level{width:144px!important;max-width:100%}#v2b-start{min-height:44px!important;font-size:16px!important}}
+@media(max-width:620px){#v2b-start{min-height:44px!important;font-size:16px!important}}
+/* 窄屏：车名移到赛道下方，不压住画面 */
+@media (max-width:600px),(pointer:coarse){
+  .legend{position:static;display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 0;background:none;border:0}
+  .legend span{min-height:44px;min-width:64px;padding:4px 8px;border:1px solid rgba(242,243,239,.22)}
+  .legend span.on{border-color:var(--lime)}
+}
+@media(max-width:620px){.hud3d{backdrop-filter:none;background:rgba(0,40,18,.85)}}
+@media(pointer:coarse){.hud3d{backdrop-filter:none;background:rgba(0,40,18,.85)}}
+@media(pointer:coarse) and (max-height:500px){canvas#scene3d,.ign{max-height:calc(100vh - 110px);max-height:calc(100svh - 110px)}}
+@media(max-width:360px){.rays{grid-template-columns:repeat(3,minmax(0,1fr))}.v2b-mode #gates{grid-template-columns:repeat(8,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){.bit,.gate{transition:none}}
+/* 长的说明区接近视口时才排版 */
+main>.band.p,details.tech section{content-visibility:auto;contain-intrinsic-size:auto 700px}
+@media print{main>.band.p,details.tech section{content-visibility:visible;contain-intrinsic-size:none}body::after{display:none}.site{position:static}}
 </style>
 
-<div class="wrap">
-<div class="topbar">
-  <div class="eyebrow" data-i18n="eyebrow"></div>
-  <div class="lang" role="group" aria-label="language"><button id="l-zh">中文</button><button id="l-en">EN</button></div>
-</div>
-<nav class="also" aria-label="site" data-i18n="also"></nav>
-
-<h1 data-i18n="h1"></h1>
-<p class="lede" data-i18n="lede"></p>
-<ul class="howto" aria-label="怎么看 / How to watch">
-  <li data-i18n="how_1"></li>
-  <li data-i18n="how_2"></li>
-  <li data-i18n="how_3"></li>
-</ul>
-
-<div class="stage">
-  <div class="panel scene">
-    <svg id="scene" viewBox="0 0 760 620" aria-label="car on a loop track steered by the 21-NAND netlist">
-      <path id="band" fill="var(--track-soft)" fill-rule="evenodd"/>
-      <path id="center" fill="none" stroke="var(--track)" stroke-width="1" stroke-dasharray="6 8"/>
-      <defs>
-        <g id="kart">
-          <rect x="-11" y="-8.5" width="6" height="3" rx="1" fill="var(--ink)"/>
-          <rect x="-11" y="5.5" width="6" height="3" rx="1" fill="var(--ink)"/>
-          <rect x="5" y="-8.5" width="6" height="3" rx="1" fill="var(--ink)"/>
-          <rect x="5" y="5.5" width="6" height="3" rx="1" fill="var(--ink)"/>
-          <path class="body" d="M-13,-6 Q-13,-7 -12,-7 L8,-7 Q13,-7 14,-3 L14,3 Q13,7 8,7 L-12,7 Q-13,7 -13,6 Z"/>
-          <path d="M-1,-5 L6,-5 Q8,-5 8.5,-3 L8.5,3 Q8,5 6,5 L-1,5 Z" fill="var(--paper)" fill-opacity=".85"/>
-          <rect x="-11" y="-4.5" width="7" height="9" rx="1.5" fill="var(--paper)" fill-opacity=".35"/>
-          <circle cx="13" cy="-4" r="1.2" fill="#fff"/><circle cx="13" cy="4" r="1.2" fill="#fff"/>
-        </g>
-      </defs>
-      <g id="trails"></g>
-      <g id="rays" stroke="var(--ink-3)" stroke-opacity=".55" fill="var(--ink-3)"></g>
-      <g id="cars"></g>
-    </svg>
-    <canvas id="scene3d" hidden aria-label="3D coast run view of the same cars"></canvas>
-    <div class="ign" id="ign" hidden><div><div class="t" data-i18n="ign_title"></div><div class="s" data-i18n="ign_sub"></div></div></div>
-    <div class="hud3d" id="hud3d" hidden><div class="v"><span id="h3-speed">146</span><small data-i18n="hud_speed"></small></div><div class="l"><span id="h3-lap">0.0%</span> · <span id="h3-car"></span></div></div>
-    <div class="hud" id="hud">
-      <span><span data-i18n="hud_step"></span> <b id="h-step">0</b></span>
-      <span><span data-i18n="hud_prog"></span> <b id="h-prog">0.0%</b></span>
-      <span><span data-i18n="hud_laps"></span> <b id="h-laps">0</b> &middot; <span data-i18n="hud_crash"></span> <b id="h-crash">0</b></span>
-    </div>
-    <div class="legend" id="legend"></div>
-    <div class="controls">
-      <button id="b-run" data-i18n="btn_pause"></button>
-      <button id="b-step" data-i18n="btn_step"></button>
-      <button id="b-reset" data-i18n="btn_reset"></button>
-      <button id="b-live" data-i18n="btn_live"></button>
-      <button id="b-3d"></button>
-      <button id="b-cam" hidden></button>
-      <button id="b-sound" hidden></button>
-      <span class="hint" id="cam-hint" hidden>C</span>
-      <span class="status" id="status"></span>
-    </div>
+<header class="site">
+  <div class="in">
+    <nav class="l" aria-label="本站演示 / Demos">
+      <a href="gate/"><span class="zh">门电路大脑</span><span class="en">Gate brain</span></a>
+      <a href="xlayer-bench/"><span class="zh">Pi 工作台</span><span class="en">Pi workbench</span></a>
+      <a class="nm" href="ncd2net/">ncd2net</a>
+    </nav>
+    <a class="logo" href="./" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
+    <nav class="r" aria-label="链上与参赛 / On chain">
+      <a href="#arena"><span class="zh">竞技场</span><span class="en">Arena</span></a>
+      <a href="https://282-732.aihashrate.stream/"><span class="zh">链上站</span><span class="en">On chain</span></a>
+      <div class="lang" role="group" aria-label="language"><button id="l-zh">中文</button><button id="l-en">EN</button></div>
+      <a class="btn pri" href="sites/"><span class="zh">从这里开始</span><span class="en">Start here</span></a>
+      <details class="menu">
+        <summary><span class="zh">菜单</span><span class="en">Menu</span></summary>
+        <div>
+          <a href="sites/"><span class="zh">从这里开始</span><span class="en">Start here</span></a>
+          <a href="gate/"><span class="zh">门电路大脑</span><span class="en">Gate brain</span></a>
+          <a href="xlayer-bench/"><span class="zh">Pi 工作台</span><span class="en">Pi workbench</span></a>
+          <a class="nm" href="ncd2net/">ncd2net</a>
+          <a href="#arena"><span class="zh">竞技场</span><span class="en">Arena</span></a>
+          <a href="https://282-732.aihashrate.stream/"><span class="zh">链上站</span><span class="en">On chain</span></a>
+        </div>
+      </details>
+    </nav>
   </div>
+</header>
 
-  <div class="panel net">
-    <h2 data-i18n="net_h"></h2>
-    <div><p data-i18n="net_read_help" style="font-size:12px;color:var(--ink-2);margin:0 0 8px"></p><div class="lab" data-i18n="net_in"></div><div class="rays" id="rays-ui"></div><p id="v2b-sensor-help" data-i18n="trk_sensor_range" hidden style="font-size:12px;color:var(--ink-2);margin:6px 0 0"></p></div>
-    <div><div class="lab" data-i18n="net_g"></div><div class="gates" id="gates"></div></div>
-    <div>
-      <div class="lab" data-i18n="net_out"></div>
-      <div class="out">
-        <div class="actbox"><span data-i18n="left"></span><span class="bit" id="o-left"></span></div>
-        <div class="actbox"><span data-i18n="right"></span><span class="bit" id="o-right"></span></div>
+<main>
+<section class="band g hero" aria-labelledby="hero-h">
+  <div class="in hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 id="hero-h" data-i18n="h1"></h1>
+      <p class="lede" data-i18n="lede"></p>
+      <div class="cta">
+        <a class="btn pri" href="#works-h"><span class="zh">它是怎么做到的</span><span class="en">How it works</span> ↓</a>
+        <a class="btn" href="#arena"><span class="zh">训练电路来比</span><span class="en">Race your circuit</span> →</a>
       </div>
-      <div class="act" id="act"></div>
+      <ul class="howto" aria-label="怎么看 / How to watch">
+        <li data-i18n="how_1"></li>
+        <li data-i18n="how_2"></li>
+        <li data-i18n="how_3"></li>
+      </ul>
+    </div>
+
+    <div class="panel scene" id="scene-panel">
+      <svg id="scene" viewBox="0 0 760 620" aria-label="car on a loop track steered by the 21-NAND netlist">
+        <path id="band" fill="var(--track-soft)" fill-rule="evenodd"/>
+        <path id="center" fill="none" stroke="var(--track)" stroke-width="1" stroke-dasharray="6 8"/>
+        <defs>
+          <g id="kart">
+            <rect x="-11" y="-8.5" width="6" height="3" rx="1" fill="var(--ink)"/>
+            <rect x="-11" y="5.5" width="6" height="3" rx="1" fill="var(--ink)"/>
+            <rect x="5" y="-8.5" width="6" height="3" rx="1" fill="var(--ink)"/>
+            <rect x="5" y="5.5" width="6" height="3" rx="1" fill="var(--ink)"/>
+            <path class="body" d="M-13,-6 Q-13,-7 -12,-7 L8,-7 Q13,-7 14,-3 L14,3 Q13,7 8,7 L-12,7 Q-13,7 -13,6 Z"/>
+            <path d="M-1,-5 L6,-5 Q8,-5 8.5,-3 L8.5,3 Q8,5 6,5 L-1,5 Z" fill="var(--paper)" fill-opacity=".85"/>
+            <rect x="-11" y="-4.5" width="7" height="9" rx="1.5" fill="var(--paper)" fill-opacity=".35"/>
+            <circle cx="13" cy="-4" r="1.2" fill="#fff"/><circle cx="13" cy="4" r="1.2" fill="#fff"/>
+          </g>
+        </defs>
+        <g id="trails"></g>
+        <g id="rays" stroke="var(--ink-3)" stroke-opacity=".55" fill="var(--ink-3)"></g>
+        <g id="cars"></g>
+      </svg>
+      <canvas id="scene3d" hidden aria-label="3D coast run view of the same cars"></canvas>
+      <div class="ign" id="ign" hidden><div><div class="t" data-i18n="ign_title"></div><div class="s" data-i18n="ign_sub"></div></div></div>
+      <div class="hud3d" id="hud3d" hidden><div class="v"><span id="h3-speed">146</span><small data-i18n="hud_speed"></small></div><div class="l"><span id="h3-lap">0.0%</span> · <span id="h3-car"></span></div></div>
+      <div class="hud" id="hud">
+        <span><span data-i18n="hud_step"></span> <b id="h-step">0</b></span>
+        <span><span data-i18n="hud_prog"></span> <b id="h-prog">0.0%</b></span>
+        <span><span data-i18n="hud_laps"></span> <b id="h-laps">0</b> &middot; <span data-i18n="hud_crash"></span> <b id="h-crash">0</b></span>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="controls">
+        <button id="b-run" data-i18n="btn_pause"></button>
+        <button id="b-step" data-i18n="btn_step"></button>
+        <button id="b-reset" data-i18n="btn_reset"></button>
+        <button id="b-live" data-i18n="btn_live"></button>
+        <button id="b-3d"></button>
+        <button id="b-cam" hidden></button>
+        <button id="b-sound" hidden></button>
+        <span class="hint" id="cam-hint" hidden>C</span>
+        <span class="status" id="status"></span>
+      </div>
     </div>
   </div>
-</div>
 
-<nav class="panel driver-guide after-stage" aria-label="Controllers / 控制器">
-  <p class="guides-h" data-i18n="guides_h"></p>
-  <ul>
-    <li data-i18n="guide_car"></li>
-    <li data-i18n="guide_memory"></li>
-    <li data-i18n="guide_duck"></li>
-  </ul>
-  <p data-i18n="guide_view"></p>
-  <p data-i18n="guide_arena"></p>
-</nav>
-
-<section class="works" aria-labelledby="works-h">
-  <h2 id="works-h" data-i18n="works_h"></h2>
-  <ol>
-    <li data-i18n="works_1"></li>
-    <li data-i18n="works_2"></li>
-    <li data-i18n="works_3"></li>
-  </ol>
-  <p class="limit" data-i18n="works_limit"></p>
-</section>
-
-<div class="join" id="join">
-  <div class="l">
-    <div class="eyebrow" data-i18n="j_eyebrow"></div>
-    <h2 data-i18n="j_h"></h2>
-    <p data-i18n="j_p"></p>
-    <button class="big" id="b-wallet" data-i18n="btn_wallet"></button>
-    <div class="wstatus" id="wstatus"></div>
-    <div class="steps">
-      <div class="step"><i>1</i><span data-i18n="j_s1"></span></div>
-      <div class="step"><i>2</i><span data-i18n="j_s2"></span></div>
-      <div class="step"><i>3</i><span data-i18n="j_s3"></span></div>
+  <div class="in console">
+    <div class="panel net">
+      <h2 data-i18n="net_h"></h2>
+      <div><p data-i18n="net_read_help" style="font-size:12.5px;color:var(--ink-2);margin:0 0 12px"></p><div class="lab" data-i18n="net_in"></div><div class="rays" id="rays-ui"></div><p id="v2b-sensor-help" data-i18n="trk_sensor_range" hidden style="font-size:12px;color:var(--ink-2);margin:6px 0 0"></p></div>
+      <div><div class="lab" data-i18n="net_g"></div><div class="gates" id="gates"></div></div>
+      <div>
+        <div class="lab" data-i18n="net_out"></div>
+        <div class="out">
+          <div class="actbox"><span data-i18n="left"></span><span class="bit" id="o-left"></span></div>
+          <div class="actbox"><span data-i18n="right"></span><span class="bit" id="o-right"></span></div>
+        </div>
+        <div class="act" id="act"></div>
+      </div>
     </div>
-    <div class="fine" data-i18n="j_fine"></div>
   </div>
-  <div class="r">
-    <h3 data-i18n="j_log"></h3>
-    <div class="tablebox"><table id="drivelog">
-      <tr><th data-i18n="t_when"></th><th data-i18n="t_who"></th><th data-i18n="t_car"></th><th data-i18n="t_in"></th><th data-i18n="t_out"></th><th>tx</th></tr>
-    </table></div>
-    <p id="d-empty" style="color:var(--ink-3);font-size:13.5px;margin:10px 0 0" data-i18n="j_empty"></p>
+</section>
+
+<section class="band p" aria-label="电路与原理 / Circuits and method">
+  <div class="in">
+    <nav class="driver-guide" aria-label="Controllers / 控制器">
+      <p class="guides-h" data-i18n="guides_h"></p>
+      <ul>
+        <li data-i18n="guide_car" data-stat="21 NAND&#10;#279"></li>
+        <li data-i18n="guide_memory" data-stat="87 NAND + 3 LATCH&#10;#280"></li>
+        <li data-i18n="guide_duck" data-stat="Microduck&#10;#281 + #282"></li>
+      </ul>
+      <p data-i18n="guide_view"></p>
+      <p data-i18n="guide_arena"></p>
+    </nav>
+
+    <section class="works" aria-labelledby="works-h">
+      <div class="sec-h"><h2 id="works-h" data-i18n="works_h"></h2></div>
+      <ol>
+        <li data-i18n="works_1"></li>
+        <li data-i18n="works_2"></li>
+        <li data-i18n="works_3"></li>
+      </ol>
+      <p class="limit" data-i18n="works_limit"></p>
+    </section>
   </div>
-</div>
+</section>
 
-
-<div class="arena" id="arena">
-  <div class="l">
-    <div class="eyebrow" data-i18n="a_eyebrow"></div>
-    <h2 data-i18n="a_h"></h2>
-    <p data-i18n="a_p"></p>
-    <div class="steps">
-      <div class="step"><i>1</i><span data-i18n="a_s1"></span></div>
-      <div class="step"><i>2</i><span data-i18n="a_s2"></span></div>
-      <div class="step"><i>3</i><span data-i18n="a_s3"></span></div>
+<section class="band g mid" aria-labelledby="join-h">
+  <div class="in">
+    <div class="join" id="join">
+      <div class="l">
+        <div class="eyebrow" data-i18n="j_eyebrow"></div>
+        <h2 id="join-h" data-i18n="j_h"></h2>
+        <p data-i18n="j_p"></p>
+        <button class="big" id="b-wallet" data-i18n="btn_wallet"></button>
+        <div class="wstatus" id="wstatus"></div>
+        <div class="steps">
+          <div class="step"><i>01</i><span data-i18n="j_s1"></span></div>
+          <div class="step"><i>02</i><span data-i18n="j_s2"></span></div>
+          <div class="step"><i>03</i><span data-i18n="j_s3"></span></div>
+        </div>
+        <div class="fine" data-i18n="j_fine"></div>
+      </div>
+      <div class="r">
+        <h3 data-i18n="j_log"></h3>
+        <div class="tablebox"><table id="drivelog">
+          <tr><th data-i18n="t_when"></th><th data-i18n="t_who"></th><th data-i18n="t_car"></th><th data-i18n="t_in"></th><th data-i18n="t_out"></th><th>tx</th></tr>
+        </table></div>
+        <p id="d-empty" style="color:var(--ink-3);font-size:13.5px;margin:10px 0 0" data-i18n="j_empty"></p>
+      </div>
     </div>
-    <p data-i18n="a_rules"></p>
-    <p data-i18n="a_settle"></p>
-    <div class="fine" id="a-addr"></div>
   </div>
-  <div class="r">
-    <h3><span data-i18n="a_lb" style="font:inherit;color:inherit"></span><span id="a-max">max 34 560</span></h3>
-    <p id="arena-score-help" data-i18n="arena_score_help" style="font-size:12px;margin:0 0 8px"></p>
-    <div class="tablebox"><table id="lbtable" class="lbtable" aria-describedby="arena-score-help">
-      <tr><th>#</th><th data-i18n="t_circuit"></th><th data-i18n="t_owner"></th><th data-i18n="t_gates"></th><th data-i18n="t_score"></th><th data-i18n="t_drives"></th><th data-i18n="t_trace"></th></tr>
-    </table></div>
-    <p id="a-empty" style="color:var(--ink-3);font-size:13.5px;margin:10px 0 0" data-i18n="a_empty"></p>
-  </div>
-</div>
-
-<details class="tech">
-<summary data-i18n="tech_sum"></summary>
-<h3 class="chain-h" data-i18n="chain_h"></h3>
-<div class="chain">
-  <span>CPU <b>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</b></span>
-  <span><span data-i18n="chain_builtin_circuit">circuit </span><b>#279</b></span>
-  <span><span data-i18n="chain_tapeout_tx">tx </span><b><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e">0xc6eaa661&hellip;754a6e</a></b></span>
-  <span>Witness <b><a href="https://bscscan.com/address/0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42">0x12a580c1&hellip;28ca42</a></b></span>
-  <span>Arena v2 <b><a href="https://bscscan.com/address/0x7520fe965751953101fb4410b36361026713209a">0x7520fe96&hellip;13209a</a></b> <small data-i18n="arena_history_badge"></small></span>
-</div>
-<p class="method-scope" data-i18n="method_scope"></p>
-<div class="facts">
-  <div class="fact"><div class="k" data-i18n="f1k"></div><div class="v">13</div><div class="s" data-i18n="f1s"></div></div>
-  <div class="fact"><div class="k" data-i18n="f2k"></div><div class="v">21</div><div class="s" data-i18n="f2s"></div></div>
-  <div class="fact"><div class="k" data-i18n="f3k"></div><div class="v">32 768 / 32 768</div><div class="s" data-i18n="f3s"></div></div>
-  <div class="fact"><div class="k" data-i18n="f4k"></div><div class="v">24 / 24</div><div class="s" data-i18n="f4s"></div></div>
-</div>
-
-<section>
-  <h2 data-i18n="s1h"></h2>
-  <p data-i18n="s1p1"></p>
-  <p data-i18n="s1p2"></p>
-  <p data-i18n="s1p3"></p>
-  <p data-i18n="s1p4"></p>
 </section>
 
-<section>
-  <h2 data-i18n="s2h"></h2>
-  <p data-i18n="s2p1"></p>
-  <p data-i18n="s2p2"></p>
-  <p data-i18n="s2p3"></p>
-</section>
+<section class="band p" aria-labelledby="arena-h">
+  <div class="in">
+    <div class="arena" id="arena">
+      <div class="l">
+        <div class="eyebrow" data-i18n="a_eyebrow"></div>
+        <h2 id="arena-h" data-i18n="a_h"></h2>
+        <p data-i18n="a_p"></p>
+        <div class="steps">
+          <div class="step"><i>01</i><span data-i18n="a_s1"></span></div>
+          <div class="step"><i>02</i><span data-i18n="a_s2"></span></div>
+          <div class="step"><i>03</i><span data-i18n="a_s3"></span></div>
+        </div>
+        <p data-i18n="a_rules"></p>
+        <p data-i18n="a_settle"></p>
+        <div class="fine" id="a-addr"></div>
+      </div>
+      <div class="r">
+        <h3><span data-i18n="a_lb" style="font:inherit;color:inherit"></span><span id="a-max">max 34 560</span></h3>
+        <p id="arena-score-help" data-i18n="arena_score_help" style="font-size:12px;margin:0 0 8px"></p>
+        <div class="tablebox"><table id="lbtable" class="lbtable" aria-describedby="arena-score-help">
+          <tr><th>#</th><th data-i18n="t_circuit"></th><th data-i18n="t_owner"></th><th data-i18n="t_gates"></th><th data-i18n="t_score"></th><th data-i18n="t_drives"></th><th data-i18n="t_trace"></th></tr>
+        </table></div>
+        <p id="a-empty" style="color:var(--ink-3);font-size:13.5px;margin:10px 0 0" data-i18n="a_empty"></p>
+      </div>
+    </div>
 
-<section class="wide">
-  <h2 data-i18n="s3h"></h2>
-  <div class="two">
-    <div>
-      <p data-i18n="s3p1"></p>
+    <details class="tech" id="tech">
+    <summary data-i18n="tech_sum"></summary>
+    <h3 class="chain-h" data-i18n="chain_h"></h3>
+    <div class="chain">
+      <span>CPU <b>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</b></span>
+      <span><span data-i18n="chain_builtin_circuit">circuit </span><b>#279</b></span>
+      <span><span data-i18n="chain_tapeout_tx">tx </span><b><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e">0xc6eaa661&hellip;754a6e</a></b></span>
+      <span>Witness <b><a href="https://bscscan.com/address/0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42">0x12a580c1&hellip;28ca42</a></b></span>
+      <span>Arena v2 <b><a href="https://bscscan.com/address/0x7520fe965751953101fb4410b36361026713209a">0x7520fe96&hellip;13209a</a></b> <small data-i18n="arena_history_badge"></small></span>
+    </div>
+    <p class="method-scope" data-i18n="method_scope"></p>
+    <div class="facts">
+      <div class="fact"><div class="k" data-i18n="f1k"></div><div class="v">13</div><div class="s" data-i18n="f1s"></div></div>
+      <div class="fact"><div class="k" data-i18n="f2k"></div><div class="v">21</div><div class="s" data-i18n="f2s"></div></div>
+      <div class="fact"><div class="k" data-i18n="f3k"></div><div class="v">32 768 / 32 768</div><div class="s" data-i18n="f3s"></div></div>
+      <div class="fact"><div class="k" data-i18n="f4k"></div><div class="v">24 / 24</div><div class="s" data-i18n="f4s"></div></div>
+    </div>
+
+    <section>
+      <h2 data-i18n="s1h"></h2>
+      <p data-i18n="s1p1"></p>
+      <p data-i18n="s1p2"></p>
+      <p data-i18n="s1p3"></p>
+      <p data-i18n="s1p4"></p>
+    </section>
+
+    <section>
+      <h2 data-i18n="s2h"></h2>
+      <p data-i18n="s2p1"></p>
+      <p data-i18n="s2p2"></p>
+      <p data-i18n="s2p3"></p>
+    </section>
+
+    <section class="wide">
+      <h2 data-i18n="s3h"></h2>
+      <div class="two">
+        <div>
+          <p data-i18n="s3p1"></p>
 <pre><span class="c" data-i18n="c_cast"></span>
 cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
   "eval(uint256,bytes)(bytes)" <span id="v-cid">279</span> 0x<span class="h" id="v-in">ff7f</span> \
   --rpc-url https://bsc-rpc.publicnode.com</pre>
-      <p data-i18n="s3p2"></p>
-      <pre id="calldata-live"></pre>
-    </div>
-    <div>
-      <p data-i18n="s3p3"></p>
-      <div class="tablebox"><table class="gatetable" id="gatetable">
-        <tr><th data-i18n="t_gate"></th><th data-i18n="t_inputs"></th><th data-i18n="t_bytes"></th><th data-i18n="t_now"></th></tr>
-      </table></div>
-      <p data-i18n="s3p4"></p>
-      <pre class="hex" id="nl-hex"></pre>
-    </div>
+          <p data-i18n="s3p2"></p>
+          <pre id="calldata-live"></pre>
+        </div>
+        <div>
+          <p data-i18n="s3p3"></p>
+          <div class="tablebox"><table class="gatetable" id="gatetable">
+            <tr><th data-i18n="t_gate"></th><th data-i18n="t_inputs"></th><th data-i18n="t_bytes"></th><th data-i18n="t_now"></th></tr>
+          </table></div>
+          <p data-i18n="s3p4"></p>
+          <pre class="hex" id="nl-hex"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="s4h"></h2>
+      <p data-i18n="s4p1"></p>
+      <p data-i18n="s4p2"></p>
+      <p data-i18n="s4p3"></p>
+    </section>
+    </details>
   </div>
 </section>
+</main>
 
-<section>
-  <h2 data-i18n="s4h"></h2>
-  <p data-i18n="s4p1"></p>
-  <p data-i18n="s4p2"></p>
-  <p data-i18n="s4p3"></p>
-</section>
-</details>
-
-<footer>
-  <span>Petersen et al., Deep Differentiable Logic Gate Networks, NeurIPS 2022</span>
-  <span>circuit #279 burned 2026-09-08 &middot; block 120731587</span>
-  <span>Witness deployed 2026-09-08 &middot; block 120735774</span>
-  <span>Arena v2 (BEM) deployed 2026-09-08 &middot; block 120746295 &middot; v1 0xfa1c0596&hellip;c91425 retired</span>
+<footer class="foot">
+  <div class="mark" aria-hidden="true">21 NAND Driver</div>
+  <div class="in">
+    <div class="cols">
+      <div class="brand">
+        <b>21 NAND<br>Driver</b>
+        <p><span class="zh">TapeOut · BNB Chain 上的一个小实验：开车的电路写在链上，人人可以复核。</span><span class="en">TapeOut · a small experiment on BNB Chain: the driving circuit lives on chain, and anyone can check it.</span></p>
+      </div>
+      <div>
+        <h4><span class="zh">本站</span><span class="en">This site</span></h4>
+        <ul>
+          <li><a href="sites/"><span class="zh">从这里开始</span><span class="en">Start here</span></a></li>
+          <li><a href="gate/"><span class="zh">门电路大脑</span><span class="en">Gate brain</span></a></li>
+          <li><a href="xlayer-bench/"><span class="zh">Pi 工作台</span><span class="en">Pi workbench</span></a></li>
+          <li><a href="ncd2net/"><span class="zh">ncd2net 网表台</span><span class="en">ncd2net</span></a></li>
+          <li><a href="duck/brain.html">Microduck</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="zh">链上</span><span class="en">On chain</span></h4>
+        <ul>
+          <li><a href="https://282-732.aihashrate.stream/">282.732.tape</a></li>
+          <li><a href="https://1-2-245.aihashrate.stream/">1.2.245.tape</a></li>
+          <li><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e"><span class="zh">电路 #279 流片交易</span><span class="en">Circuit #279 tapeout tx</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="zh">资料</span><span class="en">Reading</span></h4>
+        <ul>
+          <li><a href="#works-h"><span class="zh">它是怎么做到的</span><span class="en">How it works</span></a></li>
+          <li><a href="RULES.md"><span class="zh">竞技场规则</span><span class="en">Arena rules</span></a></li>
+          <li><a href="https://arxiv.org/abs/2210.08277"><span class="zh">论文：可微逻辑门网络</span><span class="en">Paper: logic gate networks</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="prov">
+      <span>Petersen et al., Deep Differentiable Logic Gate Networks, NeurIPS 2022</span>
+      <span>circuit #279 burned 2026-09-08 &middot; block 120731587</span>
+      <span>Witness deployed 2026-09-08 &middot; block 120735774</span>
+      <span>Arena v2 (BEM) deployed 2026-09-08 &middot; block 120746295 &middot; v1 0xfa1c0596&hellip;c91425 retired</span>
+    </div>
+  </div>
 </footer>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.min.js"></script>
 <script>
@@ -2500,6 +2674,30 @@ leaderboardPending=loadSnapshot().then(loadLeaderboard);
   // The memory-car note and its entry list belong next to the track, not above the wallet block.
   const note=document.getElementById('v2b-note'),list=document.getElementById('v2b-entries'),guide=document.querySelector('.driver-guide');
   if(note&&guide){guide.after(note);if(list)note.after(list);}
+  applyLang();
+  if(typeof trackLabels==='function')trackLabels();
+})();
+</script>
+<script>
+// ---- 绿色版（2026-10-01）：版式变了，个别文案跟着改。只改字，不动任何功能。
+// 「它此刻在想什么」从赛道右边挪到了首屏下方；步骤编号由样式统一画（01 02 03），文案里不再写 ①②③ 和「1.」。
+(function(){
+  const set=(k,zh,en)=>{T[k]={zh,en};};
+  set('h1','一辆只靠 <em>21 个开关</em><br>开车的小车，<br>开关写在区块链上','A little car driven by <em>21 switches</em> that live on a blockchain');
+  set('how_1','<b>看它开</b>小车自己在跑。下面的面板实时显示它看到了什么、哪些门亮了、决定往哪边转。',
+    '<b>Watch it drive</b>The car drives itself. The panel below shows what it sees, which gates light up and which way it decides to turn.');
+  set('how_2','<b>换着看</b>点赛道画面里的车名，切换要跟随的车；「3D 海岸」按钮换成追车视角。',
+    '<b>Look around</b>Click a car’s name in the track view to follow it; the “3D coast” button switches to a chase view.');
+  set('how_3','<b>让区块链验证</b>点「让区块链来算」，之后选中车的每一步都由 BNB Chain 计算，不用钱包、不花钱。',
+    '<b>Let the chain check it</b>Press “Let the blockchain compute” and every step of the selected car is computed by BNB Chain — no wallet, no cost.');
+  set('works_1','<b>学开车</b>先在电脑上训练一个特殊的小神经网络：它的每个“神经元”不是一串乘法，而是一个逻辑门。它照着一个只看 5 个方向距离的“老司机”规则学。',
+    '<b>Learn to drive</b>A special tiny neural network is trained on a computer: each “neuron” is a logic gate instead of a pile of multiplications. It learns by imitating a simple rule-based driver that only looks at distances in 5 directions.');
+  set('works_2','<b>压成 21 个开关</b>学好之后网络只剩 13 个门，再全部翻译成最基础的 NAND 门，一共 21 个。翻译前后在全部 32,768 种可能的输入上逐一对比，结果完全一样。',
+    '<b>Squeeze it into 21 switches</b>After training only 13 gates remain; they are translated into the most basic NAND gates, 21 in total. Before and after were compared on all 32,768 possible inputs: identical every time.');
+  set('works_3','<b>写进区块链</b>用 TapeOut 把这 21 个门“流片”到 BNB Chain，成为 279 号电路。之后任何人都能免费让链上的节点算它的任何一步，结果和你浏览器里看到的一模一样。',
+    '<b>Write it onto a blockchain</b>TapeOut “tapes out” these 21 gates onto BNB Chain as circuit #279. From then on anyone can ask the chain to compute any step for free, and the result matches what your browser shows.');
+  // 手机菜单：点了链接就收起
+  document.querySelectorAll('.menu a').forEach(a=>a.addEventListener('click',()=>{const d=a.closest('details');if(d)d.open=false;}));
   applyLang();
   if(typeof trackLabels==='function')trackLabels();
 })();
