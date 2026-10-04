@@ -142,6 +142,8 @@ const CHAINS={
   base:{chainId:8453,hex:'0x2105',name:'Base',symbol:'ETH',registry:'0xd6efb7adcc9c83dc4924ad56f6a8e4e969b9adb6',minGwei:'0.001',explorer:'https://basescan.org/tx/',
        add:{chainId:'0x2105',chainName:'Base',nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}}};
 const CHEAP={xlayer:0,base:1,bsc:2};
+// 身份验证器的备份：版本 4 起写在 .private/authenticator/，旧版本（1–3）在 .authenticator/，两处都要看
+const BACKUP_PATHS=['.private/authenticator/backup.bin','.authenticator/backup.bin'];
 const RPC={bsc:'https://bsc-dataseed.bnbchain.org',xlayer:'https://rpc.xlayer.tech',base:'https://mainnet.base.org'};   // 公共节点，浏览器直连
 const REG_ABI=['function putFile(address container,string path,string contentType,bytes32 sha256Hash,bytes data)',
   'function appendChunk(address container,string path,uint256 expectIndex,bytes data)',
@@ -195,7 +197,7 @@ async function connectAuthenticator(){
     try{ const cs=await TP.findCircuits(net,me,m=>log(m));
       return await Promise.all(cs.map(async c=>{
         if(!c.opened||!c.container) return {...c,net};
-        const [bk,op,n]=await Promise.all([TP.fileInfo(net,c.container).catch(()=>({size:0})),
+        const [bk,op,n]=await Promise.all([Promise.all(BACKUP_PATHS.map(p=>TP.fileInfo(net,c.container,p).catch(()=>({size:0})))).then(a=>({size:a.reduce((s,x)=>s+x.size,0)})),
           TP.currentOperator(net,c.container).catch(()=>({op:null})),TP.listFiles(net,c.container).then(f=>f.length).catch(()=>0)]);
         return {...c,net,backup:bk.size>0,op:op.op?op:null,n};
       }));
@@ -367,7 +369,7 @@ async function run(){
   if(!t.isNew){
     const prevOp=await regR.operatorOf(t.container).catch(()=>ethers.ZeroAddress), prevUntil=Number(await regR.operatorUntil(t.container).catch(()=>0n));
     other=prevOp!==ethers.ZeroAddress&&prevOp.toLowerCase()!==op.address.toLowerCase()&&prevUntil*1000>Date.now()+120000?{op:prevOp,until:prevUntil}:null;
-    hasBackup=Number((await regR.fileInfo(t.container,'.authenticator/backup.bin')).size)>0;
+    for(const bp of BACKUP_PATHS) if(Number((await regR.fileInfo(t.container,bp)).size)>0) hasBackup=true;
   }
   const batch=await canBatch(ch), f3=x=>(+ethers.formatEther(x)).toPrecision(3);
   const steps=batch?['确认 1 次就行（钱包会把几步合在一起）']
