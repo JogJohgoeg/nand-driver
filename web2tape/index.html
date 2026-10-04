@@ -22,6 +22,7 @@
   .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-1px;margin-right:6px}
   @keyframes sp{to{transform:rotate(360deg)}}
   .card h3{font-size:15px;margin:0 0 4px}
+  a.main-link{display:inline-block;background:var(--accent);color:#fff;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:600}
   .note{color:var(--mute);font-size:13.5px;margin:4px 0}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
   input[type=text],select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
@@ -73,13 +74,16 @@
     <p class="msg" id="msg2"></p>
     <div id="install" class="card" hidden>
       <h3>先装 web2tape 插件（只要一次）</h3>
-      <p class="note">web2tape 用你自己的浏览器读网页，需要一个小插件（Chrome / Edge）：</p>
+      <p class="note">web2tape 用你自己的浏览器读网页，需要一个小插件（Chrome / Edge）。</p>
+      <p><a class="main-link" href="https://chromewebstore.google.com/detail/bafgdpellbpfcondmgmkdgbfmomhcflj" target="_blank" rel="noopener">到 Chrome 应用商店安装 web2tape →</a></p>
+      <p class="note">装好后回到这里刷新页面。以后在任何网站上点浏览器右上角的 web2tape 图标，就能直接存那个网站。</p>
+      <details><summary class="note">打不开应用商店？手动安装</summary>
       <ol class="note">
         <li>下载 <a href="web2tape-extension.zip" download>web2tape-extension.zip</a>，解压成一个文件夹</li>
         <li>浏览器地址栏打开 <code>chrome://extensions</code>，右上角打开「开发者模式」</li>
         <li>点「加载已解压的扩展程序」，选中解压出来的文件夹</li>
         <li>回到这里刷新页面</li>
-      </ol>
+      </ol></details>
       <p class="note">插件只在 web2tape 页面上工作；读网页时不带你的登录状态，不会把你的私人页面存上去。</p>
     </div>
     <details class="more"><summary>更多选项</summary>
