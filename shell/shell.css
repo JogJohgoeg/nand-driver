@@ -1,0 +1,84 @@
+/* 主站外壳：仿 tapeout.net 的左侧导航 + 圆角卡片，配色沿用全站绿色（theme/green-kit.css）。
+   类名一律 tk- 前缀；由 shell.js 注入到 dist_cf 的各页面（build_shell.py 负责插 <link>/<script>）。 */
+:root{
+  --tk-g:#006B35; --tk-g-deep:#005C2B; --tk-lime:#E4F53C;
+  --tk-bg:#F2F3EF; --tk-side:#E9ECE6; --tk-panel:#FFFFFF; --tk-soft:#E3EBE2;
+  --tk-ink:#0B2A18; --tk-ink2:#3C5446; --tk-ink3:#5A6E62;
+  --tk-line:rgba(11,42,24,.10); --tk-line2:rgba(0,107,53,.30);
+  --tk-hi:#006B35; --tk-on-hi:#F2F3EF; --tk-tint:#EEF5DA; --tk-tint-line:#D6E6A8;
+  --tk-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  --tk-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --tk-w:232px; --tk-rail:64px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --tk-g:#006A34; --tk-g-deep:#00522A;
+  --tk-bg:#0D1A12; --tk-side:#0A150E; --tk-panel:#13241A; --tk-soft:#1A3022;
+  --tk-ink:#E6EFE8; --tk-ink2:#A9BCB0; --tk-ink3:#7E9386;
+  --tk-line:rgba(230,239,232,.10); --tk-line2:rgba(91,224,143,.35);
+  --tk-hi:#5BE08F; --tk-on-hi:#0D1A12; --tk-tint:#1F2A10; --tk-tint-line:#3F5218;
+}}
+
+/* 侧边栏 */
+.tk-side{position:fixed;z-index:2147483000;top:0;left:0;bottom:0;width:var(--tk-w);box-sizing:border-box;
+  display:flex;flex-direction:column;background:var(--tk-side);color:var(--tk-ink);border-right:1px solid var(--tk-line);
+  font:400 14px/1.4 var(--tk-sans);-webkit-font-smoothing:antialiased;text-align:left;letter-spacing:0;text-transform:none}
+.tk-side *{box-sizing:border-box}
+.tk-side a{color:inherit;text-decoration:none}
+.tk-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;min-height:60px}
+.tk-logo{flex:none;width:28px;height:28px;border-radius:7px;background:var(--tk-g);color:#F2F3EF;display:grid;place-items:center;font:700 11px/1 var(--tk-mono);letter-spacing:-.02em}
+.tk-logo b{color:var(--tk-lime);font-weight:700}
+.tk-brand-t{font-weight:650;font-size:15px;white-space:nowrap}
+.tk-brand-s{display:block;font:400 11px/1.2 var(--tk-mono);color:var(--tk-ink3);margin-top:2px}
+.tk-chain{display:flex;align-items:center;gap:8px;margin:0 12px 10px;padding:8px 10px;border:1px solid var(--tk-line);border-radius:9px;background:var(--tk-panel);font-size:13px;white-space:nowrap}
+.tk-dot{flex:none;width:7px;height:7px;border-radius:50%;background:#C7A008}
+.tk-dot.ok{background:#1FA45A}
+.tk-chain .tk-blk{margin-left:auto;font:400 11.5px/1 var(--tk-mono);color:var(--tk-ink3)}
+.tk-nav{flex:1;overflow-y:auto;padding:4px 10px 12px;scrollbar-width:thin}
+.tk-sec{margin:14px 8px 4px;font-size:12px;color:var(--tk-ink3);white-space:nowrap}
+.tk-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:var(--tk-ink2);white-space:nowrap;overflow:hidden}
+.tk-item:hover{background:rgba(0,107,53,.07);color:var(--tk-ink)}
+.tk-item.on{background:var(--tk-panel);color:var(--tk-ink);font-weight:600;box-shadow:0 1px 2px rgba(11,42,24,.08)}
+.tk-item.on .tk-ic{color:var(--tk-hi)}
+.tk-ic{flex:none;width:17px;height:17px;color:var(--tk-ink3)}
+.tk-ic svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tk-ext{margin-left:auto;font-size:11px;color:var(--tk-ink3)}
+.tk-foot{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--tk-line);font-size:13px;color:var(--tk-ink2)}
+.tk-foot button{font:inherit;color:inherit;background:none;border:0;padding:4px 6px;border-radius:6px;cursor:pointer}
+.tk-foot button:hover{background:rgba(0,107,53,.08)}
+.tk-lang{margin-left:auto;white-space:nowrap}
+.tk-lang b{color:var(--tk-ink);font-weight:650}
+.tk-tip{display:none}
+
+/* 收起成图标栏 */
+html.tk-rail .tk-side{width:var(--tk-rail)}
+html.tk-rail .tk-side .tk-txt,html.tk-rail .tk-brand-t,html.tk-rail .tk-chain,html.tk-rail .tk-sec,html.tk-rail .tk-ext,html.tk-rail .tk-lang{display:none}
+html.tk-rail .tk-brand{justify-content:center;padding:16px 0 12px}
+html.tk-rail .tk-item{justify-content:center;padding:0}
+html.tk-rail .tk-nav{padding-top:10px}
+html.tk-rail .tk-sec+.tk-item{margin-top:14px}
+html.tk-rail .tk-foot{justify-content:center;padding:10px 0}
+html.tk-rail .tk-collapse svg{transform:scaleX(-1)}
+
+/* 把页面推到侧边栏右边（用 padding 而不是 margin，页面自己写的 body margin 不受影响） */
+html.tk-on{padding-left:var(--tk-w)!important;box-sizing:border-box}
+html.tk-on.tk-rail{padding-left:var(--tk-rail)!important}
+
+/* 手机：侧边栏变抽屉，左下角一个圆按钮打开 */
+.tk-fab,.tk-scrim{display:none}
+@media (max-width:900px){
+  html.tk-on,html.tk-on.tk-rail{padding-left:0!important}
+  .tk-side,html.tk-rail .tk-side{width:min(280px,84vw);transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 0 0 rgba(0,0,0,0)}
+  html.tk-rail .tk-side .tk-txt,html.tk-rail .tk-brand-t,html.tk-rail .tk-chain,html.tk-rail .tk-sec,html.tk-rail .tk-ext,html.tk-rail .tk-lang{display:revert}
+  html.tk-rail .tk-chain{display:flex} html.tk-rail .tk-item{justify-content:flex-start;padding:0 10px}
+  html.tk-rail .tk-brand{justify-content:flex-start;padding:16px 16px 12px}
+  html.tk-open .tk-side{transform:none;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+  .tk-collapse{display:none}
+  /* 左侧边缘中间的小拉手：避开各页左下角的输入框和左上角的标题 */
+  .tk-fab{display:grid;place-items:center;position:fixed;z-index:2147482999;left:0;top:50%;width:22px;height:52px;margin-top:-26px;border-radius:0 10px 10px 0;
+    border:1px solid var(--tk-line2);border-left:0;background:var(--tk-panel);color:var(--tk-ink);box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer;padding:0;opacity:.92}
+  .tk-fab svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+  html.tk-open .tk-scrim{display:block;position:fixed;inset:0;z-index:2147482998;background:rgba(0,0,0,.35)}
+  html.tk-own-bar .tk-fab{display:none}
+}
+.tk-side a:focus-visible,.tk-side button:focus-visible,.tk-fab:focus-visible{outline:2px solid var(--tk-hi);outline-offset:2px}
+@media print{.tk-side,.tk-fab{display:none}html.tk-on{padding-left:0!important}}
