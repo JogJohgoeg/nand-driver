@@ -4,7 +4,10 @@
 // 浏览器与 Node（≥ 20）通用。测试时可设 globalThis.__TAPEOUT_RPC__ 把读取指向本地分叉节点：字符串 = 所有链，{ xlayer: url } = 只换这条链。
 import { t } from './i18n.js';
 
-export const BACKUP_PATH = '.authenticator/backup.bin';
+export const BACKUP_PATH = '.private/authenticator/backup.bin';   // 版本 4（TAP 草案的路径约定 .private/<应用>/<文件>）
+export const LEGACY_PATH = '.authenticator/backup.bin';            // 版本 1–3 写在这里；只读，新备份不再写
+/** 只放备份的路径（设备钥匙只授权给只有这些文件的容器） */
+export const isBackupPath = (p) => p.startsWith('.private/') || p.startsWith('.authenticator/');
 export const BACKUP_TYPE = 'application/octet-stream';
 export const CHUNK = 24000;                                         // SiteRegistry 每块上限（TapeKit 规范附录 B.5）
 const IMPL_SLOT = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
@@ -21,18 +24,18 @@ export const SEL = {
 const L2 = { factory: '0x1f09daefa827f02cbb40967cc91b259763760761', opener: '0x536add8f30f03b69f6fbf29d425a816a0dc50106',
   registry: '0xd6efb7adcc9c83dc4924ad56f6a8e4e969b9adb6', registryImpl: ['0xa85c4143d1d4a77f54b8e4ecc9e6d1418afea45f'] };
 export const NETS = [
-  { key: 'bsc', name: 'BNB Chain', chainId: 56, tag: null, currency: 'BNB',
+  { key: 'bsc', name: 'BNB Chain', chainId: 56, tag: null, currency: 'BNB', maxPinLag: 400,
     factory: '0x68224f668083c29e9800be2a646d42d18cedf7e2', opener: '0x021745de2f42a7839d96f2d3634d0294487d81f1',
     registry: '0xd006ffdd5ae313b17729621a00999cd3c71ce5e6', registryImpl: ['0x1d279d138a4d803378a7d4557c056f1bed53c261'],
     rpcs: ['https://bsc-dataseed.bnbchain.org', 'https://bsc-rpc.publicnode.com'], explorer: 'https://bscscan.com/tx/',
     wallet: { chainId: '0x38', chainName: 'BNB Smart Chain', rpcUrls: ['https://bsc-dataseed.bnbchain.org'],
       nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 }, blockExplorerUrls: ['https://bscscan.com'] } },
-  { key: 'xlayer', name: 'X Layer', chainId: 196, tag: 2, currency: 'OKB', ...L2,
+  { key: 'xlayer', name: 'X Layer', chainId: 196, tag: 2, currency: 'OKB', maxPinLag: 300, ...L2,
     rpcs: ['https://rpc.xlayer.tech', 'https://xlayerrpc.okx.com', 'https://xlayer.drpc.org'],   // 前两个都是 OKX 的：多节点核对要有一家别的运营方（dRPC）
     explorer: 'https://www.oklink.com/xlayer/tx/',
     wallet: { chainId: '0xc4', chainName: 'X Layer', rpcUrls: ['https://rpc.xlayer.tech'],
       nativeCurrency: { name: 'OKB', symbol: 'OKB', decimals: 18 }, blockExplorerUrls: ['https://www.oklink.com/xlayer'] } },
-  { key: 'base', name: 'Base', chainId: 8453, tag: 3, currency: 'ETH', ...L2,
+  { key: 'base', name: 'Base', chainId: 8453, tag: 3, currency: 'ETH', maxPinLag: 150, ...L2,
     rpcs: ['https://mainnet.base.org', 'https://base-rpc.publicnode.com'], explorer: 'https://basescan.org/tx/',
     wallet: { chainId: '0x2105', chainName: 'Base', rpcUrls: ['https://mainnet.base.org'],
       nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, blockExplorerUrls: ['https://basescan.org'] } },
@@ -156,27 +159,70 @@ const decodeFileInfo = (d) => ({ size: Number(big(wordAt(d, 0))), contentType: t
 export async function fileInfo(net, container, path = BACKUP_PATH, block = 'latest') {
   return decodeFileInfo(await ethCall(net, net.registry, call(SEL.fileInfo, [{ t: 'addr', v: container }, { t: 'str', v: path }]), block));
 }
-/** 同时问这条链的每个公共节点，核对文件信息一致。一个节点就能把链上历史里的旧密文当成最新的给你、再把写入时间改成刚刚
- *  （新设备第一次恢复时察觉不到），或者藏起新备份；两个不同运营方的节点都这么做才骗得过。
- *  返回 { info, checked（参与核对的节点数） }；不一致时抛 { conflict: true }。测试里指定了单个节点时不核对 */
-/** 同一个 eth_call 问这条链的每个公共节点，取各自的结果（连不上的是 null）。测试里指定了单个节点时只问它 */
-async function callEach(net, to, data) {
-  const o = globalThis.__TAPEOUT_RPC__;
-  if (typeof o === 'string' || (o && o[net.key])) return [await ethCall(net, to, data)];
+// ---------------- 多节点核对（TAP-10 §5：运营方、固定区块、严格一致）----------------
+/** 节点的运营方：同一家的几个节点只算一票 */
+const OPERATOR = { 'bsc-dataseed.bnbchain.org': 'bnbchain', 'bsc-rpc.publicnode.com': 'publicnode', 'rpc.xlayer.tech': 'okx', 'xlayerrpc.okx.com': 'okx',
+  'xlayer.drpc.org': 'drpc', 'mainnet.base.org': 'base', 'base-rpc.publicnode.com': 'publicnode' };
+export const operatorOf = (url) => { const h = new URL(url).hostname; return OPERATOR[h] || h; };
+/** 测试里指定了单个节点：TAP-10 §5.2 允许只配了一个节点时直接采用它的回答 */
+const singleNode = (net) => { const o = globalThis.__TAPEOUT_RPC__; return typeof o === 'string' || !!(o && o[net.key]); };
+/** 严格一致要的不同运营方数：max(2, min(3, 配置里的运营方数)) */
+export const strictNeed = (net) => Math.max(2, Math.min(3, new Set(net.rpcs.map(operatorOf)).size));
+const unavailable = (net, got, need) => Object.assign(new Error(t('{0} 只有 {1} 家运营方的节点有回应，不够核对（要 {2} 家）。过一会儿再试。', net.name, got, need)), { unavailable: true });
+/** 同一个请求发给这条链的每个公共节点（限时）：[{ op, result }]，连不上、报错、超时的不在里面 */
+async function askEach(net, method, params, ms = 8000) {
   const got = await Promise.all(net.rpcs.map(async (url) => {
+    const ac = new AbortController(), timer = setTimeout(() => ac.abort(), ms);
     try {
-      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', id: ++rid, method: 'eth_call', params: [{ to, data }, 'latest'] }) });
+      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: ac.signal,
+        body: JSON.stringify({ jsonrpc: '2.0', id: ++rid, method, params }) });
       const j = await r.json();
-      return j.error ? null : unhex(j.result);
-    } catch { return null; }
+      return j.error || j.result == null ? null : { op: operatorOf(url), result: j.result };
+    } catch { return null; } finally { clearTimeout(timer); }
   }));
-  return got.some(Boolean) ? got.filter(Boolean) : [await ethCall(net, to, data)];   // 都连不上：走平常的换节点逻辑（它会报错）
+  return got.filter(Boolean);
 }
-export async function fileInfoCross(net, container, path = BACKUP_PATH) {
-  const got = (await callEach(net, net.registry, call(SEL.fileInfo, [{ t: 'addr', v: container }, { t: 'str', v: path }]))).map(decodeFileInfo);
-  if (got.some((x) => x.sha !== got[0].sha || x.size !== got[0].size)) throw Object.assign(new Error(t('{0} 的两个公共节点给出的备份不一样：可能有节点被篡改，也可能刚备份过、还没同步。过一会儿再试；一直不一样的话先别恢复。', net.name)), { conflict: true });
-  return { info: got[0], checked: got.length };
+/** 固定区块（TAP-10 §5.3）：每家运营方取它的节点里最低的块高，取第 Q 高（Q = min(2, 运营方数)）再减 2。
+ *  落后最高块高超过这条链的 max pin lag 就拒绝（stale）。一次读取的文件信息和内容都在这个块上取，中途有写入也不会拼出新旧混杂的结果。
+ *  返回十六进制块号 */
+export async function pinnedBlock(net) {
+  if (singleNode(net)) return rpc(net, 'eth_blockNumber', []);   // 只有一个节点（分叉链测试）：用它的最新块，每笔交易一个块，减 2 会读不到刚写的
+  const heads = new Map();
+  for (const { op, result } of await askEach(net, 'eth_blockNumber', [], 5000)) {
+    const n = parseInt(result, 16);
+    if (Number.isFinite(n)) heads.set(op, Math.min(heads.get(op) ?? n, n));
+  }
+  const q = Math.min(2, new Set(net.rpcs.map(operatorOf)).size);
+  const sorted = [...heads.values()].sort((a, b) => b - a);
+  if (sorted.length < q) throw unavailable(net, sorted.length, q);
+  const pinned = sorted[q - 1] - 2;
+  if (sorted[0] - pinned > net.maxPinLag) throw Object.assign(new Error(t('{0} 的节点块高相差太多（落后 {1} 块），可能有节点没同步。过一会儿再试。', net.name, sorted[0] - pinned)), { unavailable: true, stale: true });
+  return '0x' + pinned.toString(16);
+}
+/** 严格一致（TAP-10 §5.2）：同一个 eth_call 在 block 上问每个节点，全部一致、且来自至少 strictNeed 家运营方才采用。
+ *  不一致抛 { conflict: true }（消息由调用方给），回应的运营方不够抛 { unavailable: true }。返回一致的那份结果 */
+async function strictCall(net, to, data, block, conflictMsg) {
+  if (singleNode(net)) return { data: await ethCall(net, to, data, block), checked: 1 };
+  const got = await askEach(net, 'eth_call', [{ to, data }, block]);
+  if (got.some((x) => x.result.toLowerCase() !== got[0].result.toLowerCase())) throw Object.assign(new Error(conflictMsg), { conflict: true });
+  const ops = new Set(got.map((x) => x.op)).size, need = strictNeed(net);
+  if (ops < need) throw unavailable(net, ops, need);
+  return { data: unhex(got[0].result), checked: got.length };
+}
+/** 同一个 eth_call 问这条链的每个公共节点，取各自的结果（宁可多报的查询用，例如 currentOperator）。测试里指定了单个节点时只问它 */
+async function callEach(net, to, data) {
+  if (singleNode(net)) return [await ethCall(net, to, data)];
+  const got = (await askEach(net, 'eth_call', [{ to, data }, 'latest'])).map((x) => unhex(x.result));
+  return got.length ? got : [await ethCall(net, to, data)];   // 都连不上：走平常的换节点逻辑（它会报错）
+}
+/** 文件信息，严格一致：一个节点就能把链上历史里的旧密文当成最新的给你、再把写入时间改成刚刚（新设备第一次恢复时察觉不到），
+ *  或者藏起新备份；要骗过它，配置里每家运营方的节点都得一起作假。block 不给时取固定区块。
+ *  返回 { info, checked（回应的节点数）, block }；不一致抛 { conflict: true }，节点不够抛 { unavailable: true } */
+export async function fileInfoCross(net, container, path = BACKUP_PATH, block = null) {
+  block = block || await pinnedBlock(net);
+  const r = await strictCall(net, net.registry, call(SEL.fileInfo, [{ t: 'addr', v: container }, { t: 'str', v: path }]), block,
+    t('{0} 的两个公共节点给出的备份不一样：可能有节点被篡改，也可能刚备份过、还没同步。过一会儿再试；一直不一样的话先别恢复。', net.name));
+  return { info: decodeFileInfo(r.data), checked: r.checked, block };
 }
 /** 最近一小时多（约 65 分钟）里这个文件有没有被「原样写回」过：每次备份都用新的随机数加密，同一份密文不会合法地出现两次。
  *  当前这份的 SHA-256 在更早的写入事件里出现过、中间又写过别的，就是有人把旧密文写回来了（回滚）。更早的回滚由「生成时间比
@@ -243,9 +289,9 @@ async function recentWrites(net, container, path, budgetMs) {
 }
 /** 容器里的文件数，每个公共节点核对一致（授权设备钥匙前要确认容器里没有网站文件，单个节点可以瞒报） */
 export async function pathCountCross(net, container) {
-  const got = (await callEach(net, net.registry, call(SEL.pathCount, [{ t: 'addr', v: container }]))).map((d) => Number(big(d)));
-  if (got.some((x) => x !== got[0])) throw Object.assign(new Error(t('{0} 的两个公共节点给出的容器文件数不一样，先别授权，过一会儿再试。', net.name)), { conflict: true });
-  return got[0];
+  const r = await strictCall(net, net.registry, call(SEL.pathCount, [{ t: 'addr', v: container }]), await pinnedBlock(net),
+    t('{0} 的两个公共节点给出的容器文件数不一样，先别授权，过一会儿再试。', net.name));
+  return Number(big(r.data));
 }
 /** 容器里的全部文件路径（SiteRegistry.pathCount / pathsRange） */
 export async function listFiles(net, container) {
@@ -263,22 +309,33 @@ export async function paidUntil(net, binding, container) {
   return Number(big(await ethCall(net, binding, call(SEL.containerPaidUntil, [{ t: 'addr', v: container }]))));
 }
 export const sha256 = async (bytes) => '0x' + hex(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)));
+/** 这个容器的备份在哪个路径：新路径有文件就用它；没有、而且这台设备在这个容器里没见过版本 4（newOnly 为假）才看旧路径。
+ *  见过版本 4 以后不再回头读旧路径：有写入权限的人删掉新文件，就能让客户端退回去读那份旧的（降级、回滚）。
+ *  返回 { path, info }；两处都没有时 path 是新路径、info.size = 0 */
+export async function backupPath(net, container, newOnly = false) {
+  const block = await pinnedBlock(net);                          // 两个路径、之后读内容都在同一个块上（严格一致，见 fileInfoCross）
+  const { info } = await fileInfoCross(net, container, BACKUP_PATH, block);
+  if (info.size || newOnly) return { path: BACKUP_PATH, info, block };
+  const { info: old } = await fileInfoCross(net, container, LEGACY_PATH, block);
+  return old.size ? { path: LEGACY_PATH, info: old, block } : { path: BACKUP_PATH, info, block };
+}
 /** 读文件并与链上记录的 SHA-256 核对 */
 export const MAX_BACKUP = 256 * 1024;
-export async function readFile(net, container, path = BACKUP_PATH) {
+/** pinned：在这个块上读（调用方已在这个块上严格核对过文件信息），只取一次；不给时取最新块，对不上换个块重取一次 */
+export async function readFile(net, container, path = BACKUP_PATH, pinned = null) {
   // 文件信息和内容在同一个区块上取：分两次按 latest 取，中间别的设备刚好写了一次，就会对不上、被当成坏文件（进而问要不要覆盖掉那台设备刚写的）。
   // 真对不上再换个区块重取一次，还不对才算坏
   for (let attempt = 0; ; attempt++) {
-    const block = await rpc(net, 'eth_blockNumber', []);
+    const block = pinned || await rpc(net, 'eth_blockNumber', []);
     const info = await fileInfo(net, container, path, block);
     if (!info.size) return null;
     // 备份很小（30 个帐号约 800 字节，1000 个也不到 30 KB）：大得离谱的是有写入权限的人塞进来的，不去读它
     // badFile：文件本身不对（太大、哈希对不上），调用方当「解不开」处理、给人覆盖的机会——不然写一次就能让人再也备份不了
-    if (path === BACKUP_PATH && info.size > MAX_BACKUP) throw Object.assign(new Error(t('容器里的备份文件大得不正常（{0} 字节），没有读取。可能有人往里面塞了别的东西。', info.size)), { badFile: true });
+    if ((path === BACKUP_PATH || path === LEGACY_PATH) && info.size > MAX_BACKUP) throw Object.assign(new Error(t('容器里的备份文件大得不正常（{0} 字节），没有读取。可能有人往里面塞了别的东西。', info.size)), { badFile: true });
     const d = await ethCall(net, net.registry, call(SEL.read, [{ t: 'addr', v: container }, { t: 'str', v: path }]), block);
     const bytes = dynAt(d, Number(big(wordAt(d, 0)))).slice();
-    if (bytes.length === info.size && (await sha256(bytes)) === info.sha) return { bytes, info };
-    if (attempt) throw Object.assign(new Error(t('链上文件与记录的哈希不符')), { badFile: true });
+    if (bytes.length === info.size && (await sha256(bytes)) === info.sha) return { bytes, info, path };
+    if (attempt || pinned) throw Object.assign(new Error(t('链上文件与记录的哈希不符')), { badFile: true });
   }
 }
 /** SiteRegistry 是可升级代理：实现换成了没核对过的版本就停用（与 TapeKit 内核的做法一致） */
@@ -307,9 +364,8 @@ export async function currentOperator(net, container) {
 }
 /** 容器持有人，每个公共节点核对一致（回执链接、授权前靠它确认「这是谁的容器」，单个节点可以谎报）；不一致抛 { conflict: true } */
 export async function containerOwnerCross(net, container) {
-  const got = (await callEach(net, container, SEL.owner)).map((d) => addrAt(d, 0));
-  if (got.some((x) => x !== got[0])) throw Object.assign(new Error(t('{0} 的两个公共节点给出的容器持有人不一样，先别继续，过一会儿再试。', net.name)), { conflict: true });
-  return got[0];
+  const r = await strictCall(net, container, SEL.owner, await pinnedBlock(net), t('{0} 的两个公共节点给出的容器持有人不一样，先别继续，过一会儿再试。', net.name));
+  return addrAt(r.data, 0);
 }
 export async function containerOwner(net, container) {
   return addrAt(await ethCall(net, container, SEL.owner), 0);
@@ -340,7 +396,7 @@ export async function writeFile(provider, net, from, container, bytes, { path = 
   for (let i = 0; i < bytes.length; i += CHUNK) chunks.push(bytes.subarray(i, i + CHUNK));
   if (!chunks.length) chunks.push(new Uint8Array());
   const txs = [];
-  let first = null;
+  let first = null, lastBlock = 0;
   for (let i = 0; i < chunks.length; i++) {
     const data = i === 0 ? putFileData(container, chunks[0], sha, path) : appendChunkData(container, i, chunks[i], path);
     if (onStatus) onStatus('sign', i + 1, chunks.length);
@@ -350,6 +406,7 @@ export async function writeFile(provider, net, from, container, bytes, { path = 
     if (rc.status !== '0x1') throw new Error(t('写入交易失败'));
     if (i === 0) first = rc;
     txs.push(hash);
+    lastBlock = parseInt(rc.blockNumber, 16);
   }
   const info = await fileInfo(net, container, path);
   if (info.size !== bytes.length || info.sha !== sha) {
@@ -358,7 +415,7 @@ export async function writeFile(provider, net, from, container, bytes, { path = 
       && l.topics[1] === '0x' + container.slice(2).toLowerCase().padStart(64, '0')
       && l.data && l.data.length >= 2 + 64 * 3 && '0x' + l.data.slice(2 + 128, 2 + 192) === sha);
     if (!ours || chunks.length > 1) throw new Error(t('写入后链上记录与本地不符'));
-    return { txs, info: { ...info, size: bytes.length, sha, overwritten: true } };
+    return { txs, block: lastBlock, info: { ...info, size: bytes.length, sha, overwritten: true } };
   }
-  return { txs, info };
+  return { txs, block: lastBlock, info };
 }
