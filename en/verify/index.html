@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verify · 21 NAND</title>
+<link rel="stylesheet" href="../../home.css">
+<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
+(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
+if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
+if(l!==document.documentElement.lang.slice(0,2))location.replace("../../verify/"+location.hash);
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="../">21 NAND</a>
+    <nav class="nav" aria-label="Main">
+      <a href="../#bard">The Bard</a>
+      <a href="https://nand.aihashrate.stream/gate/">Try it</a>
+      <a href="../build/">Build</a>
+      <a href="../faq/">FAQ</a>
+      <a href="../progress/">Progress</a>
+      <a href="./" aria-current="page">Verify</a>
+      <a class="hi" href="../../verify/" lang="zh-CN" hreflang="zh-CN">中文</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div>
+    <h1>Check it yourself</h1>
+    <p class="lead">You don’t have to take our word for anything. Everything below is on chain, and you can fetch it and recompute it yourself.</p>
+  </div>
+
+  <section class="grp" aria-labelledby="how">
+    <h2 id="how">THREE WAYS TO CHECK, FROM EASY TO EXPERT</h2>
+    <ol class="steps">
+      <li><strong>Open it through an official gateway.</strong> TapeOut’s official gateways read every file from the chain and check each byte, for example this site at <a href="https://282-732.tapekit.org/">282-732.tapekit.org</a>. If it looks the same as what you see here, the content came from the chain.</li>
+      <li><strong>Compute the fingerprint.</strong> Each file’s sha256 fingerprint was recorded when it went on chain. Download the file, run any sha256 tool on it and compare with the values below.</li>
+      <li><strong>Call the contracts directly.</strong> Web files are recorded in the site registry <code>0xd006ffdd5ae313b17729621a00999cd3c71ce5e6</code> (BNB Chain); <code>fileInfo(container, path)</code> returns the size and fingerprint. Circuits can be run directly with <code>eval</code>; see the 21-gate driver below.</li>
+    </ol>
+  </section>
+
+  <section class="grp" aria-labelledby="what">
+    <h2 id="what">WHAT WE HAVE ON CHAIN</h2>
+
+    <article class="proof">
+      <h3>The Bard chip blueprint</h3>
+      <dl>
+        <dt>Chain</dt><dd>X Layer · <code>bard/v8g/</code> in 1.2.245.tape</dd>
+        <dt>Content</dt><dd>Signed-off full layout (OASIS, 11,155,630 bytes, stored in two parts)</dd>
+        <dt>sha256</dt><dd><code>3a03c0091f475c540fc6dcb022924ebfb03da13a10a62096d0c63cc4e404de0d</code></dd>
+        <dt>Stored</dt><dd>2026-10-12; read back byte for byte after upload</dd>
+      </dl>
+      <a href="https://1-2-245.aihashrate.stream/bard/v8g/">Fetch, join, check and save it in your browser →</a>
+    </article>
+
+    <article class="proof">
+      <h3>Ternary dot-product circuit DOT32_T</h3>
+      <dl>
+        <dt>Chain</dt><dd>X Layer · circuit #3 on processor #245 (3.2.245)</dd>
+        <dt>Size</dt><dd>320 inputs, 32 outputs, 3,829 NAND</dd>
+        <dt>Netlist sha256</dt><dd><code>b1507f55d3bd80bbc55f9e06dc656d81e049138827c97ec7fe640d7bfa2ce0b7</code></dd>
+        <dt>Checks</dt><dd>Taped out 2026-10-05; 86 on-chain runs all matched the local reference (block 72440910). Before tapeout, 1 million local cases with 0 differences.</dd>
+      </dl>
+    </article>
+
+    <article class="proof">
+      <h3>The 21-gate driver</h3>
+      <dl>
+        <dt>Chain</dt><dd>BNB Chain · circuit #279 on processor <code>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</code></dd>
+        <dt>Tapeout tx</dt><dd><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e"><code>0xc6eaa661…754a6e</code></a> (2026-09-08)</dd>
+        <dt>Contracts</dt><dd>Witness <code>0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42</code> · Arena <code>0xeb248f4fb929686b045e63c47c69505cf0009888</code></dd>
+      </dl>
+      <p class="sub">Run it once yourself (needs Foundry’s <code>cast</code>):</p>
+      <pre><code>cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
+  "eval(uint256,bytes)(bytes)" 279 0xff7f \
+  --rpc-url https://bsc-rpc.publicnode.com</code></pre>
+      <a href="https://nand.aihashrate.stream/arena.html">Watch it drive in the arena →</a>
+    </article>
+
+    <article class="proof">
+      <h3>21 NAND Driver (X Layer)</h3>
+      <dl>
+        <dt>Chain</dt><dd>X Layer · circuit #1 on processor #245 (1.2.245)</dd>
+        <dt>Processor</dt><dd><code>0xA93E807fAB41431827EBBa57443Fb687a95E2AA3</code></dd>
+        <dt>Container</dt><dd><code>0x75c6E2D063963561c08c838476111adda7a1a6CD</code> (the Bard blueprint lives here too)</dd>
+      </dl>
+    </article>
+
+    <article class="proof">
+      <h3>This site</h3>
+      <dl>
+        <dt>Chain</dt><dd>BNB Chain · circuit #282 on processor #732 (282.732.tape); the name 21nand.bem points here</dd>
+        <dt>Container</dt><dd><a href="https://bscscan.com/address/0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3"><code>0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3</code></a></dd>
+        <dt>File fingerprints</dt><dd>See “Verify the on-chain files” at the end of the <a href="../../sites/#proof">full page list</a></dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="grp" aria-labelledby="all">
+    <h2 id="all">MORE</h2>
+    <p style="margin:0">Every page, tool and on-chain site we have made is in the <a href="../../sites/">full page list</a>, including the Pi workbench, the ncd2net netlist bench and the TapeID token launcher.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>21 NAND · an open experiment on TapeOut</b>
+    <a href="../">Home</a>
+    <a href="../faq/">FAQ</a>
+    <a href="../progress/">Progress</a>
+  </div>
+</footer>
+</body>
+</html>

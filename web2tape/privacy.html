@@ -1,34 +1,62 @@
 <!doctype html>
+<html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>web2tape 隐私说明</title>
-<!--tk-shell--><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+<meta name="theme-color" content="#050506">
+<title>web2tape 隐私说明 / Privacy Policy</title>
 <style>
-  :root{--fg:#1d2420;--mute:#5d6b63;--bg:#fff;--accent:#006B35}
-  @media (prefers-color-scheme:dark){:root{--fg:#e3e9e5;--mute:#9aa8a0;--bg:#121614;--accent:#3fbf7f}}
-  body{font:15px/1.65 -apple-system,system-ui,"PingFang SC",sans-serif;max-width:720px;margin:28px auto;padding:0 16px;color:var(--fg);background:var(--bg)}
-  h1{color:var(--accent);font-size:24px} h2{font-size:17px;margin-top:22px} .note{color:var(--mute);font-size:13.5px}
+  :root{color-scheme:dark;--fg:#FFFFFF;--text-2:#CBCBD3;--mute:#9C9DAE;--line:rgba(112,113,135,.24);--soft:#17171C;--bg:#050506;--accent:#A496FF;--sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif}
+  body{font:15px/1.65 var(--sans);max-width:720px;margin:28px auto;padding:0 16px;color:var(--fg);background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%) top/100% 480px no-repeat,var(--bg)}
+  h1{color:var(--fg);font-size:24px;font-weight:800} h2{font-size:17px;font-weight:700;margin-top:22px} a{color:var(--accent)} .note{color:var(--mute);font-size:13.5px}
+  html[lang^="en"] .zh{display:none!important} html:not([lang^="en"]) .en{display:none!important}
+  .hd{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #lang{flex:none;font:inherit;font-size:13.5px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--mute);cursor:pointer} #lang b{color:var(--fg)}
 </style>
-<h1>web2tape 隐私说明 / Privacy</h1>
-<p class="note">更新于 2026-10-01</p>
+<script>var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN';</script>
+<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+</head>
+<body>
+<div class="hd"><h1><span class="zh">web2tape 隐私说明</span><span class="en">web2tape Privacy Policy</span></h1><button id="lang" type="button" aria-label="切换语言 / Switch language"><b>中文</b>&nbsp;/&nbsp;EN</button></div>
+<p class="note"><span class="zh">更新于 2026-10-01</span><span class="en">Last updated: 2026-10-01</span></p>
 
-<h2>插件做什么</h2>
-<p>只有一件事：你在 web2tape 页面上要求存某个网站时，插件用你的浏览器把这个网站的网页、图片、样式、字体读下来，交给 web2tape 页面，由你决定是否存到区块链上。
+<h2><span class="zh">插件做什么</span><span class="en">What the extension does</span></h2>
+<p class="zh">只有一件事：你在 web2tape 页面上要求存某个网站时，插件用你的浏览器把这个网站的网页、图片、样式、字体读下来，交给 web2tape 页面，由你决定是否存到区块链上。
 你在任何网站上点插件按钮时，插件只读取当前标签页的网址，用来打开 web2tape 并填好网址。</p>
+<p class="en">Only one thing: when you ask the web2tape page to save a website, the extension uses your browser to fetch that site's pages, images, styles and fonts and hands them to the web2tape page, where you decide whether to store them on the blockchain.
+When you click the extension button on any website, the extension reads only the current tab's URL, which it uses to open web2tape with that URL filled in.</p>
 
-<h2>不收集任何数据</h2>
-<ul>
+<h2><span class="zh">不收集任何数据</span><span class="en">No data collection</span></h2>
+<ul class="zh">
   <li>插件和 web2tape 页面没有自己的服务器，不收集、不上传、不出售任何个人数据，也没有统计或追踪代码。</li>
   <li>读网页时<strong>不带你的登录状态</strong>（不发送 Cookie），所以只能读到任何人都能看的公开内容。</li>
   <li>插件不读取你的浏览记录、表单、密码，也不在别的网站上运行任何代码；只在 web2tape 页面上与页面通信。</li>
   <li>为了读出靠脚本画出的网页，插件可能临时在后台打开那个网页的标签页，读完立即关闭。</li>
 </ul>
+<ul class="en">
+  <li>The extension and the web2tape page have no server of their own. They do not collect, upload or sell any personal data, and contain no analytics or tracking code.</li>
+  <li>Pages are fetched <strong>without your login state</strong> (no cookies are sent), so only public content that anyone can see is read.</li>
+  <li>The extension does not read your browsing history, forms or passwords, and does not run any code on other websites; it communicates only with the web2tape page.</li>
+  <li>To read pages that are rendered by scripts, the extension may temporarily open that page in a background tab and closes it as soon as reading is done.</li>
+</ul>
 
-<h2>存上链的内容是公开、永久的</h2>
-<p>你选择存上链的网页会写进你自己的 TapeOut 存放空间（区块链上的文件），任何人都能看到，且无法删除。请只存你有权公开的内容。
+<h2><span class="zh">存上链的内容是公开、永久的</span><span class="en">Content stored on-chain is public and permanent</span></h2>
+<p class="zh">你选择存上链的网页会写进你自己的 TapeOut 存放空间（区块链上的文件），任何人都能看到，且无法删除。请只存你有权公开的内容。
 上链需要你的钱包签名；钱包地址和交易本来就公开在区块链上。上传用的临时钥匙只存在你这台电脑的浏览器里，用剩的手续费会退回你的钱包。</p>
+<p class="en">Pages you choose to store on-chain are written to your own TapeOut storage space (files on the blockchain), where anyone can see them and they cannot be deleted. Only store content you have the right to make public.
+Storing on-chain requires your wallet's signature; wallet addresses and transactions are public on the blockchain by nature. The temporary key used for uploading is stored only in your browser on this computer, and unused fees are refunded to your wallet.</p>
 
-<h2>Summary (English)</h2>
-<p>The web2tape extension fetches the public pages of a website you ask it to save, without cookies, and hands them to the web2tape page so you can store them on-chain.
-It collects no personal data, has no server, no analytics, and runs only on the web2tape page. Content you choose to store on-chain is public and permanent.</p>
-<p class="note">问题反馈：<a href="https://github.com/JogJohgoeg/nand-driver/issues">github.com/JogJohgoeg/nand-driver/issues</a> · 源码 MIT</p>
+<p class="note"><span class="zh">问题反馈：</span><span class="en">Feedback: </span><a href="https://github.com/JogJohgoeg/nand-driver/issues">github.com/JogJohgoeg/nand-driver/issues</a> · <span class="zh">源码 MIT</span><span class="en">Source code: MIT license</span></p>
+<script>
+document.getElementById('lang').onclick=function(){
+  var n=/^en/i.test(document.documentElement.lang)?'zh':'en';
+  try{ localStorage.setItem('nand-driver-lang',n) }catch(e){}
+  document.documentElement.lang=n==='en'?'en':'zh-CN'; paint();
+};
+function paint(){
+  var en=/^en/i.test(document.documentElement.lang);
+  document.getElementById('lang').innerHTML=en?'中文&nbsp;/&nbsp;<b>EN</b>':'<b>中文</b>&nbsp;/&nbsp;EN';
+  document.title=en?'web2tape Privacy Policy':'web2tape 隐私说明';
+}
+paint();
+</script>
+</body></html>

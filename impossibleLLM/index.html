@@ -1,80 +1,74 @@
 <!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>impossible LLM v2</title>
 <meta name="description" content="一个 5,142,875 门的 NAND 网表语言模型：读最近 6 个 MiniCPM5 token 和 4 个随机位，输出下一个 token，在浏览器里逐门求值。">
-<meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap"></noscript>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050506">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235741D8'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
 <style>
-/* 全站绿色版式（2026-10-01，规范见 circuits/_scratch/hashport/theme/README.md）：米白纸面、绿带页头与首屏、方角卡片、
-   窄体细体标题、等宽小标签、虚线分隔。旧变量名 --fg --dim --card --acc --warn 映射到新色：行内样式和脚本生成的元素还在用它们。 */
-:root{--g:#006B35;--g-deep:#005C2B;--g-deeper:#004A22;--frame:#1E8C4E;--lime:#E4F53C;--paper-c:#F2F3EF;
-  --bg:#F2F3EF;--panel:#fff;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;--line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);
-  --hi:#006B35;--hi-soft:rgba(0,107,53,.18);--head:#006B35;--err:#B3261E;
+/* Kraken Pro 式深色（2026-10-14 起，配色基准 circuits/_scratch/hashport/site/home.css；取代 10-01 的绿色版式）：近黑底、深灰圆角卡片、
+   细边框、品牌紫、系统字体；只有这一套深色。旧变量名 --fg --dim --card --acc --warn 保留：行内样式和脚本生成的元素还在用它们。 */
+:root{color-scheme:dark;
+  --bg:#050506;--panel:#111114;--panel2:#17171C;--ink:#FFFFFF;--ink2:#CBCBD3;--ink3:#9C9DAE;
+  --line:rgba(112,113,135,.14);--line2:rgba(112,113,135,.24);
+  --brand:#5741D8;--brand-hover:#6A55E8;--hi:#A496FF;--hi-soft:rgba(164,150,255,.35);--head:#FFFFFF;--pos:#00DA80;--err:#F0616D;
   --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err);
-  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --gut:clamp(16px,4vw,40px);color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--g:#006A34;--g-deep:#00522A;--g-deeper:#00401F;
-  --bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;--line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);
-  --hi:#5BE08F;--hi-soft:rgba(91,224,143,.2);--head:#5BE08F;--err:#FF8A80}}
-/* 绿带（页头、首屏、续写卡片）：米白字，强调换成黄绿 */
-.g{background:var(--g);color:var(--paper-c);
-  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--line2:rgba(242,243,239,.6);
-  --hi:var(--lime);--hi-soft:rgba(228,245,60,.4);--head:#F2F3EF;--err:#FFD2CC;--panel:var(--g-deep);
-  --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err)}
+  --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --gut:clamp(16px,4vw,40px)}
+/* 原「绿带」（页头、首屏、续写卡片）：页头深底，首屏顶部一层淡紫色光，续写卡片同普通深色卡片 */
+.g{background:var(--bg);color:var(--ink)}
+.hero.g{background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%),var(--bg)}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
-body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
 a{color:var(--hi);text-decoration:none;border-bottom:1px solid var(--hi-soft)}
-a:hover{border-bottom-color:var(--hi)}
+a:hover{color:#C2B9FF;border-bottom-color:currentColor}
 :focus-visible{outline:2px solid var(--hi);outline-offset:2px}
 b{font-weight:600}
 .in,.wrap{max-width:calc(1180px + 2*var(--gut));margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
 /* 页头：字标链回主站首页 */
 .site{border-bottom:1px solid var(--line)}
 .site .in{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:9px;padding-bottom:9px}
-.mark{display:grid;flex:none;line-height:.92;color:var(--ink);border:0}
-.mark b{font:200 23px/.92 var(--disp);text-transform:uppercase;letter-spacing:.02em}
-.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-top:5px}
-.crumb{font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);text-align:right;word-break:keep-all}
+.mark{display:grid;flex:none;line-height:1.05;color:var(--ink);border:0}
+.mark:hover{color:var(--ink)}
+.mark b{font:800 19px/1.05 var(--sans);letter-spacing:.01em}
+.mark small{font:400 10px/1 var(--mono);letter-spacing:.08em;color:var(--ink3);margin-top:5px}
+.crumb{font:400 12px/1.4 var(--mono);letter-spacing:.04em;color:var(--ink2);text-align:right;word-break:keep-all}
 /* 首屏 */
 .hero{padding:clamp(28px,4.5vw,56px) 0 clamp(32px,5vw,60px)}
-h1{margin:0 0 16px;font:300 clamp(32px,4.4vw,58px)/1.1 var(--disp);letter-spacing:-.005em;color:var(--head);max-width:22em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty}
+h1{margin:0 0 16px;font:800 clamp(28px,3.8vw,48px)/1.18 var(--sans);letter-spacing:-.01em;color:var(--head);max-width:22em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty}
 .sub{margin:0;max-width:62em;color:var(--ink2);font-size:16px;line-height:1.7}
-.hero .sub b{color:var(--lime);font-weight:500}
-/* 纸面 */
+.hero .sub b{color:var(--hi);font-weight:600}
+/* 主体 */
 .wrap{padding-top:clamp(24px,4vw,44px);padding-bottom:72px}
 .grid{display:grid;gap:20px;align-items:start}
 @media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)!important}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:0;padding:22px;min-width:0}
-.card.g{background:var(--g);border-color:var(--g)}
-h2{margin:0 0 12px;font:300 clamp(22px,2.2vw,28px)/1.15 var(--disp);letter-spacing:.005em;color:var(--head);word-break:keep-all;overflow-wrap:anywhere}
-.out{background:var(--g-deep);border:1px solid var(--line);border-radius:0;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font:14px/1.65 var(--mono);color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:22px;min-width:0}
+.card.g{background:var(--panel);border-color:var(--line2)}
+h2{margin:0 0 12px;font:700 clamp(20px,2vw,24px)/1.25 var(--sans);color:var(--head);word-break:keep-all;overflow-wrap:anywhere}
+.out{background:var(--bg);border:1px solid var(--line2);border-radius:12px;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font:14px/1.65 var(--mono);color:var(--ink)}
 .gen{color:var(--hi)}.muted{color:var(--ink3)}.warn{color:var(--err)}
-.g .muted{color:var(--ink2)}.g .out .muted{color:var(--ink3)}
-textarea{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:0;padding:10px 12px;font:15px/1.5 var(--sans);resize:vertical}
-.g textarea{background:var(--g-deeper);border-color:var(--line)}
-button{font:400 15px/1.1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--line2);border-radius:0;padding:10px 18px;min-height:40px;cursor:pointer}
-button:hover:not(:disabled){border-color:var(--ink)}
+.g .muted{color:var(--ink3)}.g .out .muted{color:var(--ink3)}
+textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font:15px/1.5 var(--sans);resize:vertical}
+.g textarea{background:var(--bg);border-color:var(--line2)}
+textarea:focus{outline:2px solid var(--hi);outline-offset:1px;border-color:var(--hi)}
+button{font:600 15px/1.1 var(--sans);color:var(--ink);background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:10px 18px;min-height:40px;cursor:pointer}
+button:hover:not(:disabled){border-color:rgba(112,113,135,.5);background:#1F1F26}
 button:disabled{opacity:.5;cursor:not-allowed}
-#go{background:var(--ink);color:var(--g);border-color:var(--ink)}
-#go:hover:not(:disabled){filter:brightness(1.06)}
+#go{background:var(--brand);color:#fff;border-color:var(--brand)}
+#go:hover:not(:disabled){background:var(--brand-hover);border-color:var(--brand-hover)}
 .row{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin-top:12px}
 #stat{font:12.5px/1.4 var(--mono)}
-code{font:12.5px var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:1px 5px;overflow-wrap:anywhere}
-.g code{background:var(--g-deeper)}
+code{font:12.5px var(--mono);background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.g code{background:var(--panel2)}
 table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:8px 10px 8px 0;border-top:1px dashed var(--line);vertical-align:top;text-align:left}
+td,th{padding:8px 10px 8px 0;border-top:1px solid var(--line);vertical-align:top;text-align:left}
 th{font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);border-top:0;border-bottom:1px solid var(--line2)}
 .num{font-variant-numeric:tabular-nums}
 ul{margin:8px 0 0;padding-left:18px}li{margin:6px 0}
 li::marker{color:var(--hi)}
-@media (max-width:620px){body::after{border-width:3px}.site .in{min-height:64px}.crumb{font-size:11px;letter-spacing:.08em}.card{padding:16px}.sub{font-size:15px}}
+@media (max-width:620px){.site .in{min-height:64px}.crumb{font-size:11px;letter-spacing:.02em}.card{padding:16px}.sub{font-size:15px}}
 @media (pointer:coarse),(max-width:600px){button{min-height:44px;touch-action:manipulation}}
 .grid{grid-template-columns:minmax(0,1fr) 440px}
 .out{min-height:140px}
@@ -83,96 +77,131 @@ td.k{color:var(--ink3);white-space:nowrap;padding-right:14px;font-size:13.5px}
 td.warn{color:var(--err)}
 table.num td:not(.k){font-family:var(--mono);font-size:13px}
 label{display:flex;gap:8px;align-items:center;color:var(--ink2);font-size:14px;cursor:pointer}
-input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--hi)}
+input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--brand)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.chips button{font:400 12.5px/1.3 var(--mono);letter-spacing:0;text-transform:none;color:var(--ink);padding:6px 10px;min-height:32px;border:1px dashed var(--line2)}
-.chips button:hover:not(:disabled){background:rgba(242,243,239,.14);border-style:solid}
+.chips button{font:400 12.5px/1.3 var(--mono);letter-spacing:0;text-transform:none;color:var(--ink2);background:var(--panel2);padding:6px 10px;min-height:32px;border:1px solid var(--line2);border-radius:8px}
+.chips button:hover:not(:disabled){color:var(--ink);background:#1F1F26;border-color:rgba(164,150,255,.5)}
 @media (pointer:coarse),(max-width:600px){.chips button,label{min-height:44px}}
-</style><!--tk-shell--><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+/* 全站语言切换（localStorage 'nand-driver-lang'） */
+html[lang^="en"] .zh{display:none!important} html:not([lang^="en"]) .en{display:none!important}
+.hdr-r{display:flex;align-items:center;gap:12px;min-width:0}
+.langbtn{font:500 12px/1 var(--mono);letter-spacing:.06em;text-transform:none;color:var(--ink2);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:6px 12px;min-height:34px;cursor:pointer;white-space:nowrap;flex:none}
+.langbtn:hover:not(:disabled){color:var(--ink);background:#1F1F26;border-color:rgba(112,113,135,.5)}
+.langbtn .cur{color:var(--ink);font-weight:800}
+@media (pointer:coarse),(max-width:600px){.langbtn{min-height:44px;min-width:44px}}
+</style>
+<script>var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN';</script>
+<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
 </head><body>
 <header class="site g"><div class="in">
 <a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
-<span class="crumb">impossible LLM · v2</span>
+<div class="hdr-r"><span class="crumb">impossible LLM · v2</span><button type="button" class="langbtn" id="langbtn" aria-label="切换语言 / Switch language"><span data-l="zh">中文</span> / <span data-l="en">EN</span></button></div>
 </div></header>
 <section class="hero g"><div class="in">
-<h1>impossible LLM v2 — 5,142,875 个 NAND 门的语言模型</h1>
-<p class="sub">它读最近 6 个 MiniCPM5 token 和 4 个随机位，一次求值输出下一个 token；这一页在你的浏览器里逐门计算，没有后端。
+<h1>impossible LLM v2 — <span class="zh">5,142,875 个 NAND 门的语言模型</span><span class="en">a language model made of 5,142,875 NAND gates</span></h1>
+<p class="sub"><span class="zh">它读最近 6 个 MiniCPM5 token 和 4 个随机位，一次求值输出下一个 token；这一页在你的浏览器里逐门计算，没有后端。
 v2 相比 v1：<b>不再掉进 “the 2008 , the 2008” 这类死循环</b>（采样时 0%），在对话、网页、中文文本上的一致率分别是 v1 的 4.1、2.1、53 倍。
-它仍然写不出连贯的句子，也<b>没有上链</b>。</p>
+它仍然写不出连贯的句子，也<b>没有上链</b>。</span><span class="en">It reads the last 6 MiniCPM5 tokens plus 4 random bits and outputs the next token in a single evaluation; this page computes it gate by gate in your browser, with no backend.
+Compared with v1, v2 <b>no longer falls into loops like “the 2008 , the 2008”</b> (0% when sampling), and its agreement with the teacher on chat, web and Chinese text is 4.1×, 2.1× and 53× that of v1.
+It still can't write coherent sentences, and it is <b>not on-chain</b>.</span></p>
 </div></section>
 <div class="wrap">
 
 <div class="grid">
 <div class="card g">
-  <h2>续写</h2>
-  <div id="out" class="out"><span class="muted">正在读取网表（压缩后 7.9 MB，解开 36 MB）和分词器（约 2 MB）…</span></div>
-  <div class="row"><textarea id="msg" aria-label="要续写的文字">I like cats because</textarea></div>
+  <h2><span class="zh">续写</span><span class="en">Continuation</span></h2>
+  <div id="out" class="out"><span class="muted"><span class="zh">正在读取网表（压缩后 7.9 MB，解开 36 MB）和分词器（约 2 MB）…</span><span class="en">Loading the netlist (7.9 MB compressed, 36 MB unpacked) and the tokenizer (about 2 MB)…</span></span></div>
+  <div class="row"><textarea id="msg" aria-label="要续写的文字" data-aria-zh="要续写的文字" data-aria-en="Text to continue">I like cats because</textarea></div>
   <div class="chips" id="chips"></div>
   <div class="row">
-    <button id="go" disabled>▶ 生成 48 个 token</button>
-    <label><input type="checkbox" id="greedy"> 贪心（随机位固定为 0）</label>
+    <button id="go" disabled>▶ <span class="zh">生成 48 个 token</span><span class="en">Generate 48 tokens</span></button>
+    <label><input type="checkbox" id="greedy"> <span class="zh">贪心（随机位固定为 0）</span><span class="en">Greedy (random bits fixed at 0)</span></label>
     <span id="stat" class="muted num"></span>
   </div>
-  <p class="muted" style="margin-top:10px">每个 token：取文本最后 6 个 token（102 位）+ 4 个随机位 → 5,142,875 个门 → 13 位编码 → token。随机位来自浏览器的 <code>crypto.getRandomValues</code>；勾选「贪心」后恒为 0，输出只由文本决定。</p>
+  <p class="muted" style="margin-top:10px"><span class="zh">每个 token：取文本最后 6 个 token（102 位）+ 4 个随机位 → 5,142,875 个门 → 13 位编码 → token。随机位来自浏览器的 <code>crypto.getRandomValues</code>；勾选「贪心」后恒为 0，输出只由文本决定。</span><span class="en">Per token: the last 6 tokens of the text (102 bits) + 4 random bits → 5,142,875 gates → 13-bit code → token. The random bits come from the browser's <code>crypto.getRandomValues</code>; with “Greedy” checked they are always 0, so the output depends only on the text.</span></p>
 </div>
 
 <div class="card">
-  <h2>模型</h2>
+  <h2><span class="zh">模型</span><span class="en">Model</span></h2>
   <table>
-    <tr><td class="k">门数</td><td class="num"><b>5,142,875</b> NAND · 0 LATCH · 记录 36,000,125 字节</td></tr>
-    <tr><td class="k">接口</td><td>106 位输入：6 × 17 位 token id（最老在低位）+ 4 个随机位 · 13 位输出（在 8,192 个 token 里的序号）</td></tr>
-    <tr><td class="k">教师</td><td>MiniCPM5-2B BF16 的 argmax，每段先喂 1,024 个 token 上下文</td></tr>
-    <tr><td class="k">数据</td><td class="num">英文维基 1,000 万 · 网页 fineweb-edu 800 万 · 对话 smoltalk 800 万 · 中文维基 600 万 token；每个来源另留 20 万 token 做测试</td></tr>
-    <tr><td class="k">结构</td><td class="num">6 层回退查表：看最近 1…6 个 token 的表项 52,751 / 140,400 / 79,659 / 14,780 / 5,078 / 1,049 个，长的优先；都查不到时按 16 格分布输出</td></tr>
-    <tr><td class="k">采样</td><td>每个表项存教师在该上下文下最常给出的 3 个答案及比例；随机位按比例选（量化到 1/16）。随机位全 0 就是贪心</td></tr>
-    <tr><td class="k">选表项</td><td>只收比退回下一层能多猜对的上下文，门数按「每门多猜对几次」分配到各层</td></tr>
-    <tr><td class="k">浏览器耗时</td><td class="num">每个 token 约 10 ms（node 实测 9.6 ms）</td></tr>
-    <tr><td class="k warn">上链</td><td class="warn num">没有流片。按容器成本模型，一步约 116 亿 gas ≈ 170 个区块，实际上不可能上链执行（模型只在 5,300 门以内实测过，这里外推了约 1,000 倍）</td></tr>
+    <tr><td class="k"><span class="zh">门数</span><span class="en">Gates</span></td><td class="num"><b>5,142,875</b> NAND · 0 LATCH · <span class="zh">记录 36,000,125 字节</span><span class="en">36,000,125 bytes of records</span></td></tr>
+    <tr><td class="k"><span class="zh">接口</span><span class="en">Interface</span></td><td><span class="zh">106 位输入：6 × 17 位 token id（最老在低位）+ 4 个随机位 · 13 位输出（在 8,192 个 token 里的序号）</span><span class="en">106 input bits: 6 × 17-bit token ids (oldest in the low bits) + 4 random bits · 13 output bits (an index into 8,192 tokens)</span></td></tr>
+    <tr><td class="k"><span class="zh">教师</span><span class="en">Teacher</span></td><td><span class="zh">MiniCPM5-2B BF16 的 argmax，每段先喂 1,024 个 token 上下文</span><span class="en">argmax of MiniCPM5-2B (BF16), with 1,024 tokens of context fed in before each segment</span></td></tr>
+    <tr><td class="k"><span class="zh">数据</span><span class="en">Data</span></td><td class="num"><span class="zh">英文维基 1,000 万 · 网页 fineweb-edu 800 万 · 对话 smoltalk 800 万 · 中文维基 600 万 token；每个来源另留 20 万 token 做测试</span><span class="en">English Wikipedia 10M · web (fineweb-edu) 8M · chat (smoltalk) 8M · Chinese Wikipedia 6M tokens; another 200K tokens per source held out for testing</span></td></tr>
+    <tr><td class="k"><span class="zh">结构</span><span class="en">Structure</span></td><td class="num"><span class="zh">6 层回退查表：看最近 1…6 个 token 的表项 52,751 / 140,400 / 79,659 / 14,780 / 5,078 / 1,049 个，长的优先；都查不到时按 16 格分布输出</span><span class="en">6-level back-off lookup: 52,751 / 140,400 / 79,659 / 14,780 / 5,078 / 1,049 entries keyed on the last 1…6 tokens, longest match first; if none match, it outputs from a 16-slot distribution</span></td></tr>
+    <tr><td class="k"><span class="zh">采样</span><span class="en">Sampling</span></td><td><span class="zh">每个表项存教师在该上下文下最常给出的 3 个答案及比例；随机位按比例选（量化到 1/16）。随机位全 0 就是贪心</span><span class="en">Each entry stores the teacher's 3 most frequent answers in that context and their shares; the random bits pick one in proportion (quantized to 1/16). All-zero random bits means greedy</span></td></tr>
+    <tr><td class="k"><span class="zh">选表项</span><span class="en">Entry selection</span></td><td><span class="zh">只收比退回下一层能多猜对的上下文，门数按「每门多猜对几次」分配到各层</span><span class="en">Only contexts that guess right more often than backing off to the next level are kept; gates are allocated across levels by “extra correct guesses per gate”</span></td></tr>
+    <tr><td class="k"><span class="zh">浏览器耗时</span><span class="en">Browser time</span></td><td class="num"><span class="zh">每个 token 约 10 ms（node 实测 9.6 ms）</span><span class="en">about 10 ms per token (9.6 ms measured in node)</span></td></tr>
+    <tr><td class="k warn"><span class="zh">上链</span><span class="en">On-chain</span></td><td class="warn num"><span class="zh">没有流片。按容器成本模型，一步约 116 亿 gas ≈ 170 个区块，实际上不可能上链执行（模型只在 5,300 门以内实测过，这里外推了约 1,000 倍）</span><span class="en">Not taped out. Under the container cost model one step costs about 11.6 billion gas ≈ 170 blocks, so running it on-chain is practically impossible (the cost model was only measured up to 5,300 gates; this extrapolates about 1,000×)</span></td></tr>
   </table>
 
-  <h2 style="margin-top:20px">与 v1 对比（同一批测试文本）</h2>
+  <h2 style="margin-top:20px"><span class="zh">与 v1 对比（同一批测试文本）</span><span class="en">Compared with v1 (same test text)</span></h2>
   <table class="num">
-    <tr><th>和教师一致的比例</th><th>v1</th><th>v2 贪心</th><th>v2 采样</th></tr>
-    <tr><td class="k">英文维基</td><td>0.235</td><td><b>0.309</b></td><td>0.233</td></tr>
-    <tr><td class="k">对话</td><td>0.074</td><td><b>0.303</b></td><td>0.226</td></tr>
-    <tr><td class="k">网页</td><td>0.116</td><td><b>0.241</b></td><td>0.177</td></tr>
-    <tr><td class="k">中文维基</td><td>0.004</td><td><b>0.219</b></td><td>0.174</td></tr>
-    <tr><td class="k">MiniCPM5-2B 自身</td><td colspan="3">约 0.49（维基，v1 测得）</td></tr>
+    <tr><th><span class="zh">和教师一致的比例</span><span class="en">Agreement with teacher</span></th><th>v1</th><th>v2 <span class="zh">贪心</span><span class="en">greedy</span></th><th>v2 <span class="zh">采样</span><span class="en">sampled</span></th></tr>
+    <tr><td class="k"><span class="zh">英文维基</span><span class="en">English Wikipedia</span></td><td>0.235</td><td><b>0.309</b></td><td>0.233</td></tr>
+    <tr><td class="k"><span class="zh">对话</span><span class="en">Chat</span></td><td>0.074</td><td><b>0.303</b></td><td>0.226</td></tr>
+    <tr><td class="k"><span class="zh">网页</span><span class="en">Web</span></td><td>0.116</td><td><b>0.241</b></td><td>0.177</td></tr>
+    <tr><td class="k"><span class="zh">中文维基</span><span class="en">Chinese Wikipedia</span></td><td>0.004</td><td><b>0.219</b></td><td>0.174</td></tr>
+    <tr><td class="k">MiniCPM5-2B <span class="zh">自身</span><span class="en">itself</span></td><td colspan="3"><span class="zh">约 0.49（维基，v1 测得）</span><span class="en">about 0.49 (Wikipedia, measured for v1)</span></td></tr>
   </table>
   <table class="num" style="margin-top:10px">
-    <tr><th>80 条提示各续写 48 个 token</th><th>v1</th><th>v2 贪心</th><th>v2 采样</th></tr>
-    <tr><td class="k">卡进短循环的比例</td><td class="warn">100%</td><td>3.7%</td><td><b>0%</b></td></tr>
-    <tr><td class="k">平均不同 token 数</td><td>7.5</td><td>24.3</td><td><b>34.5</b></td></tr>
+    <tr><th><span class="zh">80 条提示各续写 48 个 token</span><span class="en">80 prompts, 48 tokens each</span></th><th>v1</th><th>v2 <span class="zh">贪心</span><span class="en">greedy</span></th><th>v2 <span class="zh">采样</span><span class="en">sampled</span></th></tr>
+    <tr><td class="k"><span class="zh">卡进短循环的比例</span><span class="en">Stuck in a short loop</span></td><td class="warn">100%</td><td>3.7%</td><td><b>0%</b></td></tr>
+    <tr><td class="k"><span class="zh">平均不同 token 数</span><span class="en">Mean distinct tokens</span></td><td>7.5</td><td>24.3</td><td><b>34.5</b></td></tr>
   </table>
-  <p class="muted">「采样」一致率更低是预期的：采样按比例选答案，不总选最常见的那个；换来的是不重复。</p>
+  <p class="muted"><span class="zh">「采样」一致率更低是预期的：采样按比例选答案，不总选最常见的那个；换来的是不重复。</span><span class="en">Lower agreement when “sampled” is expected: sampling picks answers in proportion rather than always the most common one; what it buys is no repetition.</span></p>
 
-  <h2 style="margin-top:20px">怎么验证的</h2>
+  <h2 style="margin-top:20px"><span class="zh">怎么验证的</span><span class="en">How it was verified</span></h2>
   <ul>
-    <li>网表和查表语义逐位一致：全部 293,717 个表项 × 16 种随机位、20 万条随机输入、四个来源各约 20 万条测试窗口，<b>0 处不一致</b>（C 位并行求值器）。</li>
-    <li>上面的一致率是用网表本身的输出算的，和建表程序的数字逐位相同。</li>
-    <li>这一页用的 JavaScript 求值器在 4,000 条输入上与参考语义 0 处不一致；分词和打包与离线流程在 200 条参考提示上一致。</li>
+    <li><span class="zh">网表和查表语义逐位一致：全部 293,717 个表项 × 16 种随机位、20 万条随机输入、四个来源各约 20 万条测试窗口，<b>0 处不一致</b>（C 位并行求值器）。</span><span class="en">The netlist matches the lookup-table semantics bit for bit: all 293,717 entries × 16 random-bit values, 200K random inputs, and about 200K test windows from each of the four sources, with <b>0 mismatches</b> (bit-parallel C evaluator).</span></li>
+    <li><span class="zh">上面的一致率是用网表本身的输出算的，和建表程序的数字逐位相同。</span><span class="en">The agreement rates above are computed from the netlist's own outputs and are identical to the table builder's numbers.</span></li>
+    <li><span class="zh">这一页用的 JavaScript 求值器在 4,000 条输入上与参考语义 0 处不一致；分词和打包与离线流程在 200 条参考提示上一致。</span><span class="en">The JavaScript evaluator on this page has 0 mismatches against the reference semantics on 4,000 inputs; tokenization and packing match the offline pipeline on 200 reference prompts.</span></li>
   </ul>
 </div>
 </div>
 
 <div class="card" style="margin-top:18px">
-  <h2>它做不到什么</h2>
+  <h2><span class="zh">它做不到什么</span><span class="en">What it can't do</span></h2>
   <ul>
-    <li><b>写不出连贯的话。</b>它只看最近 6 个 token，本质是一张教师答案的回退查表；句子常常在中文、英文、代码之间乱跳（四种语料混在一起训练的结果）。</li>
-    <li><b>采样只是不重复，不是更聪明。</b>任何「只看最近 6 个 token 的确定性网表」都终究会循环，v1 在 80 条提示上全部卡住；给表项换答案只会把环挪个位置（在只用维基的试验表上实测：改 60 处后 800 个起点仍全部被困），所以 v2 改用随机位。</li>
-    <li><b>偶尔出现 “�”。</b>汉字由几个字节 token 拼成，模型有时只输出了其中一部分就转去别的 token。</li>
-    <li><b>离教师还很远。</b>最好的来源也只有约 0.31，教师约 0.49。门数每翻一倍大约只多 0.014，再往上主要靠更多训练数据，而不是更多门。</li>
-    <li><b>不会调用工具、没有记忆、没有上链。</b></li>
+    <li><span class="zh"><b>写不出连贯的话。</b>它只看最近 6 个 token，本质是一张教师答案的回退查表；句子常常在中文、英文、代码之间乱跳（四种语料混在一起训练的结果）。</span><span class="en"><b>It can't write coherent text.</b> It only sees the last 6 tokens and is essentially a back-off lookup table of the teacher's answers; sentences often jump between Chinese, English and code (the result of training on four mixed corpora).</span></li>
+    <li><span class="zh"><b>采样只是不重复，不是更聪明。</b>任何「只看最近 6 个 token 的确定性网表」都终究会循环，v1 在 80 条提示上全部卡住；给表项换答案只会把环挪个位置（在只用维基的试验表上实测：改 60 处后 800 个起点仍全部被困），所以 v2 改用随机位。</span><span class="en"><b>Sampling only avoids repetition; it isn't smarter.</b> Any deterministic netlist that sees only the last 6 tokens will eventually loop, and v1 got stuck on all 80 prompts. Changing the answers in table entries only moves the loop somewhere else (measured on a Wikipedia-only trial table: after 60 edits all 800 starting points were still trapped), so v2 switched to random bits.</span></li>
+    <li><span class="zh"><b>偶尔出现 “�”。</b>汉字由几个字节 token 拼成，模型有时只输出了其中一部分就转去别的 token。</span><span class="en"><b>Occasional “�”.</b> A Chinese character is made of several byte tokens, and the model sometimes outputs only some of them before moving on to a different token.</span></li>
+    <li><span class="zh"><b>离教师还很远。</b>最好的来源也只有约 0.31，教师约 0.49。门数每翻一倍大约只多 0.014，再往上主要靠更多训练数据，而不是更多门。</span><span class="en"><b>Still far from the teacher.</b> Even the best source reaches only about 0.31, versus about 0.49 for the teacher. Each doubling of the gate count adds only about 0.014; further gains will come mainly from more training data, not more gates.</span></li>
+    <li><span class="zh"><b>不会调用工具、没有记忆、没有上链。</b></span><span class="en"><b>No tool use, no memory, not on-chain.</b></span></li>
   </ul>
-  <p class="muted" style="margin-top:12px">相关页面：<a href="../nandtool/">Pi 工作台（大脑换成本网表）</a> · <a href="v1/">v1 存档（54,147 门）</a> ·
-  源码在 tapeout 仓库 <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code>（建表 <code>v2_build.py</code>、分块综合 <code>v2_chunk_synth.py</code>、验证 <code>v2_verify.py</code> + <code>nleval.c</code>）。</p>
+  <p class="muted" style="margin-top:12px"><span class="zh">相关页面：<a href="../nandtool/">Pi 工作台（大脑换成本网表）</a> · <a href="v1/">v1 存档（54,147 门）</a> ·
+  源码在 tapeout 仓库 <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code>（建表 <code>v2_build.py</code>、分块综合 <code>v2_chunk_synth.py</code>、验证 <code>v2_verify.py</code> + <code>nleval.c</code>）。</span><span class="en">Related: <a href="../nandtool/">Pi workbench (with this netlist as its brain)</a> · <a href="v1/">v1 archive (54,147 gates)</a> ·
+  Source is in the tapeout repo at <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code> (table builder <code>v2_build.py</code>, chunked synthesis <code>v2_chunk_synth.py</code>, verification <code>v2_verify.py</code> + <code>nleval.c</code>).</span></p>
 </div>
 </div>
 
+<script>
+/* 语言切换：写回 localStorage('nand-driver-lang')，改 html lang，不刷新；.zh/.en 由 CSS 显隐 */
+function L(zh,en){ return /^en/i.test(document.documentElement.lang) ? en : zh; }
+(function(){
+  var h=document.documentElement, b=document.getElementById('langbtn');
+  function sync(){
+    var en=/^en/i.test(h.lang);
+    [].forEach.call(b.querySelectorAll('[data-l]'), function(x){ x.classList.toggle('cur', x.getAttribute('data-l')===(en?'en':'zh')); });
+    b.setAttribute('aria-label', en ? 'Language: English. Switch to Chinese (中文)' : '语言：中文。切换到英文（English）');
+    [].forEach.call(document.querySelectorAll('[data-aria-en]'), function(x){ x.setAttribute('aria-label', en ? x.getAttribute('data-aria-en') : x.getAttribute('data-aria-zh')); });
+    document.title = en ? 'impossible LLM v2' : 'impossible LLM v2';
+    var m=document.querySelector('meta[name=description]'); if(m) m.setAttribute('content', en?'A 5,142,875-gate NAND netlist language model: it reads the last 6 MiniCPM5 tokens and 4 random bits, outputs the next token, and is evaluated gate by gate in your browser.':'一个 5,142,875 门的 NAND 网表语言模型：读最近 6 个 MiniCPM5 token 和 4 个随机位，输出下一个 token，在浏览器里逐门求值。'); 
+  }
+  b.addEventListener('click', function(){
+    var l=/^en/i.test(h.lang) ? 'zh' : 'en';
+    h.lang = l==='en' ? 'en' : 'zh-CN';
+    try{ localStorage.setItem('nand-driver-lang', l); }catch(e){}
+  });
+  new MutationObserver(sync).observe(h, {attributes:true, attributeFilter:['lang']});
+  sync();
+})();
+</script>
 <script type="module">
 const $ = id => document.getElementById(id);
 const OUT = $('out'), STAT = $('stat'), GO = $('go'), MSG = $('msg'), GREEDY = $('greedy');
 const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const T = (zh, en) => '<span class="zh">' + zh + '</span><span class="en">' + en + '</span>';
 const SUGGEST = ['I like cats because', 'The album was released in', 'Hello, how are you?', 'def fibonacci(n):', '今天天气很好，我们', '中国的首都是'];
 for (const s of SUGGEST) {
   const b = document.createElement('button'); b.textContent = s;
@@ -193,10 +222,10 @@ try {
     templateUrl: new URL('../nandtool/brain/chat_template.jinja', location.href).href,
     makeTokenizer: (tj, tc) => new PreTrainedTokenizer(tj, tc),
   });
-  OUT.innerHTML = '<span class="muted">就绪：' + brain.info.gates.toLocaleString() + ' 个门，' + brain.info.randomBits + ' 个随机位。点「生成」。</span>';
+  OUT.innerHTML = '<span class="muted">' + T('就绪：' + brain.info.gates.toLocaleString() + ' 个门，' + brain.info.randomBits + ' 个随机位。点「生成」。', 'Ready: ' + brain.info.gates.toLocaleString() + ' gates, ' + brain.info.randomBits + ' random bits. Press “Generate”.') + '</span>';
   GO.disabled = false;
 } catch (err) {
-  OUT.innerHTML = '<span class="warn">加载失败：' + esc(String(err.message || err)) + '</span>';
+  OUT.innerHTML = '<span class="warn">' + T('加载失败：', 'Load failed: ') + esc(String(err.message || err)) + '</span>';
 }
 
 GO.onclick = async () => {
@@ -214,7 +243,7 @@ GO.onclick = async () => {
     await yieldNow();
   }, () => false, greedy);
   ids_so_far.length = 0;
-  STAT.textContent = ids.length + ' 个 token · ' + ((performance.now() - t0) / Math.max(1, ids.length)).toFixed(1) + ' ms/token · ' + (greedy ? '贪心' : '采样');
+  STAT.innerHTML = T(ids.length + ' 个 token', ids.length + ' tokens') + ' · ' + ((performance.now() - t0) / Math.max(1, ids.length)).toFixed(1) + ' ms/token · ' + (greedy ? T('贪心', 'greedy') : T('采样', 'sampled'));
   GO.disabled = false;
 };
 </script>

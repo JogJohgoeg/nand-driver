@@ -3,7 +3,7 @@
    页面若自带顶栏和菜单按钮（概览页），在 <html> 上加 class="tk-own-bar"，手机上就不再画浮动按钮。 */
 (function(){
   if (window.__tkShell) return; window.__tkShell = 1;
-  const NAV = /*NAV*/[{"items": [{"zh": "概览", "en": "Overview", "href": "./", "icon": "grid"}]}, {"zh": "演示", "en": "Demos", "items": [{"zh": "21 门小车", "en": "21-gate car", "href": "arena.html", "icon": "car"}, {"zh": "门电路大脑", "en": "Gate brain", "href": "gate/", "icon": "brain"}, {"zh": "Pi 工作台", "en": "Pi Workbench", "href": "xlayer-bench/", "icon": "terminal"}, {"zh": "impossible LLM", "en": "impossible LLM", "href": "impossibleLLM/", "icon": "text"}, {"zh": "Microduck", "en": "Microduck", "href": "duck/brain.html", "icon": "duck"}, {"zh": "ncd2net", "en": "ncd2net", "href": "ncd2net/", "icon": "graph"}, {"zh": "电路 283", "en": "Circuit 283", "href": "agents-api/", "icon": "bot"}]}, {"zh": "你的电路", "en": "Your circuit", "items": [{"zh": "web2tape", "en": "web2tape", "href": "web2tape/", "icon": "globe"}, {"zh": "TapeID 发币", "en": "TapeID launch", "href": "tapeid/", "icon": "coin"}, {"zh": "TapeID · X Layer", "en": "TapeID · X Layer", "href": "tapeid/xlayer.html", "icon": "coin"}, {"zh": "TapeID 领取", "en": "TapeID claim", "href": "tapeid/claim.html", "icon": "coin"}, {"zh": "短链接", "en": "Short links", "href": "https://s.aihashrate.stream/", "icon": "link", "ext": 1}, {"zh": "身份验证器", "en": "Authenticator", "href": "https://288-732.aihashrate.stream/", "icon": "key", "ext": 1}]}, {"zh": "资料", "en": "Reference", "items": [{"zh": "竞技场规则", "en": "Arena rules", "href": "RULES.md", "icon": "book"}, {"zh": "Gas 账本", "en": "Gas ledger", "href": "gas/", "icon": "gauge"}, {"zh": "旧版工作台", "en": "Earlier workbench", "href": "nandtool/", "icon": "archive"}, {"zh": "MCP 接口", "en": "MCP server", "href": "https://mcp.aihashrate.stream/", "icon": "plug", "ext": 1}, {"zh": "全部页面", "en": "All pages", "href": "sites/", "icon": "list"}]}, {"zh": "链上站", "en": "On chain", "items": [{"zh": "282.732.tape", "en": "282.732.tape", "href": "https://282-732.aihashrate.stream/", "icon": "layers", "ext": 1}, {"zh": "1.2.245.tape", "en": "1.2.245.tape", "href": "https://1-2-245.aihashrate.stream/", "icon": "layers", "ext": 1}]}]/*END*/;
+  const NAV = /*NAV*/[{"items": [{"zh": "首页", "en": "Home", "href": "./", "hrefEn": "en/", "icon": "grid"}]}, {"zh": "设计", "en": "Design", "items": [{"zh": "门电路大脑", "en": "Gate brain", "href": "gate/", "icon": "brain"}, {"zh": "21 门小车", "en": "21-gate car", "href": "arena.html", "icon": "car"}, {"zh": "竞技场规则", "en": "Arena rules", "href": "RULES.md", "icon": "book"}, {"zh": "Pi 工作台", "en": "Pi Workbench", "href": "xlayer-bench/", "icon": "terminal"}, {"zh": "impossible LLM", "en": "impossible LLM", "href": "impossibleLLM/", "icon": "text"}, {"zh": "Microduck", "en": "Microduck", "href": "duck/brain.html", "icon": "duck"}, {"zh": "ncd2net", "en": "ncd2net", "href": "ncd2net/", "icon": "graph"}, {"zh": "旧版工作台", "en": "Earlier workbench", "href": "nandtool/", "icon": "archive"}, {"zh": "吟游诗人芯片", "en": "The Bard chip", "href": "./#bard", "hrefEn": "en/#bard", "icon": "chip"}]}, {"zh": "制造", "en": "Make", "items": [{"zh": "做一个小电路", "en": "Make a circuit", "href": "build/", "hrefEn": "en/build/", "icon": "layers"}, {"zh": "电路 283", "en": "Circuit 283", "href": "agents-api/", "icon": "bot"}, {"zh": "TapeID 发币", "en": "TapeID launch", "href": "tapeid/", "icon": "coin"}, {"zh": "TapeID · X Layer", "en": "TapeID · X Layer", "href": "tapeid/xlayer.html", "icon": "coin"}, {"zh": "TapeID 领取", "en": "TapeID claim", "href": "tapeid/claim.html", "icon": "coin"}, {"zh": "web2tape", "en": "web2tape", "href": "web2tape/", "icon": "globe"}, {"zh": "身份验证器", "en": "Authenticator", "href": "https://288-732.aihashrate.stream/", "icon": "key", "ext": 1}, {"zh": "短链接", "en": "Short links", "href": "https://s.aihashrate.stream/", "icon": "link", "ext": 1}, {"zh": "Gas 账本", "en": "Gas ledger", "href": "gas/", "icon": "gauge"}, {"zh": "MCP 接口", "en": "MCP server", "href": "https://mcp.aihashrate.stream/", "icon": "plug", "ext": 1}, {"zh": "282.732.tape", "en": "282.732.tape", "href": "https://282-732.aihashrate.stream/", "icon": "layers", "ext": 1}, {"zh": "1.2.245.tape", "en": "1.2.245.tape", "href": "https://1-2-245.aihashrate.stream/", "icon": "layers", "ext": 1}]}, {"zh": "关于", "en": "About", "items": [{"zh": "常见问题", "en": "FAQ", "href": "faq/", "hrefEn": "en/faq/", "icon": "text"}, {"zh": "进度", "en": "Progress", "href": "progress/", "hrefEn": "en/progress/", "icon": "gauge"}, {"zh": "自己核对", "en": "Verify", "href": "verify/", "hrefEn": "en/verify/", "icon": "key"}, {"zh": "全部页面", "en": "All pages", "href": "sites/", "icon": "list"}]}]/*END*/;
   const RPC = 'https://bsc-rpc.publicnode.com';
   const ICONS = {
     grid:'<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
@@ -41,12 +41,19 @@
     get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
     set(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
   };
-  const docLang = () => /^en/i.test(document.documentElement.lang || '') ? 'en' : 'zh';
+  // 以统一语言键为准（lang.js 已同步各页旧键）；没有才看页面的 html lang
+  const docLang = () => {
+    try { const v = localStorage.getItem('nand-driver-lang'); if (v === 'en' || v === 'zh') return v; } catch(e){}
+    return /^en/i.test(document.documentElement.lang || '') ? 'en' : 'zh';
+  };
   let lang = docLang();
+
+  // 新官网各页有英文版（en/…）：侧边栏切到英文时链到英文页
+  const hrefOf = it => (lang === 'en' && it.hrefEn) || it.href;
 
   function isOn(it){
     if (it.ext) return false;
-    const p = new URL(it.href, ROOT).pathname.replace(/index\.html$/, '');
+    const p = new URL(hrefOf(it), ROOT).pathname.replace(/index\.html$/, '');
     if (p === rel) return here === rel;
     return here === p || (p.endsWith('/') && here.startsWith(p));
   }
@@ -57,7 +64,7 @@
     for (const sec of NAV){
       if (sec.zh) nav += '<div class="tk-sec">' + t(sec) + '</div>';
       for (const it of sec.items){
-        const href = it.ext ? it.href : new URL(it.href, ROOT).href;
+        const href = it.ext ? it.href : new URL(hrefOf(it), ROOT).href;
         nav += '<a class="tk-item' + (isOn(it) ? ' on' : '') + '" href="' + esc(href) + '"' + (it.ext ? ' target="_blank" rel="noopener"' : '') +
           ' title="' + t(it) + '"><span class="tk-ic">' + svg(it.icon) + '</span><span class="tk-txt">' + t(it) + '</span>' +
           (it.ext ? '<span class="tk-ext">↗</span>' : '') + '</a>';
@@ -111,6 +118,7 @@
     scrim.onclick = () => html.classList.remove('tk-open');
     document.addEventListener('tk-menu', () => html.classList.toggle('tk-open'));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') html.classList.remove('tk-open'); });
+    window.addEventListener('nand-driver-lang', () => { const l = docLang(); if (l !== lang){ lang = l; render(); } });
     new MutationObserver(() => { const l = docLang(); if (l !== lang){ lang = l; render(); } })
       .observe(html, {attributes:true, attributeFilter:['lang']});
     // 侧边栏宽度改变了页面可用宽度，让画布类页面重新量一次

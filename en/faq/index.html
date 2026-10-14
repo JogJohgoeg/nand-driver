@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ · 21 NAND</title>
+<link rel="stylesheet" href="../../home.css">
+<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
+(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
+if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
+if(l!==document.documentElement.lang.slice(0,2))location.replace("../../faq/"+location.hash);
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="../">21 NAND</a>
+    <nav class="nav" aria-label="Main">
+      <a href="../#bard">The Bard</a>
+      <a href="https://nand.aihashrate.stream/gate/">Try it</a>
+      <a href="../build/">Build</a>
+      <a href="./" aria-current="page">FAQ</a>
+      <a href="../progress/">Progress</a>
+      <a href="../verify/">Verify</a>
+      <a class="hi" href="../../faq/" lang="zh-CN" hreflang="zh-CN">中文</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div>
+    <h1>FAQ</h1>
+    <p class="lead">The questions we get most often. If yours isn’t here, ask us in the community.</p>
+  </div>
+
+  <section class="grp" aria-labelledby="g1">
+    <h2 id="g1">TRYING THE GATE BRAIN</h2>
+    <details class="qa" id="pc" open>
+      <summary>Is my computer good enough?</summary>
+      <div class="a">
+        <p>The page checks your computer first and tells you plainly if something is missing. Rough guide:</p>
+        <div class="two">
+          <div><strong>Works</strong>An ordinary laptop with 8 GB of memory, no graphics card needed. About 3 minutes the first time, then about 1.5 s per word.</div>
+          <div><strong>Comfortable</strong>16 GB of memory or more and a stronger graphics chip. Long answers available, about 0.5 s per word.</div>
+        </div>
+        <p>Use the latest Chrome or Edge on a computer. Safari needs version 18 or later with WebGPU turned on in settings. Phones can’t run it yet. Leave 2 to 4 GB of disk space free.</p>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>Do I have to wait this long every time?</summary>
+      <div class="a">
+        <p>No. The first time, your browser builds the whole circuit on your computer and saves it. After that it is ready in ten to twenty-odd seconds.</p>
+        <p class="sub">It rebuilds when we release a new version, when you clear browser data, in a private window, or when disk space runs short.</p>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>Does running it leave anything of mine on chain?</summary>
+      <div class="a">
+        <p><strong>No.</strong> The gate brain runs only on your own computer. Nothing goes on chain and no on-chain asset is created for you.</p>
+        <p class="sub">It is simply too big: one word takes about 260 billion gates, while one on-chain circuit holds roughly 25,000 today. That is why only small circuits go on chain.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="grp" aria-labelledby="g5">
+    <h2 id="g5">THE BARD CHIP</h2>
+    <details class="qa">
+      <summary>What is the Bard, and how is it different from the gate brain?</summary>
+      <div class="a">
+        <p>The Bard is a real chip design: a small AI that tells short English stories, made directly into a circuit. What it learned is carved into the chip, and it starts talking as soon as it powers on.</p>
+        <p class="sub">The gate brain simulates gates on your graphics card; the Bard is meant to be manufactured as a physical chip. Its model is far smaller, about one million parameters, so the whole chip is only 15 square millimetres.</p>
+      </div>
+    </details>
+    <details class="qa">
+      <summary>Has it been made? Can I buy one?</summary>
+      <div class="a">
+        <p><strong>Not made yet, and not for sale.</strong> On 12 October 2026 its design passed every manufacturing-rule check the factory requires, and the complete blueprint was stored on X Layer. Which fab, at what cost and when are all undecided.</p>
+        <p class="sub">What you can do now: <a href="https://1-2-245.aihashrate.stream/bard/v8g/">fetch its blueprint from chain</a> and check the fingerprint yourself. The blueprint and tools are public, so anyone can inspect it, change it, or even send it to a fab.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="grp" aria-labelledby="g2">
+    <h2 id="g2">TAKING PART</h2>
+    <details class="qa">
+      <summary>What is the most useful thing I can do right now?</summary>
+      <div class="a">
+        <ol>
+          <li><strong>Try it and tell us</strong>, which helps most. “Settings → Test your computer” submits your speed in one click; if you hit an error, send us the message shown.</li>
+          <li><strong>Make a small circuit of your own</strong> and go through tapeout on TapeOut yourself.</li>
+          <li><strong>Buying transistors or opening a Container</strong> is the cost of making a circuit, not an investment.</li>
+          <li><strong>Holding tokens</strong> does not directly help the project; see “Tokens” below.</li>
+        </ol>
+      </div>
+    </details>
+    <details class="qa" id="build">
+      <summary>Can I turn my own small model or business logic into a circuit?</summary>
+      <div class="a">
+        <p>Technically yes, and we do it internally, but our tools aren’t ready for outside users and there is no public tutorial for now.</p>
+        <p class="sub">For cost: we put a circuit of about 3,800 gates on X Layer for about 0.0023 OKB net. On someone else’s processor you also pay their price for transistors. Start very small; see <a href="../build/">Build</a> for the steps and costs, and send us concrete ideas for an estimate.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="grp" aria-labelledby="g3">
+    <h2 id="g3">TOKENS AND RIGHTS</h2>
+    <details class="qa key" id="token" open>
+      <summary>Do tokens carry any rights to circuits, income or chips?</summary>
+      <div class="a">
+        <p style="font-size:20px;font-weight:900">No.</p>
+        <ul>
+          <li>The token contracts only say how trading fees are split: most goes to the project’s circuit account, some to buybacks.</li>
+          <li>Holders have no contractual rights to the circuits, tool income or any future chip: no dividends and no revenue share.</li>
+          <li>The Bard chip’s design is finished, but it has not been sent to a fab.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <section class="grp" aria-labelledby="g4">
+    <h2 id="g4" style="font-size:28px;color:var(--ink);letter-spacing:0">Words explained</h2>
+    <dl class="words">
+      <div><dt>Gate / NAND</dt><dd>The simplest switching circuit: it outputs 0 only when both inputs are 1, otherwise 1. Any computation can be built from it.</dd></div>
+      <div><dt>Circuit</dt><dd>Many gates wired together in order to do one job, such as adding, driving or answering questions.</dd></div>
+      <div><dt>Transistor</dt><dd>The “material” on TapeOut. Every gate in a circuit uses one, and you buy enough before tapeout.</dd></div>
+      <div><dt>Tapeout</dt><dd>Writing a circuit onto the chain for good. After that anyone can run and check it.</dd></div>
+      <div><dt>Processor / CPU</dt><dd>A “factory” on TapeOut, with its own transistors and price. Circuits are taped out onto a processor.</dd></div>
+      <div><dt>Container</dt><dd>The on-chain account every circuit comes with; it can receive funds and hold web files. This site lives in one.</dd></div>
+    </dl>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>21 NAND · an open experiment on TapeOut</b>
+    <a href="../">Home</a>
+    <a href="../progress/">Progress</a>
+    <a href="../verify/">Verify</a>
+  </div>
+</footer>
+</body>
+</html>

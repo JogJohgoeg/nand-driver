@@ -1,22 +1,16 @@
-/* 主站外壳：仿 tapeout.net 的左侧导航 + 圆角卡片，配色沿用全站绿色（theme/green-kit.css）。
-   类名一律 tk- 前缀；由 shell.js 注入到 dist_cf 的各页面（build_shell.py 负责插 <link>/<script>）。 */
-:root{
-  --tk-g:#006B35; --tk-g-deep:#005C2B; --tk-lime:#E4F53C;
-  --tk-bg:#F2F3EF; --tk-side:#E9ECE6; --tk-panel:#FFFFFF; --tk-soft:#E3EBE2;
-  --tk-ink:#0B2A18; --tk-ink2:#3C5446; --tk-ink3:#5A6E62;
-  --tk-line:rgba(11,42,24,.10); --tk-line2:rgba(0,107,53,.30);
-  --tk-hi:#006B35; --tk-on-hi:#F2F3EF; --tk-tint:#EEF5DA; --tk-tint-line:#D6E6A8;
+/* 主站外壳：仿 tapeout.net 的左侧导航 + 圆角卡片，配色与新官网 site/home.css 相同（Kraken Pro 式深色）。
+   类名一律 tk- 前缀；由 shell.js 注入到 dist_cf 的各页面（build_shell.py 负责插样式表和脚本标签）。 */
+:root{color-scheme:dark;
+  /* 2026-10-14 起全站统一成 Kraken Pro 式深色（与新官网 site/home.css 同一套颜色），不再随系统切换浅色 */
+  --tk-g:#5741D8; --tk-g-deep:#4532B8; --tk-lime:#A496FF;
+  --tk-bg:#050506; --tk-side:#0A0A0D; --tk-panel:#111114; --tk-soft:#1A1A20;
+  --tk-ink:#FFFFFF; --tk-ink2:#CBCBD3; --tk-ink3:#9C9DAE;
+  --tk-line:rgba(112,113,135,.24); --tk-line2:rgba(164,150,255,.5);
+  --tk-hi:#A496FF; --tk-on-hi:#050506; --tk-tint:#17142B; --tk-tint-line:rgba(87,65,216,.55);
   --tk-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Segoe UI","Microsoft YaHei",system-ui,sans-serif;
   --tk-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --tk-w:232px; --tk-rail:64px;
 }
-@media (prefers-color-scheme:dark){:root{
-  --tk-g:#006A34; --tk-g-deep:#00522A;
-  --tk-bg:#0D1A12; --tk-side:#0A150E; --tk-panel:#13241A; --tk-soft:#1A3022;
-  --tk-ink:#E6EFE8; --tk-ink2:#A9BCB0; --tk-ink3:#7E9386;
-  --tk-line:rgba(230,239,232,.10); --tk-line2:rgba(91,224,143,.35);
-  --tk-hi:#5BE08F; --tk-on-hi:#0D1A12; --tk-tint:#1F2A10; --tk-tint-line:#3F5218;
-}}
 
 /* 侧边栏 */
 .tk-side{position:fixed;z-index:2147483000;top:0;left:0;bottom:0;width:var(--tk-w);box-sizing:border-box;
@@ -25,26 +19,26 @@
 .tk-side *{box-sizing:border-box}
 .tk-side a{color:inherit;text-decoration:none}
 .tk-brand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;min-height:60px}
-.tk-logo{flex:none;width:28px;height:28px;border-radius:7px;background:var(--tk-g);color:#F2F3EF;display:grid;place-items:center;font:700 11px/1 var(--tk-mono);letter-spacing:-.02em}
+.tk-logo{flex:none;width:28px;height:28px;border-radius:7px;background:var(--tk-g);color:#FFFFFF;display:grid;place-items:center;font:700 11px/1 var(--tk-mono);letter-spacing:-.02em}
 .tk-logo b{color:var(--tk-lime);font-weight:700}
 .tk-brand-t{font-weight:650;font-size:15px;white-space:nowrap}
 .tk-brand-s{display:block;font:400 11px/1.2 var(--tk-mono);color:var(--tk-ink3);margin-top:2px}
 .tk-chain{display:flex;align-items:center;gap:8px;margin:0 12px 10px;padding:8px 10px;border:1px solid var(--tk-line);border-radius:9px;background:var(--tk-panel);font-size:13px;white-space:nowrap}
-.tk-dot{flex:none;width:7px;height:7px;border-radius:50%;background:#C7A008}
-.tk-dot.ok{background:#1FA45A}
+.tk-dot{flex:none;width:7px;height:7px;border-radius:50%;background:#9C9DAE}
+.tk-dot.ok{background:#00DA80}
 .tk-chain .tk-blk{margin-left:auto;font:400 11.5px/1 var(--tk-mono);color:var(--tk-ink3)}
 .tk-nav{flex:1;overflow-y:auto;padding:4px 10px 12px;scrollbar-width:thin}
 .tk-sec{margin:14px 8px 4px;font-size:12px;color:var(--tk-ink3);white-space:nowrap}
 .tk-item{display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;border-radius:8px;color:var(--tk-ink2);white-space:nowrap;overflow:hidden}
-.tk-item:hover{background:rgba(0,107,53,.07);color:var(--tk-ink)}
-.tk-item.on{background:var(--tk-panel);color:var(--tk-ink);font-weight:600;box-shadow:0 1px 2px rgba(11,42,24,.08)}
+.tk-item:hover{background:rgba(112,113,135,.12);color:var(--tk-ink)}
+.tk-item.on{background:var(--tk-panel);color:var(--tk-ink);font-weight:600;box-shadow:inset 0 0 0 1px var(--tk-line)}
 .tk-item.on .tk-ic{color:var(--tk-hi)}
 .tk-ic{flex:none;width:17px;height:17px;color:var(--tk-ink3)}
 .tk-ic svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .tk-ext{margin-left:auto;font-size:11px;color:var(--tk-ink3)}
 .tk-foot{display:flex;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--tk-line);font-size:13px;color:var(--tk-ink2)}
 .tk-foot button{font:inherit;color:inherit;background:none;border:0;padding:4px 6px;border-radius:6px;cursor:pointer}
-.tk-foot button:hover{background:rgba(0,107,53,.08)}
+.tk-foot button:hover{background:rgba(112,113,135,.12)}
 .tk-lang{margin-left:auto;white-space:nowrap}
 .tk-lang b{color:var(--tk-ink);font-weight:650}
 .tk-tip{display:none}

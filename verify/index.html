@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>自己核对 · 21 NAND</title>
+<link rel="stylesheet" href="../home.css">
+<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
+(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
+if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
+if(l!==document.documentElement.lang.slice(0,2))location.replace("../en/verify/"+location.hash);
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="../">21 NAND</a>
+    <nav class="nav" aria-label="主导航">
+      <a href="../#bard">吟游诗人</a>
+      <a href="https://nand.aihashrate.stream/gate/">试一试</a>
+      <a href="../build/">做电路</a>
+      <a href="../faq/">常见问题</a>
+      <a href="../progress/">进度</a>
+      <a href="./" aria-current="page">核对</a>
+      <a class="hi" href="../en/verify/" lang="en" hreflang="en">EN</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+  <div>
+    <h1>自己核对</h1>
+    <p class="lead">不用相信我们说的。下面每一样东西都在链上，你可以自己取回来、自己算一遍。</p>
+  </div>
+
+  <section class="grp" aria-labelledby="how">
+    <h2 id="how">三种核对方法，从简单到专业</h2>
+    <ol class="steps">
+      <li><strong>用官方网关打开。</strong>TapeOut 官方网关每次都从链上读文件、逐字节核对，比如本站的 <a href="https://282-732.tapekit.org/">282-732.tapekit.org</a>。和你现在看到的一样，就说明内容来自链上。</li>
+      <li><strong>算文件指纹。</strong>每个文件上链时都记下了 sha256 指纹。把文件下载下来，用任意 sha256 工具算一遍，和下面列的对照。</li>
+      <li><strong>直接调用合约。</strong>网页文件记在站点合约 <code>0xd006ffdd5ae313b17729621a00999cd3c71ce5e6</code>（BNB Chain）里，调用 <code>fileInfo(容器, 路径)</code> 就能读到大小和指纹；电路可以直接调用 <code>eval</code> 运行，例子见下面「21 个门开车」。</li>
+    </ol>
+  </section>
+
+  <section class="grp" aria-labelledby="what">
+    <h2 id="what">我们在链上的东西</h2>
+
+    <article class="proof">
+      <h3>吟游诗人芯片设计图</h3>
+      <dl>
+        <dt>链</dt><dd>X Layer · 1.2.245.tape 的 <code>bard/v8g/</code></dd>
+        <dt>内容</dt><dd>签核版完整版图（OASIS 格式，11,155,630 字节，分两段存放）</dd>
+        <dt>sha256</dt><dd><code>3a03c0091f475c540fc6dcb022924ebfb03da13a10a62096d0c63cc4e404de0d</code></dd>
+        <dt>上链日期</dt><dd>2026-10-12，上传后读回逐字节一致</dd>
+      </dl>
+      <a href="https://1-2-245.aihashrate.stream/bard/v8g/">在浏览器里取回、拼接、核对、保存 →</a>
+    </article>
+
+    <article class="proof">
+      <h3>三值点积电路 DOT32_T</h3>
+      <dl>
+        <dt>链</dt><dd>X Layer · 处理器 #245 的电路 #3（3.2.245）</dd>
+        <dt>规模</dt><dd>320 个输入、32 个输出、3,829 个 NAND</dd>
+        <dt>网表 sha256</dt><dd><code>b1507f55d3bd80bbc55f9e06dc656d81e049138827c97ec7fe640d7bfa2ce0b7</code></dd>
+        <dt>核对</dt><dd>2026-10-05 流片；链上 86 组运行结果和本地参考全部一致（区块 72440910）。上链前本地比对 100 万组，0 处不同。</dd>
+      </dl>
+    </article>
+
+    <article class="proof">
+      <h3>「21 个门开车」</h3>
+      <dl>
+        <dt>链</dt><dd>BNB Chain · 处理器 <code>0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38</code> 的电路 #279</dd>
+        <dt>流片交易</dt><dd><a href="https://bscscan.com/tx/0xc6eaa6616968fc6f7ffa8058d18d55e26a06469e9e866ce07636d94e33754a6e"><code>0xc6eaa661…754a6e</code></a>（2026-09-08）</dd>
+        <dt>相关合约</dt><dd>Witness <code>0x12a580c1d02335e02d4e0fa812f5c2bc6f28ca42</code> · 竞技场 <code>0xeb248f4fb929686b045e63c47c69505cf0009888</code></dd>
+      </dl>
+      <p class="sub">自己运行一次（需要安装 Foundry 的 <code>cast</code>）：</p>
+      <pre><code>cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
+  "eval(uint256,bytes)(bytes)" 279 0xff7f \
+  --rpc-url https://bsc-rpc.publicnode.com</code></pre>
+      <a href="https://nand.aihashrate.stream/arena.html">去竞技场看它开车 →</a>
+    </article>
+
+    <article class="proof">
+      <h3>21 NAND Driver（X Layer 版）</h3>
+      <dl>
+        <dt>链</dt><dd>X Layer · 处理器 #245 的电路 #1（1.2.245）</dd>
+        <dt>处理器合约</dt><dd><code>0xA93E807fAB41431827EBBa57443Fb687a95E2AA3</code></dd>
+        <dt>容器</dt><dd><code>0x75c6E2D063963561c08c838476111adda7a1a6CD</code>（吟游诗人设计图也存在这里）</dd>
+      </dl>
+    </article>
+
+    <article class="proof">
+      <h3>本网站</h3>
+      <dl>
+        <dt>链</dt><dd>BNB Chain · 处理器 #732 的电路 #282（282.732.tape），域名 21nand.bem 指向这里</dd>
+        <dt>容器</dt><dd><a href="https://bscscan.com/address/0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3"><code>0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3</code></a></dd>
+        <dt>每个文件的指纹</dt><dd>见 <a href="../sites/#proof">全部页面清单</a> 最后的「核对链上文件」</dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="grp" aria-labelledby="all">
+    <h2 id="all">还想看更多</h2>
+    <p style="margin:0">我们做过的所有页面、工具和链上站点，都列在 <a href="../sites/">全部页面清单</a> 里，包括 Pi 工作台、ncd2net 网表台、TapeID 发币工具等。</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>21 NAND · TapeOut 上的开源实验</b>
+    <a href="../">首页</a>
+    <a href="../faq/">常见问题</a>
+    <a href="../progress/">进度</a>
+  </div>
+</footer>
+</body>
+</html>

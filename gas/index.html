@@ -1,122 +1,127 @@
 <!doctype html>
+<html lang="zh-CN">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TapeOut Gas 账本</title>
-<meta name="theme-color" content="#006B35">
-<!--tk-shell--><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+<meta name="description" content="TapeOut Gas 账本：BSC 上一个 NAND 门、一条 RISC-V 指令、一个内存页的实测 gas 价格与优化杠杆 / TapeOut Gas Ledger: measured gas per NAND gate, RISC-V instruction and memory page on BSC.">
+<meta name="theme-color" content="#050506">
 <style>
-/* 绿色版式（2026-10-01，全站统一；规范见 tapeout 仓库 circuits/_scratch/hashport/theme/README.md）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
+/* 深色版式（2026-10-14 由绿色版改为 Kraken Pro 式深色，基准 hashport/site/home.css）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
 :root{
-  color-scheme:light;
-  --g:#006B35; --lime:#E4F53C; --frame:#1E8C4E;
-  --ground:#F2F3EF; --surface:#FFFFFF; --ink:#0B2A18; --ink-2:#3C5446; --ink-3:#5A6E62;
-  --rule:rgba(0,107,53,.26); --rule-strong:rgba(0,107,53,.55); --accent:#006B35; --accent-soft:#E2EEE5; --cost:#A8520F; --cost-soft:#F6E9DC;
-  --s1:#2a78d6; --s2:#eb6834; --s3:#006B35; --s4:#b07a00;
-  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",system-ui,sans-serif;
-  --display:"Avenir Next Condensed","Bahnschrift","DIN Condensed","Roboto Condensed","Arial Narrow","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --g:#006A34; --ground:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#8FA597;
-    --rule:rgba(91,224,143,.22); --rule-strong:rgba(91,224,143,.5); --accent:#5BE08F; --accent-soft:#1C3A28; --cost:#E39A55; --cost-soft:#3A2A1B;
-    --s1:#3987e5; --s2:#d95926; --s3:#2FB56A; --s4:#c98500;
-  }
-}
-:root[data-theme="dark"]{
   color-scheme:dark;
-  --g:#006A34; --ground:#0D1A12; --surface:#13241A; --ink:#E6EFE8; --ink-2:#A9BCB0; --ink-3:#8FA597;
-  --rule:rgba(91,224,143,.22); --rule-strong:rgba(91,224,143,.5); --accent:#5BE08F; --accent-soft:#1C3A28; --cost:#E39A55; --cost-soft:#3A2A1B;
+  --ground:#050506; --surface:#111114; --surface-2:#17171C; --ink:#FFFFFF; --ink-2:#CBCBD3; --ink-3:#9C9DAE;
+  --rule:rgba(112,113,135,.24); --rule-soft:rgba(112,113,135,.14); --rule-strong:rgba(112,113,135,.45);
+  --brand:#5741D8; --accent:#A496FF; --accent-soft:rgba(87,65,216,.16); --pos:#00DA80; --neg:#F0616D;
+  --cost:#E39A55; --cost-soft:rgba(227,154,85,.12);
   --s1:#3987e5; --s2:#d95926; --s3:#2FB56A; --s4:#c98500;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --display:var(--sans);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 96px}
-body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
-@media (max-width:620px){body::after{border-width:3px}}
+body{margin:0;background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%) no-repeat,var(--ground);background-size:100% 900px,auto;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 96px}
 .wrap{max-width:76ch;margin:0 auto}
-/* 页头：通栏绿带（背景用阴影铺满整行，不改结构） */
-header{padding-block:22px 40px;background:var(--g);box-shadow:0 0 0 100vmax var(--g);clip-path:inset(0 -100vmax);color:#F2F3EF;
-  --ink:#F2F3EF;--ink-2:rgba(242,243,239,.9);--ink-3:rgba(242,243,239,.82);--rule:rgba(242,243,239,.28);--rule-strong:rgba(242,243,239,.6);--surface:#005C2B;--accent:var(--lime)}
-.mark{display:inline-grid;line-height:.92;color:#F2F3EF;text-decoration:none;padding-bottom:26px;margin-bottom:34px;border-bottom:1px solid rgba(242,243,239,.28);width:100%}
-.mark b{font:200 23px/.92 var(--display);font-stretch:condensed;text-transform:uppercase;letter-spacing:.02em}
-.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:rgba(242,243,239,.82);margin-top:5px}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
+/* 页头：近黑底 + 页面顶部一层淡紫光（光晕在 body 上） */
+header{padding-block:22px 40px;border-bottom:1px solid var(--rule-soft);color:var(--ink);position:relative}
+.mark{display:inline-grid;line-height:1.1;color:var(--ink);text-decoration:none;padding-bottom:26px;margin-bottom:34px;border-bottom:1px solid var(--rule-soft);width:100%}
+.mark b{font:800 20px/1.1 var(--sans);letter-spacing:.02em}
+.mark small{font:400 11px/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);margin-top:5px}
+/* 语言切换（全站共用 localStorage 键 nand-driver-lang） */
+.langsw{position:absolute;top:22px;right:0;z-index:1;font:400 12px/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);background:transparent;border:1px solid var(--rule-strong);border-radius:4px;padding:6px 10px;cursor:pointer}
+.langsw:hover{border-color:var(--accent);color:var(--ink-2)}
+html:not([lang^="en"]) .langsw .lz,html[lang^="en"] .langsw .le{font-weight:800;color:var(--ink)}
+html[lang^="en"] .zh{display:none!important}
+html:not([lang^="en"]) .en{display:none!important}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
 .eyebrow .live{color:var(--accent)}
-h1{font-family:var(--display);font-stretch:condensed;font-weight:200;font-size:clamp(40px,7vw,72px);line-height:1;margin:16px 0 14px;letter-spacing:-.005em;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
+h1{font-family:var(--sans);font-weight:800;font-size:clamp(34px,5.5vw,56px);line-height:1.12;margin:16px 0 14px;letter-spacing:-.01em;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
 .sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
 .threeq{margin-top:22px;font-size:14px;background:transparent}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
-.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:28px;background:var(--surface)}
-.thesis div{padding:16px 18px;border-right:1px dashed var(--rule)}
+.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin-top:28px;background:var(--surface)}
+.thesis div{padding:16px 18px;border-right:1px solid var(--rule-soft)}
 .thesis div:last-child{border-right:0}
-.thesis .n{font-family:var(--display);font-stretch:condensed;font-size:40px;font-weight:200;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--ink)}
+.thesis .n{font-family:var(--sans);font-size:34px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--ink)}
 .thesis .l{font-size:13px;color:var(--ink-2);margin-top:4px}
-.thesis .l span{display:block;color:var(--ink-3);font-size:12px}
-h2{font-family:var(--display);font-stretch:condensed;font-weight:200;font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:64px 0 10px;letter-spacing:0;text-wrap:balance;color:var(--accent);word-break:keep-all;overflow-wrap:anywhere}
-h2 small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
-p{margin:10px 0;max-width:68ch}
-.note{border-left:3px solid var(--accent);padding:8px 14px;background:var(--accent-soft);color:var(--ink);margin:16px 0;font-size:15px}
+.thesis .l small{display:block;color:var(--ink-3);font-size:12px}
+h2{font-family:var(--sans);font-weight:800;font-size:clamp(24px,3vw,32px);line-height:1.25;margin:64px 0 10px;letter-spacing:0;text-wrap:balance;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+h2 small{display:block;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--accent);margin-bottom:8px}
+p{margin:10px 0;max-width:68ch;color:var(--ink-2)}
+strong,b{color:var(--ink)}
+li{color:var(--ink-2)}
+.note{border-left:3px solid var(--brand);border-radius:0 8px 8px 0;padding:8px 14px;background:var(--accent-soft);color:var(--ink);margin:16px 0;font-size:15px}
 .warn{border-left:3px solid var(--cost);background:var(--cost-soft)}
 table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0 6px;background:var(--surface)}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px dashed var(--rule);vertical-align:top}
-th{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);border-bottom:1px solid var(--rule-strong)}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--ink-3);border-bottom:1px solid var(--rule-strong)}
 td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-td.k{font-weight:500}
+td.k{font-weight:600}
 .tw{overflow-x:auto}
-.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 7px;border:1px dashed var(--rule-strong);border-radius:0;color:var(--ink-2);vertical-align:middle}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:1px 7px;border:1px dashed var(--rule-strong);border-radius:4px;color:var(--ink-2);vertical-align:middle}
 .tag.m{color:var(--accent);border:1px solid var(--accent)}
 .tag.e{color:var(--cost);border:1px solid var(--cost)}
-code{font-family:var(--mono);font-size:.92em;background:var(--surface);border:1px solid var(--rule);padding:0 5px;border-radius:0}
-pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--accent);padding:14px 16px;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);border:1px solid var(--rule);padding:0 5px;border-radius:4px;color:var(--ink)}
+pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--brand);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:14px 0;color:var(--ink-2)}
+pre code{background:none;border:0;padding:0}
 figure{margin:18px 0 8px}
 figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:0;margin-right:6px;vertical-align:-1px}
-.bar{display:flex;height:34px;gap:2px;background:var(--surface);border:1px solid var(--rule)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.bar{display:flex;height:34px;gap:2px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
 .bar span{display:block;height:100%;position:relative;min-width:2px}
 .bar span[data-l]::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#fff;font-variant-numeric:tabular-nums}
+html[lang^="en"] .bar span[data-len]::after{content:attr(data-len)}
 .hbars{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 12px;align-items:center;font-size:14px}
 .hbars .lbl{font-family:var(--mono);color:var(--ink-2);font-size:13px;white-space:nowrap}
-.hbars .trk{height:14px;background:var(--surface);border:1px solid var(--rule);position:relative}
-.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:0}
+.hbars .trk{height:14px;background:var(--surface-2);border:1px solid var(--rule);border-radius:4px;position:relative}
+.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
 .hbars .trk i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--cost)}
 .hbars .v{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .hbars .v small{color:var(--ink-3)}
 ol,ul{padding-left:1.3em}
 li{margin:6px 0}
 footer{margin-top:72px;padding-top:16px;border-top:1px solid var(--rule-strong);font-size:13px;color:var(--ink-2)}
+a{color:var(--accent)}
+a:hover{color:#C2B9FF}
 footer a,p a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px dashed var(--rule)}.thesis div:last-child{border-bottom:0}}
+@media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px solid var(--rule-soft)}.thesis div:last-child{border-bottom:0}}
 @media (prefers-reduced-motion:no-preference){.bar span{transition:flex-basis .3s}}
 </style>
+<script>/* 全站统一语言：localStorage 键 nand-driver-lang，值 'zh' 或 'en'；未设置时按浏览器语言 */
+(function(){var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN'; if(l==='en') document.title='TapeOut Gas Ledger';})();
+</script>
+<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+</head>
+<body>
 <div class="wrap">
 <header>
   <a class="mark" href="https://nand.aihashrate.stream/" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
-  <div class="eyebrow"><span>TapeOut · BNB Smart Chain</span><span>2026-09-13</span><span class="live">实测 + 估算 · 只读链访问 · 零交易</span></div>
-  <h1>TapeOut Gas 账本</h1>
-  <p class="sub">面向 agent 的参考页：把一个 NAND 门、一条 RISC-V 指令、一个内存页在 BSC 上的真实价格记清楚，再看哪里能省。所有数字来自链上收据、只读估算和逐字节精确的离线复现。</p>
+  <button type="button" class="langsw" id="lang-btn" aria-label="切换语言 / Switch language"><span class="lz" lang="zh-CN">中文</span> / <span class="le" lang="en">EN</span></button>
+  <div class="eyebrow"><span>TapeOut · BNB Smart Chain</span><span>2026-09-13</span><span class="live"><span class="zh">实测 + 估算 · 只读链访问 · 零交易</span><span class="en">Measured + estimated · read-only chain access · zero transactions</span></span></div>
+  <h1><span class="zh">TapeOut Gas 账本</span><span class="en">TapeOut Gas Ledger</span></h1>
+  <p class="sub"><span class="zh">面向 agent 的参考页：把一个 NAND 门、一条 RISC-V 指令、一个内存页在 BSC 上的真实价格记清楚，再看哪里能省。所有数字来自链上收据、只读估算和逐字节精确的离线复现。</span><span class="en">A reference page for agents: the real BSC price of one NAND gate, one RISC-V instruction and one memory page, and where gas can be saved. All figures come from on-chain receipts, read-only estimates and byte-exact offline replay.</span></p>
   <div class="tw"><table class="threeq">
-    <tr><th>主信息 / See first</th><td>TapeOut 在 BSC 上每单位工作的价格：每门每步、每条 RISC-V 指令、每个脏页的 gas，以及它们各自的状态标签。</td></tr>
-    <tr><th>关联信息 / Context</th><td>链的容量与利用率（决定"贵"是相对什么）、三种测量方法与样本范围、结构评分 C 与 gas 的区别。</td></tr>
-    <tr><th>下一步 / Decide</th><td>选优化杠杆的顺序（脏页、指令循环、固定项）；判断哪些负载该走电路、走 VM、走乐观裁决；引用时带上状态与区块高度。</td></tr>
+    <tr><th><span class="zh">主信息</span><span class="en">See first</span></th><td><span class="zh">TapeOut 在 BSC 上每单位工作的价格：每门每步、每条 RISC-V 指令、每个脏页的 gas，以及它们各自的状态标签。</span><span class="en">The price of each unit of TapeOut work on BSC: gas per gate per step, per RISC-V instruction and per dirty page, each with its status label.</span></td></tr>
+    <tr><th><span class="zh">关联信息</span><span class="en">Context</span></th><td><span class="zh">链的容量与利用率（决定"贵"是相对什么）、三种测量方法与样本范围、结构评分 C 与 gas 的区别。</span><span class="en">Chain capacity and utilization (what "expensive" is relative to), the three measurement methods and sample ranges, and how the structural score C differs from gas.</span></td></tr>
+    <tr><th><span class="zh">下一步</span><span class="en">Decide</span></th><td><span class="zh">选优化杠杆的顺序（脏页、指令循环、固定项）；判断哪些负载该走电路、走 VM、走乐观裁决；引用时带上状态与区块高度。</span><span class="en">The order of optimization levers (dirty pages, instruction loop, fixed term); which workloads belong in circuits, in the VM or in optimistic arbitration; cite figures with their status and block height.</span></td></tr>
   </table></div>
   <div class="thesis">
-    <div><div class="n">1,921</div><div class="l">gas / NAND 门 / 步<span>电路 step 线性拟合斜率</span></div></div>
-    <div><div class="n">962</div><div class="l">gas / RISC-V 指令<span>链上 Linux 机器，80 笔收据回归</span></div></div>
-    <div><div class="n">239,715</div><div class="l">gas / 脏页写回<span>1 KB 页的写时复制 CREATE</span></div></div>
+    <div><div class="n">1,921</div><div class="l"><span class="zh">gas / NAND 门 / 步</span><span class="en">gas / NAND gate / step</span><small><span class="zh">电路 step 线性拟合斜率</span><span class="en">slope of the linear fit over circuit step()</span></small></div></div>
+    <div><div class="n">962</div><div class="l"><span class="zh">gas / RISC-V 指令</span><span class="en">gas / RISC-V instruction</span><small><span class="zh">链上 Linux 机器，80 笔收据回归</span><span class="en">on-chain Linux machine, regression over 80 receipts</span></small></div></div>
+    <div><div class="n">239,715</div><div class="l"><span class="zh">gas / 脏页写回</span><span class="en">gas / dirty-page write-back</span><small><span class="zh">1 KB 页的写时复制 CREATE</span><span class="en">copy-on-write CREATE of a 1 KB page</span></small></div></div>
   </div>
 </header>
 
 
-<h2><small>00 · For agents</small>给 agent 的使用说明</h2>
-<p>本页是给自动化代理读的参考数据，不是营销页。规则：</p>
+<h2><small>00 · For agents</small><span class="zh">给 agent 的使用说明</span><span class="en">Notes for agents</span></h2>
+<p><span class="zh">本页是给自动化代理读的参考数据，不是营销页。规则：</span><span class="en">This page is reference data for automated agents, not a marketing page. Rules:</span></p>
 <ul>
-<li>所有数字的机器可读版本在同目录 <a href="gas_model.json"><code>gas_model.json</code></a>，也内嵌在本页 <code>&lt;script id="gas-model" type="application/json"&gt;</code> 里；字段名为英文 snake_case，单位默认 gas。</li>
-<li>每个数字带状态：<code>measured</code> 来自链上收据、<code>eth_estimateGas</code> 或逐字节精确的本地重放；<code>estimate</code> 是尚未测量的分析值；<code>model</code> 是按已拟合公式推算。引用时请连状态一起引用。</li>
-<li>公式可直接代入：电路 <code>gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH</code>；机器 <code>gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D</code>。样本范围外的外推自负。</li>
-<li>页面纯静态，无脚本渲染，<code>curl</code> 即可读全文；<code>updated</code> 字段是数据日期，链上参数会漂移，用前核对区块高度。</li>
-<li>结论优先级：链不是瓶颈；脏页与指令循环是；大模型原生上链不可行，走乐观裁决。</li>
+<li><span class="zh">所有数字的机器可读版本在同目录 <a href="gas_model.json"><code>gas_model.json</code></a>，也内嵌在本页 <code>&lt;script id="gas-model" type="application/json"&gt;</code> 里；字段名为英文 snake_case，单位默认 gas。</span><span class="en">Machine-readable versions of all figures are in <a href="gas_model.json"><code>gas_model.json</code></a> in the same directory, and are also embedded in this page as <code>&lt;script id="gas-model" type="application/json"&gt;</code>; field names are English snake_case and units default to gas.</span></li>
+<li><span class="zh">每个数字带状态：<code>measured</code> 来自链上收据、<code>eth_estimateGas</code> 或逐字节精确的本地重放；<code>estimate</code> 是尚未测量的分析值；<code>model</code> 是按已拟合公式推算。引用时请连状态一起引用。</span><span class="en">Every figure carries a status: <code>measured</code> comes from on-chain receipts, <code>eth_estimateGas</code> or byte-exact local replay; <code>estimate</code> is an analytical value not yet measured; <code>model</code> is derived from a fitted formula. Always cite the status with the figure.</span></li>
+<li><span class="zh">公式可直接代入：电路 <code>gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH</code>；机器 <code>gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D</code>。样本范围外的外推自负。</span><span class="en">The formulas can be used directly: circuit <code>gas = 52250.58 + 1920.69*NAND + 6704.92*LATCH</code>; machine <code>gas = 578245 + 11671*F + 962.12*I + 5470.59*L + 239714.66*D</code>. Extrapolation beyond the sample ranges is at your own risk.</span></li>
+<li><span class="zh">页面纯静态，无脚本渲染，<code>curl</code> 即可读全文；<code>updated</code> 字段是数据日期，链上参数会漂移，用前核对区块高度。</span><span class="en">The page is static with no script-rendered content; <code>curl</code> returns the full text (both languages). The <code>updated</code> field is the data date; on-chain parameters drift, so check the block height before use.</span></li>
+<li><span class="zh">结论优先级：链不是瓶颈；脏页与指令循环是；大模型原生上链不可行，走乐观裁决。</span><span class="en">Conclusions in priority order: the chain is not the bottleneck; dirty pages and the instruction loop are; running large models natively on-chain is infeasible, so use optimistic arbitration.</span></li>
 </ul>
 <script id="gas-model" type="application/json">
 {
@@ -973,96 +978,125 @@ footer a,p a{color:var(--accent)}
 }
 </script>
 
-<h2><small>01 · Chain envelope</small>链给的上限</h2>
-<p>BSC 是改了共识的 Geth 分支（节点报 <code>Geth/v1.7.7</code>），下面是 2026-09-13 实测的最近 200 块。块空间八成是空的，gas 价没有人竞价：<strong>瓶颈不在链，在解释执行</strong>。</p>
+<h2><small>01 · Chain envelope</small><span class="zh">链给的上限</span><span class="en">What the chain allows</span></h2>
+<p><span class="zh">BSC 是改了共识的 Geth 分支（节点报 <code>Geth/v1.7.7</code>），下面是 2026-09-13 实测的最近 200 块。块空间八成是空的，gas 价没有人竞价：<strong>瓶颈不在链，在解释执行</strong>。</span><span class="en">BSC is a Geth fork with modified consensus (nodes report <code>Geth/v1.7.7</code>). Below are the latest 200 blocks, measured on 2026-09-13. About 80% of block space is empty and nobody bids up the gas price: <strong>the bottleneck is not the chain, it is interpreted execution</strong>.</span></p>
 <div class="tw"><table>
-<tr><th>指标</th><th class="num">数值</th><th>备注</th></tr>
-<tr><td class="k">出块间隔</td><td class="num">0.452 s</td><td>200 块 90 秒</td></tr>
-<tr><td class="k">块 gas 上限</td><td class="num">69,455,003</td><td>算力容量 1.54 亿 gas/s</td></tr>
-<tr><td class="k">实际使用</td><td class="num">13.6 M / 块</td><td>20% 满，峰值 36.2 M</td></tr>
-<tr><td class="k">实际 TPS</td><td class="num">168</td><td>理论简单转账 7,300</td></tr>
-<tr><td class="k">gas 价</td><td class="num">0.05 gwei</td><td>1 亿 gas ≈ 0.005 BNB</td></tr>
-<tr><td class="k">TapeOut 机器单笔上限</td><td class="num">16,777,216</td><td>约块上限的 24%</td></tr>
+<tr><th><span class="zh">指标</span><span class="en">Metric</span></th><th class="num"><span class="zh">数值</span><span class="en">Value</span></th><th><span class="zh">备注</span><span class="en">Notes</span></th></tr>
+<tr><td class="k"><span class="zh">出块间隔</span><span class="en">Block interval</span></td><td class="num">0.452 s</td><td><span class="zh">200 块 90 秒</span><span class="en">200 blocks in 90 s</span></td></tr>
+<tr><td class="k"><span class="zh">块 gas 上限</span><span class="en">Block gas limit</span></td><td class="num">69,455,003</td><td><span class="zh">算力容量 1.54 亿 gas/s</span><span class="en">capacity 154 M gas/s</span></td></tr>
+<tr><td class="k"><span class="zh">实际使用</span><span class="en">Actual usage</span></td><td class="num"><span class="zh">13.6 M / 块</span><span class="en">13.6 M / block</span></td><td><span class="zh">20% 满，峰值 36.2 M</span><span class="en">20% full, peak 36.2 M</span></td></tr>
+<tr><td class="k"><span class="zh">实际 TPS</span><span class="en">Actual TPS</span></td><td class="num">168</td><td><span class="zh">理论简单转账 7,300</span><span class="en">7,300 theoretical for simple transfers</span></td></tr>
+<tr><td class="k"><span class="zh">gas 价</span><span class="en">Gas price</span></td><td class="num">0.05 gwei</td><td><span class="zh">1 亿 gas ≈ 0.005 BNB</span><span class="en">100 M gas ≈ 0.005 BNB</span></td></tr>
+<tr><td class="k"><span class="zh">TapeOut 机器单笔上限</span><span class="en">TapeOut machine per-transaction cap</span></td><td class="num">16,777,216</td><td><span class="zh">约块上限的 24%</span><span class="en">about 24% of the block limit</span></td></tr>
 </table></div>
 
-<h2><small>02 · Circuit step</small>一步电路多少钱</h2>
-<p>对三个已烧录的有状态电路做 <code>eth_estimateGas</code>（零输入模式，区块 121591371）。gas 对门数是线性的，这和 TapeOut 的结构评分 C = g·d³ 完全不同：<strong>深度只影响评分，不影响 gas；一个 LATCH 的 gas 约等于 3.5 个 NAND</strong>。</p>
+<h2><small>02 · Circuit step</small><span class="zh">一步电路多少钱</span><span class="en">Cost of one circuit step</span></h2>
+<p><span class="zh">对三个已烧录的有状态电路做 <code>eth_estimateGas</code>（零输入模式，区块 121591371）。gas 对门数是线性的，这和 TapeOut 的结构评分 C = g·d³ 完全不同：<strong>深度只影响评分，不影响 gas；一个 LATCH 的 gas 约等于 3.5 个 NAND</strong>。</span><span class="en"><code>eth_estimateGas</code> on three burned stateful circuits (zero-input pattern, block 121591371). Gas is linear in element count, which is entirely different from TapeOut's structural score C = g·d³: <strong>depth affects only the score, not gas; one LATCH costs about as much gas as 3.5 NANDs</strong>.</span></p>
 <div class="tw"><table>
-<tr><th>电路</th><th class="num">NAND</th><th class="num">LATCH</th><th class="num">step gas</th><th class="num">gas / 元件</th></tr>
-<tr><td class="k">#280 驾驶车控制器</td><td class="num">87</td><td class="num">3</td><td class="num">261,497</td><td class="num">2,906</td></tr>
-<tr><td class="k">#283 Agents-API 控制器 v2</td><td class="num">152</td><td class="num">10</td><td class="num">433,276</td><td class="num">2,674</td></tr>
-<tr><td class="k">#284 Agents-API 控制器 v3</td><td class="num">295</td><td class="num">23</td><td class="num">795,098</td><td class="num">2,500</td></tr>
+<tr><th><span class="zh">电路</span><span class="en">Circuit</span></th><th class="num">NAND</th><th class="num">LATCH</th><th class="num">step gas</th><th class="num"><span class="zh">gas / 元件</span><span class="en">gas / element</span></th></tr>
+<tr><td class="k">#280 <span class="zh">驾驶车控制器</span><span class="en">driving-car controller</span></td><td class="num">87</td><td class="num">3</td><td class="num">261,497</td><td class="num">2,906</td></tr>
+<tr><td class="k">#283 <span class="zh">Agents-API 控制器 v2</span><span class="en">Agents-API controller v2</span></td><td class="num">152</td><td class="num">10</td><td class="num">433,276</td><td class="num">2,674</td></tr>
+<tr><td class="k">#284 <span class="zh">Agents-API 控制器 v3</span><span class="en">Agents-API controller v3</span></td><td class="num">295</td><td class="num">23</td><td class="num">795,098</td><td class="num">2,500</td></tr>
 </table></div>
 <figure>
   <div class="hbars">
-    <div class="lbl">#280 · 90 元件</div><div class="trk"><b style="width:32.9%"></b></div><div class="v">261,497</div>
-    <div class="lbl">#283 · 162 元件</div><div class="trk"><b style="width:54.5%"></b></div><div class="v">433,276</div>
-    <div class="lbl">#284 · 318 元件</div><div class="trk"><b style="width:100%"></b></div><div class="v">795,098</div>
+    <div class="lbl">#280 · 90 <span class="zh">元件</span><span class="en">elements</span></div><div class="trk"><b style="width:32.9%"></b></div><div class="v">261,497</div>
+    <div class="lbl">#283 · 162 <span class="zh">元件</span><span class="en">elements</span></div><div class="trk"><b style="width:54.5%"></b></div><div class="v">433,276</div>
+    <div class="lbl">#284 · 318 <span class="zh">元件</span><span class="en">elements</span></div><div class="trk"><b style="width:100%"></b></div><div class="v">795,098</div>
   </div>
-  <figcaption>step gas，同一比例尺，满格 795,098。三点线性拟合（扣除交易固有 gas）：<code>52,251 + 1,920.7 × NAND + 6,704.9 × LATCH</code>，三点恰好落在平面上，所以固定开销与单元件成本不能各自独立辨认，只能作为这批负载的描述性系数。</figcaption>
+  <figcaption><span class="zh">step gas，同一比例尺，满格 795,098。三点线性拟合（扣除交易固有 gas）：<code>52,251 + 1,920.7 × NAND + 6,704.9 × LATCH</code>，三点恰好落在平面上，所以固定开销与单元件成本不能各自独立辨认，只能作为这批负载的描述性系数。</span><span class="en">Step gas on a common scale; a full bar is 795,098. Three-point linear fit (transaction intrinsic gas removed): <code>52,251 + 1,920.7 × NAND + 6,704.9 × LATCH</code>. The three points lie exactly on the plane, so the fixed overhead and per-element costs cannot be identified separately; treat them as descriptive coefficients for this set of workloads.</span></figcaption>
 </figure>
-<div class="note">流水化的代价：把 dlgn_llm 的求解器用深度 1 流水版重写，结构 C 降了 426 倍，但每次状态转移变成 11 次调用并扫描更多锁存器，<strong>gas 反而上升</strong>。评分和账单是两本账。</div>
+<div class="note"><span class="zh">流水化的代价：把 dlgn_llm 的求解器用深度 1 流水版重写，结构 C 降了 426 倍，但每次状态转移变成 11 次调用并扫描更多锁存器，<strong>gas 反而上升</strong>。评分和账单是两本账。</span><span class="en">The cost of pipelining: rewriting the dlgn_llm solver as a depth-1 pipeline cut structural C by 426×, but each state transition became 11 calls scanning more latches, so <strong>gas went up</strong>. The score and the bill are separate ledgers.</span></div>
 
-<h2><small>03 · RISC-V tick</small>链上 Linux 机器每拍多少钱</h2>
-<p>TapeOut 的 rv32ima 解释器（Yul，语义与 mini-rv32ima 逐位一致）跑着未修改的 Linux 6.5.12。对 80 笔 <code>tick()</code> 收据回归，F 为翻转数，I 为指令数，L 为加载页数，D 为脏页数：</p>
-<pre>gas = 578,245 + 11,671·F + 962.1·I + 5,470.6·L + 239,714.7·D      留出样本 RMSE 11,700
+<h2><small>03 · RISC-V tick</small><span class="zh">链上 Linux 机器每拍多少钱</span><span class="en">Cost per tick of the on-chain Linux machine</span></h2>
+<p><span class="zh">TapeOut 的 rv32ima 解释器（Yul，语义与 mini-rv32ima 逐位一致）跑着未修改的 Linux 6.5.12。对 80 笔 <code>tick()</code> 收据回归，F 为翻转数，I 为指令数，L 为加载页数，D 为脏页数：</span><span class="en">TapeOut's rv32ima interpreter (Yul, bit-exact with mini-rv32ima semantics) runs unmodified Linux 6.5.12. Regression over 80 <code>tick()</code> receipts, where F is flips, I is instructions executed, L is pages loaded and D is dirty pages:</span></p>
+<pre class="zh">gas = 578,245 + 11,671·F + 962.1·I + 5,470.6·L + 239,714.7·D      留出样本 RMSE 11,700
 样本范围  F 3–5   I 1,620–4,447   L 62–132   D 7–20   单笔 4.35–9.87 M gas</pre>
-<p>固定项里约 503,295 是每拍分配约 490 KB 内存的二次方扩张费，占 87%。脏页是 CREATE 一个 1,025 字节的代码合约，所以一页就要 24 万。</p>
+<pre class="en">gas = 578,245 + 11,671·F + 962.1·I + 5,470.6·L + 239,714.7·D      holdout RMSE 11,700
+sample range  F 3–5   I 1,620–4,447   L 62–132   D 7–20   per tx 4.35–9.87 M gas</pre>
+<p><span class="zh">固定项里约 503,295 是每拍分配约 490 KB 内存的二次方扩张费，占 87%。脏页是 CREATE 一个 1,025 字节的代码合约，所以一页就要 24 万。</span><span class="en">About 503,295 of the fixed term (87%) is the quadratic memory-expansion fee for allocating about 490 KB per tick. A dirty page is a CREATE of a 1,025-byte code contract, so each page costs about 240k.</span></p>
 <figure>
-  <div class="bar" role="img" aria-label="典型一拍 906 万 gas 的构成：脏页 360 万，指令 385 万，固定 58 万，取页 55 万，翻转 5 万">
-    <span style="flex-basis:39.7%;background:var(--s2)" data-l="脏页 3.60M"></span>
-    <span style="flex-basis:42.5%;background:var(--s1)" data-l="指令 3.85M"></span>
+  <div class="bar" id="tick-bar" role="img" aria-label="典型一拍 906 万 gas 的构成：脏页 360 万，指令 385 万，固定 58 万，取页 55 万，翻转 5 万" data-aria-zh="典型一拍 906 万 gas 的构成：脏页 360 万，指令 385 万，固定 58 万，取页 55 万，翻转 5 万" data-aria-en="Typical 9.06 M gas tick: dirty pages 3.60 M, instructions 3.85 M, fixed 0.58 M, page loads 0.55 M, flips 0.05 M">
+    <span style="flex-basis:39.7%;background:var(--s2)" data-l="脏页 3.60M" data-len="Dirty 3.60M"></span>
+    <span style="flex-basis:42.5%;background:var(--s1)" data-l="指令 3.85M" data-len="Instr 3.85M"></span>
     <span style="flex-basis:6.4%;background:var(--s3)" data-l="0.58M"></span>
     <span style="flex-basis:6.0%;background:var(--s4)" data-l="0.55M"></span>
     <span style="flex-basis:0.5%;background:var(--ink-3)"></span>
   </div>
-  <div class="legend"><span><i style="background:var(--s2)"></i>脏页写回 D=15</span><span><i style="background:var(--s1)"></i>指令 I=4,000</span><span><i style="background:var(--s3)"></i>固定开销</span><span><i style="background:var(--s4)"></i>取页 L=100</span><span><i style="background:var(--ink-3)"></i>翻转 F=4</span></div>
-  <figcaption>按拟合模型算的一拍典型账单，合计约 9.06 M gas。写密集的负载里脏页第一，指令第二。</figcaption>
+  <div class="legend"><span><i style="background:var(--s2)"></i><span class="zh">脏页写回</span><span class="en">Dirty-page write-back</span> D=15</span><span><i style="background:var(--s1)"></i><span class="zh">指令</span><span class="en">Instructions</span> I=4,000</span><span><i style="background:var(--s3)"></i><span class="zh">固定开销</span><span class="en">Fixed overhead</span></span><span><i style="background:var(--s4)"></i><span class="zh">取页</span><span class="en">Page loads</span> L=100</span><span><i style="background:var(--ink-3)"></i><span class="zh">翻转</span><span class="en">Flips</span> F=4</span></div>
+  <figcaption><span class="zh">按拟合模型算的一拍典型账单，合计约 9.06 M gas。写密集的负载里脏页第一，指令第二。</span><span class="en">A typical per-tick bill from the fitted model, about 9.06 M gas in total. In write-heavy workloads dirty pages come first and instructions second.</span></figcaption>
 </figure>
 <div class="tw"><table>
-<tr><th>项</th><th class="num">系数</th><th class="num">典型一拍</th><th class="num">占比</th></tr>
-<tr><td class="k">脏页写回</td><td class="num">239,715 / 页</td><td class="num">3,595,725</td><td class="num">39.7%</td></tr>
-<tr><td class="k">指令执行</td><td class="num">962 / 条</td><td class="num">3,848,400</td><td class="num">42.5%</td></tr>
-<tr><td class="k">固定开销</td><td class="num">578,245 / 拍</td><td class="num">578,245</td><td class="num">6.4%</td></tr>
-<tr><td class="k">取页</td><td class="num">5,471 / 页</td><td class="num">547,060</td><td class="num">6.0%</td></tr>
-<tr><td class="k">翻转</td><td class="num">11,671 / 次</td><td class="num">46,684</td><td class="num">0.5%</td></tr>
+<tr><th><span class="zh">项</span><span class="en">Item</span></th><th class="num"><span class="zh">系数</span><span class="en">Coefficient</span></th><th class="num"><span class="zh">典型一拍</span><span class="en">Typical tick</span></th><th class="num"><span class="zh">占比</span><span class="en">Share</span></th></tr>
+<tr><td class="k"><span class="zh">脏页写回</span><span class="en">Dirty-page write-back</span></td><td class="num">239,715 / <span class="zh">页</span><span class="en">page</span></td><td class="num">3,595,725</td><td class="num">39.7%</td></tr>
+<tr><td class="k"><span class="zh">指令执行</span><span class="en">Instruction execution</span></td><td class="num">962 / <span class="zh">条</span><span class="en">instr</span></td><td class="num">3,848,400</td><td class="num">42.5%</td></tr>
+<tr><td class="k"><span class="zh">固定开销</span><span class="en">Fixed overhead</span></td><td class="num">578,245 / <span class="zh">拍</span><span class="en">tick</span></td><td class="num">578,245</td><td class="num">6.4%</td></tr>
+<tr><td class="k"><span class="zh">取页</span><span class="en">Page loads</span></td><td class="num">5,471 / <span class="zh">页</span><span class="en">page</span></td><td class="num">547,060</td><td class="num">6.0%</td></tr>
+<tr><td class="k"><span class="zh">翻转</span><span class="en">Flips</span></td><td class="num">11,671 / <span class="zh">次</span><span class="en">flip</span></td><td class="num">46,684</td><td class="num">0.5%</td></tr>
 </table></div>
 
-<h2><small>04 · Levers</small>六个优化杠杆</h2>
-<p>每条标注是<span class="tag m">实测</span>还是<span class="tag e">估算</span>。估算项正在用逐字节精确的离线孪生逐一测量，测完会替换成实测值。</p>
+<h2><small>04 · Levers</small><span class="zh">六个优化杠杆</span><span class="en">Six optimization levers</span></h2>
+<p><span class="zh">每条标注是<span class="tag m">实测</span>还是<span class="tag e">估算</span>。估算项正在用逐字节精确的离线孪生逐一测量，测完会替换成实测值。</span><span class="en">Each lever is marked <span class="tag m">measured</span> or <span class="tag e">estimate</span>. Estimates are being measured one by one on the byte-exact offline twin and will be replaced with measured values.</span></p>
 <div class="tw"><table>
-<tr><th>杠杆</th><th>现状</th><th>能做到</th><th>谁能改</th><th>状态</th></tr>
-<tr><td class="k">内存扩张</td><td>每拍分配约 490 KB，503 k gas</td><td>按页懒分配：MLP 负载一拍 4,157,498 → 3,210,968 gas，<strong>1.295 倍</strong>；CPU 快照与页内容与基线逐字节一致</td><td>TapeOut 机器 / 自部署</td><td><span class="tag m">实测</span></td></tr>
-<tr><td class="k">脏页写回</td><td>CREATE 1 KB 代码合约，239,715 / 页</td><td>小改动按 32 字节字 SSTORE 差分；多拍打包一笔交易让页只脏一次；瞬态存储暂存</td><td>TapeOut 机器 / 自部署</td><td><span class="tag e">估算</span></td></tr>
-<tr><td class="k">指令循环</td><td>962 / 条</td><td>计算跳转表译码单独实测只有 <strong>1.010 倍</strong>（4,117,356 gas），说明译码不是主项；预掩码寄存器、去越界检查、指令对融合尚未测，地板估计 250 到 400</td><td>TapeOut 机器 / 自部署</td><td><span class="tag m">部分实测</span></td></tr>
-<tr><td class="k">取页</td><td>5,471 / 页，冷读 EXTCODECOPY</td><td>EIP-2929 暖读 100 起；多拍同交易内缓存页</td><td>同上</td><td><span class="tag e">估算</span></td></tr>
-<tr><td class="k">拍上限</td><td>1,024 条 / 拍</td><td>放开到 gas 允许的约 1.2 万条，固定项摊薄 10 倍</td><td>TapeOut 参数</td><td><span class="tag m">按模型可算</span></td></tr>
-<tr><td class="k">静态翻译</td><td>全部解释执行</td><td>热循环（MAC 内核）直接编成 EVM/Yul，256 位字内 SIMD 一次 8 到 32 个 int8 乘加，热点 10 倍以上</td><td>程序侧，无需改机器</td><td><span class="tag e">估算</span></td></tr>
+<tr><th><span class="zh">杠杆</span><span class="en">Lever</span></th><th><span class="zh">现状</span><span class="en">Today</span></th><th><span class="zh">能做到</span><span class="en">Achievable</span></th><th><span class="zh">谁能改</span><span class="en">Who can change it</span></th><th><span class="zh">状态</span><span class="en">Status</span></th></tr>
+<tr><td class="k"><span class="zh">内存扩张</span><span class="en">Memory expansion</span></td><td><span class="zh">每拍分配约 490 KB，503 k gas</span><span class="en">about 490 KB allocated per tick, 503 k gas</span></td><td><span class="zh">按页懒分配：MLP 负载一拍 4,157,498 → 3,210,968 gas，<strong>1.295 倍</strong>；CPU 快照与页内容与基线逐字节一致</span><span class="en">Lazy per-page allocation: MLP workload tick 4,157,498 → 3,210,968 gas, <strong>1.295×</strong>; CPU snapshot and page contents byte-identical to the baseline</span></td><td><span class="zh">TapeOut 机器 / 自部署</span><span class="en">TapeOut machine / own deployment</span></td><td><span class="tag m"><span class="zh">实测</span><span class="en">measured</span></span></td></tr>
+<tr><td class="k"><span class="zh">脏页写回</span><span class="en">Dirty-page write-back</span></td><td><span class="zh">CREATE 1 KB 代码合约，239,715 / 页</span><span class="en">CREATE of a 1 KB code contract, 239,715 / page</span></td><td><span class="zh">小改动按 32 字节字 SSTORE 差分；多拍打包一笔交易让页只脏一次；瞬态存储暂存</span><span class="en">SSTORE diffs per 32-byte word for small changes; batch multiple ticks into one transaction so each page is dirtied only once; stage in transient storage</span></td><td><span class="zh">TapeOut 机器 / 自部署</span><span class="en">TapeOut machine / own deployment</span></td><td><span class="tag e"><span class="zh">估算</span><span class="en">estimate</span></span></td></tr>
+<tr><td class="k"><span class="zh">指令循环</span><span class="en">Instruction loop</span></td><td><span class="zh">962 / 条</span><span class="en">962 / instr</span></td><td><span class="zh">计算跳转表译码单独实测只有 <strong>1.010 倍</strong>（4,117,356 gas），说明译码不是主项；预掩码寄存器、去越界检查、指令对融合尚未测，地板估计 250 到 400</span><span class="en">Computed jump-table decode measured alone gives only <strong>1.010×</strong> (4,117,356 gas), so decode is not the dominant term; pre-masked registers, dropping bounds checks and instruction-pair fusion are not yet measured; estimated floor 250–400</span></td><td><span class="zh">TapeOut 机器 / 自部署</span><span class="en">TapeOut machine / own deployment</span></td><td><span class="tag m"><span class="zh">部分实测</span><span class="en">partly measured</span></span></td></tr>
+<tr><td class="k"><span class="zh">取页</span><span class="en">Page loads</span></td><td><span class="zh">5,471 / 页，冷读 EXTCODECOPY</span><span class="en">5,471 / page, cold EXTCODECOPY</span></td><td><span class="zh">EIP-2929 暖读 100 起；多拍同交易内缓存页</span><span class="en">EIP-2929 warm reads from 100; cache pages across ticks within one transaction</span></td><td><span class="zh">同上</span><span class="en">Same as above</span></td><td><span class="tag e"><span class="zh">估算</span><span class="en">estimate</span></span></td></tr>
+<tr><td class="k"><span class="zh">拍上限</span><span class="en">Tick cap</span></td><td><span class="zh">1,024 条 / 拍</span><span class="en">1,024 instr / tick</span></td><td><span class="zh">放开到 gas 允许的约 1.2 万条，固定项摊薄 10 倍</span><span class="en">Raise to the ~12,000 instructions that gas allows, amortizing the fixed term 10×</span></td><td><span class="zh">TapeOut 参数</span><span class="en">TapeOut parameter</span></td><td><span class="tag m"><span class="zh">按模型可算</span><span class="en">model-derived</span></span></td></tr>
+<tr><td class="k"><span class="zh">静态翻译</span><span class="en">Static translation</span></td><td><span class="zh">全部解释执行</span><span class="en">Fully interpreted</span></td><td><span class="zh">热循环（MAC 内核）直接编成 EVM/Yul，256 位字内 SIMD 一次 8 到 32 个 int8 乘加，热点 10 倍以上</span><span class="en">Compile hot loops (MAC kernels) directly to EVM/Yul, with SIMD inside 256-bit words doing 8–32 int8 multiply-accumulates at once; 10×+ on hot spots</span></td><td><span class="zh">程序侧，无需改机器</span><span class="en">Program side, no machine change needed</span></td><td><span class="tag e"><span class="zh">估算</span><span class="en">estimate</span></span></td></tr>
 </table></div>
-<p>已测的两项合并为 <strong>1.311 倍</strong>（3,170,826 gas）。合起来的现实预期：解释器本身 3 到 5 倍，热循环静态翻译后 10 倍以上，写密集负载再从脏页和固定项拿 2 到 3 倍。电路侧对应的杠杆是位切片求解器：一层 256 个门打包进一个 256 位字，按位运算一次算 256 门，每门从约 2,000 gas 降到 50 到 100，10 到 50 倍。</p>
+<p><span class="zh">已测的两项合并为 <strong>1.311 倍</strong>（3,170,826 gas）。合起来的现实预期：解释器本身 3 到 5 倍，热循环静态翻译后 10 倍以上，写密集负载再从脏页和固定项拿 2 到 3 倍。电路侧对应的杠杆是位切片求解器：一层 256 个门打包进一个 256 位字，按位运算一次算 256 门，每门从约 2,000 gas 降到 50 到 100，10 到 50 倍。</span><span class="en">The two measured levers combined give <strong>1.311×</strong> (3,170,826 gas). Realistic combined expectation: 3–5× from the interpreter itself, 10×+ on hot loops after static translation, and another 2–3× from dirty pages and the fixed term on write-heavy workloads. The circuit-side counterpart is a bit-sliced evaluator: pack a 256-gate layer into one 256-bit word and evaluate 256 gates per bitwise operation, cutting each gate from about 2,000 gas to 50–100, i.e. 10–50×.</span></p>
 
-<h2><small>05 · Where it stops</small>优化救不了的事</h2>
-<p>同一把尺子量一个大模型。DeepSeek v4.1 Flash 按官方配置精算：每次 decode 的 MoE 矩阵乘加 99.1 亿次，触及路由专家权重 4.51 GB；rv32ima 上实测 FP4 对乘加 20 条指令：</p>
+<h2><small>05 · Where it stops</small><span class="zh">优化救不了的事</span><span class="en">What optimization cannot fix</span></h2>
+<p><span class="zh">同一把尺子量一个大模型。DeepSeek v4.1 Flash 按官方配置精算：每次 decode 的 MoE 矩阵乘加 99.1 亿次，触及路由专家权重 4.51 GB；rv32ima 上实测 FP4 对乘加 20 条指令：</span><span class="en">Measure a large model with the same ruler. DeepSeek v4.1 Flash, computed from the official config: each decode step performs 9.91 billion MoE matrix multiply-accumulates and touches 4.51 GB of routed-expert weights; an FP4 multiply-accumulate measured on rv32ima takes 20 instructions:</span></p>
 <div class="tw"><table>
-<tr><th>项</th><th class="num">数量</th></tr>
-<tr><td class="k">每 token 指令数（16B MAC 代理，20 条/MAC）</td><td class="num">3.20 × 10¹¹</td></tr>
-<tr><td class="k">每 token gas</td><td class="num">3.985 × 10¹⁴</td></tr>
-<tr><td class="k">占满整条链的时间</td><td class="num">29.85 天 / token</td></tr>
-<tr><td class="k">费用（0.05 gwei）</td><td class="num">19,925 BNB ≈ $14.39M / token</td></tr>
-<tr><td class="k">510 GB 检查点存成页合约（4.98 亿页）</td><td class="num">1.386 × 10¹⁴ gas ≈ 6,932 BNB 一次性</td></tr>
+<tr><th><span class="zh">项</span><span class="en">Item</span></th><th class="num"><span class="zh">数量</span><span class="en">Amount</span></th></tr>
+<tr><td class="k"><span class="zh">每 token 指令数（16B MAC 代理，20 条/MAC）</span><span class="en">Instructions per token (16B MAC proxy, 20 instr/MAC)</span></td><td class="num">3.20 × 10¹¹</td></tr>
+<tr><td class="k"><span class="zh">每 token gas</span><span class="en">Gas per token</span></td><td class="num">3.985 × 10¹⁴</td></tr>
+<tr><td class="k"><span class="zh">占满整条链的时间</span><span class="en">Time with the whole chain fully occupied</span></td><td class="num"><span class="zh">29.85 天 / token</span><span class="en">29.85 days / token</span></td></tr>
+<tr><td class="k"><span class="zh">费用（0.05 gwei）</span><span class="en">Cost (0.05 gwei)</span></td><td class="num">19,925 BNB ≈ $14.39M / token</td></tr>
+<tr><td class="k"><span class="zh">510 GB 检查点存成页合约（4.98 亿页）</span><span class="en">510 GB checkpoint stored as page contracts (498 M pages)</span></td><td class="num">1.386 × 10¹⁴ gas ≈ 6,932 BNB <span class="zh">一次性</span><span class="en">one-time</span></td></tr>
 </table></div>
-<div class="note warn">存储不是墙，算力差七个数量级。所有杠杆加起来不到 100 倍。大模型"在 TapeOut 上运行"只有一种成立的定义：链下执行、轨迹承诺、交互式二分，<strong>由链上这台逐位精确的 rv32ima 机器裁决争议的那一条指令</strong>。优化解释器的意义，是让裁判那一步和小模型试点便宜十倍。</div>
+<div class="note warn"><span class="zh">存储不是墙，算力差七个数量级。所有杠杆加起来不到 100 倍。大模型"在 TapeOut 上运行"只有一种成立的定义：链下执行、轨迹承诺、交互式二分，<strong>由链上这台逐位精确的 rv32ima 机器裁决争议的那一条指令</strong>。优化解释器的意义，是让裁判那一步和小模型试点便宜十倍。</span><span class="en">Storage is not the wall; compute is seven orders of magnitude short. All levers combined give less than 100×. There is only one valid sense in which a large model "runs on TapeOut": off-chain execution, trace commitment and interactive bisection, <strong>with this bit-exact on-chain rv32ima machine arbitrating the single disputed instruction</strong>. The point of optimizing the interpreter is to make that arbitration step and small-model pilots ten times cheaper.</span></div>
 
-<h2><small>06 · Method</small>方法与复现</h2>
+<h2><small>06 · Method</small><span class="zh">方法与复现</span><span class="en">Method and reproduction</span></h2>
 <ol>
-<li>电路 step：对 #280、#283、#284 的 <code>step()</code> 做 <code>eth_estimateGas</code>，零输入模式加非零模式共 18 组，扣除交易固有 gas 后做三点线性拟合。</li>
-<li>RISC-V 机器：从公开收据的 <code>Ticked(flips, instructions, loadedPages, dirtyPages, gasUsed, halted, cutFlips)</code> 事件取 80 笔样本做最小二乘回归，留出集校验。</li>
-<li>离线孪生：拉取机器合约 14,490 字节和页合约 1,025 字节的部署字节码，在本地 EVM 里逐字节重放，对照区块 120503146 和 120503286 的 <code>cpuWords()</code> 与脏页指针，8/8 CPU 字、12 加 16 个脏页全部一致。杠杆的实测就在这个孪生上做。</li>
-<li>全程只读 RPC，零交易，零烧录。机器源码未验证，解释以静态反汇编为准。</li>
+<li><span class="zh">电路 step：对 #280、#283、#284 的 <code>step()</code> 做 <code>eth_estimateGas</code>，零输入模式加非零模式共 18 组，扣除交易固有 gas 后做三点线性拟合。</span><span class="en">Circuit step: <code>eth_estimateGas</code> on <code>step()</code> of #280, #283 and #284, 18 runs across zero-input and non-zero patterns, then a three-point linear fit after removing transaction intrinsic gas.</span></li>
+<li><span class="zh">RISC-V 机器：从公开收据的 <code>Ticked(flips, instructions, loadedPages, dirtyPages, gasUsed, halted, cutFlips)</code> 事件取 80 笔样本做最小二乘回归，留出集校验。</span><span class="en">RISC-V machine: least-squares regression over 80 samples taken from <code>Ticked(flips, instructions, loadedPages, dirtyPages, gasUsed, halted, cutFlips)</code> events in public receipts, validated on a holdout set.</span></li>
+<li><span class="zh">离线孪生：拉取机器合约 14,490 字节和页合约 1,025 字节的部署字节码，在本地 EVM 里逐字节重放，对照区块 120503146 和 120503286 的 <code>cpuWords()</code> 与脏页指针，8/8 CPU 字、12 加 16 个脏页全部一致。杠杆的实测就在这个孪生上做。</span><span class="en">Offline twin: fetch the deployed bytecode of the machine contract (14,490 bytes) and the page contract (1,025 bytes), replay it byte-exact in a local EVM, and compare <code>cpuWords()</code> and dirty-page pointers at blocks 120503146 and 120503286: 8/8 CPU words and 12 + 16 dirty pages all match. Lever measurements are made on this twin.</span></li>
+<li><span class="zh">全程只读 RPC，零交易，零烧录。机器源码未验证，解释以静态反汇编为准。</span><span class="en">Read-only RPC throughout: zero transactions, zero burns. The machine's source is unverified; interpretation relies on static disassembly.</span></li>
 </ol>
-<p>参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://nand.aihashrate.stream/">21 门驾驶车</a>（#279/#280 的公开演示）。</p>
+<p><span class="zh">参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://nand.aihashrate.stream/">21 门驾驶车</a>（#279/#280 的公开演示）。</span><span class="en">References: <a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a> (machine <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>, BSC), <a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a> (cold/warm access pricing), <a href="https://nand.aihashrate.stream/">21 NAND Driver</a> (public demo of #279/#280).</span></p>
 
 <footer>
-  <div>版本 2026-09-13 r13（新增 mmio_refinement_game 实测：env-mmio-state-v1 固定输入（≤31 字节）配置，255 个已部署端点 5,572 微步 + 4 个新队列/控制台边界 57 步全部精确；错误的有符号 UART 字节装载争议一轮二分 587,428 gas（resolve 151,685），10 个反例被拒；MMIO 硬件微步 RTL 通过 5,747 见证（5,733 接受/14 拒绝，最多 2,979 时钟）；共享 Keccak 的 RAM 控制器 IHP ABC -fast 映射通过：720,365 标准单元、6.304 mm² 单元面积（不含布局布线/SRAM/IO/时钟树，无 Fmax/功耗声明）；仍无实时输入追加、无链上交易）· r12（environment_refinement_game 新增 hardware_validation 实测：独立的认证 RAM 硬件环境微步与 env-ram-state-v1 哈希 RTL 通过 5,197 个见证，单个最多 2,953 时钟；无 MMIO/输入/syscon、无 Hazard3 集成、无物理 SRAM、不含面积/频率/功耗声明）· r11（r10 修正：environment_refinement_game 钉住验证器运行时 SHA256（11,716 字节），实测总 gas 602,139、resolve 171,351；tick 博弈数值不变）· r10（新增 environment_refinement_game 实测：env-ram-state-v1 配置下 32 个已部署端点 5,147 微步 + 4 个新 RAM 写端点全部精确，跨页 store 后省略 wrapper 空转的争议一轮二分 602,139 gas（resolve 171,351，r11 修正），8 个反例被拒；tick_refinement_game 范围修正：tick-state-v1 不含外部周期历史、wrapper 空转与 syscon/UART 记录，实测 gas 不变；仍为本地 RAM 原型，无链上交易）· r9（新增 authenticated_bank_game 实测：MiniCPM 第 0 层两 token 的 14 个真实 bank 边界各自经本地 Solidity 验证器重放，107,534 页转换，前后 CPU48/RAM 端点全部精确；13 轮子博弈 2.28M–2.29M gas，含全局模型根、钉死段、虚拟保证金原型、层输出提取 906,240 gas；新增 tick_refinement_game 实测：1,024 指令 CSR/MIP 客体 10 轮 1,797,373 gas；均为本地博弈，无链上交易，硬件未集成）· r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+  <div class="zh">版本 2026-09-13 r13（新增 mmio_refinement_game 实测：env-mmio-state-v1 固定输入（≤31 字节）配置，255 个已部署端点 5,572 微步 + 4 个新队列/控制台边界 57 步全部精确；错误的有符号 UART 字节装载争议一轮二分 587,428 gas（resolve 151,685），10 个反例被拒；MMIO 硬件微步 RTL 通过 5,747 见证（5,733 接受/14 拒绝，最多 2,979 时钟）；共享 Keccak 的 RAM 控制器 IHP ABC -fast 映射通过：720,365 标准单元、6.304 mm² 单元面积（不含布局布线/SRAM/IO/时钟树，无 Fmax/功耗声明）；仍无实时输入追加、无链上交易）· r12（environment_refinement_game 新增 hardware_validation 实测：独立的认证 RAM 硬件环境微步与 env-ram-state-v1 哈希 RTL 通过 5,197 个见证，单个最多 2,953 时钟；无 MMIO/输入/syscon、无 Hazard3 集成、无物理 SRAM、不含面积/频率/功耗声明）· r11（r10 修正：environment_refinement_game 钉住验证器运行时 SHA256（11,716 字节），实测总 gas 602,139、resolve 171,351；tick 博弈数值不变）· r10（新增 environment_refinement_game 实测：env-ram-state-v1 配置下 32 个已部署端点 5,147 微步 + 4 个新 RAM 写端点全部精确，跨页 store 后省略 wrapper 空转的争议一轮二分 602,139 gas（resolve 171,351，r11 修正），8 个反例被拒；tick_refinement_game 范围修正：tick-state-v1 不含外部周期历史、wrapper 空转与 syscon/UART 记录，实测 gas 不变；仍为本地 RAM 原型，无链上交易）· r9（新增 authenticated_bank_game 实测：MiniCPM 第 0 层两 token 的 14 个真实 bank 边界各自经本地 Solidity 验证器重放，107,534 页转换，前后 CPU48/RAM 端点全部精确；13 轮子博弈 2.28M–2.29M gas，含全局模型根、钉死段、虚拟保证金原型、层输出提取 906,240 gas；新增 tick_refinement_game 实测：1,024 指令 CSR/MIP 客体 10 轮 1,797,373 gas；均为本地博弈，无链上交易，硬件未集成）· r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
+  <div class="en">Version 2026-09-13 r13 (adds mmio_refinement_game measurements: env-mmio-state-v1 fixed-input (≤31 bytes) profile; 255 deployed endpoints / 5,572 microsteps + 4 new queue/console boundaries / 57 steps, all exact; a dispute over incorrect signed UART byte loading resolves in one bisection round for 587,428 gas (resolve 151,685), 10 negative cases rejected; MMIO hardware microstep RTL passes 5,747 witnesses (5,733 accepted / 14 rejected, at most 2,979 clocks); the RAM controller with shared Keccak maps under IHP ABC -fast: 720,365 standard cells, 6.304 mm² cell area (excluding place-and-route/SRAM/IO/clock tree; no Fmax/power claim); still no live input append and no on-chain transactions) · r12 (adds hardware_validation measurements to environment_refinement_game: a separate authenticated RAM hardware environment microstep and env-ram-state-v1 hash RTL pass 5,197 witnesses, at most 2,953 clocks each; no MMIO/input/syscon, no Hazard3 integration, no physical SRAM, no area/frequency/power claims) · r11 (r10 correction: environment_refinement_game pins the verifier runtime SHA256 (11,716 bytes); measured total gas 602,139, resolve 171,351; tick game figures unchanged) · r10 (adds environment_refinement_game measurements: under env-ram-state-v1, 32 deployed endpoints / 5,147 microsteps + 4 new RAM-write endpoints, all exact; a dispute over omitted wrapper idle advancement after a cross-page store resolves in one bisection round for 602,139 gas (resolve 171,351, corrected in r11), 8 negative cases rejected; tick_refinement_game scope corrected: tick-state-v1 omits external cycle history, wrapper idle advancement and the syscon/UART transcript, measured gas unchanged; still a local RAM prototype, no on-chain transactions) · r9 (adds authenticated_bank_game measurements: each of the 14 real bank boundaries of MiniCPM layer 0 over two tokens replayed through the local Solidity verifier, 107,534 page transitions, all pre/post CPU48/RAM endpoints exact; 13-round subgames 2.28M–2.29M gas, plus a global model root, a pinned segment, a virtual-bond prototype and layer-output extraction at 906,240 gas; adds tick_refinement_game measurements: 1,024-instruction CSR/MIP guest, 10 rounds, 1,797,373 gas; all local games, no on-chain transactions, hardware not integrated) · r8 (adds optimistic_game measurements: a single TraceGame dispute on local PyEVM, 1,712-instruction MLP trace, 11 bisection rounds, honest challenger wins, full game 1,892,451 gas, unchallenged 308,087 gas; minicpm_bound.optimistic split into happy/dispute tiers citing measured arbiter gas of 41.8k–248.6k; the depth-35 full-model dispute at 6.62M–7.04M gas is a synthetic-fixture model value, not a measurement) · r7 (stateless_arbiter adds BSC BEP-496 protocol accounting: protocolTotalGas and calldataFloorGas alongside executionGas; 84 cases in the 41.8k–234k gas suite hit the calldata floor; all local measurements + protocol formula, not chain receipts) · r6 (adds long_term_model_bound, the measured stateless_arbiter MUL arbitration receipt, and measured 14-flip call batching at −12.02% gas/instruction; 32/64 flips exceed the BSC 2^24 transaction gas cap and are marked counterfactual) · r5 (data island adds measured MiniCPM5-2B instruction counts, fidelity and trace evidence) · r4 (adds the three questions at the top per docs/fe-page-guide-antd.md) · r3 (adds twin measurements of lazy allocation and jump-table decode) · r2 (large-model cost recomputed from a fixed model configuration, see riscv_machine/ROADMAP_DEEPSEEK.md) · Data measured by Claude and codex agents in the tapeout repository; scripts and raw receipts are in <code>circuits/_scratch/riscv_machine/</code> and <code>circuits/_scratch/onchain_inference/</code>. The next version will replace "estimate" entries with twin measurements.</div>
 </footer>
 </div>
+<script>/* 语言切换：写回 nand-driver-lang，只改 <html lang>，不刷新；CSS 按 lang 显示 .zh/.en */
+(function(){
+  var d=document.documentElement, K='nand-driver-lang';
+  var btn=document.getElementById('lang-btn'), bar=document.getElementById('tick-bar');
+  var TITLE={zh:'TapeOut Gas 账本',en:'TapeOut Gas Ledger'};
+  function cur(){return /^en/i.test(d.lang||'')?'en':'zh'}
+  function set(l){d.lang=l==='en'?'en':'zh-CN'}
+  function apply(){
+    var l=cur();
+    document.title=TITLE[l];
+    btn.setAttribute('aria-label',l==='en'?'Language: English. Switch to Chinese (中文)':'语言：中文。切换到英文（English）');
+    if(bar) bar.setAttribute('aria-label',bar.getAttribute('data-aria-'+l));
+  }
+  btn.addEventListener('click',function(){
+    var l=cur()==='en'?'zh':'en';
+    try{localStorage.setItem(K,l)}catch(e){}
+    set(l);
+  });
+  window.addEventListener('storage',function(e){if(e.key===K&&(e.newValue==='zh'||e.newValue==='en'))set(e.newValue)});
+  if(window.MutationObserver) new MutationObserver(apply).observe(d,{attributes:true,attributeFilter:['lang']});
+  else btn.addEventListener('click',apply);
+  apply();
+})();
+</script>
+</body>
+</html>

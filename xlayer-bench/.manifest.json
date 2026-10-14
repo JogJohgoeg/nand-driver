@@ -111,8 +111,8 @@
     },
     {
       "path": "brain/bench-ui.css",
-      "bytes": 38083,
-      "sha256": "c9cf811d1ea67127738c8c26977b8d82bceb5551efb086d3ffc959f0b55d71d4",
+      "bytes": 36570,
+      "sha256": "a77627faa12dc98c7425901b9a8e4b88d594326a8d5db11e5c3cf41446bfdd49",
       "chunks": 2
     },
     {
@@ -285,8 +285,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 22399,
-      "sha256": "e7ae4c8f1c8bb3ed85a7f5c81aa2df67873df8c37db87bb39c295546db99642a",
+      "bytes": 22007,
+      "sha256": "24ff82b00335a294b050942e7172e9d5f5d827bcf821751a352e03ef7494c299",
       "chunks": 1
     },
     {
@@ -404,7 +404,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8431167,
+  "totalBytes": 8429262,
   "chunks": 402,
   "fileCap": 8400000
 }

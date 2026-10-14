@@ -1,120 +1,164 @@
 <!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>门电路 BitCPM4 对话</title>
-<meta name="theme-color" content="#006B35">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Cpath d='M8 9h8a7 7 0 0 1 0 14H8z' fill='none' stroke='%23F2F3EF' stroke-width='2.4'/%3E%3Ccircle cx='24.5' cy='16' r='2.2' fill='none' stroke='%23F2F3EF' stroke-width='2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap" media="print" onload="this.media='all'">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>门电路 BitCPM4 对话</title>
+<meta name="theme-color" content="#050506">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235741D8'/%3E%3Cpath d='M8 9h8a7 7 0 0 1 0 14H8z' fill='none' stroke='%23FFFFFF' stroke-width='2.4'/%3E%3Ccircle cx='24.5' cy='16' r='2.2' fill='none' stroke='%23FFFFFF' stroke-width='2'/%3E%3C/svg%3E">
 <style>
-/* 门电路大脑 · 精简版页面，绿色版式（2026-10-01；规范见 hashport/theme/README.md）。脚本与 id、类名（mute ok warn bad tool）不变。 */
-:root{color-scheme:light;
-  --g:#006B35;--frame:#1E8C4E;--lime:#E4F53C;--paper-c:#F2F3EF;
-  --bg:#F2F3EF;--panel:#FFFFFF;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;
-  --line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);--hi:#006B35;--hi-soft:rgba(0,107,53,.08);--on-hi:#F2F3EF;--err:#B3261E;
-  --disp:"Antonio","Avenir Next Condensed","Bahnschrift","Roboto Condensed","Arial Narrow","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+/* 门电路大脑 · 精简版页面，Kraken Pro 式深色（2026-10-14 起，配色基准 hashport/site/home.css）。脚本与 id、类名（mute ok warn bad tool）不变。 */
+:root{color-scheme:dark;
+  --bg:#050506;--panel:#111114;--panel2:#17171C;--ink:#FFFFFF;--ink2:#CBCBD3;--ink3:#9C9DAE;
+  --line:rgba(112,113,135,.14);--line2:rgba(112,113,135,.24);
+  --brand:#5741D8;--brand-hover:#6A55E8;--hi:#A496FF;--hi-soft:rgba(87,65,216,.16);
+  --pos:#00DA80;--warn:#F5A524;--err:#F0616D;
+  --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   --gut:clamp(16px,4vw,40px)}
-@media (prefers-color-scheme:dark){:root{color-scheme:dark;
-  --g:#006A34;--bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;
-  --line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);--hi:#5BE08F;--hi-soft:rgba(91,224,143,.1);--on-hi:#0D1A12;--err:#FF8A80}}
-.g{--ink:#F2F3EF;--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--hi:var(--lime);background:var(--g);color:var(--ink)}
+.g{background:var(--bg);color:var(--ink)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.62 var(--sans);font-variation-settings:"wdth" 96;-webkit-font-smoothing:antialiased}
-body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
+body{margin:0;background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%) no-repeat,var(--bg);background-size:100% 640px,auto;color:var(--ink);font:15px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--hi)}a:hover{color:#C2B9FF}
 :focus-visible{outline:2px solid var(--hi);outline-offset:2px}
 .w{max-width:900px;margin:0 auto;padding:0 var(--gut)}
-/* 页头：绿带 + 字标（回主站首页） */
+/* 页头：字标（回主站首页） */
 .top{border-bottom:1px solid var(--line)}
+.top.g{background:transparent}
 .top .w{display:flex;align-items:center;min-height:72px;padding-top:7px;padding-bottom:7px}
-.mark{display:grid;line-height:.92;color:var(--ink);text-decoration:none}
-.mark b{font:200 23px/.92 var(--disp);font-stretch:condensed;letter-spacing:.02em;text-transform:uppercase}
-.mark small{margin-top:5px;font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;white-space:nowrap;color:var(--ink3)}
+.mark{display:grid;line-height:1.05;color:var(--ink);text-decoration:none}
+.mark b{font:800 19px/1.05 var(--sans);letter-spacing:.01em}
+.mark small{margin-top:5px;font:400 10px/1 var(--mono);letter-spacing:.08em;white-space:nowrap;color:var(--ink3)}
 main.w{padding-top:clamp(28px,5vw,56px);padding-bottom:64px}
-h1{margin:0 0 16px;font:200 clamp(36px,5.4vw,60px)/1.05 var(--disp);font-stretch:condensed;letter-spacing:-.005em;color:var(--hi);word-break:keep-all;overflow-wrap:anywhere}
-.mute{color:var(--ink3)}.ok{color:var(--hi)}.bad,.warn{color:var(--err)}.tool{color:var(--hi)}
+h1{margin:0 0 16px;font:800 clamp(30px,4.6vw,48px)/1.15 var(--sans);letter-spacing:-.01em;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+.mute{color:var(--ink3)}.ok{color:var(--pos)}.bad{color:var(--err)}.warn{color:var(--warn)}.tool{color:var(--hi)}
 h1+.mute{max-width:46em;line-height:1.75;color:var(--ink2)}
-.stage{margin-top:28px;padding:18px 0 4px;border-top:1px dashed var(--line2)}
-.stage>b:first-child{font:300 22px/1.2 var(--disp);font-stretch:condensed;color:var(--hi)}
+.stage{margin-top:28px;padding:18px 0 4px;border-top:1px solid var(--line2)}
+.stage>b:first-child{font:700 19px/1.3 var(--sans);color:var(--ink)}
 label{display:block;margin:0 0 8px;font:500 12px/1.4 var(--mono);letter-spacing:.04em}
-textarea{display:block;width:100%;padding:10px 12px;font:13.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:0;resize:vertical}
+textarea{display:block;width:100%;padding:10px 12px;font:13.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:10px;resize:vertical}
 textarea::placeholder{color:var(--ink3);opacity:1}
 textarea:focus{outline:2px solid var(--hi);outline-offset:1px;border-color:var(--hi)}
-/* 折叠项：上下虚线，右侧「+」 */
-details{margin-top:14px;border-top:1px dashed var(--line2);border-bottom:1px dashed var(--line2)}
+/* 折叠项：上下细线，右侧「+」 */
+details{margin-top:14px;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
 details>summary,details>summary.mute{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:44px;padding:8px 0;list-style:none;cursor:pointer;
-  font:300 17px/1.3 var(--disp);font-stretch:condensed;color:var(--hi)}
+  font:600 15.5px/1.35 var(--sans);color:var(--hi)}
 details>summary::-webkit-details-marker{display:none}
-details>summary::after{content:"+";flex:none;font:300 26px/1 var(--disp);transition:transform .2s}
+details>summary::after{content:"+";flex:none;font:300 24px/1 var(--sans);color:var(--ink3);transition:transform .2s}
 details[open]>summary::after{transform:rotate(45deg)}
 details[open]{padding-bottom:12px}
-/* 按钮：方角、窄体字；「生成」是主按钮 */
+/* 按钮：圆角；次按钮深灰底，「生成」是主按钮（品牌紫底白字） */
 button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:0;padding:0 16px;
-  font:400 15px/1.1 var(--disp);font-stretch:condensed;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
-  color:var(--ink);background:transparent;border:1px solid var(--line2);border-radius:0;cursor:pointer}
-button:hover:not(:disabled){border-color:var(--hi);color:var(--hi);background:var(--hi-soft)}
+  font:600 15px/1.1 var(--sans);white-space:nowrap;
+  color:var(--ink);background:var(--panel2);border:1px solid var(--line2);border-radius:10px;cursor:pointer}
+button:hover:not(:disabled){border-color:rgba(112,113,135,.5);color:var(--ink);background:#1F1F26}
 button:disabled{opacity:.45;cursor:default}
-#go{background:var(--hi);border-color:var(--hi);color:var(--on-hi)}
-#go:hover:not(:disabled){background:var(--hi);color:var(--on-hi);filter:brightness(1.08)}
+#go{background:var(--brand);border-color:var(--brand);color:#fff}
+#go:hover:not(:disabled){background:var(--brand-hover);border-color:var(--brand-hover);color:#fff}
 /* 按钮行：放不下时整段说明换到下一行，不在字中间断开 */
 .stage p{display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px;margin:16px 0 10px}
 #info{min-width:0}
-#out{min-height:2.5em;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--hi)}
-pre{margin:8px 0 0;padding:10px 12px;font:12.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line);overflow:auto;white-space:pre-wrap}
+#out{min-height:2.5em;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel);border:1px solid var(--line2);border-radius:14px}
+pre{margin:8px 0 0;padding:10px 12px;font:12.5px/1.5 var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:10px;overflow:auto;white-space:pre-wrap}
 #call{margin-top:10px}
 table{border-collapse:collapse;margin-top:10px;font-size:13.5px}
 td{padding:7px 12px 7px 0;vertical-align:top}
-tr+tr td{border-top:1px dashed var(--line)}
-@media (max-width:640px){body::after{border-width:3px}}
+tr+tr td{border-top:1px solid var(--line)}
 @media (pointer:coarse),(max-width:600px){button{min-height:44px;touch-action:manipulation}textarea{font-size:16px}}
 @media (prefers-reduced-motion:reduce){details>summary::after{transition:none}}
-</style><!--tk-shell--><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+/* 中英双语：.zh/.en 按 html lang 显示；语言键 nand-driver-lang 全站共用 */
+html[lang^="en"] .zh{display:none!important} html:not([lang^="en"]) .en{display:none!important}
+#lang{margin-left:auto;min-height:36px;padding:0 12px;font-weight:500;font-size:13.5px;color:var(--ink3)} #lang b{color:var(--ink)}
+</style>
+<script>var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN';</script>
+<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
 </head>
 <body>
-<header class="top g"><div class="w"><a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a></div></header>
+<header class="top g"><div class="w"><a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a><button id="lang" type="button" aria-label="切换语言 / Switch language"><b>中文</b>&nbsp;/&nbsp;EN</button></div></header>
 <main class="w">
-<h1>门电路版 BitCPM4-1B</h1>
-<div class="mute">整个语言模型被现场生成为 NAND / LATCH 门电路网表，在你的显卡上用 WebGPU 逐位执行；每个 token 约需 1.4 万亿次 NAND。
+<h1><span class="zh">门电路版 BitCPM4-1B</span><span class="en">BitCPM4-1B in Logic Gates</span></h1>
+<div class="mute"><span class="zh">整个语言模型被现场生成为 NAND / LATCH 门电路网表，在你的显卡上用 WebGPU 逐位执行；每个 token 约需 1.4 万亿次 NAND。
 单元库是预综合的固定资产；「按权重选单元与连线」由本页在浏览器里现场生成。文字 ↔ 编号由原 tokenizer 在页面里完成（宿主 I/O，不参与计算）。
-带工具定义时，工具调用由门内的 K6 摘要机生成（工具不会被执行）。首次打开需下载约 750 MB 并生成电路（几分钟）；之后从本机缓存启动。</div>
-<div class="stage"><b>设备与准备</b>：<span id="st">检查中…</span><div id="pre"></div></div>
+带工具定义时，工具调用由门内的 K6 摘要机生成（工具不会被执行）。首次打开需下载约 750 MB 并生成电路（几分钟）；之后从本机缓存启动。</span><span class="en">The whole language model is generated on the spot as a NAND / LATCH gate netlist and executed bit by bit on your GPU with WebGPU; each token takes about 1.4 trillion NAND evaluations.
+The cell library is a fixed, pre-synthesized asset; “choosing cells and wiring from the weights” is generated live in your browser by this page. Text ↔ token IDs are converted in the page by the original tokenizer (host I/O, not part of the computation).
+When tool definitions are given, tool calls are generated by the in-gate K6 summarizer (tools are never executed). The first visit downloads about 750 MB and generates the circuit (a few minutes); after that it starts from the local cache.</span></div>
+<div class="stage"><b><span class="zh">设备与准备</span><span class="en">Device &amp; setup</span></b><span class="zh">：</span><span class="en">: </span><span id="st"><span class="zh">检查中…</span><span class="en">Checking…</span></span><div id="pre"></div></div>
 <div class="stage">
-  <label class="mute" for="msg">你的消息</label><textarea id="msg" rows="3">What is the capital of France?</textarea>
-  <details><summary class="mute">工具定义（可选，JSON 数组，OpenAI function 格式）</summary><textarea id="tools" rows="6" placeholder='[{"type":"function","function":{"name":"read_file","description":"…","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}]'></textarea></details>
-  <p><button id="go" disabled>生成</button><button id="stop" disabled>停止</button><button id="long" hidden>改用长回答模式重来</button> <span id="info" class="mute"></span></p>
+  <label class="mute" for="msg"><span class="zh">你的消息</span><span class="en">Your message</span></label><textarea id="msg" rows="3">What is the capital of France?</textarea>
+  <details><summary class="mute"><span class="zh">工具定义（可选，JSON 数组，OpenAI function 格式）</span><span class="en">Tool definitions (optional; JSON array in OpenAI function format)</span></summary><textarea id="tools" rows="6" placeholder='[{"type":"function","function":{"name":"read_file","description":"…","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}]'></textarea></details>
+  <p><button id="go" disabled><span class="zh">生成</span><span class="en">Generate</span></button><button id="stop" disabled><span class="zh">停止</span><span class="en">Stop</span></button><button id="long" hidden><span class="zh">改用长回答模式重来</span><span class="en">Retry in long-answer mode</span></button> <span id="info" class="mute"></span></p>
   <div id="out"></div><div id="call"></div>
 </div>
 </main>
 <script type="module">
 import { createGateBrain } from './gate-brain.mjs';
 const q = new URLSearchParams(location.search), $ = id => document.getElementById(id), esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-const stageName = { cache: '检查本机缓存', download: '下载并校验权重', generate: '现场生成电路', upload: '从缓存上传', prompt: '读入提示' };
+// 中英双语：B 输出两份 span（CSS 按 html lang 显示，切换语言不用重绘）；EN 把 gate-brain.mjs 发来的中文提示译成英文（认不出的原样显示）
+const B = (zh, en) => `<span class="zh">${zh}</span><span class="en">${en}</span>`;
+const EN_RULES = [
+  [/^长回答模式不可用：(.*)$/s, (m, r) => 'Long-answer mode unavailable: ' + EN(r)],
+  [/^没有 WebGPU$/, 'no WebGPU'], [/^没有显卡适配器$/, 'no GPU adapter'],
+  [/^浏览器不报告内存大小；长回答模式需要约 ([\d.]+) GB 内存与 ([\d.]+) GB 显存，请确认设备足够后再开$/, 'the browser does not report its memory size; long-answer mode needs about $1 GB of RAM and $2 GB of GPU memory, so make sure your device has enough before enabling it'],
+  [/^浏览器报告内存 ≥ (\S+) GB$/, 'the browser reports ≥ $1 GB of memory'],
+  [/^浏览器报告内存 (\S+) GB，长回答模式需要约 ([\d.]+) GB$/, 'the browser reports $1 GB of memory; long-answer mode needs about $2 GB'],
+  [/^这台设备不满足运行条件（见预检结果），没有下载任何权重。$/, "This device doesn't meet the requirements (see the device check results); no weights were downloaded."],
+  [/^无法创建 WebGPU 设备：(.*)$/s, 'Could not create a WebGPU device: $1'],
+  [/^显卡设备丢失（驱动重置或内存不足），请刷新页面重试。$/, 'The GPU device was lost (driver reset or out of memory). Please reload the page and try again.'],
+  [/^取不到权重清单（(.*?)）：(.*)。若权重与页面不同源，托管端需返回 Access-Control-Allow-Origin。$/s, 'Could not fetch the weights manifest ($1): $2. If the weights are served from a different origin than the page, the host must return Access-Control-Allow-Origin.'],
+  [/^权重包版本与本代码不符（缺少所需模板）。$/, 'The weights package version does not match this code (required templates are missing).'],
+  [/^附加单元 (.*) 的网表校验失败。$/s, 'Netlist verification failed for extra cell $1.'],
+  [/^本机缓存不可用（(.*)），已作废并重新生成。$/s, 'The local cache is unusable ($1); it was discarded and the circuit is being regenerated.'],
+  [/^读取本机缓存出错（(.*)），改为重新生成。$/s, 'Error reading the local cache ($1); regenerating instead.'],
+  [/^本机缓存写入失败（(.*)），已停止缓存；本次不受影响，下次打开需要重新生成。请在浏览器设置里为本站留出约 ([\d.]+) GB 存储空间。$/s, 'Writing the local cache failed ($1), so caching has stopped. This session is unaffected, but the circuit will have to be regenerated next time. Please allow about $2 GB of storage for this site in your browser settings.'],
+  [/^下载权重块 (\S+) 失败：(.*)$/s, 'Failed to download weight chunk $1: $2'],
+  [/^权重块 (\S+) 的 SHA-256 与清单不符，已拒绝生成（文件损坏或被替换）。$/, 'The SHA-256 of weight chunk $1 does not match the manifest, so generation was refused (the file is damaged or was replaced).'],
+  [/^模型还没有准备好，请先等待 ready。$/, 'The model is not ready yet; wait for ready first.'],
+  [/^上一个问题还在生成中，请等它结束或先调用 stop\(\)。$/, 'The previous question is still generating; wait for it to finish or call stop() first.'],
+  [/^正在生成，请先 stop\(\)。$/, 'Generation is in progress; call stop() first.'],
+  [/^提示有 (\d+) 个 token，超过本电路容量（C(\d+)，最多 (\d+) 个）。请缩短对话(，或改用长回答模式（C512）)?。$/, (m, p, c, n, l) => `The prompt has ${p} tokens, exceeding this circuit's capacity (C${c}, at most ${n}). Please shorten the conversation${l ? ' or switch to long-answer mode (C512)' : ''}.`],
+  [/^回答写满了本电路的容量（C(\d+)：提示 \+ 回答 ≤ (\d+) 个 token）。(.*)$/s, (m, c, n, r) => `The answer filled this circuit's capacity (C${c}: prompt + answer ≤ ${n} tokens).` + ({ '可以改用长回答模式（C512）重新回答。': ' You can answer again in long-answer mode (C512).', '这台设备不满足长回答模式的内存要求。': " This device doesn't meet the memory requirements for long-answer mode." }[r] ?? (r ? ' ' + r : ''))],
+  // 设备预检（precheck）的说明
+  [/^此浏览器没有开启 WebGPU。.*$/s, 'WebGPU is not enabled in this browser. Use Chrome / Edge 113 or later (on Linux, enable WebGPU in chrome://flags), or Safari 18 or later with WebGPU turned on.'],
+  [/^浏览器支持 WebGPU，但没有拿到可用的显卡适配器.*$/s, 'The browser supports WebGPU but could not get a usable GPU adapter (outdated driver, or the GPU is blocklisted by the browser). Update your GPU driver, or see chrome://gpu for the reason.'],
+  [/^(\d+) MiB（需要 ≥ (\d+) MiB）$/, '$1 MiB (need ≥ $2 MiB)'], [/^(\d+) 字节（需要 ≥ (\d+)）$/, '$1 bytes (need ≥ $2)'], [/^(\d+)（需要 ≥ (\d+)）$/, '$1 (need ≥ $2)'],
+  [/^浏览器不报告内存大小。本模式峰值：浏览器进程约 ([\d.]+) GB，另需显存（或核显共享内存）约 ([\d.]+) GB。$/, 'The browser does not report its memory size. Peak use in this mode: about $1 GB for the browser process, plus about $2 GB of GPU memory (or shared memory on integrated graphics).'],
+  [/^浏览器报告 ≥ (\S+) GB（浏览器最多报 8）(——.*)?。$/s, (m, d, w) => `The browser reports ≥ ${d} GB (browsers report at most 8)${w ? ' — this device may not have enough memory and the page may be killed by the system or browser' : ''}.`],
+  [/^无法查询；不影响运行，只是不能缓存$/, 'Cannot be queried; this only disables caching and does not affect running'],
+  [/^可用约 ([\d.]+) GB（缓存需要约 ([\d.]+) GB(，不足.*)?）$/s, (m, f, n, w) => `About ${f} GB available (the cache needs about ${n} GB${w ? '; not enough, so nothing will be cached and the circuit is regenerated on every visit' : ''})`],
+];
+const EN = m => { m = String(m); for (const [re, to] of EN_RULES) if (re.test(m)) return m.replace(re, to); return m; };
+const BI = m => B(esc(String(m)), esc(EN(m)));      // 中文原文 + 英译，转义后输出
+const WHAT_EN = { 'WebGPU 适配器': 'WebGPU adapter', '单个存储缓冲绑定上限': 'Max storage buffer binding size', '单个缓冲大小上限': 'Max buffer size', '每阶段存储缓冲数': 'Storage buffers per shader stage', '工作组共享内存': 'Workgroup shared memory', '内存': 'Memory', '本机缓存空间': 'Local cache space' };
+const stageName = { cache: ['检查本机缓存', 'Checking local cache'], download: ['下载并校验权重', 'Downloading and verifying weights'], generate: ['现场生成电路', 'Generating the circuit'], upload: ['从缓存上传', 'Uploading from cache'], prompt: ['读入提示', 'Reading prompt'] };
 const brain = createGateBrain({ weightsBase: q.get('w') || undefined, C: +(q.get('C') || 128), onEvent: e => {
-  if (e.type === 'precheck') $('pre').innerHTML = '<table>' + e.rows.map(r => `<tr><td class="${r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad'}">${r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗'}</td><td>${r.what}</td><td>${r.detail}</td></tr>`).join('') + '</table>';
-  else if (e.type === 'progress' && e.stage !== 'prompt') $('st').textContent = stageName[e.stage] + (e.total ? `：${e.stage === 'download' ? (e.done / 1e6).toFixed(0) + ' / ' + (e.total / 1e6).toFixed(0) + ' MB' : e.done + ' / ' + e.total}` : e.unit ? `：${e.unit}` : e.tag ? `：${e.tag}` : '');
-  else if (e.type === 'progress') $('info').textContent = `读入提示：${e.done} / ${e.total}`;
-  else if (e.type === 'ready') { $('st').innerHTML = `<span class="ok">就绪</span>（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`; $('go').disabled = false; }
-  else if (e.type === 'warning') $('st').innerHTML += ` <span class="warn">${esc(e.message)}</span>`;
-  else if (e.type === 'error') $('st').innerHTML = `<span class="bad">${esc(e.message)}</span>`;
-  else if (e.type === 'capacity') { $('info').innerHTML = `<span class="warn">${esc(e.message)}</span>`; $('long').hidden = !e.canSwitchLong; }
+  if (e.type === 'precheck') $('pre').innerHTML = '<table>' + e.rows.map(r => `<tr><td class="${r.ok === true ? 'ok' : r.ok === 'warn' ? 'warn' : 'bad'}">${r.ok === true ? '✓' : r.ok === 'warn' ? '!' : '✗'}</td><td>${B(r.what, WHAT_EN[r.what] || r.what)}</td><td>${B(r.detail, EN(r.detail))}</td></tr>`).join('') + '</table>';
+  else if (e.type === 'progress' && e.stage !== 'prompt') { const n = stageName[e.stage] || [e.stage, e.stage], v = e.total ? `${e.stage === 'download' ? (e.done / 1e6).toFixed(0) + ' / ' + (e.total / 1e6).toFixed(0) + ' MB' : e.done + ' / ' + e.total}` : e.unit ? `${e.unit}` : e.tag ? `${e.tag}` : '';
+    $('st').innerHTML = B(esc(n[0] + (v ? '：' + v : '')), esc(n[1] + (v ? ': ' + v : ''))); }
+  else if (e.type === 'progress') $('info').innerHTML = B(`读入提示：${e.done} / ${e.total}`, `Reading prompt: ${e.done} / ${e.total}`);
+  else if (e.type === 'ready') { $('st').innerHTML = B(`<span class="ok">就绪</span>（C${e.C}，${e.warm ? '本机缓存' : '现场生成'}，${(e.prepMs / 1e3).toFixed(0)} s）`, `<span class="ok">Ready</span> (C${e.C}, ${e.warm ? 'from local cache' : 'generated live'}, ${(e.prepMs / 1e3).toFixed(0)} s)`); $('go').disabled = false; }
+  else if (e.type === 'warning') $('st').innerHTML += ` <span class="warn">${BI(e.message)}</span>`;
+  else if (e.type === 'error') $('st').innerHTML = `<span class="bad">${BI(e.message)}</span>`;
+  else if (e.type === 'capacity') { $('info').innerHTML = `<span class="warn">${BI(e.message)}</span>`; $('long').hidden = !e.canSwitchLong; }
 } });
 let ctrl = null;
 async function run() {
   let tools = null; const tt = $('tools').value.trim();
-  if (tt) { try { tools = JSON.parse(tt); } catch (err) { $('info').innerHTML = `<span class="bad">工具定义不是合法 JSON：${esc(err.message)}</span>`; return; } }
+  if (tt) { try { tools = JSON.parse(tt); } catch (err) { $('info').innerHTML = `<span class="bad">${B('工具定义不是合法 JSON：', 'Tool definitions are not valid JSON: ')}${esc(err.message)}</span>`; return; } }
   $('out').textContent = ''; $('call').innerHTML = ''; $('go').disabled = true; $('stop').disabled = false; $('long').hidden = true; ctrl = new AbortController();
   try {
     const r = await brain.ask([{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: $('msg').value }], tools,
       { signal: ctrl.signal, onToken: t => { $('out').innerHTML = t.tool ? `<span class="tool">${esc(t.text)}</span>` : esc(t.text.replace(/<\|im_end\|>$/, '')); } });
-    $('info').innerHTML = `结束：${({ eos: '模型结束', max_tokens: '达到 256 个 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' })[r.stop]}；`
-      + `首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}` + ($('info').innerHTML.includes('容量') ? '<br>' + $('info').innerHTML : '');
-    if (r.toolCall) $('call').innerHTML = `<div class="tool">工具调用（门内 K6 生成，未执行）：<pre>${esc(JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1))}</pre></div>`;
-  } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; }
+    $('info').innerHTML = B(`结束：${({ eos: '模型结束', max_tokens: '达到 256 个 token 上限', capacity: '容量已满', stopped: '已停止', tool_truncated: '工具调用截断', tool_aborted: '工具调用中止' })[r.stop]}；`
+      + `首 token ${(r.firstTokenMs / 1e3).toFixed(1)} s，每 token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}`,
+      `Ended: ${({ eos: 'model finished', max_tokens: 'hit the 256-token limit', capacity: 'capacity full', stopped: 'stopped', tool_truncated: 'tool call truncated', tool_aborted: 'tool call aborted' })[r.stop]}; `
+      + `first token ${(r.firstTokenMs / 1e3).toFixed(1)} s, per token ${r.msPerToken ? (r.msPerToken / 1e3).toFixed(2) + ' s' : '—'}`) + ($('info').innerHTML.includes('容量') ? '<br>' + $('info').innerHTML : '');
+    if (r.toolCall) $('call').innerHTML = `<div class="tool">${B('工具调用（门内 K6 生成，未执行）：', 'Tool call (generated in-gate by K6, not executed):')}<pre>${esc(JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1))}</pre></div>`;
+  } catch (err) { $('info').innerHTML = `<span class="bad">${BI(err.message)}</span>`; }
   $('go').disabled = false; $('stop').disabled = true;
 }
 $('go').onclick = run; $('stop').onclick = () => ctrl?.abort();
-$('long').onclick = async () => { $('long').hidden = true; $('go').disabled = true; try { await brain.switchToLong(); await run(); } catch (err) { $('info').innerHTML = `<span class="bad">${esc(err.message)}</span>`; } };
+$('long').onclick = async () => { $('long').hidden = true; $('go').disabled = true; try { await brain.switchToLong(); await run(); } catch (err) { $('info').innerHTML = `<span class="bad">${BI(err.message)}</span>`; } };
 brain.ready.catch(() => { });
+// 语言切换：写回 nand-driver-lang，改 html lang（文字靠 .zh/.en 的 CSS 切换），不刷新页面
+const applyLang = () => { const en = /^en/i.test(document.documentElement.lang); $('lang').innerHTML = en ? '中文&nbsp;/&nbsp;<b>EN</b>' : '<b>中文</b>&nbsp;/&nbsp;EN'; document.title = en ? 'BitCPM4 chat in logic gates' : '门电路 BitCPM4 对话'; };
+$('lang').onclick = () => { const n = /^en/i.test(document.documentElement.lang) ? 'zh' : 'en'; try { localStorage.setItem('nand-driver-lang', n); } catch { } document.documentElement.lang = n === 'en' ? 'en' : 'zh-CN'; applyLang(); };
+applyLang();
 </script></body></html>

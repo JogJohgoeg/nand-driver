@@ -1,103 +1,129 @@
 <!doctype html>
-<html lang="zh-CN" class="tk-own-bar">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>21 NAND · 概览</title>
-<meta name="description" content="把神经网络压成 NAND 门、写在区块链上：小车、门电路大脑、impossible LLM、web2tape 等全部入口。">
-<meta name="theme-color" content="#F2F3EF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0D1A12" media="(prefers-color-scheme: dark)">
-<style>
-html{background:var(--tk-bg)}
-body{margin:0;background:var(--tk-bg);color:var(--tk-ink);font:400 15px/1.55 var(--tk-sans);-webkit-font-smoothing:antialiased}
-html[lang^=en] .zh,html:not([lang^=en]) .en{display:none}
-a{color:inherit;text-decoration:none}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;height:52px;padding:0 28px;background:color-mix(in srgb,var(--tk-bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--tk-line);font-size:13px;color:var(--tk-ink2)}
-.top .menu{display:none;border:0;background:none;color:var(--tk-ink);padding:6px;margin-left:-8px;cursor:pointer}
-.top .menu svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
-.top .sp{flex:1}
-.top a:hover{color:var(--tk-ink)}
-.top .blk{display:inline-flex;align-items:center;gap:6px;font:400 12.5px/1 var(--tk-mono)}
-.top .blk i{width:7px;height:7px;border-radius:50%;background:#C7A008} .top .blk i.ok{background:#1FA45A}
-.top .chip{border:1px solid var(--tk-line);background:var(--tk-panel);border-radius:8px;padding:6px 10px;font:400 12.5px/1 var(--tk-mono);color:var(--tk-ink)}
-main{max-width:1180px;padding:28px 28px 64px}
-h1{font-size:28px;font-weight:650;letter-spacing:-.01em;margin:4px 0 6px}
-.lead{margin:0 0 22px;color:var(--tk-ink2);font-size:14.5px;max-width:760px}
-.acts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.act{display:flex;gap:12px;padding:16px;border:1px solid var(--tk-line);border-radius:12px;background:var(--tk-panel);transition:border-color .15s,transform .15s}
-.act:hover{border-color:var(--tk-line2);transform:translateY(-1px)}
-.act.tint{background:var(--tk-tint);border-color:var(--tk-tint-line)}
-.act-ic{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--tk-soft);color:var(--tk-hi)}
-.act.tint .act-ic{background:#E4F53C;color:#0B2A18}
-.act-ic svg,.av svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.act b{display:block;font-size:14.5px;font-weight:650;margin-bottom:4px} .act b i{font-style:normal;color:var(--tk-ink3)}
-.act small{display:block;font-size:12.5px;line-height:1.5;color:var(--tk-ink2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin:18px 0 8px;padding:18px 6px;border:1px solid var(--tk-line);border-radius:12px;background:var(--tk-panel)}
-.st{padding:0 14px;border-left:1px solid var(--tk-line)} .st:first-child{border-left:0}
-.st>span{display:block;font-size:12.5px;color:var(--tk-ink2)}
-.st b{display:block;font-size:22px;font-weight:650;margin:6px 0 2px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.st>small{display:block;font-size:11.5px;color:var(--tk-ink3)}
-.sec{margin-top:34px}
-.sec-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:12px}
-.sec-h h2{font-size:17px;font-weight:650;margin:0} .sec-h p{margin:0;font-size:13px;color:var(--tk-ink3)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.card{display:flex;gap:12px;padding:14px;border:1px solid var(--tk-line);border-radius:12px;background:var(--tk-panel);transition:border-color .15s}
-.card:hover{border-color:var(--tk-line2)}
-.av{flex:none;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:var(--tk-soft);color:var(--tk-hi);font:600 12px/1 var(--tk-mono)}
-.cb{min-width:0}
-.cb b{display:block;font-size:14px;font-weight:600;margin-bottom:3px}
-.cb small{display:block;font-size:12.5px;line-height:1.5;color:var(--tk-ink2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.need{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.need em{font-style:normal;font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--tk-soft);color:var(--tk-ink2)}
-.need em.wallet{background:var(--tk-tint);color:var(--tk-ink)}
-.rows{border:1px solid var(--tk-line);border-radius:12px;background:var(--tk-panel);overflow:hidden}
-.row{display:grid;grid-template-columns:150px 100px 1fr 20px;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid var(--tk-line);font-size:13.5px}
-.row:first-child{border-top:0} .row:hover{background:color-mix(in srgb,var(--tk-soft) 50%,transparent)}
-.row b{font:600 13px/1.3 var(--tk-mono)} .row .rd{color:var(--tk-ink2)} .row .go{color:var(--tk-ink3)}
-.pill{justify-self:start;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--tk-line);color:var(--tk-ink2)}
-details{margin-top:12px;border:1px solid var(--tk-line);border-radius:12px;background:var(--tk-panel)}
-summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 16px;font-weight:600;font-size:14.5px}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"+";font-size:20px;line-height:1;color:var(--tk-ink3)}
-details[open]>summary::after{content:"−"}
-.in{padding:0 16px 16px;font-size:13.5px;color:var(--tk-ink2)}
-.in a{color:var(--tk-hi)}
-.gl dt{font-weight:600;color:var(--tk-ink);margin-top:12px} .gl dt:first-child{margin-top:0} .gl dd{margin:2px 0 0}
-.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:8px 0;font-size:12.5px} .kv dt{color:var(--tk-ink3)} .kv dd{margin:0;font-family:var(--tk-mono);word-break:break-all}
-.files{border-collapse:collapse;width:100%} .files th,.files td{padding:5px 8px 5px 0;border-top:1px solid var(--tk-line);font-size:12px;text-align:left;vertical-align:top}
-.files th{color:var(--tk-ink3);border-top:0} .files td{font-family:var(--tk-mono)} .files .n{text-align:right;white-space:nowrap;padding-right:14px} .files .h{word-break:break-all;font-size:11px}
-h3.ch{font-size:14px;color:var(--tk-ink);margin:16px 0 4px}
-footer{margin-top:40px;font-size:12.5px;color:var(--tk-ink3)}
-footer a{text-decoration:underline;text-underline-offset:2px}
-@media (max-width:1180px){.acts{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:16px}.st:nth-child(4){border-left:0}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:900px){.top{padding:0 16px}.top .menu{display:block}main{padding:20px 16px 56px}}
-@media (max-width:620px){.acts,.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.st:nth-child(odd){border-left:0}.st:nth-child(4){border-left:1px solid var(--tk-line)}
-  .row{grid-template-columns:1fr auto;row-gap:4px}.row .rd{grid-column:1/-1}.row .go{display:none}.top .hide-s{display:none}}
-</style>
-<!--tk-shell--><link rel="stylesheet" href="shell/shell.css"><script src="shell/shell.js" defer></script><!--/tk-shell-->
-<script>try{var l=localStorage.getItem('nand-driver-lang')||(navigator.language.startsWith('zh')?'zh':'en');document.documentElement.lang=l==='zh'?'zh-CN':'en'}catch(e){}</script>
+<title>21 NAND · 把 AI 拆成最基础的开关</title>
+<meta name="description" content="把一个开源 AI 模型完全换成门电路，在你电脑上一位一位算出答案；我们的第一颗芯片「吟游诗人」设计图已存上链。">
+<link rel="stylesheet" href="home.css">
+<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
+(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
+if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
+if(l!==document.documentElement.lang.slice(0,2))location.replace("en/"+location.hash);
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
 </head>
 <body>
 <header class="top">
-  <button class="menu" type="button" aria-label="菜单 / Menu" onclick="document.dispatchEvent(new Event('tk-menu'))"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-  <span class="sp"></span>
-  <a class="hide-s" href="https://tapeout.net/" target="_blank" rel="noopener"><span class="zh">TapeOut 官网</span><span class="en">TapeOut</span> ↗</a>
-  <span class="blk"><i id="ov-dot"></i><span id="ov-blk2">#…</span></span>
-  <a class="chip" href="sites/"><span class="zh">全部页面</span><span class="en">All pages</span></a>
+  <div class="wrap">
+    <a class="logo" href="./">21 NAND</a>
+    <nav class="nav" aria-label="主导航">
+      <a href="#bard">吟游诗人</a>
+      <a href="https://nand.aihashrate.stream/gate/">试一试</a>
+      <a href="build/">做电路</a>
+      <a href="faq/">常见问题</a>
+      <a href="progress/">进度</a>
+      <a href="verify/">核对</a>
+      <a class="hi" href="en/" lang="en" hreflang="en">EN</a>
+    </nav>
+  </div>
 </header>
+
 <main>
-  <h1><span class="zh">21 NAND：写在链上的门电路</span><span class="en">21 NAND: gate circuits on chain</span></h1>
-  <p class="lead"><span class="zh">我们把神经网络压成最简单的 NAND 门，写在 BNB Chain 和 X Layer 上。下面的演示都在你的浏览器里逐门运行，其中一部分还能让链上重算一遍核对。</span><span class="en">We compress neural networks into the simplest NAND gates and store them on BNB Chain and X Layer. Every demo below runs gate by gate in your browser, and some can be recomputed on chain to check.</span></p>
-  <div class="acts"><a class="act" href="arena.html"><span class="act-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16.5h14M6.5 16.5V12l2-4.5h7l2 4.5v4.5"/><path d="M5.5 12h13"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg></span><span class="act-b"><b><span class="zh">21 门小车</span><span class="en">21-gate car</span> <i>→</i></b><small><span class="zh">小车在赛道上自己开，它的“大脑”只有 21 个 NAND 门，写在 BNB Chain 上；你还可以让链上把它的每一步重新算一遍。</span><span class="en">A little car drives itself around a track. Its whole “brain” is 21 NAND gates stored on BNB Chain, and you can have the chain recompute every step.</span></small></span></a><a class="act" href="gate/"><span class="act-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5a3 3 0 0 0-3 3 3 3 0 0 0-2 5.2A3 3 0 0 0 6.5 17a3 3 0 0 0 5.5 1.5V6a2.5 2.5 0 0 0-3-1.5z"/><path d="M15 4.5a3 3 0 0 1 3 3 3 3 0 0 1 2 5.2 3 3 0 0 1-2.5 4.3 3 3 0 0 1-5.5 1.5"/></svg></span><span class="act-b"><b><span class="zh">门电路大脑</span><span class="en">Gate brain</span> <i>→</i></b><small><span class="zh">一个 10 亿参数的 AI 聊天模型被拆成几千亿个最简单的开关，你电脑的显卡一个开关一个开关地算出每个字，回答和原版模型一字不差。准备好一次之后，断网也能用。</span><span class="en">A 1-billion-parameter chat AI split into hundreds of billions of the simplest switches. Your graphics card computes every word switch by switch, and the answers match the original model exactly. Once set up, it works offline.</span></small></span></a><a class="act tint" href="web2tape/"><span class="act-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.5 5.3 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.3-3.5-8.5S9.6 5.9 12 3.5z"/></svg></span><span class="act-b"><b><span class="zh">web2tape</span><span class="en">web2tape</span> <i>→</i></b><small><span class="zh">把一个网站存到区块链上，生成一个永久的新网址。原网站以后改版或关掉，链上这份也还在。配套 Chrome 插件已上架。</span><span class="en">Save a website on chain and get a permanent new address. If the original site changes or goes away, the on-chain copy stays. A companion Chrome extension is in the Web Store.</span></small></span></a><a class="act tint" href="tapeid/"><span class="act-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.8c.5-1 1.4-1.5 2.6-1.5 1.5 0 2.4.8 2.4 1.8 0 2.6-5 1.4-5 4 0 1 1 1.9 2.6 1.9 1.2 0 2.1-.5 2.6-1.5"/></svg></span><span class="act-b"><b><span class="zh">TapeID 发币</span><span class="en">TapeID launch</span> <i>→</i></b><small><span class="zh">如果你在 TapeOut 上做过电路，这里能一步在 Base 链上为它发一个代币；交易产生的手续费 80% 归你。</span><span class="en">If you’ve made a circuit on TapeOut, launch a token for it on Base in one step; 80% of the trading fees go to you.</span></small></span></a></div>
-  <div class="stats"><div class="st"><span><span class="zh">小车的大脑</span><span class="en">Car brain</span></span><b>21</b><small><span class="zh">个 NAND 门</span><span class="en">NAND gates</span></small></div><div class="st"><span><span class="zh">电路 283</span><span class="en">Circuit 283</span></span><b>152</b><small><span class="zh">门 + 10 个存储位</span><span class="en">gates + 10 memory bits</span></small></div><div class="st"><span><span class="zh">Pi 默认大脑</span><span class="en">Pi default brain</span></span><b><span class="zh">485 万</span><span class="en">4.85M</span></b><small><span class="zh">个门</span><span class="en">gates</span></small></div><div class="st"><span><span class="zh">impossible LLM</span><span class="en">impossible LLM</span></span><b><span class="zh">514 万</span><span class="en">5.14M</span></b><small><span class="zh">个门</span><span class="en">gates</span></small></div><div class="st"><span><span class="zh">门电路大脑</span><span class="en">Gate brain</span></span><b><span class="zh">10 亿</span><span class="en">1B</span></b><small><span class="zh">参数，逐门算</span><span class="en">parameters, gate by gate</span></small></div><div class="st"><span><span class="zh">BNB Chain 区块</span><span class="en">BNB Chain block</span></span><b id="ov-blk">…</b><small><span class="zh">实时</span><span class="en">live</span></small></div></div>
-  <section class="sec"><div class="sec-h"><h2><span class="zh">演示</span><span class="en">Demos</span></h2><p><span class="zh">都在浏览器里运行，不用钱包。</span><span class="en">All run in your browser; no wallet needed.</span></p></div><div class="grid"><a class="card" href="arena.html"><span class="av">21</span><span class="cb"><b><span class="zh">一辆只靠 21 个门开的车</span><span class="en">A car driven by 21 gates</span></b><small><span class="zh">小车在赛道上自己开，它的“大脑”只有 21 个 NAND 门，写在 BNB Chain 上；你还可以让链上把它的每一步重新算一遍。</span><span class="en">A little car drives itself around a track. Its whole “brain” is 21 NAND gates stored on BNB Chain, and you can have the chain recompute every step.</span></small><span class="need"><em class=""><span class="zh">打开就能看</span><span class="en">Opens right away</span></em><em class=""><span class="zh">不用钱包</span><span class="en">No wallet</span></em></span></span></a><a class="card" href="gate/"><span class="av">GA</span><span class="cb"><b><span class="zh">门电路大脑：和一个由开关组成的 AI 聊天</span><span class="en">Gate brain: chat with an AI made of switches</span></b><small><span class="zh">一个 10 亿参数的 AI 聊天模型被拆成几千亿个最简单的开关，你电脑的显卡一个开关一个开关地算出每个字，回答和原版模型一字不差。准备好一次之后，断网也能用。</span><span class="en">A 1-billion-parameter chat AI split into hundreds of billions of the simplest switches. Your graphics card computes every word switch by switch, and the answers match the original model exactly. Once set up, it works offline.</span></small><span class="need"><em class=""><span class="zh">用电脑：新版 Chrome 或 Edge</span><span class="en">Desktop: recent Chrome or Edge</span></em><em class=""><span class="zh">首次下载约 580 MB，准备 2–8 分钟</span><span class="en">First visit: ~580 MB download, 2–8 min setup</span></em></span></span></a><a class="card" href="xlayer-bench/"><span class="av">PI</span><span class="cb"><b><span class="zh">Pi 工作台：浏览器里的 AI 助手</span><span class="en">Pi Workbench: an AI assistant in your browser</span></b><small><span class="zh">一个能在浏览器里读写文件、跑命令的 AI 助手，“大脑”可以换：默认是 485 万个门组成的小语言模型，也能换成门电路大脑。</span><span class="en">An AI assistant that reads and writes files and runs commands inside your browser. Its “brain” is swappable: by default a small language model made of 4.85 million gates, or the gate brain.</span></small><span class="need"><em class=""><span class="zh">首次下载约 21 MB</span><span class="en">First visit downloads ~21 MB</span></em></span></span></a><a class="card" href="impossibleLLM/"><span class="av">IM</span><span class="cb"><b><span class="zh">impossible LLM：514 万个门写出来的字</span><span class="en">impossible LLM: text written by 5.14 million gates</span></b><small><span class="zh">一个完全由门组成的小语言模型：看前面 6 个词，写出下一个词，一个接一个往下写。它还写不通顺，但每一步都在你的浏览器里逐门算出。</span><span class="en">A small language model made entirely of gates: it reads the last six words and writes the next one, word after word. It can’t write fluent sentences yet, but every step is computed gate by gate in your browser.</span></small><span class="need"><em class=""><span class="zh">首次下载约 10 MB</span><span class="en">First visit downloads ~10 MB</span></em></span></span></a><a class="card" href="duck/brain.html"><span class="av">MI</span><span class="cb"><b><span class="zh">Microduck：两个链上电路给鸭子指路</span><span class="en">Microduck: two on-chain circuits guide a duck</span></b><small><span class="zh">一只模拟的鸭子要走到目标点：一个电路管转向，另一个电路记路，两个电路都写在 BNB Chain 上。</span><span class="en">A simulated duck has to reach its goals: one circuit steers, another remembers the way, and both are stored on BNB Chain.</span></small><span class="need"><em class=""><span class="zh">首次下载约 7 MB</span><span class="en">First visit downloads ~7 MB</span></em></span></span></a><a class="card" href="ncd2net/"><span class="av">NC</span><span class="cb"><b><span class="zh">ncd2net：把神经网络变成门电路</span><span class="en">ncd2net: turning neural networks into gate circuits</span></b><small><span class="zh">给它一张神经网络的结构图，它自动编译成门电路；页面里能直接运行这些电路，并和原模型逐一比对。偏技术。</span><span class="en">Give it a neural network’s structure diagram and it compiles a gate circuit automatically; the page runs those circuits and checks them against the original model. Technical.</span></small><span class="need"><em class=""><span class="zh">打开就能看</span><span class="en">Opens right away</span></em></span></span></a><a class="card" href="agents-api/"><span class="av">CI</span><span class="cb"><b><span class="zh">电路 283：AI 助手的“下一步”写在链上</span><span class="en">Circuit 283: an AI assistant’s “next step”, on chain</span></b><small><span class="zh">OpenAI 的 AI 助手框架里决定“下一步做什么”的那段逻辑，被做成 152 个门加 10 个存储位写在链上；页面里可以拨动输入，看它怎么决定。偏技术。</span><span class="en">The part of OpenAI’s agent framework that decides “what to do next”, built as 152 gates plus 10 memory bits on chain. Flip its inputs in the page and watch it decide. Technical.</span></small><span class="need"><em class=""><span class="zh">打开就能看</span><span class="en">Opens right away</span></em></span></span></a></div></section><section class="sec"><div class="sec-h"><h2><span class="zh">你的电路</span><span class="en">Your circuit</span></h2><p><span class="zh">给已经有电路、有链上网站的人。发币、领取和验证器的链上备份要连钱包，每一笔都由你自己在钱包里确认；起短链接不用钱包。</span><span class="en">For people who already have a circuit and an on-chain site. Launching, claiming and the authenticator’s chain backup connect your wallet, and you confirm every transaction yourself; short links need no wallet.</span></p></div><div class="grid"><a class="card" href="web2tape/"><span class="av">WE</span><span class="cb"><b><span class="zh">web2tape：把网站存上链</span><span class="en">web2tape: save a website on chain</span></b><small><span class="zh">把一个网站存到区块链上，生成一个永久的新网址。原网站以后改版或关掉，链上这份也还在。配套 Chrome 插件已上架。</span><span class="en">Save a website on chain and get a permanent new address. If the original site changes or goes away, the on-chain copy stays. A companion Chrome extension is in the Web Store.</span></small><span class="need"><em class="wallet"><span class="zh">需要钱包</span><span class="en">Needs a wallet</span></em></span></span></a><a class="card" href="tapeid/"><span class="av">TA</span><span class="cb"><b><span class="zh">TapeID：把你的电路发成代币（Base）</span><span class="en">TapeID: turn your circuit into a token (Base)</span></b><small><span class="zh">如果你在 TapeOut 上做过电路，这里能一步在 Base 链上为它发一个代币；交易产生的手续费 80% 归你。</span><span class="en">If you’ve made a circuit on TapeOut, launch a token for it on Base in one step; 80% of the trading fees go to you.</span></small><span class="need"><em class="wallet"><span class="zh">需要钱包</span><span class="en">Needs a wallet</span></em><em class=""><span class="zh">需要你自己的电路</span><span class="en">Needs your own circuit</span></em></span></span></a><a class="card" href="tapeid/xlayer.html"><span class="av">TA</span><span class="cb"><b><span class="zh">TapeID：X Layer 版</span><span class="en">TapeID: X Layer edition</span></b><small><span class="zh">在 X Layer 链上发币：交易税 80% 归你的电路（存进它自己的账户），20% 用于回购。</span><span class="en">Launch on X Layer: 80% of the trading tax goes to your circuit (into its own account), 20% to buybacks.</span></small><span class="need"><em class="wallet"><span class="zh">需要钱包</span><span class="en">Needs a wallet</span></em><em class=""><span class="zh">需要你自己的电路</span><span class="en">Needs your own circuit</span></em></span></span></a><a class="card" href="tapeid/claim.html"><span class="av">TA</span><span class="cb"><b><span class="zh">TapeID：领取收益</span><span class="en">TapeID: claim your earnings</span></b><small><span class="zh">发过币之后，在这里把分给你电路的交易税领到钱包。</span><span class="en">After launching, claim the trading tax owed to your circuit into your wallet.</span></small><span class="need"><em class="wallet"><span class="zh">需要钱包</span><span class="en">Needs a wallet</span></em></span></span></a><a class="card" href="https://s.aihashrate.stream/" target="_blank" rel="noopener"><span class="av">SH</span><span class="cb"><b><span class="zh">短链接：给你的链上网站起个短名字</span><span class="en">Short links: a short name for your on-chain site</span> ↗</b><small><span class="zh">把链上名字（例如 282.732.tape）变成 s.aihashrate.stream/你起的名字，普通浏览器一点就开；生成前会在链上核对名字已开通。</span><span class="en">Turn an on-chain name such as 282.732.tape into s.aihashrate.stream/your-name that any browser opens; the name is checked on chain first.</span></small><span class="need"><em class=""><span class="zh">不用钱包</span><span class="en">No wallet</span></em><em class=""><span class="zh">需要已开通的链上名字</span><span class="en">Needs an activated on-chain name</span></em></span></span></a><a class="card" href="https://288-732.aihashrate.stream/" target="_blank" rel="noopener"><span class="av">AU</span><span class="cb"><b><span class="zh">身份验证器：两步验证码，备份在你自己的电路里</span><span class="en">Authenticator: two-step codes, backed up in your own circuit</span> ↗</b><small><span class="zh">照 Google Authenticator 做的验证码应用，二维码和转移格式互通。连上钱包后，帐号加密存进你自己的电路容器，换设备签一次名就能恢复；应用本身也放在链上（288.732.tape）。</span><span class="en">A two-step code app modeled on Google Authenticator, compatible with its QR and transfer codes. Connect a wallet and your accounts are encrypted into your own circuit container; on a new device one signature restores them. The app itself lives on chain (288.732.tape).</span></small><span class="need"><em class=""><span class="zh">看验证码不用钱包</span><span class="en">Codes need no wallet</span></em><em class="wallet"><span class="zh">链上备份要连钱包，并有开通了容器的电路</span><span class="en">Chain backup needs a wallet and a circuit with an opened container</span></em></span></span></a></div></section><section class="sec"><div class="sec-h"><h2><span class="zh">资料</span><span class="en">Reference</span></h2><p><span class="zh">给想参加比赛或深入了解的人。</span><span class="en">For people entering the races or digging deeper.</span></p></div><div class="grid"><a class="card" href="RULES.md"><span class="av">AR</span><span class="cb"><b><span class="zh">竞技场规则</span><span class="en">Arena rules</span></b><small><span class="zh">小车比赛怎么报名、怎么评分，含 v2b 赛道和尚未部署的 v3.1 草案。</span><span class="en">How to enter the car races and how they are scored, including the v2b track and the not-yet-deployed v3.1 draft.</span></small><span class="need"><em class=""><span class="zh">阅读</span><span class="en">Reading</span></em></span></span></a><a class="card" href="gas/"><span class="av">GA</span><span class="cb"><b><span class="zh">Gas 账本：在链上算一步要花多少钱</span><span class="en">Gas ledger: what a step costs on chain</span></b><small><span class="zh">在 BNB Chain 上跑一个门、一条 RISC-V 指令、写一页内存的实测费用，给开发者参考。</span><span class="en">Measured BNB Chain costs for one gate, one RISC-V instruction and one memory page, for developers.</span></small><span class="need"><em class=""><span class="zh">阅读</span><span class="en">Reading</span></em></span></span></a><a class="card" href="nandtool/"><span class="av">EA</span><span class="cb"><b><span class="zh">Pi · impossible LLM（旧版工作台）</span><span class="en">Pi · impossible LLM (earlier workbench)</span></b><small><span class="zh">Pi 工作台的上一版，大脑固定是 impossible LLM，留作对照。</span><span class="en">The previous Pi Workbench, with impossible LLM as its fixed brain, kept for comparison.</span></small><span class="need"><em class=""><span class="zh">首次下载约 38 MB</span><span class="en">First visit downloads ~38 MB</span></em></span></span></a><a class="card" href="https://mcp.aihashrate.stream/" target="_blank" rel="noopener"><span class="av">MC</span><span class="cb"><b><span class="zh">给 AI 助手用：MCP 接口</span><span class="en">For AI assistants: an MCP server</span> ↗</b><small><span class="zh">把 mcp.aihashrate.stream/mcp 加进 Claude、Cursor 等 AI 助手，它就能直接查链上名字、读链上网站、在链上运行电路、估算发布一枚电路要花多少钱。</span><span class="en">Add mcp.aihashrate.stream/mcp to Claude, Cursor or another AI assistant and it can look up on-chain names, read on-chain sites, run circuits on chain and price publishing a circuit.</span></small><span class="need"><em class=""><span class="zh">不用钱包</span><span class="en">No wallet</span></em><em class=""><span class="zh">需要支持 MCP 的 AI 助手</span><span class="en">Needs an AI assistant that supports MCP</span></em></span></span></a></div></section>
-  <section class="sec"><div class="sec-h"><h2><span class="zh">链上站</span><span class="en">On-chain sites</span></h2><p><span class="zh">这几个网站的文件本身存在链上，网关直接从合约里读出来。</span><span class="en">These sites’ files live on chain; the gateway reads them straight from the contracts.</span></p></div>
-  <div class="rows"><a class="row" href="https://282-732.aihashrate.stream/" target="_blank" rel="noopener"><b>282.732.tape</b><span class="pill">BNB Chain</span><span class="rd"><span class="zh">链上根页：全部页面的总表，和主站「全部页面」同一个文件</span><span class="en">On-chain root: the index of every page, the same file as “All pages” here</span></span><span class="go">↗</span></a><a class="row" href="https://1-2-245.aihashrate.stream/" target="_blank" rel="noopener"><b>1.2.245.tape</b><span class="pill">X Layer</span><span class="rd"><span class="zh">TapeID 的 X Layer 发币页与领取页</span><span class="en">TapeID launch and claim pages on X Layer</span></span><span class="go">↗</span></a><a class="row" href="https://288-732.aihashrate.stream/" target="_blank" rel="noopener"><b>288.732.tape</b><span class="pill">BNB Chain</span><span class="rd"><span class="zh">身份验证器，应用本身也放在链上</span><span class="en">The authenticator; the app itself lives on chain</span></span><span class="go">↗</span></a></div></section>
-  
-  <footer><span class="zh">页面源码与说明见</span><span class="en">Source and notes:</span> <a href="README.md">README</a> · <a href="RULES.md">RULES.md</a> · <a href="https://jogjohgoeg.github.io/nand-driver/" target="_blank" rel="noopener"><span class="zh">备份站</span><span class="en">Mirror</span></a></footer>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-t">
+      <h1>把一个 AI 拆成最基础的开关，在你电脑上跑起来</h1>
+      <p>我们把一个开源 AI 模型完全换成了门电路，也就是最基础的开和关。打开网页，它就在你自己的显卡上一位一位算出答案，每一步都能核对。</p>
+      <div class="btns only-desk">
+        <a class="btn" href="https://nand.aihashrate.stream/gate/">在我电脑上试试</a>
+        <a class="link-w" href="faq/#pc">我的电脑够不够？</a>
+      </div>
+      <p class="small only-desk">免费 · 不用钱包 · 不上链 · 要用电脑上的 Chrome 或 Edge</p>
+      <p class="small only-phone">手机跑不动这个模型。想亲自试，请在电脑的 Chrome 或 Edge 里打开 <b>21nand.bem.city</b>。</p>
+    </div>
+    <figure class="chat" aria-label="一次真实回答">
+      <div class="bub q">问一个常识题</div>
+      <div class="bub a">The capital of France is Paris.</div>
+      <div class="mono">它的一次真实回答，和原模型逐位一致 · 每个字约 0.5–1.5 秒</div>
+    </figure>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="clear" aria-labelledby="clear-h">
+    <h2 id="clear-h">先说清楚</h2>
+    <div><strong>只在你电脑上跑</strong><span>体验门电路大脑不会上链，也不会生成任何属于你的链上资产。</span></div>
+    <div><strong>代币没有任何权益</strong><span>持币人对电路、工具收入、未来芯片没有分红或分成。</span></div>
+    <div><strong>芯片设计好了，还没生产</strong><span>吟游诗人已通过工厂的规则检查，哪家厂造、什么时候造还没定。<a href="progress/">看进度</a></span></div>
+  </section>
+
+  <section id="bard" class="sec" aria-labelledby="bard-h">
+    <div class="bard">
+      <figure><img src="bard.webp" width="560" height="843" alt="吟游诗人芯片的完整版图，下方三排条状区域存着它学到的知识"></figure>
+      <div class="bard-t">
+        <span class="kicker">我们的第一颗芯片 · BARD</span>
+        <h2 id="bard-h">吟游诗人</h2>
+        <p>一个会讲英文小故事的 AI，直接做成了一颗芯片。芯片里没有处理器，也没有程序，它学到的东西刻在芯片上，通电就能开口。完整的设计图已经存上了链，谁都能取回来核对，谁也改不了。</p>
+        <div class="nums">
+          <div><b>15 mm²</b><span>比小指甲盖还小</span></div>
+          <div><b>约 100 万</b><span>刻进芯片的参数</span></div>
+          <div><b>0 元</b><span>设计软件费用，全用开源工具</span></div>
+        </div>
+        <p class="note">2026-10-12 设计通过工厂的全部制造规则检查，设计图存上 X Layer。还没送厂生产。</p>
+        <div class="btns">
+          <a class="btn" href="https://x.com/zhuoning293/article/2109614055484756114">读它的故事</a>
+          <a class="link-w" href="https://1-2-245.aihashrate.stream/bard/v8g/">从链上取回设计图并核对</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="paths-h">
+    <h2 class="big" id="paths-h">你想做什么？</h2>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">体验 · 5 分钟</span>
+        <h3>看它答一个问题</h3>
+        <p>打开网页，等它在你电脑上搭好电路，然后随便问。跑完可以一键提交你电脑的速度，帮我们补全设备数据。</p>
+        <a class="go" href="https://nand.aihashrate.stream/gate/">去试试 →</a>
+      </article>
+      <article class="card">
+        <span class="tag">动手 · 1 小时起</span>
+        <h3>做一个自己的小电路</h3>
+        <p>在 TapeOut 上把一个几十到几千个门的小电路放上链。我们一次 3,800 个门的流片，净花费约 0.0023 OKB。</p>
+        <a class="go" href="build/">看流程和花费 →</a>
+      </article>
+      <article class="card">
+        <span class="tag">核对 · 给懂行的人</span>
+        <h3>自己验证我们说的</h3>
+        <p>所有页面、链上站点、合约地址和每个文件的指纹，以及「21 个门开车」竞技场，都在这里。</p>
+        <a class="go" href="verify/">打开核对页 →</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="scale-h">
+    <h2 class="big" id="scale-h">有多大？</h2>
+    <div class="grid">
+      <div class="stat"><b>2,600 亿</b><strong>算一个字要用的门</strong><span>相当于全世界每个人各按 30 多次开关，才得出一个字。</span></div>
+      <div class="stat"><b>约 2.5 万</b><strong>链上一个电路能放的门</strong><span>差了一千万倍，所以整个模型放不上链，链上只放小电路。</span></div>
+      <div class="stat"><b>0 处不同</b><strong>和原模型逐位比对</strong><span>门电路算出的每一位，都和原模型的结果一样。</span></div>
+    </div>
+    <details class="raw">
+      <summary>给懂行的人：原始数字</summary>
+      <p>模型 BitCPM4-1B · 每 token 261,022,627,596 NAND + 109,052,458 LATCH · WebGPU 逐门执行 · 与 RefB 金标逐 token 一致 · BSC 区块约 7,000 万 gas</p>
+    </details>
+  </section>
+</div>
 </main>
-<script>
-document.addEventListener('tk-block',function(e){if(!e.detail)return;var s='#'+e.detail.toLocaleString('en-US');document.getElementById('ov-blk').textContent=s;document.getElementById('ov-blk2').textContent=s;document.getElementById('ov-dot').className='ok'});
-</script>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>21 NAND · TapeOut 上的开源实验</b>
+    <a href="faq/">常见问题</a>
+    <a href="progress/">进度</a>
+    <a href="verify/">核对</a>
+  </div>
+</footer>
 </body>
 </html>

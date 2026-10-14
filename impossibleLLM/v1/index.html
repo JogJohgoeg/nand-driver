@@ -1,151 +1,177 @@
 <!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>impossible LLM v1（存档）</title>
-<meta name="color-scheme" content="light dark">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23006B35'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@100..700&family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@200..700&display=swap"></noscript>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050506">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235741D8'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
 <style>
-/* 全站绿色版式（2026-10-01，规范见 circuits/_scratch/hashport/theme/README.md）：米白纸面、绿带页头与首屏、方角卡片、
-   窄体细体标题、等宽小标签、虚线分隔。旧变量名 --fg --dim --card --acc --warn 映射到新色：行内样式和脚本生成的元素还在用它们。 */
-:root{--g:#006B35;--g-deep:#005C2B;--g-deeper:#004A22;--frame:#1E8C4E;--lime:#E4F53C;--paper-c:#F2F3EF;
-  --bg:#F2F3EF;--panel:#fff;--ink:#0B2A18;--ink2:#3C5446;--ink3:#5A6E62;--line:rgba(0,107,53,.26);--line2:rgba(0,107,53,.55);
-  --hi:#006B35;--hi-soft:rgba(0,107,53,.18);--head:#006B35;--err:#B3261E;
+/* Kraken Pro 式深色（2026-10-14 起，配色基准 circuits/_scratch/hashport/site/home.css；取代 10-01 的绿色版式）：近黑底、深灰圆角卡片、
+   细边框、品牌紫、系统字体；只有这一套深色。旧变量名 --fg --dim --card --acc --warn 保留：行内样式和脚本生成的元素还在用它们。 */
+:root{color-scheme:dark;
+  --bg:#050506;--panel:#111114;--panel2:#17171C;--ink:#FFFFFF;--ink2:#CBCBD3;--ink3:#9C9DAE;
+  --line:rgba(112,113,135,.14);--line2:rgba(112,113,135,.24);
+  --brand:#5741D8;--brand-hover:#6A55E8;--hi:#A496FF;--hi-soft:rgba(164,150,255,.35);--head:#FFFFFF;--pos:#00DA80;--err:#F0616D;
   --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err);
-  --disp:"Antonio","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-  --sans:"Archivo","Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --gut:clamp(16px,4vw,40px);color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--g:#006A34;--g-deep:#00522A;--g-deeper:#00401F;
-  --bg:#0D1A12;--panel:#13241A;--ink:#E6EFE8;--ink2:#A9BCB0;--ink3:#7E9386;--line:rgba(91,224,143,.22);--line2:rgba(91,224,143,.5);
-  --hi:#5BE08F;--hi-soft:rgba(91,224,143,.2);--head:#5BE08F;--err:#FF8A80}}
-/* 绿带（页头、首屏、续写卡片）：米白字，强调换成黄绿 */
-.g{background:var(--g);color:var(--paper-c);
-  --ink:#F2F3EF;--ink2:rgba(242,243,239,.9);--ink3:rgba(242,243,239,.82);--line:rgba(242,243,239,.28);--line2:rgba(242,243,239,.6);
-  --hi:var(--lime);--hi-soft:rgba(228,245,60,.4);--head:#F2F3EF;--err:#FFD2CC;--panel:var(--g-deep);
-  --fg:var(--ink);--dim:var(--ink2);--card:var(--panel);--acc:var(--hi);--warn:var(--err)}
+  --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --gut:clamp(16px,4vw,40px)}
+/* 原「绿带」（页头、首屏、续写卡片）：页头深底，首屏顶部一层淡紫色光，续写卡片同普通深色卡片 */
+.g{background:var(--bg);color:var(--ink)}
+.hero.g{background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%),var(--bg)}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
-body::after{content:"";position:fixed;inset:0;border:5px solid var(--frame);pointer-events:none;z-index:1000}
 a{color:var(--hi);text-decoration:none;border-bottom:1px solid var(--hi-soft)}
-a:hover{border-bottom-color:var(--hi)}
+a:hover{color:#C2B9FF;border-bottom-color:currentColor}
 :focus-visible{outline:2px solid var(--hi);outline-offset:2px}
 b{font-weight:600}
 .in,.wrap{max-width:calc(1180px + 2*var(--gut));margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
 /* 页头：字标链回主站首页 */
 .site{border-bottom:1px solid var(--line)}
 .site .in{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:9px;padding-bottom:9px}
-.mark{display:grid;flex:none;line-height:.92;color:var(--ink);border:0}
-.mark b{font:200 23px/.92 var(--disp);text-transform:uppercase;letter-spacing:.02em}
-.mark small{font:400 9.5px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-top:5px}
-.crumb{font:400 12px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);text-align:right;word-break:keep-all}
+.mark{display:grid;flex:none;line-height:1.05;color:var(--ink);border:0}
+.mark:hover{color:var(--ink)}
+.mark b{font:800 19px/1.05 var(--sans);letter-spacing:.01em}
+.mark small{font:400 10px/1 var(--mono);letter-spacing:.08em;color:var(--ink3);margin-top:5px}
+.crumb{font:400 12px/1.4 var(--mono);letter-spacing:.04em;color:var(--ink2);text-align:right;word-break:keep-all}
 /* 首屏 */
 .hero{padding:clamp(28px,4.5vw,56px) 0 clamp(32px,5vw,60px)}
-h1{margin:0 0 16px;font:300 clamp(32px,4.4vw,58px)/1.1 var(--disp);letter-spacing:-.005em;color:var(--head);max-width:22em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty}
+h1{margin:0 0 16px;font:800 clamp(28px,3.8vw,48px)/1.18 var(--sans);letter-spacing:-.01em;color:var(--head);max-width:22em;word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty}
 .sub{margin:0;max-width:62em;color:var(--ink2);font-size:16px;line-height:1.7}
-.hero .sub b{color:var(--lime);font-weight:500}
-/* 纸面 */
+.hero .sub b{color:var(--hi);font-weight:600}
+/* 主体 */
 .wrap{padding-top:clamp(24px,4vw,44px);padding-bottom:72px}
 .grid{display:grid;gap:20px;align-items:start}
 @media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)!important}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:0;padding:22px;min-width:0}
-.card.g{background:var(--g);border-color:var(--g)}
-h2{margin:0 0 12px;font:300 clamp(22px,2.2vw,28px)/1.15 var(--disp);letter-spacing:.005em;color:var(--head);word-break:keep-all;overflow-wrap:anywhere}
-.out{background:var(--g-deep);border:1px solid var(--line);border-radius:0;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font:14px/1.65 var(--mono);color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:22px;min-width:0}
+.card.g{background:var(--panel);border-color:var(--line2)}
+h2{margin:0 0 12px;font:700 clamp(20px,2vw,24px)/1.25 var(--sans);color:var(--head);word-break:keep-all;overflow-wrap:anywhere}
+.out{background:var(--bg);border:1px solid var(--line2);border-radius:12px;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font:14px/1.65 var(--mono);color:var(--ink)}
 .gen{color:var(--hi)}.muted{color:var(--ink3)}.warn{color:var(--err)}
-.g .muted{color:var(--ink2)}.g .out .muted{color:var(--ink3)}
-textarea{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:0;padding:10px 12px;font:15px/1.5 var(--sans);resize:vertical}
-.g textarea{background:var(--g-deeper);border-color:var(--line)}
-button{font:400 15px/1.1 var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--line2);border-radius:0;padding:10px 18px;min-height:40px;cursor:pointer}
-button:hover:not(:disabled){border-color:var(--ink)}
+.g .muted{color:var(--ink3)}.g .out .muted{color:var(--ink3)}
+textarea{width:100%;background:var(--panel2);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;font:15px/1.5 var(--sans);resize:vertical}
+.g textarea{background:var(--bg);border-color:var(--line2)}
+textarea:focus{outline:2px solid var(--hi);outline-offset:1px;border-color:var(--hi)}
+button{font:600 15px/1.1 var(--sans);color:var(--ink);background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:10px 18px;min-height:40px;cursor:pointer}
+button:hover:not(:disabled){border-color:rgba(112,113,135,.5);background:#1F1F26}
 button:disabled{opacity:.5;cursor:not-allowed}
-#go{background:var(--ink);color:var(--g);border-color:var(--ink)}
-#go:hover:not(:disabled){filter:brightness(1.06)}
+#go{background:var(--brand);color:#fff;border-color:var(--brand)}
+#go:hover:not(:disabled){background:var(--brand-hover);border-color:var(--brand-hover)}
 .row{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin-top:12px}
 #stat{font:12.5px/1.4 var(--mono)}
-code{font:12.5px var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:1px 5px;overflow-wrap:anywhere}
-.g code{background:var(--g-deeper)}
+code{font:12.5px var(--mono);background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+.g code{background:var(--panel2)}
 table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:8px 10px 8px 0;border-top:1px dashed var(--line);vertical-align:top;text-align:left}
+td,th{padding:8px 10px 8px 0;border-top:1px solid var(--line);vertical-align:top;text-align:left}
 th{font:500 11px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);border-top:0;border-bottom:1px solid var(--line2)}
 .num{font-variant-numeric:tabular-nums}
 ul{margin:8px 0 0;padding-left:18px}li{margin:6px 0}
 li::marker{color:var(--hi)}
-@media (max-width:620px){body::after{border-width:3px}.site .in{min-height:64px}.crumb{font-size:11px;letter-spacing:.08em}.card{padding:16px}.sub{font-size:15px}}
+@media (max-width:620px){.site .in{min-height:64px}.crumb{font-size:11px;letter-spacing:.02em}.card{padding:16px}.sub{font-size:15px}}
 @media (pointer:coarse),(max-width:600px){button{min-height:44px;touch-action:manipulation}}
 .grid{grid-template-columns:minmax(0,1fr) 420px}
 .out{min-height:120px}
 textarea{min-height:92px}
 td:first-child{color:var(--ink3);white-space:nowrap;padding-right:14px;font-size:13.5px}
 td.warn{color:var(--err)}
-.hero p.warn{color:var(--ink2);border:1px dashed var(--line2);padding:9px 14px;max-width:62em;font-size:14px}
-.hero p.warn b{color:var(--lime);font-weight:500}
-</style><!--tk-shell--><link rel="stylesheet" href="../../shell/shell.css"><script src="../../shell/shell.js" defer></script><!--/tk-shell-->
+.hero p.warn{color:var(--ink2);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:9px 14px;max-width:62em;font-size:14px}
+.hero p.warn b{color:var(--hi);font-weight:600}
+/* 全站语言切换（localStorage 'nand-driver-lang'） */
+html[lang^="en"] .zh{display:none!important} html:not([lang^="en"]) .en{display:none!important}
+.hdr-r{display:flex;align-items:center;gap:12px;min-width:0}
+.langbtn{font:500 12px/1 var(--mono);letter-spacing:.06em;text-transform:none;color:var(--ink2);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:6px 12px;min-height:34px;cursor:pointer;white-space:nowrap;flex:none}
+.langbtn:hover:not(:disabled){color:var(--ink);background:#1F1F26;border-color:rgba(112,113,135,.5)}
+.langbtn .cur{color:var(--ink);font-weight:800}
+@media (pointer:coarse),(max-width:600px){.langbtn{min-height:44px;min-width:44px}}
+</style>
+<script>var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN';</script>
+<!--tk-shell--><script src="../../shell/lang.js"></script><link rel="stylesheet" href="../../shell/shell.css"><script src="../../shell/shell.js" defer></script><!--/tk-shell-->
 </head><body>
 <header class="site g"><div class="in">
 <a class="mark" href="../../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
-<span class="crumb">impossible LLM · v1 存档</span>
+<div class="hdr-r"><span class="crumb">impossible LLM · v1 <span class="zh">存档</span><span class="en">archive</span></span><button type="button" class="langbtn" id="langbtn" aria-label="切换语言 / Switch language"><span data-l="zh">中文</span> / <span data-l="en">EN</span></button></div>
 </div></header>
 <section class="hero g"><div class="in">
-<p class="warn" style="margin:0 0 12px">这是 <b>v1 存档</b>（2026-09-15，54,147 门，贪心、只用维基百科）。它会掉进 “the 2008 , the 2008” 这样的吸收环。现行版本见 <a href="../" style="color:var(--acc)">impossible LLM v2</a>。</p>
-<h1>impossible LLM v1 — 把 MiniCPM5-2B 转写成一张 NAND 网表</h1>
-<p class="sub">一张 54,147 个 NAND 的组合网表，读 6 个 MiniCPM token、一次 <code>step()</code> 输出下一个 token。逐门求值在这一页的 Web Worker 里跑，没有后端、没有 API key。<br>
-A 54,147-NAND combinational netlist reads 6 MiniCPM tokens and emits the next one in a single <code>step()</code>, evaluated gate by gate in this page.</p>
+<p class="warn" style="margin:0 0 12px"><span class="zh">这是 <b>v1 存档</b>（2026-09-15，54,147 门，贪心、只用维基百科）。它会掉进 “the 2008 , the 2008” 这样的吸收环。现行版本见 <a href="../" style="color:var(--acc)">impossible LLM v2</a>。</span><span class="en">This is the <b>v1 archive</b> (2026-09-15, 54,147 gates, greedy, Wikipedia only). It falls into absorbing loops like “the 2008 , the 2008”. The current version is <a href="../" style="color:var(--acc)">impossible LLM v2</a>.</span></p>
+<h1>impossible LLM v1 — <span class="zh">把 MiniCPM5-2B 转写成一张 NAND 网表</span><span class="en">MiniCPM5-2B transcribed into a NAND netlist</span></h1>
+<p class="sub"><span class="zh">一张 54,147 个 NAND 的组合网表，读 6 个 MiniCPM token、一次 <code>step()</code> 输出下一个 token。逐门求值在这一页的 Web Worker 里跑，没有后端、没有 API key。</span><span class="en">A combinational netlist of 54,147 NAND gates reads 6 MiniCPM tokens and outputs the next token in a single <code>step()</code>. Gate-by-gate evaluation runs in a Web Worker on this page — no backend, no API key.</span></p>
 </div></section>
 <div class="wrap">
 
 <div class="grid">
 <div class="card g">
-  <h2>续写 Continuation</h2>
-  <div id="out" class="out"><span class="muted">加载分词器中… loading tokenizer (~2 MB gzipped)</span></div>
-  <div class="row"><textarea id="msg">The history of the Roman Empire</textarea></div>
+  <h2><span class="zh">续写</span><span class="en">Continuation</span></h2>
+  <div id="out" class="out"><span class="muted"><span class="zh">加载分词器中…（gzip 后约 2 MB）</span><span class="en">Loading tokenizer (~2 MB gzipped)…</span></span></div>
+  <div class="row"><textarea id="msg" aria-label="要续写的文字" data-aria-zh="要续写的文字" data-aria-en="Text to continue">The history of the Roman Empire</textarea></div>
   <div class="row">
-    <button id="go" disabled>▶ 生成 16 个 token</button>
+    <button id="go" disabled>▶ <span class="zh">生成 16 个 token</span><span class="en">Generate 16 tokens</span></button>
     <span id="stat" class="muted"></span>
   </div>
-  <p class="muted" style="margin-top:10px">建议试试 suggested：<code>The history of the Roman Empire</code> —— 点生成，看网表逐 token 写下去。</p>
+  <p class="muted" style="margin-top:10px"><span class="zh">建议试试：<code>The history of the Roman Empire</code> —— 点生成，看网表逐 token 写下去。</span><span class="en">Try: <code>The history of the Roman Empire</code> — press Generate and watch the netlist write on, token by token.</span></p>
 </div>
 
 <div class="card">
-  <h2>模型 Model</h2>
+  <h2><span class="zh">模型</span><span class="en">Model</span></h2>
   <table>
-    <tr><td>门数 gates</td><td><b>54,147</b> NAND · 0 LATCH</td></tr>
-    <tr><td>接口 interface</td><td>102 in（6 × 17 位 token id，最老在低位）/ 13 out（top-8192 码）</td></tr>
-    <tr><td>蒸馏 distillation</td><td>MiniCPM5-2B BF16，argmax，1024-token 预热，16M 标注</td></tr>
-    <tr><td>一致率（同体裁）</td><td><b>约 0.23</b> · 测试窗口与训练区同一语料体裁（基线约 0.07）</td></tr>
-    <tr><td class="warn">一致率（跨体裁）</td><td class="warn"><b>约 0.11</b> · 测试窗口落在语料另一段体裁上（基线约 0.06）。<b>这才是它面对陌生文本时的诚实数字。</b></td></tr>
-    <tr><td>教师 teacher</td><td>同两个窗口上都是 <b>约 0.49</b> —— <b>教师几乎不掉</b>，所以掉的不是数据质量，是「背下来的表不泛化」</td></tr>
-    <tr><td class="warn">测量精度</td><td class="warn">同体裁内多个不相交 20 万 token 窗口的散布约 <b>±0.01</b>；跨体裁比较必须说明体裁，否则散布看起来像 ±0.03（那是把两种体裁混在一起的假象）。小于 0.01 的差别不显著。</td></tr>
-    <tr><td>天花板 ceiling</td><td>全表 0.339 / K=1M 截断 0.35186（均为近分布）· top-8192 覆盖 0.92225</td></tr>
-    <tr><td>每步 gas step</td><td>133,993,004（1.91 个块，建模）</td></tr>
-    <tr><td>流片 tape-out</td><td class="warn"><b>尚未流片 not taped out</b> —— 12 片、实测 estimateGas 174,787,056、合计 0.011139 BNB</td></tr>
-    <tr><td class="warn">已知缺陷</td><td class="warn">这一版的查表<b>键</b>是用一个有缺陷的哈希算的：numpy 的 uint64 移位超过 63 位返回 0，导致第 5、6 个 token 完全没进键、第 4 个只进了 17 位中的 13 位。所以尽管页面确实把 102 位喂进网表，<b>深层的表实际上只区分约 3.76 个 token</b>（铁证：W=6/5/4 三层的不同键数是 11,573,526 / 11,573,527 / 11,573,528，彼此差不到 2）。下面那些一致率是这张网表<b>实测</b>的，所以数字本身没错；修正键后的版本在部署体裁上约 0.214、满表天花板 0.288，正在重造，届时替换本页。</td></tr>
+    <tr><td><span class="zh">门数</span><span class="en">Gates</span></td><td><b>54,147</b> NAND · 0 LATCH</td></tr>
+    <tr><td><span class="zh">接口</span><span class="en">Interface</span></td><td><span class="zh">102 in（6 × 17 位 token id，最老在低位）/ 13 out（top-8192 码）</span><span class="en">102 in (6 × 17-bit token ids, oldest in the low bits) / 13 out (top-8192 code)</span></td></tr>
+    <tr><td><span class="zh">蒸馏</span><span class="en">Distillation</span></td><td><span class="zh">MiniCPM5-2B BF16，argmax，1024-token 预热，16M 标注</span><span class="en">MiniCPM5-2B BF16, argmax, 1024-token warm-up, 16M labels</span></td></tr>
+    <tr><td><span class="zh">一致率（同体裁）</span><span class="en">Agreement (same genre)</span></td><td><span class="zh"><b>约 0.23</b> · 测试窗口与训练区同一语料体裁（基线约 0.07）</span><span class="en"><b>about 0.23</b> · test window in the same corpus genre as the training range (baseline about 0.07)</span></td></tr>
+    <tr><td class="warn"><span class="zh">一致率（跨体裁）</span><span class="en">Agreement (cross-genre)</span></td><td class="warn"><span class="zh"><b>约 0.11</b> · 测试窗口落在语料另一段体裁上（基线约 0.06）。<b>这才是它面对陌生文本时的诚实数字。</b></span><span class="en"><b>about 0.11</b> · test window in a different genre of the corpus (baseline about 0.06). <b>This is the honest number for text it hasn't seen.</b></span></td></tr>
+    <tr><td><span class="zh">教师</span><span class="en">Teacher</span></td><td><span class="zh">同两个窗口上都是 <b>约 0.49</b> —— <b>教师几乎不掉</b>，所以掉的不是数据质量，是「背下来的表不泛化」</span><span class="en"><b>about 0.49</b> on both windows — <b>the teacher barely drops</b>, so the drop is not about data quality but about “a memorized table doesn't generalize”</span></td></tr>
+    <tr><td class="warn"><span class="zh">测量精度</span><span class="en">Measurement precision</span></td><td class="warn"><span class="zh">同体裁内多个不相交 20 万 token 窗口的散布约 <b>±0.01</b>；跨体裁比较必须说明体裁，否则散布看起来像 ±0.03（那是把两种体裁混在一起的假象）。小于 0.01 的差别不显著。</span><span class="en">Several disjoint 200K-token windows within one genre scatter by about <b>±0.01</b>; cross-genre comparisons must state the genre, otherwise the scatter looks like ±0.03 (an artifact of mixing two genres). Differences below 0.01 are not significant.</span></td></tr>
+    <tr><td><span class="zh">天花板</span><span class="en">Ceiling</span></td><td><span class="zh">全表 0.339 / K=1M 截断 0.35186（均为近分布）· top-8192 覆盖 0.92225</span><span class="en">full table 0.339 / K=1M truncation 0.35186 (both near-distribution) · top-8192 coverage 0.92225</span></td></tr>
+    <tr><td><span class="zh">每步 gas</span><span class="en">Gas per step</span></td><td><span class="zh">133,993,004（1.91 个块，建模）</span><span class="en">133,993,004 (1.91 blocks, modeled)</span></td></tr>
+    <tr><td><span class="zh">流片</span><span class="en">Tape-out</span></td><td class="warn"><span class="zh"><b>尚未流片</b> —— 12 片、实测 estimateGas 174,787,056、合计 0.011139 BNB</span><span class="en"><b>not taped out</b> — 12 chunks, measured estimateGas 174,787,056, total 0.011139 BNB</span></td></tr>
+    <tr><td class="warn"><span class="zh">已知缺陷</span><span class="en">Known defect</span></td><td class="warn"><span class="zh">这一版的查表<b>键</b>是用一个有缺陷的哈希算的：numpy 的 uint64 移位超过 63 位返回 0，导致第 5、6 个 token 完全没进键、第 4 个只进了 17 位中的 13 位。所以尽管页面确实把 102 位喂进网表，<b>深层的表实际上只区分约 3.76 个 token</b>（铁证：W=6/5/4 三层的不同键数是 11,573,526 / 11,573,527 / 11,573,528，彼此差不到 2）。下面那些一致率是这张网表<b>实测</b>的，所以数字本身没错；修正键后的版本在部署体裁上约 0.214、满表天花板 0.288，正在重造，届时替换本页。</span><span class="en">The lookup <b>keys</b> in this version were computed with a buggy hash: numpy uint64 shifts of more than 63 bits return 0, so the 5th and 6th tokens never made it into the key and the 4th contributed only 13 of its 17 bits. So although the page really does feed 102 bits into the netlist, <b>the deep tables effectively distinguish only about 3.76 tokens</b> (hard evidence: the W=6/5/4 levels have 11,573,526 / 11,573,527 / 11,573,528 distinct keys, differing by less than 2). The agreement rates here are <b>measured</b> on this netlist, so the numbers themselves are correct; a version with fixed keys scores about 0.214 on the deployment genre with a full-table ceiling of 0.288, is being rebuilt, and will replace this page.</span></td></tr>
   </table>
 
-  <h2 style="margin-top:20px">链上对照 On-chain check</h2>
-  <p class="muted">这一页<b>暂时没有</b>链上逐 token 对照——网表还没烧。已流片的 cid 285 / 286 / 287 有活的 <code>eth_call</code> 对照，见存档页
-  <a href="../archive/onestep-index.html" style="color:var(--acc)">一步模型阶梯</a>和<a href="../archive/ws/" style="color:var(--acc)">逐字续写演示</a>（两页已下线，保留为工程存档）。烧录后这一页会补上同样的一栏。</p>
+  <h2 style="margin-top:20px"><span class="zh">链上对照</span><span class="en">On-chain check</span></h2>
+  <p class="muted"><span class="zh">这一页<b>暂时没有</b>链上逐 token 对照——网表还没烧。已流片的 cid 285 / 286 / 287 有活的 <code>eth_call</code> 对照，见存档页
+  <a href="../archive/onestep-index.html" style="color:var(--acc)">一步模型阶梯</a>和<a href="../archive/ws/" style="color:var(--acc)">逐字续写演示</a>（两页已下线，保留为工程存档）。烧录后这一页会补上同样的一栏。</span><span class="en">This page has <b>no</b> on-chain token-by-token check yet — the netlist has not been burned. The taped-out cid 285 / 286 / 287 have live <code>eth_call</code> checks; see the archive pages
+  <a href="../archive/onestep-index.html" style="color:var(--acc)">one-step model ladder</a> and <a href="../archive/ws/" style="color:var(--acc)">character-by-character continuation demo</a> (both retired and kept as engineering archives). The same section will be added here once it is burned.</span></p>
 
-  <h2 style="margin-top:20px">范围 Scope（说清它不做什么）</h2>
+  <h2 style="margin-top:20px"><span class="zh">范围（说清它不做什么）</span><span class="en">Scope (what it does not do)</span></h2>
   <ul>
-    <li><b>它不是 MiniCPM5-2B。</b>近分布一致 <b>23.5%</b>，<b>远分布只有 11.0%</b>，而教师在两个窗口上都是 <b>49.4%</b>。这是转写，不是等价。</li>
-    <li><b>它背下来的东西不泛化。</b>同一个模型在同体裁窗口上约 0.23、跨体裁窗口上约 0.11，而教师在两者上都是约 0.49，分毫不差。教师的权重能迁移，一张记住的表不能。</li>
-    <li><b>它不会「变旧」，但会遇到「不一样的文本」。</b>受控实验里，同一个模型在离训练区 16M 和 48M token 的窗口上得分相同，而在<b>反方向</b>同样距离的窗口上高得多——距离是对称的，得分不是。所以下降不是时间造成的老化，而是测试文本换了体裁：语料在某个位置有一道明显的成分分界（分界后每段的不同标签多 23%，落在最高频 token 上的质量少 19%），教师在分界两侧一样准，<b>变的是「能不能靠背」</b>（最高频 1,000 个键的命中率 0.67 → 0.50）。烧上去的网表不会因为时间流逝而退化，但会因为遇到另一种文本而掉一档。</li>
-    <li><b>训练数据选哪一段比多花门数更值钱。</b>同样的门数，用最近的 1,600 万 token 训练而不是最早的，一致率从约 0.11 提到约 0.17；而且最近区间的单层 unigram 就打赢了最早区间的完整六层级联。</li>
-    <li><b>只看 6 个 token，无状态、无记忆。</b>更长的上下文买不起：门数随表项线性（约 6.7 NAND/项），5 个块/token 的预算只够约 15 万门。</li>
-    <li><b>只有 8,192 个可能的输出</b>（教师 argmax 质量的 92.2%）；表外的目标它永远说不出来。</li>
-    <li><b>不会聊天、不会调用工具。</b>它是一个下一 token 预测器，不是 agent。</li>
-    <li><b>它会循环。</b>转写的是教师的 argmax，没有采样随机位，所以是确定性的——确定性的贪心续写必然进入循环（试试上面那句，几个 token 后就开始重复）。这是设计的直接后果，不是缺陷修不掉：加采样位要多花门数，而 v0.2 采样器制造过一个换行吸收态。</li>
-    <li>一致率之所以停在 0.23，不是门数不够，而是 <b>6 个 token 的上下文里没有足够信息</b>：在真正重复出现的上下文上，教师 argmax 的条件熵仍有 1.9–3.7 比特。</li>
+    <li><span class="zh"><b>它不是 MiniCPM5-2B。</b>近分布一致 <b>23.5%</b>，<b>远分布只有 11.0%</b>，而教师在两个窗口上都是 <b>49.4%</b>。这是转写，不是等价。</span><span class="en"><b>It is not MiniCPM5-2B.</b> Near-distribution agreement is <b>23.5%</b> and <b>far-distribution only 11.0%</b>, while the teacher scores <b>49.4%</b> on both windows. This is a transcription, not an equivalent.</span></li>
+    <li><span class="zh"><b>它背下来的东西不泛化。</b>同一个模型在同体裁窗口上约 0.23、跨体裁窗口上约 0.11，而教师在两者上都是约 0.49，分毫不差。教师的权重能迁移，一张记住的表不能。</span><span class="en"><b>What it memorized does not generalize.</b> The same model scores about 0.23 on same-genre windows and about 0.11 on cross-genre windows, while the teacher scores about 0.49 on both, without budging. The teacher's weights transfer; a memorized table does not.</span></li>
+    <li><span class="zh"><b>它不会「变旧」，但会遇到「不一样的文本」。</b>受控实验里，同一个模型在离训练区 16M 和 48M token 的窗口上得分相同，而在<b>反方向</b>同样距离的窗口上高得多——距离是对称的，得分不是。所以下降不是时间造成的老化，而是测试文本换了体裁：语料在某个位置有一道明显的成分分界（分界后每段的不同标签多 23%，落在最高频 token 上的质量少 19%），教师在分界两侧一样准，<b>变的是「能不能靠背」</b>（最高频 1,000 个键的命中率 0.67 → 0.50）。烧上去的网表不会因为时间流逝而退化，但会因为遇到另一种文本而掉一档。</span><span class="en"><b>It does not “go stale”, but it does meet “different text”.</b> In a controlled experiment the same model scored the same on windows 16M and 48M tokens away from the training range, but much higher on windows the same distance away in the <b>opposite direction</b> — the distance is symmetric, the score is not. So the drop is not aging over time but a change of genre in the test text: the corpus has a sharp compositional boundary at one point (past it, each segment has 23% more distinct labels and 19% less mass on the most frequent tokens). The teacher is equally accurate on both sides; <b>what changes is whether memorization works</b> (hit rate of the 1,000 most frequent keys 0.67 → 0.50). A burned netlist will not degrade as time passes, but it drops a notch when it meets a different kind of text.</span></li>
+    <li><span class="zh"><b>训练数据选哪一段比多花门数更值钱。</b>同样的门数，用最近的 1,600 万 token 训练而不是最早的，一致率从约 0.11 提到约 0.17；而且最近区间的单层 unigram 就打赢了最早区间的完整六层级联。</span><span class="en"><b>Which slice of training data you choose is worth more than extra gates.</b> At the same gate count, training on the most recent 16M tokens instead of the earliest raises agreement from about 0.11 to about 0.17; and a single-level unigram on the recent range already beats the full six-level cascade on the earliest range.</span></li>
+    <li><span class="zh"><b>只看 6 个 token，无状态、无记忆。</b>更长的上下文买不起：门数随表项线性（约 6.7 NAND/项），5 个块/token 的预算只够约 15 万门。</span><span class="en"><b>Sees only 6 tokens; stateless, no memory.</b> Longer context is unaffordable: gates grow linearly with entries (about 6.7 NAND per entry), and a budget of 5 blocks per token buys only about 150K gates.</span></li>
+    <li><span class="zh"><b>只有 8,192 个可能的输出</b>（教师 argmax 质量的 92.2%）；表外的目标它永远说不出来。</span><span class="en"><b>Only 8,192 possible outputs</b> (92.2% of the teacher's argmax mass); targets outside that list can never be produced.</span></li>
+    <li><span class="zh"><b>不会聊天、不会调用工具。</b>它是一个下一 token 预测器，不是 agent。</span><span class="en"><b>Can't chat or call tools.</b> It is a next-token predictor, not an agent.</span></li>
+    <li><span class="zh"><b>它会循环。</b>转写的是教师的 argmax，没有采样随机位，所以是确定性的——确定性的贪心续写必然进入循环（试试上面那句，几个 token 后就开始重复）。这是设计的直接后果，不是缺陷修不掉：加采样位要多花门数，而 v0.2 采样器制造过一个换行吸收态。</span><span class="en"><b>It loops.</b> It transcribes the teacher's argmax with no random sampling bits, so it is deterministic — and deterministic greedy continuation inevitably ends up in a loop (try the sentence above; it starts repeating after a few tokens). This is a direct consequence of the design rather than an unfixable bug: sampling bits cost extra gates, and the v0.2 sampler once created a newline absorbing state.</span></li>
+    <li><span class="zh">一致率之所以停在 0.23，不是门数不够，而是 <b>6 个 token 的上下文里没有足够信息</b>：在真正重复出现的上下文上，教师 argmax 的条件熵仍有 1.9–3.7 比特。</span><span class="en">Agreement stalls at 0.23 not for lack of gates but because <b>6 tokens of context do not carry enough information</b>: on contexts that genuinely recur, the conditional entropy of the teacher's argmax is still 1.9–3.7 bits.</span></li>
   </ul>
 </div>
 </div>
 
+<script>
+/* 语言切换：写回 localStorage('nand-driver-lang')，改 html lang，不刷新；.zh/.en 由 CSS 显隐 */
+function L(zh,en){ return /^en/i.test(document.documentElement.lang) ? en : zh; }
+(function(){
+  var h=document.documentElement, b=document.getElementById('langbtn');
+  function sync(){
+    var en=/^en/i.test(h.lang);
+    [].forEach.call(b.querySelectorAll('[data-l]'), function(x){ x.classList.toggle('cur', x.getAttribute('data-l')===(en?'en':'zh')); });
+    b.setAttribute('aria-label', en ? 'Language: English. Switch to Chinese (中文)' : '语言：中文。切换到英文（English）');
+    [].forEach.call(document.querySelectorAll('[data-aria-en]'), function(x){ x.setAttribute('aria-label', en ? x.getAttribute('data-aria-en') : x.getAttribute('data-aria-zh')); });
+    document.title = en ? 'impossible LLM v1 (archive)' : 'impossible LLM v1（存档）';
+    
+  }
+  b.addEventListener('click', function(){
+    var l=/^en/i.test(h.lang) ? 'zh' : 'en';
+    h.lang = l==='en' ? 'en' : 'zh-CN';
+    try{ localStorage.setItem('nand-driver-lang', l); }catch(e){}
+  });
+  new MutationObserver(sync).observe(h, {attributes:true, attributeFilter:['lang']});
+  sync();
+})();
+</script>
 <script type="module">
 const $=id=>document.getElementById(id);
 const OUT=$('out'), STAT=$('stat'), GO=$('go'), MSG=$('msg');
+const T=(zh,en)=>'<span class="zh">'+zh+'</span><span class="en">'+en+'</span>';
 let cascade=null, worker=null, NET=null;
 
 const workerSrc=`
@@ -173,17 +199,17 @@ function step(bytes){return new Promise(res=>{const h=e=>{if('code' in e.data){w
     NET=await (await fetch('./netlist.json')).json();
     const hex=NET.nl_hex.startsWith('0x')?NET.nl_hex.slice(2):NET.nl_hex;
     worker=new Worker(URL.createObjectURL(new Blob([workerSrc],{type:'application/javascript'})));
-    worker.onerror=ev=>{OUT.innerHTML='<span class="warn">worker 启动失败 worker failed: '+(ev.message||'unknown')+'</span>';};
+    worker.onerror=ev=>{OUT.innerHTML='<span class="warn">'+T('Worker 启动失败：','Worker failed to start: ')+(ev.message||'unknown')+'</span>';};
     const ready=new Promise((res,rej)=>{const h=e=>{if(e.data.ready){worker.removeEventListener('message',h);res(e.data);}else if(e.data.error){worker.removeEventListener('message',h);rej(new Error(e.data.error));}};worker.addEventListener('message',h);});
     worker.postMessage({init:{hex,nIn:NET.nIn,nOut:NET.nOut}});
     const r=await ready;
     if(r.n!==NET.nNand) throw new Error('record count '+r.n+' != nNand '+NET.nNand);
-    OUT.innerHTML='<span class="muted">网表已载入 '+r.n.toLocaleString()+' 门，正在载入分词器…</span>';
+    OUT.innerHTML='<span class="muted">'+T('网表已载入 '+r.n.toLocaleString()+' 门，正在载入分词器…','Netlist loaded: '+r.n.toLocaleString()+' gates. Loading tokenizer…')+'</span>';
     cascade=await import('./cascade.js');
     await cascade.encode('warmup');
-    OUT.innerHTML='<span class="muted">就绪。点「生成」。 Ready — press generate.</span>';
+    OUT.innerHTML='<span class="muted">'+T('就绪。点「生成」。','Ready. Press “Generate”.')+'</span>';
     GO.disabled=false;
-  }catch(err){OUT.innerHTML='<span class="warn">加载失败 load failed: '+err.message+'</span>';}
+  }catch(err){OUT.innerHTML='<span class="warn">'+T('加载失败：','Load failed: ')+err.message+'</span>';}
 })();
 
 GO.onclick=async()=>{
@@ -196,9 +222,9 @@ GO.onclick=async()=>{
     const piece=await cascade.decode(code);
     gen.push(piece); text+=piece;
     OUT.innerHTML=MSG.value.replace(/</g,'&lt;')+'<span class="gen">'+gen.join('').replace(/</g,'&lt;')+'</span>';
-    STAT.textContent='第 '+(i+1)+'/16 个 token · '+NET.nNand.toLocaleString()+' NAND/步';
+    STAT.innerHTML=T('第 '+(i+1)+'/16 个 token','token '+(i+1)+'/16')+' · '+NET.nNand.toLocaleString()+T(' NAND/步',' NAND/step');
   }
-  STAT.textContent='16 个 token · '+NET.nNand.toLocaleString()+' NAND/步 · 浏览器内 '+Math.round(performance.now()-t0)+' ms';
+  STAT.innerHTML=T('16 个 token','16 tokens')+' · '+NET.nNand.toLocaleString()+T(' NAND/步',' NAND/step')+' · '+T('浏览器内 ','in browser ')+Math.round(performance.now()-t0)+' ms';
   GO.disabled=false;
 };
 </script>
