@@ -10,5 +10,5 @@
   "dlgnGates": 1902,
   "bitsRead": 12,
   "positionsRead": "last char + every far offset present in the rule set",
-  "corpus": "circuits/_scratch/tapeout_asic/onestep_lm/data/tinyshakespeare.txt"
+  "corpus": "data/tinyshakespeare.txt"
 }

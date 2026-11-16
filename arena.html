@@ -682,14 +682,14 @@ const T = {
  j_p:{zh:"eval 是只读的，链上不记得谁调过。竞技场合约收 0.005 BEM 进奖池，再经 Witness 把这一步的输入输出写成事件。按下按钮，你的钱包签一笔，BSC 全网算出这一步，选中的车照链上返回的结果动，你的地址永久留在右边的记录里，你付的 BEM 成为参赛者的奖金。",en:"eval is read-only, so the chain does not remember who called it. The arena contract takes 0.005 BEM into the prize pool and, through the Witness, writes this step's inputs and outputs as an event. Press the button: your wallet signs once, the BSC network computes the step, the selected car moves by what the chain returned, your address stays in the log, and your BEM becomes prize money for the entrants."},
  btn_wallet:{zh:"用钱包开一步",en:"Drive one step"},
  j_s1:{zh:"页面暂停，把选中的车当前帧的 15 位传感器打包成 2 个字节。",en:"The page pauses and packs the selected car's 15 sensor bits into 2 bytes."},
- j_s2:{zh:"钱包签一笔 drive(entry, inputs)，收 0.005 BEM 进奖池（第一次会先批准 0.5 BEM 的额度），约 17 万 gas。",en:"Your wallet signs drive(entry, inputs); 0.005 BEM goes to the prize pool (the first time also approves a 0.5 BEM allowance); about 170k gas."},
+ j_s2:{zh:"钱包签一笔 drive(entry, inputs)，收 0.005 BEM 进奖池（额度不够时先批准这一步的 0.005 BEM，不多批），约 17 万 gas。",en:"Your wallet signs drive(entry, inputs); 0.005 BEM goes to the prize pool (if the allowance is short, it first approves exactly this step\u2019s 0.005 BEM, no more); about 170k gas."},
  j_s3:{zh:"上链后页面读取事件里的 outputs，用链上的那一步推进车。",en:"Once mined, the page reads the outputs from the event and advances the car with the chain's step."},
  j_fine:{zh:"需要浏览器钱包（MetaMask、OKX 等）、BNB Smart Chain 和一点 BEM。合约地址见下方竞技场。",en:"Needs a browser wallet (MetaMask, OKX, ...) on BNB Smart Chain and a little BEM. Contract address in the arena block below."},
  j_log:{zh:"链上驾驶记录",en:"On-chain drive log"},
  j_empty:{zh:"还没有人开过。第一步等你。",en:"Nobody has driven yet. The first step is yours."},
  w_nowallet:{zh:"没有检测到钱包插件",en:"no wallet extension found"}, w_confirm:{zh:"请在钱包里确认",en:"confirm in your wallet"}, w_pending:{zh:"已发送，等待上链",en:"sent, waiting for the block"},
  w_done:{zh:"上链了，这一步由你签名",en:"mined: this step was signed by you"}, w_rejected:{zh:"已取消",en:"cancelled"}, w_err:{zh:"交易失败",en:"transaction failed"},
- w_approve:{zh:"第一次需要先批准 0.5 BEM 额度，请确认",en:"first time: approve a 0.5 BEM allowance"}, w_nobem:{zh:"BEM 余额不足 0.005",en:"BEM balance below 0.005"}, w_noentry:{zh:"这辆车还没在 v2 竞技场报名",en:"this car has no v2 arena entry yet"},
+ w_approve:{zh:"额度不够：先批准这一步的 0.005 BEM，请确认",en:"allowance too low: approve exactly this step\u2019s 0.005 BEM"}, w_nobem:{zh:"BEM 余额不足 0.005",en:"BEM balance below 0.005"}, w_noentry:{zh:"这辆车还没在 v2 竞技场报名",en:"this car has no v2 arena entry yet"},
  t_when:{zh:"区块",en:"block"}, t_who:{zh:"谁",en:"who"}, t_car:{zh:"车",en:"car"}, t_in:{zh:"输入",en:"inputs"}, t_out:{zh:"动作",en:"action"},
  a_eyebrow:{zh:"竞技场 · 让你的大脑上场",en:"Arena · bring your own brain"},
  a_h:{zh:"训练你自己的控制器，烧上链，同一条赛道比圈速",en:"Train your own controller, burn it, race it on the same track"},
@@ -907,6 +907,17 @@ async function loadDriveLog(){
     rows.sort((x,y)=>y.block-x.block).slice(0,50).forEach(r=>addLogRow(r,false));
   }catch(e){}
 }
+/* ensureAllowance:start —— 用户 11-05 定（D-53）：每次只批准这一步的准确金额；额度已经够就不再批准。arena_allowance.test.mjs 原样摘出这段测 */
+async function ensureAllowance(eth, me, fee, onApprove){
+  const allow=BigInt(await eth.request({method:'eth_call',params:[{to:BEM,data:SEL.allowance+w32(me)+w32(ARENA)},'latest']}));
+  if(allow>=BigInt(fee)) return true;                       // 够了：不发 approve
+  onApprove&&onApprove();
+  const ah=await eth.request({method:'eth_sendTransaction',params:[{from:me,to:BEM,data:SEL.approve+w32(ARENA)+w32(fee),chainId:'0x38'}]});   // 准确金额，不多批
+  let arc=null; for(let i=0;i<120&&!arc;i++){ await new Promise(r=>setTimeout(r,ensureAllowance.poll)); arc=await eth.request({method:'eth_getTransactionReceipt',params:[ah]}); }
+  return !!arc && arc.status==='0x1';
+}
+ensureAllowance.poll=1500;
+/* ensureAllowance:end */
 document.getElementById('b-wallet').onclick=async()=>{
   const eth=window.ethereum, btn=document.getElementById('b-wallet'), f=focus;
   if(!eth){ wst.textContent=t('w_nowallet'); return; }
@@ -920,8 +931,7 @@ document.getElementById('b-wallet').onclick=async()=>{
     if(V2){
       const fees=(await eth.request({method:'eth_call',params:[{to:ARENA,data:SEL.fees},'latest']})).slice(2); const driveFee=parseInt(fees.slice(64,128),16);
       const bal=parseInt(await eth.request({method:'eth_call',params:[{to:BEM,data:SEL.balanceOf+w32(me)},'latest']}),16); if(bal<driveFee){ wst.textContent=t('w_nobem'); return; }
-      const allow=parseInt(await eth.request({method:'eth_call',params:[{to:BEM,data:SEL.allowance+w32(me)+w32(ARENA)},'latest']}),16);
-      if(allow<driveFee){ wst.textContent=t('w_approve'); const ah=await eth.request({method:'eth_sendTransaction',params:[{from:me,to:BEM,data:SEL.approve+w32(ARENA)+w32(driveFee*100),chainId:'0x38'}]}); let arc=null; for(let i=0;i<120&&!arc;i++){ await new Promise(r=>setTimeout(r,1500)); arc=await eth.request({method:'eth_getTransactionReceipt',params:[ah]}); } if(!arc||arc.status!=='0x1'){ wst.textContent=t('w_err'); return; } }
+      if(!(await ensureAllowance(eth,me,driveFee,()=>{wst.textContent=t('w_approve');}))){ wst.textContent=t('w_err'); return; }
       to=ARENA; data=driveCalldata(f.entryId,obs.bits);
     } else { to=WITNESS; data=SEL.evaluate+w32(f.cpu)+w32(f.id)+w32(96)+w32(2)+packHex(obs.bits).padEnd(64,'0'); }
     wst.textContent=t('w_confirm');
@@ -1276,7 +1286,7 @@ leaderboardPending=loadSnapshot().then(loadLeaderboard);
   const cv=document.getElementById('scene3d'), svg=document.getElementById('scene');
   const btn=document.getElementById('b-3d'), camBtn=document.getElementById('b-cam'), hint=document.getElementById('cam-hint'), host=document.querySelector('.panel.scene');
   // Explain the existing two-transaction first-drive path without changing wallet behavior.
-  T.j_p={zh:'观看演示无需钱包。链上开一步会发送交易，并向竞技场奖池支付 0.005 BEM；首次可能需要先单独授权 BEM 额度。车辆按记录的结果前进，你的地址及这一步的输入、输出会公开留在链上。',en:'Watching the demo needs no wallet. Driving one on-chain step sends a transaction and contributes 0.005 BEM to the arena prize pool. The first drive may require a separate BEM allowance approval. The selected car follows the recorded result; your address and that step’s inputs and outputs are public.'};
+  T.j_p={zh:'观看演示无需钱包。链上开一步会发送交易，并向竞技场奖池支付 0.005 BEM；额度不够时，会先单独授权这一步的 0.005 BEM，不多授权。车辆按记录的结果前进，你的地址及这一步的输入、输出会公开留在链上。',en:'Watching the demo needs no wallet. Driving one on-chain step sends a transaction and contributes 0.005 BEM to the arena prize pool. If the allowance is short, it first approves exactly this step’s 0.005 BEM, no more. The selected car follows the recorded result; your address and that step’s inputs and outputs are public.'};
   document.querySelector('[data-i18n="j_p"]').textContent=t('j_p');
   // Keep the original selection handler; provide keyboard access and selected state.
   T.legend_choose={zh:'选择查看的车辆',en:'Choose a car to follow'};
@@ -2613,10 +2623,10 @@ leaderboardPending=loadSnapshot().then(loadLeaderboard);
   set('works_limit','<b>它做不到的：</b>它只学会了这一类赛道，不是通用司机；它也没有记忆，记不住速度和上一个弯——“记住速度”那辆车就是为此做的。',
     '<b>What it can’t do:</b> it only learned this family of tracks and is no general driver; it also has no memory, so it can’t track its speed or the last bend — the “Remember speed” car was built for exactly that.');
   set('j_eyebrow','想亲手参与？ · 需要钱包','Want to take part? · needs a wallet');
-  set('j_p','只看不需要钱包。想亲自参与的话：按下按钮，你的钱包会发一笔交易，由 BNB Chain 算出选中的车下一步怎么转，车就照链上的结果走一步。这一步付 0.005 BEM 进比赛奖池（第一次要先授权额度），你的地址和这一步的输入、输出会永久公开记在链上。',
-    'Watching needs no wallet. To take part: press the button and your wallet sends one transaction; BNB Chain computes the selected car’s next move and the car follows the chain’s answer. The step pays 0.005 BEM into the race prize pool (the first time needs an allowance), and your address plus the step’s inputs and outputs stay public on chain.');
+  set('j_p','只看不需要钱包。想亲自参与的话：按下按钮，你的钱包会发一笔交易，由 BNB Chain 算出选中的车下一步怎么转，车就照链上的结果走一步。这一步付 0.005 BEM 进比赛奖池（额度不够时先授权这一步的 0.005 BEM，不多授权），你的地址和这一步的输入、输出会永久公开记在链上。',
+    'Watching needs no wallet. To take part: press the button and your wallet sends one transaction; BNB Chain computes the selected car’s next move and the car follows the chain’s answer. The step pays 0.005 BEM into the race prize pool (if the allowance is short, it first approves exactly this step’s 0.005 BEM), and your address plus the step’s inputs and outputs stay public on chain.');
   set('j_s1','页面暂停，把选中的车此刻看到的 15 位信息打包好。','The page pauses and packs what the selected car sees right now (15 bits).');
-  set('j_s2','钱包签一笔交易：付 0.005 BEM 进奖池（第一次要先授权 0.5 BEM 额度），手续费约 17 万 gas。','Your wallet signs one transaction: 0.005 BEM goes to the prize pool (the first time approves a 0.5 BEM allowance); about 170k gas.');
+  set('j_s2','钱包签一笔交易：付 0.005 BEM 进奖池（额度不够时先授权这一步的 0.005 BEM，不多授权），手续费约 17 万 gas。','Your wallet signs one transaction: 0.005 BEM goes to the prize pool (if the allowance is short, it first approves exactly this step\u2019s 0.005 BEM); about 170k gas.');
   set('j_s3','交易上链后，页面读取链上算出的结果，车照这个结果走一步。','Once it is on chain, the page reads the chain’s answer and moves the car one step.');
   set('j_fine','需要：浏览器钱包（如 MetaMask、OKX Wallet）、BNB Chain 上一点 BNB 付手续费，以及一点 BEM。','You need a browser wallet (such as MetaMask or OKX Wallet), a little BNB on BNB Chain for fees, and a little BEM.');
   set('a_eyebrow','竞技场 · 给想参赛的人','Arena · for people who want to compete');

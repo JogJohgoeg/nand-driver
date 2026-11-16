@@ -18,7 +18,7 @@
   "dlgnGates": 19624,
   "bigramExactTop1": 0.2621,
   "trigramExactTop1": 0.3707,
-  "corpus": "circuits/_scratch/tapeout_asic/onestep_lm/data/tinyshakespeare.txt",
+  "corpus": "data/tinyshakespeare.txt",
   "corpusBytes": 1115394,
   "trainWindows": 1003822,
   "testWindows": 111508,
