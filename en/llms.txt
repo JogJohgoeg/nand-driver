@@ -1,0 +1,61 @@
+# 21 NAND docs
+
+> 21 NAND turns AI into the most basic logic gates and puts them on a blockchain, so anyone can check them. Below is the Markdown version of every docs page.
+
+```
+╶───────╮   ╶─╮       ╭───╮   ╷   ╭───────╮   ╭───╮   ╷   ┌───────╮
+        │     │       │   │   │   │       │   │   │   │   │       │
+        │     │       │   │   │   │       │   │   │   │   │       │
+╭───────╯     │       │   │   │   ├───────┤   │   │   │   │       │
+│             │       │   │   │   │       │   │   │   │   │       │
+│             │       │   │   │   │       │   │   │   │   │       │
+╰───────╴     ╵       ╵   ╰───╯   ╵       ╵   ╵   ╰───╯   └───────╯
+```
+
+## Start
+- [21 NAND docs](index.md): We turn AI into the most basic logic gates and put them on a blockchain, so anyone can check them.
+- [Quickstart](start/quickstart.md): Read the fingerprint a file has on the blockchain, then download the file and compute it yourself. If the two match, it has not been changed. Read-only, no wallet.
+- [Check it yourself](start/verify.md): You don't have to trust us: recompute the website files, circuits and models on chain with your own commands. The first four you can do right now.
+- [FAQ](start/faq.md): Is your computer good enough, do you need a wallet, can you buy the chip, does the token come with any rights.
+
+## The Bard chip
+- [The Bard chip](bard/index.md): A language model built directly as a chip. This version writes English sentences in the style of children's stories. They often don't hang together, the characters get mixed up, and a ⁇ (a word the model doesn't know) sometimes appears. We are working on upgrading it into a chip that can tell a coherent story; it is not there yet. The design files are stored on X Layer. It has not been sent to a factory yet.
+- [Fetch the design files from the chain](bard/fetch.md): The Bard's full sign-off layout is stored on X Layer. Fetch the two parts, join them back into the original file, and check the sha256.
+- [Process ladder](bard/nodes.md): The same Bard netlist, through place and route on seven process platforms. This page lists the area and frequency on each one.
+- [FPGA port](bard/fpga.md): The Bard's full chip v8g routes on an XC7A100T with an open-source toolchain, with timing at 21.19 MHz. It is not on a real board yet.
+- [Story box](bard/storybox.md): An ESP32-S3 writes sentences with the same integer rules as the Bard chip. Press the GO button and the text appears word by word on a small screen, and also comes out of the USB serial port.
+
+## Model machine
+- [Model machine](machine/index.md): A small computer that runs binary models. Each weight is just on or off, and this page can run a toy model.
+- [Full-machine architecture](machine/arch.md): The model machine's main line runs in pure software on a small computer (SBC). This page covers FPGA plus ESP32-C3, a research line that has only run in simulation.
+- [Fetch firmware from the chain](machine/tapeboot.md): At boot, the model machine fetches its runtime and model from a tape container. It checks the signature first, then each chunk's hash. If a check fails, it goes back to the last version that worked.
+- [A large model on a small computer](machine/sbc.md): No FPGA: run binary and ternary models with 1.7 billion parameters on the CPU of a small ARM computer. This page has the measured speeds and how we scale them to a board.
+
+## Gate-level AI
+- [Gate brain](gate-ai/index.md): The small model BitCPM4-1B, turned entirely into NAND gates. Your computer's GPU computes the answer gate by gate, bit for bit identical to the model's integer reference implementation.
+- [From graph to gates](gate-ai/ncd2net.md): ncd2net compiles a neural network diagram into a netlist made only of two-input NAND gates, and checks it bit for bit.
+- [A tiny language model](gate-ai/tiny-llm.md): impossible LLM v2: one netlist of 5,142,875 NAND gates. It reads the last 6 tokens and writes the next token in one evaluation.
+- [What a large model on chain would cost](gate-ai/cost.md): Running a large model directly in an on-chain processor on BNB Chain costs about 20,000 BNB per token. So the model runs off chain and disputes are settled on chain.
+
+## Circuits that drive
+- [21 gates that drive](control/index.md): A driving circuit of 21 NAND gates, written on BNB Chain as circuit #279. Anyone can run it on chain themselves.
+- [Arena rules](control/arena.md): Write your driving circuit on chain and enter it. The judge scores it from the on-chain netlist on 24 fixed starting points.
+- [Microduck](control/duck.md): 39 NAND gates steer a simulated little duck robot. Circuit #281 is written on BNB Chain. Walking is still done by the original neural network.
+- [NAND plays Squared](control/squared.md): A netlist of 386 NAND gates plays the 11×11 Squared mini game in your browser. The netlist picks its own moves to reach the target square.
+- [Fruit fly connectome](control/fly.md): Behavior pathways picked from the connectome of a fruit fly's whole central nervous system, distilled into a few dozen NAND gates. Not yet checked by independent experiments, and not on chain.
+
+## Build a circuit
+- [Build a small circuit](build/index.md): Turn a small piece of logic into a NAND circuit and write it on chain, so anyone can run and check it. Five steps and one real cost.
+- [Worked examples](build/notes.md): Gate-level designs for TapeOut circuit problems: gate count, depth and a one-line idea for 10 problems.
+- [Proven lower bounds](build/proofs.md): The carry of a 3-bit addition needs at least 6 levels of NAND: 5 levels cannot do it, and a 6-level circuit exists.
+- [Agents-API circuits #283, #284](build/agents-api.md): The control rules of an agent session built as on-chain circuits: #283 is the first version, #284 adds circuit breakers, reason codes and tiered payment.
+
+## Reference
+- [Contract addresses](reference/contracts.md): The on-chain contracts and containers used for checking. All are public contracts; reading them needs nothing but read-only calls.
+- [TBW1 weight format](reference/tbw1.md): TBW1 is the model machine's weight file: a fixed binary layout. The whole file goes on chain as is, goes into memory as is, and is read directly by the binary multiply-accumulate unit.
+- [TapeBoot spec](reference/tapeboot.md): TapeBoot defines how a device fetches firmware from a tape container: on-chain paths, channel pointers, manifest fields, signatures and the check order. Draft v0.3.
+- [Commands you can check](reference/commands.md): For everything on chain and everything we publish: what it checks, against what, which command, and what you see when it passes. All read-only, no wallet.
+- [Netlist format](reference/netlist.md): A TapeOut circuit's netlist is a list of two-input NAND gates: pairs says which two wires each gate connects to, taps says which wires the outputs come from.
+
+## Updates
+- [Progress](updates/index.md): What is done, what is in progress, and what we won't do. Every item has a date.

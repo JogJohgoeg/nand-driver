@@ -1,0 +1,14 @@
+{
+  "name": "21 NAND Driver",
+  "short_name": "NAND Driver",
+  "description": "用最简单的逻辑门搭出会开车、会答题的程序：演示导航页。",
+  "version": "1.0.3",
+  "start_url": "index.html",
+  "tapeout": {
+    "v": 1,
+    "entry": "index.html",
+    "files": { "index.html": "0xc911d9f52c5bfdf9aa68daa71bc9939969bd12979c2cad67a17eb6417e563107" },
+    "permissions": ["none"],
+    "developer": { "site": "288.732.tape", "container": "0x1b21a2d9de0d4a7242f604c37290946c383937da" }
+  }
+}

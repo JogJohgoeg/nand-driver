@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>吟游诗人</title>
+<style>
+:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  }
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--t2);font:var(--fs)/var(--lh) var(--sans);padding:.875rem}
+h2{color:var(--ink);font-size:1.125rem;margin:0 0 .5rem}
+.card{background:var(--card);border:1px solid var(--soft);border-radius:var(--r);padding:.875rem;margin:0 0 .875rem}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.875rem 0}
+button{font:600 .875rem var(--head);border-radius:var(--r);padding:.5rem .875rem;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+button.primary{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}button:disabled{opacity:.45;cursor:default}
+select,textarea,input{width:100%;background:var(--bg-deeper);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:.4375rem .5625rem;font:.875rem var(--mono)}
+textarea{min-height:3.2em;resize:vertical}
+label{display:block;font-size:.8125rem;color:var(--mu);margin:.5rem 0 3px}
+.story{min-height:7em;background:var(--bg-deeper);border:1px solid var(--soft);border-radius:var(--r);padding:.875rem;font:.9375rem/1.7 Georgia,"Times New Roman",serif;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.story.empty{color:var(--mu);font:.875rem/1.6 var(--sans)}
+.say{margin:.5rem 0 0;font-weight:600;color:var(--ink);min-height:1.5em}.ok{color:var(--pos)}.bad{color:var(--neg)}.warn{color:var(--warn)}
+.mu{color:var(--mu);font-size:.8125rem}
+details{margin-top:.875rem;font-size:.8125rem;color:var(--mu)}summary{cursor:pointer}
+details.chk{margin:0 0 .875rem}details.chk summary{font-weight:600;font-size:.875rem;min-height:calc(2em*var(--lh))}/* 留两行高：核对完的那句比「正在核对」长，窄屏会折成两行，不留就把下面推下去 */
+code,pre{font:.75rem var(--mono);color:var(--t2);overflow-wrap:anywhere}
+pre{white-space:pre-wrap;background:var(--bg-deeper);border:1px solid var(--soft);border-radius:var(--r);padding:.5rem .875rem}
+.bar{height:.375rem;border-radius:var(--r);background:var(--soft);overflow:hidden;margin-top:.5rem}.bar i{display:block;height:100%;width:0;background:var(--bt)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+@media (max-width:520px){.grid3{grid-template-columns:minmax(0,1fr)}}
+a.save{display:inline-block;background:var(--brand);color:var(--on-accent);text-decoration:none;font-weight:600;border-radius:var(--r);padding:.5rem .875rem}
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+</style>
+</head>
+<body>
+<section class="card">
+  <h2 data-t="h1">看它写几句</h2>
+  <details class="chk" id="m-chk"><summary id="m-sum">正在核对模型…</summary><p id="m-detail"></p></details>
+  <label for="preset" data-t="start">故事的开头</label>
+  <select id="preset"><option>Once upon a time</option><option>A little girl found a red ball</option><option>Tim was afraid of the dark</option></select>
+  <div class="row"><button class="primary" id="go" type="button" disabled>写一段</button><button id="stop" type="button" hidden></button></div>
+  <div class="story empty" id="text" aria-live="polite">点「写一段」，它会接着开头往下写。</div>
+  <p class="say" id="say"></p>
+  <details><summary data-t="more">更多设置</summary>
+    <label for="prompt" data-t="prompt">自己写开头（英文）</label><textarea id="prompt" maxlength="2000">Once upon a time</textarea>
+    <div class="grid3">
+      <div><label for="context" data-t="ctx">记得最近几个词</label><select id="context"><option value="16" data-t="c16">16（和芯片一样）</option><option value="32" data-t="c32">32（只在浏览器里）</option></select></div>
+      <div><label for="mode" data-t="mode">怎么选词</label><select id="mode"><option value="0" data-t="greedy">每次选最可能的（结果固定）</option><option value="1" data-t="sample">带一点随机</option></select></div>
+      <div><label for="seed" data-t="seed">随机种子</label><input id="seed" type="number" value="260500" min="1" max="4294967295"></div>
+    </div>
+    <p data-t="about">这是吟游诗人芯片用的整数模型，在你的浏览器里跑，开头不会上传。它写儿童故事风格的英文句子，常不连贯、人物会乱，有时会出现 ⁇（模型不认识的词）。模型来自 tiny-tiny-stories（MIT 许可）。</p>
+  </details>
+</section>
+<section class="card">
+  <h2 data-t="h2">取回它的设计图</h2>
+  <p class="mu" data-t="h2p">吟游诗人整颗芯片的签核版图（OASIS 格式，11.2 MB）存在 X Layer 上。直接从链上取回两段，拼回原文件，核对后保存到你的电脑。只读，不用钱包。</p>
+  <div class="row"><button class="primary" id="fetch" type="button">取回设计图（11.2 MB）</button><a class="save" id="save" hidden download="int_c16_machine.oas"></a></div>
+  <div class="bar" id="bar" style="visibility:hidden"><i id="bari"></i></div>
+  <p class="say" id="fsay" aria-live="polite" style="display:grid"><span style="grid-area:1/1"></span></p>
+  <details><summary data-t="fdet">细节：存在哪、怎么自己核对</summary><pre id="fpre"></pre></details>
+</section>
+<i id="f-model" data-model="model.bin" hidden></i><i id="f-meta" data-model="meta.json" hidden></i>
+<script id="engine" src="engine.js" defer></script>
+<script>
+"use strict";
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var meta = document.querySelector('meta[name="app-lang"]'), EN = meta ? meta.content === "en" : false;
+  if (!meta) { try { EN = localStorage.getItem("lang") === "en"; } catch (e) {} }
+  document.documentElement.lang = EN ? "en" : "zh-CN";
+  var S = {
+    h1: ["看它写几句", "Watch it write"],
+    start: ["故事的开头", "How the story starts"],
+    go: ["写一段", "Write a few lines"], stop: ["停", "Stop"],
+    more: ["更多设置", "More settings"], prompt: ["自己写开头（英文）", "Your own opening (English)"],
+    ctx: ["记得最近几个词", "Words it remembers"], mode: ["怎么选词", "How it picks words"], greedy: ["每次选最可能的（结果固定）", "Most likely word (repeatable)"],
+    sample: ["带一点随机", "A little randomness"], seed: ["随机种子", "Random seed"],
+    about: ["这是吟游诗人芯片用的整数模型，在你的浏览器里跑，开头不会上传。它写儿童故事风格的英文句子，常不连贯、人物会乱，有时会出现 ⁇（模型不认识的词）。模型来自 tiny-tiny-stories（MIT 许可）。",
+      "This is the integer model used by the Bard chip, running in your browser; your opening never leaves it. It writes English sentences in the style of children's stories; they often don't hang together, the characters get mixed up, and a ⁇ (a word the model doesn't know) sometimes appears. Model: tiny-tiny-stories (MIT license)."],
+    empty: ["点「写一段」，它会接着开头往下写。", "Tap \"Write a few lines\" and it continues from the opening."],
+    checking: ["正在核对模型…", "Checking the model…"],
+    checked: ["已核对 ✓ 模型和芯片用的参考实现逐位一致（11 组测试）", "Verified ✓ the model matches the chip's reference implementation bit for bit (11 tests)"],
+    detail: ["模型 sha256 {h}；11 组测试共 37,440 个输出值和 149,760 个中间值，和 C 参考实现逐位相同。", "Model sha256 {h}; 11 tests, 37,440 outputs and 149,760 intermediate values, bit-identical to the C reference."],
+    badModel: ["模型没通过核对，为了安全不运行。刷新页面再试；还不行请告诉我们。", "The model failed its check, so it will not run. Reload and try again; if it keeps failing, please tell us."],
+    writing: ["正在写…", "Writing…"],
+    done32: ["写完了：{n} 个词，浏览器每个词约 {ms} 毫秒。芯片只记 16 个词，这一档只在浏览器里有。", "Done: {n} words, about {ms} ms each in your browser. The chip remembers 16 words; this setting exists only in the browser."],
+    c16: ["16（和芯片一样）", "16 (same as the chip)"], c32: ["32（只在浏览器里）", "32 (browser only)"],
+    done: ["写完了：{n} 个词，浏览器每个词约 {ms} 毫秒。换成芯片，每个词约 {c} 个时钟（按 10 MHz 约 {s} 秒）。", "Done: {n} words, about {ms} ms each in your browser. On the chip each word takes about {c} clocks (about {s} s at 10 MHz)."],
+    stopped: ["停了。再点「写一段」重新开始。", "Stopped. Tap \"Write a few lines\" to start again."],
+    seedBad: ["随机种子要是 1 到 4294967295 之间的整数。", "The seed must be a whole number from 1 to 4294967295."],
+    runBad: ["运行出错了：{e}。刷新页面再试。", "Something went wrong: {e}. Reload and try again."],
+    h2: ["取回它的设计图", "Fetch its chip design"],
+    h2p: ["吟游诗人整颗芯片的签核版图（OASIS 格式，11.2 MB）存在 X Layer 上。直接从链上取回两段，拼回原文件，核对后保存到你的电脑。只读，不用钱包。",
+      "The Bard's full signed-off layout (OASIS, 11.2 MB) is stored on X Layer. Fetch both parts straight from the chain, rejoin them, verify, and save to your computer. Read-only, no wallet."],
+    fetch: ["取回设计图（11.2 MB）", "Fetch the design (11.2 MB)"], again: ["再试一次", "Try again"],
+    fRun: ["正在取回设计图…", "Fetching the design…"], fStep1: ["读链上登记", "reading the on-chain record"], fStep2: ["已取回 {p}%（{d} / 11.2 MB）", "{p}% fetched ({d} / 11.2 MB)"], secs: ["{s} 秒", "{s} s"], waited: ["等了 {s} 秒没有回应：", "No response after {s} s: "],
+    fOk: ["已核对 ✓ 取回的设计图和 X Layer 上的登记一致（11,155,630 字节）", "Verified ✓ the design matches its record on X Layer (11,155,630 bytes)"],
+    save: ["保存到电脑", "Save to computer"],
+    fNet: ["连不上 X Layer 的节点，没取回来。检查网络后点「再试一次」；一直不行就过几分钟再试。", "Couldn't reach the X Layer nodes. Check your connection and tap \"Try again\"; if it keeps failing, try in a few minutes."],
+    fDis: ["几家 X Layer 节点给的登记不一样，为了安全先不取。点「再试一次」。", "The X Layer nodes disagree about the record, so nothing was fetched. Tap \"Try again\"."],
+    fReg: ["链上登记和这页记下的设计图指纹不一样，为了安全先不取。请告诉我们。", "The on-chain record differs from the fingerprint this page expects, so nothing was fetched. Please tell us."],
+    fBad: ["取回的内容和链上登记对不上，为了安全不保存。点「再试一次」会换一家节点。", "What came back doesn't match the on-chain record, so it was not saved. \"Try again\" uses a different node."],
+    fdet: ["细节：存在哪、怎么自己核对", "Details: where it's stored, how to check it yourself"]
+  };
+  function t(k, v) { var s = S[k][EN ? 1 : 0]; if (v) Object.keys(v).forEach(function (x) { s = s.split("{" + x + "}").join(v[x]); }); return s; }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function (e) { e.textContent = t(e.dataset.t); });
+  $("go").textContent = t("go"); $("stop").textContent = t("stop"); $("fetch").textContent = t("fetch"); $("save").textContent = t("save");
+  $("text").textContent = t("empty");
+  function say(id, s, c) { var e = $(id); e.textContent = s; e.className = "say" + (c ? " " + c : ""); }
+  function hex(b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return (x < 16 ? "0" : "") + x.toString(16); }).join(""); }
+  function sha(b) { return crypto.subtle.digest("SHA-256", b).then(hex); }
+
+  // ---------- 写句子：模型核对在后台（产品原则 2），界面只显示一行 ----------
+  var worker = null, metaData = null, busy = false, times = [];
+  $("m-sum").textContent = t("checking");
+  var ready0 = false;
+  var tail = "\n" + [
+    "var model, tok, stopped = false;",
+        "function le(a){var b=new ArrayBuffer(a.length*4),d=new DataView(b);a.forEach(function(v,i){d.setInt32(i*4,v,true)});return b}",
+    "onmessage=async function(ev){var d=ev.data;try{",
+    " if(d.type==='stop'){stopped=true;return}",
+    " if(d.type==='init'){model=IntC16.load(d.model);tok=d.meta.tokenizer;",
+    "  for(var i=0;i<d.meta.fixtures.length;i++){var a=model.forward(d.meta.fixtures[i].ids),l=le(a.logits),r=le(a.trace);postMessage({type:'fix',i:i,logits:l,trace:r},[l,r])}",
+    "  postMessage({type:'ready'});return}",
+    " if(d.type==='generate'){stopped=false;var ids=IntC16.encode(d.prompt,tok),s=d.seed>>>0,n=0;",
+    "  for(var step=0;step<120&&!stopped;step++){var input=ids.slice(-d.context),t0=performance.now(),out=model.forward(input);",
+    "   s^=s<<13;s^=s>>>17;s^=s<<5;s>>>=0;var token=model.pick(out.logits.slice(-192),s,d.sample);ids.push(token);n++;",
+    "   postMessage({type:'token',n:n,text:IntC16.decode(ids,tok),ms:performance.now()-t0,len:input.length});if(token===2)break;",
+    "   await new Promise(function(r){setTimeout(r,0)})}",
+    "  postMessage({type:'done',stopped:stopped})}",
+    "}catch(e){postMessage({type:'error',message:e.message})}}"].join("\n");
+  // 应用里加载器把 engine.js 内联进来；直接打开本页时它是外部脚本，再取一次正文
+  var engineText = $("engine").textContent.trim() ? Promise.resolve($("engine").textContent) : fetch($("engine").getAttribute("src")).then(function (r) { return r.text(); });
+  function bytesOf(id) { return fetch($(id).dataset.model).then(function (r) { return r.arrayBuffer(); }); }
+  var checks = [];
+  function badModel() { $("m-sum").textContent = t("badModel"); $("m-sum").className = "bad"; $("m-chk").open = true; $("go").disabled = true; }
+  function ready() { worker.onmessage({ data: { type: "ready-ok" } }); }
+  Promise.all([bytesOf("f-model"), bytesOf("f-meta"), engineText]).then(function (r) {
+    metaData = JSON.parse(new TextDecoder().decode(r[1]));
+    return sha(r[0]).then(function (h) { if (h !== metaData.sha256) throw new Error("sha"); return r; });
+  }).then(function (r) {
+    var url = URL.createObjectURL(new Blob([r[2] + tail], { type: "text/javascript" }));
+    worker = new Worker(url); URL.revokeObjectURL(url);
+    worker.onmessage = function (ev) {
+      var m = ev.data;
+      if (m.type === "fix") {   // 浏览器沙箱里的 Worker 不一定有 crypto.subtle，指纹在这里算
+        var f = metaData.fixtures[m.i];
+        checks.push(Promise.all([sha(m.logits), sha(m.trace)]).then(function (h) { if (h[0] !== f.logit_sha256 || h[1] !== f.trace_sha256) throw new Error("golden " + f.name); }));
+        return;
+      }
+      if (m.type === "ready") { Promise.all(checks).then(ready, function () { badModel(); }); return; }
+      if (m.type === "ready-ok") { ready0 = true; $("m-sum").textContent = t("checked"); $("m-chk").className = "chk ok"; $("m-sum").className = "ok"; $("m-detail").textContent = t("detail", { h: metaData.sha256 }); $("go").disabled = false; }
+      if (m.type === "token") { $("text").className = "story"; $("text").textContent = m.text; times.push(m.ms); $("say").textContent = t("writing"); $("say").className = "say"; lastLen = m.len; count = m.n; }
+      if (m.type === "done") { busy = false; $("go").disabled = false; $("stop").hidden = true;
+        if (m.stopped) { say("say", t("stopped")); return; }
+        var ms = times.reduce(function (a, b) { return a + b; }, 0) / Math.max(1, times.length), c = metaData.cycles[String(lastLen)] ? metaData.cycles[String(lastLen)].total : 0;
+        say("say", t(runCtx > 16 ? "done32" : "done", { n: count, ms: Math.round(ms), c: c.toLocaleString(EN ? "en-US" : "zh-CN"), s: (c / 1e7).toFixed(1) }), "ok"); }
+      if (m.type === "error") { busy = false; $("stop").hidden = true;
+        if (/^(sha|golden)/.test(m.message) || !ready0) badModel();
+        else { $("go").disabled = false; say("say", t("runBad", { e: m.message }), "bad"); } }
+    };
+    worker.onerror = function (e) { say("say", t("runBad", { e: e.message || "worker" }), "bad"); };
+    worker.postMessage({ type: "init", model: r[0], meta: metaData });
+  }).catch(function (e) { badModel(); if (e.message !== "sha") say("say", t("runBad", { e: e.message }), "bad"); });
+  var lastLen = 16, count = 0, runCtx = 16;
+  $("preset").onchange = function () { $("prompt").value = $("preset").value; $("seed").value = 260500 + $("preset").selectedIndex; };
+  $("go").onclick = function () {
+    var seed = Number($("seed").value);
+    if (!Number.isInteger(seed) || seed < 1 || seed > 4294967295) { say("say", t("seedBad"), "bad"); return; }
+    busy = true; times = []; count = 0; $("go").disabled = true; $("stop").hidden = false; $("text").className = "story"; $("text").textContent = ""; say("say", t("writing"));
+    runCtx = Number($("context").value);
+    worker.postMessage({ type: "generate", prompt: $("prompt").value, context: runCtx, sample: $("mode").value === "1", seed: seed });
+  };
+  $("stop").onclick = function () { if (busy) worker.postMessage({ type: "stop" }); };
+
+  // ---------- 取回设计图：直接读 X Layer（只读 eth_call），每段先比登记，再比整份 ----------
+  var RPCS = ["https://rpc.xlayer.tech", "https://xlayerrpc.okx.com", "https://xlayer.drpc.org"];
+  var REG = "0xd6efb7adcc9c83dc4924ad56f6a8e4e969b9adb6", BOX = "0x75c6E2D063963561c08c838476111adda7a1a6CD", DIR = "bard/v8g/";
+  var PARTS = [{ p: "int_c16_machine.oas.part1", size: 5577816, sha: "714c384d9d39e4639dd4ed53c2f744db2b3c4754614ec64a826a484c0b87c9fa" },
+    { p: "int_c16_machine.oas.part2", size: 5577814, sha: "f2bc44baa5cb101a12985ee1f196f3e4077d9d29e2f1b38ccc74504d9584b7b7" }];
+  var WHOLE = { size: 11155630, sha: "3a03c0091f475c540fc6dcb022924ebfb03da13a10a62096d0c63cc4e404de0d" };
+  var STEP = 960000, off0 = 0;   // 960,000 = 24,000 × 40；「再试一次」换一家节点打头
+  $("fpre").textContent = (EN ? "Chain: X Layer\nSite registry: " : "链：X Layer\n网站文件仓库：") + REG + (EN ? "\nContainer: " : "\n容器：") + BOX + "\n" + DIR + PARTS[0].p + "  " + PARTS[0].sha + "\n" + DIR + PARTS[1].p + "  " + PARTS[1].sha +
+    (EN ? "\nWhole file " : "\n整份 ") + "int_c16_machine.oas  " + WHOLE.sha + "\n\ncast call " + REG + " \\\n  \"fileInfo(address,string)(uint32,string,bytes32,uint40,uint256)\" \\\n  " + BOX + " " + DIR + PARTS[0].p + " \\\n  --rpc-url https://rpc.xlayer.tech";
+  function w(n) { var h = n.toString(16); return "0".repeat(64 - h.length) + h; }
+  function sarg(s) { var b = new TextEncoder().encode(s), h = hex(b); return w(b.length) + h + "0".repeat((64 - h.length % 64) % 64); }
+  function call(u, data) {
+    var ac = new AbortController(), tm = setTimeout(function () { late = true; ac.abort(); }, 30000);
+    return fetch(u, { method: "POST", signal: ac.signal, headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: REG, data: data }, "latest"] }) })
+      .then(function (r) { return r.json(); }).finally(function () { clearTimeout(tm); }).then(function (j) { if (!j.result) throw new Error("rpc"); return j.result; });
+  }
+  function info(part) {
+    var data = "0x6c609107" + "0".repeat(24) + BOX.slice(2).toLowerCase() + w(64) + sarg(DIR + part.p);
+    return Promise.all(RPCS.map(function (u) { return call(u, data).then(function (r) { return { size: parseInt(r.slice(2, 66), 16), sha: r.slice(130, 194) }; }, function () { return null; }); }))
+      .then(function (rs) { var ok = rs.filter(Boolean);
+        if (ok.length < 2) throw new Error("net");
+        if (ok.some(function (x) { return x.sha !== ok[0].sha || x.size !== ok[0].size; })) throw new Error("dis");
+        if (ok[0].sha !== part.sha || ok[0].size !== part.size) throw new Error("reg");
+        return ok[0]; });
+  }
+  var got = 0, late = false, phase = "", tick = null;      // late：有请求是等到 30 秒超时才算没回的；phase：现在做到哪一步（走表时写在已用时间前面）
+/* wait-tick:begin */
+// Elapsed-time ticker for a real wait: start before the request, stop() when it settles.
+function waitTick(node, label, more) {
+  var t0 = performance.now(), span = document.createElement("span"), last = null, id = 0;
+  span.setAttribute("aria-hidden", "true"); span.className = "tick";
+  node.textContent = label; node.appendChild(span);
+  function draw() { var t = " " + more(((performance.now() - t0) / 1000).toFixed(1)); if (t !== last) span.textContent = last = t; }
+  draw(); id = setInterval(draw, 100);
+  return { draw: draw, stop: function () { clearInterval(id); id = 0; } };
+}
+/* wait-tick:end */
+  function chunk(part, off, len, k) {
+    var u = RPCS[(off0 + k) % RPCS.length], data = "0x15a4cae2" + "0".repeat(24) + BOX.slice(2).toLowerCase() + w(128) + w(off) + w(len) + sarg(DIR + part.p);
+    return call(u, data).then(function (r) {
+      var h = r.slice(2), n = parseInt(h.slice(64, 128), 16);
+      if (n !== len) throw new Error("short");
+      var out = new Uint8Array(n), q, x, y;
+      for (var i = 0; i < n; i++) { q = 128 + 2 * i; x = h.charCodeAt(q); y = h.charCodeAt(q + 1); out[i] = ((x < 58 ? x - 48 : (x | 32) - 87) << 4) | (y < 58 ? y - 48 : (y | 32) - 87); }
+      got += n; var p = Math.floor(got / WHOLE.size * 100); $("bari").style.width = p + "%";
+      phase = t("fStep2", { p: p, d: (got / 1e6).toFixed(1) }); tick.draw();
+      return out;
+    }, function (e) { if (k < RPCS.length * 2 - 1) return chunk(part, off, len, k + 1); throw new Error("net"); });
+  }
+  function getPart(part, base) {
+    var jobs = [];
+    for (var off = 0, k = 0; off < part.size; off += STEP, k++) jobs.push([off, Math.min(STEP, part.size - off), base + k]);
+    var outs = new Array(jobs.length), i = 0;
+    function lane() { if (i >= jobs.length) return Promise.resolve(); var j = jobs[i], at = i++; return chunk(part, j[0], j[1], j[2]).then(function (b) { outs[at] = b; return lane(); }); }
+    return Promise.all([lane(), lane(), lane()]).then(function () { return new Blob(outs); });
+  }
+  /* 那句话那一行：可能写的几句话先叠在同一格里占着位置（看不见的也占），等的时候、取回了、没取回都不变高；进度条的位置也一直留着 */
+  function fsay(s, c) { $("fsay").firstElementChild.textContent = s; $("fsay").className = "say" + (c ? " " + c : ""); }
+  (function () {      /* 走表时那一小段换成等宽字体，字体的行高不一样，宽屏上一行字会因此高 1 像素：占位的这一句也带上同样的一小段，高度就事先算进去了 */
+    var s = document.createElement("span"), k = document.createElement("span"); s.setAttribute("aria-hidden", "true"); s.style.cssText = "grid-area:1/1;visibility:hidden";
+    s.textContent = t("fRun"); k.className = "tick"; k.textContent = " " + t("fStep2", { p: 100, d: "11.2" }) + " · " + t("secs", { s: "888.8" }); s.appendChild(k); $("fsay").appendChild(s); })();
+  [t("fOk"), t("waited", { s: 888 }) + t("fNet"), t("fDis"), t("fReg"), t("fBad")].forEach(function (x) {
+    var s = document.createElement("span"); s.setAttribute("aria-hidden", "true"); s.style.cssText = "grid-area:1/1;visibility:hidden"; s.textContent = x; $("fsay").appendChild(s); });
+  $("fetch").onclick = function () {
+    $("fetch").disabled = true; $("save").hidden = true; got = 0; $("bar").style.visibility = ""; $("bari").style.width = "0";
+    /* 整个取回过程一只表：那句话写现在做到哪一步（读登记、取回百分之几），后面跟已用时间，每 0.1 秒重写；成了、没成都先停表再写结果 */
+    late = false; phase = t("fStep1"); fsay(""); var t0 = performance.now();
+    tick = waitTick($("fsay").firstElementChild, t("fRun"), function (s) { return phase + " · " + t("secs", { s: s }); });
+    Promise.all(PARTS.map(info)).then(function () {
+      return getPart(PARTS[0], 0).then(function (a) { return getPart(PARTS[1], 7).then(function (b) { return [a, b]; }); });
+    }).then(function (ab) {
+      return Promise.all([ab[0].arrayBuffer().then(sha), ab[1].arrayBuffer().then(sha), new Blob(ab).arrayBuffer().then(sha)]).then(function (h) {
+        if (h[0] !== PARTS[0].sha || h[1] !== PARTS[1].sha || h[2] !== WHOLE.sha) throw new Error("bad");
+        var url = URL.createObjectURL(new Blob(ab, { type: "application/octet-stream" }));
+        $("save").href = url; $("save").hidden = false; $("bar").style.visibility = "hidden";
+        tick.stop(); fsay(t("fOk"), "ok"); $("fetch").textContent = t("again"); $("fetch").disabled = false;
+      });
+    }).catch(function (e) {
+      off0 = (off0 + 1) % RPCS.length; $("bar").style.visibility = "hidden"; $("fetch").textContent = t("again"); $("fetch").disabled = false;
+      tick.stop(); fsay((late && e.message === "net" ? t("waited", { s: Math.round((performance.now() - t0) / 1000) }) : "") + t({ net: "fNet", dis: "fDis", reg: "fReg" }[e.message] || "fBad"), "bad");
+    });
+  };
+})();
+</script>
+</body>
+</html>

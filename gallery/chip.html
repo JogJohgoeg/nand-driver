@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--fs-sm:.8125rem;--fs-xs:.75rem;--s1:.875rem;--s2:1.75rem;--s3:2.625rem;--r:2px;--r-sm:2px}:root{color-scheme:dark}h1,h2,button,summary{font-family:var(--head)}h1,h2{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}button:disabled,.btn:disabled{opacity:.5;cursor:not-allowed}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--text);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--accent)}.wrap{margin:0 auto}.top{position:sticky;top:0;z-index:5;background:var(--bg)}.top .wrap{display:flex;align-items:center;gap:.75rem;height:3.25rem}.top .langlink{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .brand{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .here{font-family:var(--head);color:var(--text-dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dim{color:var(--text-dim)}.badge{font-family:var(--head);font-size:var(--fs-sm);white-space:nowrap}.top .badge{flex:1 1 0;min-width:0;align-self:stretch;display:flex;align-items:center;justify-content:flex-end;text-align:right;overflow:hidden}.top .langlink{order:1}h1{color:var(--ink);margin:var(--s2) 0 .5rem}h2{font-size:1.125rem;color:var(--ink);margin:var(--s2) 0 var(--s1)}.lede{margin:0 0 var(--s1)}.lede .detail{display:block;margin-top:.375rem;font-size:var(--fs-sm);color:var(--text-dim)}.btn{display:inline-block;font:600 var(--fs-sm)/1 var(--head);padding:.625rem .875rem;border:1px solid var(--line,transparent);color:var(--ink);text-decoration:none;cursor:pointer}.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}.note{font-size:var(--fs-sm);color:var(--text-dim);margin:.375rem 0 0}.tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--line,transparent);margin-top:var(--s1)}.tabs button{font:600 var(--fs-sm) var(--head);background:none;border:0;border-bottom:2px solid transparent;color:var(--text-dim);padding:.625rem .75rem;cursor:pointer}.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent,transparent)}.stage{display:grid;gap:var(--s1);margin-top:var(--s1)}.pane{min-width:0}.view{position:relative;aspect-ratio:1;max-height:72vh;width:100%;background:var(--bg-deeper);border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden}.view canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}.view .tools{position:absolute;right:.5rem;top:.5rem;display:flex;gap:.25rem}.view .tools .btn{padding:.5rem .625rem}.view .tools .btn{background:var(--panel)}.view .tools .btn[aria-pressed=true]{background:var(--sel);border-color:var(--accent,transparent);box-shadow:inset 0 3px 0 var(--accent)}.view .tools .btn:disabled{opacity:1;color:var(--text-dim);border-style:dashed;cursor:not-allowed}.view .tools .badge{box-sizing:border-box;min-width:6em;padding:.375rem .5rem;text-align:center;background:color-mix(in srgb,var(--bg) 90%,transparent);border:1px solid var(--line,transparent);border-radius:var(--r-sm);color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}.subs{list-style:none;margin:0;padding:0;display:grid;gap:.375rem;max-height:35rem;overflow:auto}.subs button{width:100%;text-align:left;display:flex;gap:.625rem;align-items:flex-start;background:var(--panel);border:1px solid var(--line,transparent);border-radius:var(--r-sm);padding:.625rem .75rem;color:var(--text);font:var(--fs-sm)/1.5 var(--sans);cursor:pointer}.subs button[aria-pressed=true]{border-color:var(--warn,transparent)}.subs li{display:grid;gap:2px}.subs button .dim{display:block;font-size:var(--fs-xs)}.facts{display:grid;grid-template-columns:auto 1fr;gap:.25rem .875rem;font-size:var(--fs-sm);margin:0}.check{background:var(--panel);border:1px solid var(--line,transparent);border-radius:var(--r);padding:.75rem .875rem;margin:var(--s1) 0}.check p{margin:0}details{margin-top:.5rem}summary{cursor:pointer;color:var(--text-dim);font-size:var(--fs-sm)}footer{margin:var(--s3) 0 var(--s2);font-size:var(--fs-xs);color:var(--faint)}@media (min-width:900px){.view{aspect-ratio:auto;height:35rem;max-height:none}.stage.split{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}.tabs.narrow{display:none}.stage.split .pane[hidden]{display:block}}@media (max-width:899px){.stage.split .pane[hidden]{display:none}}.wrap{max-width:82.5rem;padding:0 1.75rem}.top{border-bottom:1px solid var(--line,transparent)}h1{font-size:clamp(1.875rem,3.6vw,3rem);line-height:1.15;margin-top:2.625rem}.lede{font-size:1rem;max-width:44em}.btn{border-radius:2px;background:transparent}@media (max-width:599px){.wrap{padding:0 1rem}.top .here{display:none}.top .badge{white-space:normal;line-height:1.3}}summary{min-height:1.5rem;display:list-item}</style>
+<title>芯片 · 21 NAND</title>
+<link rel="icon" href="../favicon.ico">
+<link rel="preload" as="style" href="../assets/theme.css">
+<link rel="preload" as="style" href="gallery.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="./">← 芯片</a><span class="here" id="here"></span>
+  <a class="langlink" id="lang" href="en/chip.html" lang="en">English</a>
+  <span class="badge" id="badge" role="status">核对中…</span>
+</div></header>
+<script>var langA = document.getElementById("lang"); langA.href = langA.getAttribute("href") + location.search + location.hash;</script>
+<main class="wrap">
+  <h1 id="name">读取中…</h1>
+  <p class="lede" id="desc"><span id="say"></span><span class="detail" id="det"></span></p>
+  <!-- 每颗芯片的短名和那一句说明构建时写在下面这张表里（prerender.mjs 填），这里不等任何文件就按地址里的编号填上标题和说明 -->
+  <script id="headdata">var GALLERY_HEAD = {"279.732":["小车控制器","控制一辆小车在赛道上跑，是竞技场的第一位参赛者。","NAND 驱动 v1 · 小车控制器：21 个 NAND 门的小车控制器（DLGN 训练），NAND 驱动竞技场第 0 赛季 0 号参赛电路。"],"280.732":["带记忆的小车","能记住刚才发生了什么的小车控制器，跑得更快。","NAND 驱动 v2b · 带记忆：87 NAND + 3 LATCH 的变速赛道驱动；有记忆后跑完赛道 3,943 步，纯反应式要 8,826 步。"],"281.732":["鸭子转向大脑","替一只会走路的机器鸭子决定往哪边走。","Microduck 转向大脑：39 个 NAND 的转向大脑，接在 Microduck 双足行走模型上面决定往哪走。"],"282.732":["组合大脑 · 官网","给鸭子大脑加上记忆；21 NAND 官网也放在它这里。","组合大脑 Part B · 21nand 官网容器：22 NAND + 3 LATCH 的记忆覆盖电路（与 #281 组成组合大脑）；它的容器就是 21nand 官网所在的 282.732.tape。"],"285.732":["续写模型 第 1 版","一个小语言模型，每个字都在链上算出来；写出来多是词串，还不成句。","TapeoutLLM 一步模型 · 采样 v0.1：5,069 个 NAND 的一步语言模型，第一次把语言模型整颗流片上链；续写时每个字符由 BSC 节点 eth_call 真实执行；写出来多是词串，还不成句。"],"286.732":["续写模型 第 2 版","续写模型的第二版，演示页默认用它。","TapeoutLLM 一步模型 · 采样 v0.2：5,120 个 NAND 的第二版一步模型（采样器 v0.2），演示页默认用它。"],"287.732":["走格子策略","在格子地图上告诉你下一步往哪走，智能体拿它当工具。","nand_step · 11×11 走格子策略：386 个 NAND 的寻路策略：给出自己和目标的格子，输出下一步方向；14,641 种输入全部穷举验证。浏览器智能体把它当工具调用；NAND 玩 Squared 和入口页 02 的「链上跑一步」跑的也是它。"],"290.732":["只会上下的格子电路","想学会在格子里走到目标，实际只会往下或往上走；小游戏现在改用 287 号电路。","格子策略（蒸馏版）· 11×11：375 个 NAND：输入是 11×11 格子里自己和目标的位置（242 位），输出下一步往哪走（停、下、上、左、右）。实测它只会往下或往上走：全部 14,520 个局面里只走到目标 636 个（4.4%），比每步随便选还差。NAND 玩 Squared 现在改用 287。"],"3.2.245":["三值点积","一次把两串数对应相乘再加起来，给更大的电路当零件。","21nandkit DOT32_T · 三值点积：21nandkit 首个上链组件：320 位输入、32 位输出的三值点积，3,829 个 NAND，链上抽查 8 组全对。"],"900283.732":["智能体管家 第 2 版","帮智能体管对话轮次和工具调用，不让它乱来。","Agents-API 会话控制器 v2：264 NAND + 18 LATCH 的智能体会话状态机，管轮次、工具调用和子代理。"],"900284.732":["智能体管家 第 3 版","公开版智能体管家：出错重试、调用次数都有上限。","Agents-API 会话控制器 v3：325 NAND + 25 LATCH 的公开版会话控制器：轮次、重试、子代理、压缩次数都有熔断，16 条安全性质经 SAT 证明。"],"288.732":["身份验证器","放链上身份验证器网站的地方，类似手机上的两步验证码。","身份验证器 · 网站容器：1 个 NAND 的电路，用它的容器放链上身份验证器（Google Authenticator 复刻，备份用通行密钥加密后存链上）。"],"1.2.245":["TapeID 容器","X Layer 上的小车控制器；TapeID 网站和吟游诗人的版图存在这里。","21 NAND Driver · TapeID 容器：X Layer 上我们自建处理器 #245（TapeID）的 1 号电路：21 个 NAND 的驱动；容器放 TapeID 链上站，也存着吟游诗人的签核版图。"],"bard":["吟游诗人","写儿童故事风格句子的语言模型，句子常不连贯；直接做成了芯片版图。","吟游诗人 Bard · 整机版图 v8g：直接做成门级电路的小语言模型（tiny-stories 整数版 INT-C16）。SKY130A 整机布线，3.167 × 4.767 mm，整片签核 DRC 0、LVS 一致；研究版，未流片。签核版图存在 X Layer 1.2.245.tape 里。"],"bard-storybox":["故事机小板","给吟游诗人设计的故事机电路板，还没打样。","吟游诗人故事机 BardStoryBox · PCB：给吟游诗人做的 ESP32-S3 故事机小板：41 × 51 mm 双层，原理图与 PCB DRC 均为 0；未打板。"],"xc7a100t-miniboard":["验证小板","用来在芯片做出来之前先跑通电路的板子，还没打样。","XC7A100T 小板 · PCB：我们自己画的 Artix-7 FPGA 小板，用来把芯片先在 FPGA 上跑通：4 层、111 个器件，PCB DRC 0；未打板。"]};</script>
+  <script>(function () { var t = new URLSearchParams(location.search).get("tid") || "279.732", h = GALLERY_HEAD[t]; if (!h) return;
+    document.getElementById("here").textContent = "#" + t; document.getElementById("name").textContent = h[0]; document.getElementById("say").textContent = h[1]; document.getElementById("det").textContent = h[2]; })();</script>
+  <!-- 说明下面的内容（按钮、版图、链上那几行）要等页面脚本到了才写得出来。写出来之前这一块占着位置但不画（页面长度一开始就定下），脚本填完一次亮出来，已经画出来的东西不会被后填的内容推走 -->
+  <div id="rest" style="visibility:hidden">
+  <div class="row" id="run"></div>
+  <p class="note" id="forknote" hidden></p>
+  <div class="tabs narrow" role="tablist">
+    <button role="tab" id="tab-lay" aria-selected="true" aria-controls="pane-lay">版图</button>
+    <button role="tab" id="tab-fn" aria-selected="false" aria-controls="pane-fn">功能块</button>
+  </div>
+  <div class="stage split">
+    <section class="pane" id="pane-lay" role="tabpanel" aria-labelledby="tab-lay">
+      <div class="view"><canvas id="cv" aria-label="版图，可拖动、缩放"></canvas>
+        <div class="tools"><output class="badge" id="zlevel" aria-label="缩放倍数" style="align-self:center">1×</output><button class="btn" id="zin" aria-label="放大">+</button><button class="btn" id="zout" aria-label="缩小">−</button><button class="btn" id="zfit" aria-pressed="true">全图</button></div>
+      </div>
+      <p class="dim" id="hint">拖动看别处，滚轮或双指缩放。点一个功能块，版图上会框出它用到的单元。</p>
+    </section>
+    <section class="pane" id="pane-fn" role="tabpanel" aria-labelledby="tab-fn" hidden>
+      <ul class="subs" id="subs"><li class="dim">功能块读取中…</li></ul>
+    </section>
+  </div>
+  <!-- 「核对」这一块的节点都先写在这里，脚本只原地换字：折叠说明点开了不会自己合上，按钮和进度字一直是同一个 -->
+  <div class="check" id="check"><p id="checksay" style="display:grid"><span class="dim" style="grid-area:1/1">正在核对…</span></p>
+    <p id="checkchain" style="display:grid"><span class="dim" style="grid-area:1/1">正在核对链上登记…</span></p>
+    <details><summary>核对细节</summary>
+      <p class="dim">每张瓦片、整片图和功能块数据都先下载字节、算 sha256，和这颗芯片的瓦片清单比；瓦片清单再和登记清单里的那一行比。一致了才显示。</p>
+      <p><button class="btn" id="all" disabled>把瓦片都核一遍</button> <span id="allres" role="status" style="display:grid"><span class="dim" style="grid-area:1/1">读到这颗的瓦片清单之后才能核。</span></span></p>
+    </details></div>
+  <h2>链上</h2>
+  <dl class="facts" id="facts"></dl>
+  <details><summary>技术细节</summary><div id="tech"></div></details>
+  <footer><a href="../index.html">21 NAND</a> · <a href="../app/">打开应用</a> · <a href="../start/verify.html">自己核对</a></footer>
+  </div>
+</main>
+<script src="chips.js"></script>
+<script>
+// 页面脚本（含依赖）加载失败或一直不回时说清楚，不让徽标永远停在「核对中」
+function galleryBootFail(badge, box) { if (window.GALLERY_BOOTED) return; var b = document.getElementById(badge), c = document.getElementById(box);
+  if (b) { b.className = 'badge bad'; b.textContent = '页面没加载成功'; } if (c) c.innerHTML = '<p class="bad">这个页面的脚本没加载成功，所以图和核对都没有开始。刷新再试一次；还不行就过几分钟再来。</p>'; }
+function restShow() { var r = document.getElementById('rest'); if (r && !window.GALLERY_BOOTED) r.style.visibility = ''; }   // 脚本没起来时也把下面那块亮出来，失败说明写在里面
+setTimeout(function () { restShow(); galleryBootFail('badge', 'check'); }, 25000);
+</script>
+<script type="module" src="chip.js" onerror="restShow(); galleryBootFail('badge', 'check')"></script>
+<link rel="stylesheet" href="gallery.css">
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+{
+  "modules": [
+    {
+      "id": "chips",
+      "title": "芯片",
+      "tag": "真实版图，逐张核对",
+      "desc": "我们放上链的每颗芯片的真实版图：能放大、能看每块电路在做什么。每张图先和登记清单核对，一致了才显示。",
+      "type": "page",
+      "href": "gallery/index.html",
+      "button": "看链上芯片",
+      "button_en": "See the chips",
+      "title_en": "Chips",
+      "tag_en": "Real layouts, each image checked",
+      "desc_en": "The real layout of every chip we put on chain: zoom in and see what each block does. Each image is checked against its registered list before it shows. (The gallery is in Chinese.)"
+    },
+    {
+      "id": "machine",
+      "title": "模型机",
+      "tag": "浏览器里出字",
+      "desc": "一个玩具模型在浏览器里一个字节一个字节往外写，写出来还不通顺，不是故事。打开时自动核对，和链上记录对上了才运行。",
+      "n": "01",
+      "stat": "200 字",
+      "label": "每次写出的都和标准答案逐字节一致",
+      "stat_en": "200 chars",
+      "label_en": "identical to the reference output, byte for byte, every time",
+      "entry": "app/m/machine/index.html",
+      "title_en": "Model machine",
+      "tag_en": "Writes in your browser",
+      "desc_en": "A toy model runs in your browser and writes one byte at a time; the text is not fluent and not a story. Its files are checked against the chain first and only run if they match.",
+      "files": [
+        {
+          "path": "app/m/machine/index.html",
+          "as": "index.html"
+        },
+        {
+          "path": "machine/bmlp.js",
+          "as": "bmlp.js"
+        },
+        {
+          "path": "machine/demo.js",
+          "as": "demo.js"
+        },
+        {
+          "path": "machine/toy_bmlp.tbw1",
+          "as": "toy_bmlp.tbw1"
+        }
+      ]
+    },
+    {
+      "id": "squared",
+      "title": "NAND 玩 Squared",
+      "tag": "小游戏",
+      "desc": "链上的一块电路自己玩 11×11 小游戏。点「链上跑一步」才会联网，让区块链用同一个局面再算一次。",
+      "n": "02",
+      "stat": "178 / 178",
+      "label": "链上算的和你浏览器里算的完全一样",
+      "stat_en": "178 / 178",
+      "label_en": "the chain and your browser computed exactly the same moves",
+      "entry": "assets/squared/index.html",
+      "connect": [
+        "https://bsc-rpc.publicnode.com",
+        "https://bsc-dataseed.bnbchain.org",
+        "https://bsc-dataseed1.binance.org"
+      ],
+      "title_en": "NAND plays Squared",
+      "tag_en": "Mini game",
+      "desc_en": "A circuit on chain plays an 11×11 game by itself. Only \"Run one step on chain\" goes online, asking the blockchain to compute the same move.",
+      "files": [
+        {
+          "path": "assets/squared/index.html",
+          "as": "index.html"
+        }
+      ]
+    },
+    {
+      "id": "brain",
+      "title": "门电路大脑",
+      "tag": "在新页面打开",
+      "desc": "在你自己的电脑上向一个小 AI 提问，一问一答，回答和这个模型的整数参考实现一字不差，问题不离开你的电脑。用电脑上新版 Chrome 或 Edge（要 WebGPU）；第一次下载约 580 MB，以后不用再下；浏览器要占约 6 GB 内存；手机打不开。所以在新页面打开。",
+      "n": "03",
+      "stat": "3 / 3",
+      "label": "标准题的回答和整数参考实现逐字一致",
+      "stat_en": "3 / 3",
+      "label_en": "reference questions answered word for word like the integer reference implementation",
+      "type": "link",
+      "href": "https://nand.aihashrate.stream/gate/",
+      "button": "打开门电路大脑",
+      "button_en": "Open the gate brain",
+      "title_en": "Gate brain",
+      "tag_en": "Opens in a new tab",
+      "desc_en": "Ask a small AI questions on your own computer, one at a time; its answers match this model's integer reference implementation word for word and your questions never leave your machine. Use a recent desktop Chrome or Edge (WebGPU); the first download is about 580 MB and is not repeated; the browser needs about 6 GB of memory; phones can't run it. That is why it opens in a new tab."
+    },
+    {
+      "id": "arena",
+      "title": "开车竞技场",
+      "tag": "只读，不用钱包",
+      "desc": "一辆只靠 21 个门开车的小车，在弯道上自己绕圈。点「开一圈」就开；想确认，可以让区块链也算一步。",
+      "n": "04",
+      "stat": "24 / 24",
+      "label": "固定起点全部跑完一圈",
+      "stat_en": "24 / 24",
+      "label_en": "every fixed start finishes a full lap",
+      "entry": "app/m/arena/index.html",
+      "connect": [
+        "https://bsc-rpc.publicnode.com",
+        "https://bsc-dataseed.bnbchain.org",
+        "https://bsc-dataseed1.binance.org"
+      ],
+      "title_en": "Driving arena",
+      "tag_en": "Read-only, no wallet",
+      "desc_en": "A car driven by just 21 gates laps a winding track by itself. Tap \"Drive a lap\"; to double-check, ask the blockchain to compute a step too.",
+      "files": [
+        {
+          "path": "app/m/arena/index.html",
+          "as": "index.html"
+        },
+        {
+          "path": "app/m/arena/car.js",
+          "as": "car.js"
+        }
+      ]
+    },
+    {
+      "id": "bard",
+      "title": "吟游诗人",
+      "tag": "写句子，取回设计图",
+      "desc": "一颗语言模型芯片的设计。现在这一版写儿童故事风格的英文句子，常不连贯、人物会乱，有时会出现 ⁇（模型不认识的词）。我们正在研究把它升级成能讲连贯故事的新芯片，还没做到。在浏览器里看它写，选 16 个词时用的整数规则和芯片相同；它的完整设计图存在 X Layer 上，可以取回并核对。",
+      "entry": "app/m/bard/index.html",
+      "connect": [
+        "https://rpc.xlayer.tech",
+        "https://xlayerrpc.okx.com",
+        "https://xlayer.drpc.org"
+      ],
+      "title_en": "The Bard",
+      "tag_en": "Writes sentences; fetch its chip design",
+      "desc_en": "A design for a language-model chip. This version writes English sentences in the style of children's stories. They often don't hang together, the characters get mixed up, and a ⁇ (a word the model doesn't know) sometimes appears. We are working on upgrading it into a chip that can tell a coherent story; it is not there yet. Watch it write in your browser; with the 16-word setting it uses the same integer rules as the chip; its full layout is stored on X Layer and can be fetched and verified.",
+      "files": [
+        {
+          "path": "app/m/bard/index.html",
+          "as": "index.html"
+        },
+        {
+          "path": "app/m/bard/engine.js",
+          "as": "engine.js"
+        },
+        {
+          "path": "app/m/bard/meta.json",
+          "as": "meta.json"
+        },
+        {
+          "path": "app/m/bard/model.bin",
+          "as": "model.bin"
+        }
+      ]
+    },
+    {
+      "id": "verify",
+      "title": "自己核对",
+      "tag": "任意文件",
+      "desc": "挑本站任何一个文件，和链上记录比一比，确认它没被改过。",
+      "n": "05",
+      "stat": "217 / 217",
+      "label": "本站文件都登记在链上，下载下来逐字节一致",
+      "stat_en": "217 / 217",
+      "label_en": "every file on this site is recorded on chain and downloads byte for byte",
+      "type": "tool",
+      "title_en": "Check it yourself",
+      "tag_en": "Any file",
+      "desc_en": "Pick any file on this site and compare it with its on-chain record to confirm it has not been altered."
+    },
+    {
+      "id": "build",
+      "title": "做电路",
+      "tag": "要用钱包",
+      "desc": "做一个小电路，先在浏览器里把所有输入都试一遍，再用你的钱包写上链。只有这一步要用钱包，所以放在最后。",
+      "n": "06",
+      "stat": "3,829 门",
+      "label": "我们放上链的一个计算电路，谁都能查到",
+      "stat_en": "3,829 gates",
+      "label_en": "a computing circuit we put on chain; anyone can look it up",
+      "type": "page",
+      "href": "app/build.html",
+      "button": "开始做电路",
+      "button_en": "Start building",
+      "title_en": "Build a circuit",
+      "tag_en": "Needs a wallet",
+      "desc_en": "Make a small circuit, test every input in your browser, then write it on chain with your wallet. This is the only step that needs a wallet, so it comes last.",
+      "files": [
+        {
+          "path": "app/build.html",
+          "as": "build.html"
+        }
+      ]
+    },
+    {
+      "id": "docs",
+      "title": "文档",
+      "tag": "32 页，含搜索",
+      "desc": "每个模块怎么用、怎么自己核对，技术细节都在这里。",
+      "type": "link",
+      "href": "start/index.html",
+      "href_en": "en/index.html",
+      "button": "打开文档",
+      "button_en": "Open the docs",
+      "title_en": "Docs",
+      "tag_en": "32 pages, searchable",
+      "desc_en": "How each module works and how to check it yourself."
+    }
+  ]
+}

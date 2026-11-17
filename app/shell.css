@@ -1,0 +1,68 @@
+/* 21 NAND 应用外壳：导航 + 加载器。颜色同官网 home.css；字体都用系统字体；不连外部资源 */
+@import url(../assets/theme.css);
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t2);font:var(--fs)/var(--lh) var(--sans)}
+code{font:.86em var(--mono);color:var(--ink);overflow-wrap:anywhere}
+.bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:.875rem;height:3.5rem;padding:0 .875rem;border-bottom:1px solid var(--soft);background:var(--bar-bg)}
+.brand{color:var(--ink);font-weight:700;text-decoration:none;font-size:1.0625rem;font-family:var(--head)}
+.mode{margin-left:auto;font-size:.75rem;color:var(--mu);border:1px solid var(--line);border-radius:var(--r);padding:2px .875rem}
+.layout{display:grid;grid-template-columns:15rem minmax(0,1fr);max-width:80rem;margin:0 auto}
+.mods{display:flex;flex-direction:column;gap:.375rem;padding:.875rem .875rem;border-right:1px solid var(--soft)}
+.mods button{text-align:left;background:none;border:1px solid transparent;border-radius:var(--r);color:var(--t2);padding:.875rem .875rem;cursor:pointer;font:.9375rem var(--head)}
+.mods button strong{display:block;color:var(--ink);font-weight:600}.mods button span{font-size:.75rem;color:var(--mu)}
+.mods button:hover{background:var(--card)}.mods button[aria-current=page]{background:var(--card-2);border-color:var(--line);box-shadow:inset 2px 0 0 var(--bt)}
+.main{padding:1.75rem 1.75rem 2.625rem;min-width:0}
+h1{margin:0;color:var(--ink);font-size:1.75rem;font-family:var(--head)}.lead{margin:.5rem 0 .875rem;color:var(--t2)}
+.log{list-style:none;margin:0 0 .875rem;padding:0;font-size:.8125rem}
+.log li{display:flex;gap:.5rem;padding:.25rem 0;border-bottom:1px solid var(--soft);overflow-wrap:anywhere;min-width:0}
+.log li .k{width:1em;flex-shrink:0}.log .ok .k{color:var(--pos)}.log .bad .k{color:var(--neg)}.log .warn .k{color:var(--mu)}
+.log code{flex-shrink:0;max-width:45%}.log .msg{color:var(--mu);min-width:0}
+.stop{border:1px solid var(--neg);border-left-width:4px;background:color-mix(in srgb,var(--bad) 8%,transparent);color:var(--ink);border-radius:var(--r);padding:.875rem .875rem;overflow-wrap:anywhere}
+.frame[hidden],.stop[hidden],.go[hidden],.chk[hidden],.home[hidden],h1[hidden],.lead[hidden]{display:none}
+.frame{display:block;width:100%;height:40rem;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.go{display:inline-block;background:var(--brand);color:var(--on-accent);text-decoration:none;font-weight:700;font-family:var(--head);border-radius:var(--r);padding:.5625rem .875rem}
+.tool label{display:block;font-size:.8125rem;color:var(--mu);margin-bottom:.25rem}
+.tool .row{display:flex;gap:.5rem;flex-wrap:wrap}
+.tool input{flex:1 1 13.75rem;min-width:0;background:var(--card-2);border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:.875rem var(--mono);padding:.5rem .875rem}
+.tool button{background:var(--brand);border:0;color:var(--on-accent);border-radius:var(--r);padding:.5rem .875rem;cursor:pointer;font:700 .875rem var(--head)}
+.tool pre{margin:.875rem 0;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.875rem;font:.8125rem/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);min-height:3em}
+.tool .hint{font-size:.8125rem;color:var(--mu)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.875rem;margin-top:.875rem}
+.card{display:flex;flex-direction:column;gap:.375rem;text-align:left;background:var(--card);border:1px solid var(--soft);border-radius:var(--r);padding:.875rem .875rem;color:var(--t2);font:.9375rem/1.6 var(--sans);cursor:pointer;min-width:0}
+.card:hover{border-color:var(--bt)}
+.card .n{font:600 .8125rem var(--mono);color:var(--bt);letter-spacing:.08em}
+.card strong{color:var(--ink);font-size:1.125rem;font-family:var(--head);word-break:keep-all;overflow-wrap:break-word}
+.card .st{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;border-top:1px solid var(--soft);padding-top:.5rem;margin-top:auto}
+.card .st b{color:var(--pos);font-size:1.25rem;white-space:nowrap;font-family:var(--head)}.card .st span{font-size:.75rem;color:var(--mu);flex:1 1 8.75rem}
+.card .go2{color:var(--bt);font-weight:600;font-size:.875rem}
+@media (max-width:760px){.layout{display:block}.mods{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--soft);padding:.875rem .875rem}
+  .mods button{flex:0 0 auto}.cards{grid-template-columns:minmax(0,1fr)}.main{padding:.875rem .875rem 2.625rem}.frame{height:35rem}.log li{flex-wrap:wrap}.log code{max-width:100%}}
+.chk{margin:0 0 .875rem;border:1px solid var(--soft);border-radius:var(--r);background:var(--card)}
+.chk summary{cursor:pointer;padding:.5rem .875rem;font-size:.875rem;color:var(--mu)}
+.chk.ok summary{color:var(--pos)}.chk.bad summary{color:var(--neg)}
+.chk .log{margin:0;padding:.25rem .875rem .5rem}
+.stop p{margin:0 0 .875rem}
+.stop button,.tool .more summary{cursor:pointer}
+.stop button{background:var(--brand);border:0;color:var(--on-accent);border-radius:var(--r);padding:.4375rem .875rem;font:700 .875rem var(--head)}
+.res{margin:.875rem 0 .375rem;font-weight:600;color:var(--t2)}.res.ok{color:var(--pos)}.res.bad{color:var(--neg)}
+.tool .more summary{font-size:.8125rem;color:var(--mu)}
+.lang{background:none;border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:700 .8125rem var(--head);padding:3px .875rem;cursor:pointer}
+.lang:hover{border-color:var(--bt)}
+@media (max-width:480px){.mode{display:none}.lang{margin-left:auto}}
+
+/* 黄光室 */
+.mods button[aria-current=page]{box-shadow:inset 3px 0 0 var(--brand)}
+button.primary,.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}
+
+/* 模块清单还在核对时点了模块按钮：按钮当场给留得住的回应，核对一过自动打开。脚本只加两个属性——aria-busy="true"（全站「按钮进行中」那一套：底边一条来回跑的线、指针变进行中）
+   和 data-queued="要显示的那句话"。那句话盖在按钮最后一行原来的位置上（卡片是「打开 →」，菜单是说明那一行），原来那一行留着位置只是不显示：
+   按钮的大小、别的元素的位置都不变。放不下就截断。四样信号：那句话、描一圈、跑线、指针，不只靠颜色。 */
+:is(.card,.mods button)[data-queued]{position:relative;box-shadow:var(--ring)}
+:is(.card,.mods button)[data-queued]>:last-child{visibility:hidden}
+:is(.card,.mods button)[data-queued]::before{content:attr(data-queued);position:absolute;left:.875rem;right:.875rem;bottom:.875rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--ink)}
+.card[data-queued]::before{font:600 .875rem/1.6 var(--sans)}
+.mods button[data-queued]::before{font:.75rem/1.5 var(--head)}
+/* 模块清单核对不过以后，这些按钮开不了任何东西，脚本把它们禁用。变淡（.5）来自全站样式；指针和悬停要在这里再写一遍：
+   上面 .mods button、.card 的 cursor:pointer 和悬停底色写在全站样式后面、优先级一样，不写这两条禁用的按钮还是手型、悬停还会变底色。 */
+.mods button:disabled,.card:disabled{opacity:.5;cursor:not-allowed}
+.mods button:disabled:hover{background:none}.card:disabled:hover{border-color:var(--soft)}

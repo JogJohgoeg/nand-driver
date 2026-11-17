@@ -4,15 +4,91 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TapeOut Gas 账本</title>
+<link rel="icon" href="../favicon.ico">
 <meta name="description" content="TapeOut Gas 账本：BSC 上一个 NAND 门、一条 RISC-V 指令、一个内存页的实测 gas 价格与优化杠杆 / TapeOut Gas Ledger: measured gas per NAND gate, RISC-V instruction and memory page on BSC.">
-<meta name="theme-color" content="#050506">
+<script>/* 全站统一语言：localStorage 键 nand-driver-lang，值 'zh' 或 'en'；未设置时按浏览器语言 */
+(function(){var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN'; if(l==='en') document.title='TapeOut Gas Ledger';})();
+</script>
+<style id="theme">:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  --logo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2.2 -2.2 354.4 70.4' fill='none' stroke-width='4.4' stroke-linecap='round' stroke-linejoin='round' stroke='%23000'%3E%3Cpath d='M5 11L40 11A5 5 0 0 1 45 16L45 28A5 5 0 0 1 40 33L10 33A5 5 0 0 0 5 38L5 50A5 5 0 0 0 10 55L45 55M65 11L80 11A5 5 0 0 1 85 16L85 55M125 55L125 16A5 5 0 0 1 130 11L140 11A5 5 0 0 1 145 16L145 50A5 5 0 0 0 150 55L160 55A5 5 0 0 0 165 50L165 11M185 55L185 16A5 5 0 0 1 190 11L220 11A5 5 0 0 1 225 16L225 55M185 33L225 33M245 55L245 16A5 5 0 0 1 250 11L260 11A5 5 0 0 1 265 16L265 50A5 5 0 0 0 270 55L280 55A5 5 0 0 0 285 50L285 11M305 11L340 11A5 5 0 0 1 345 16L345 50A5 5 0 0 1 340 55L305 55Z'/%3E%3C/svg%3E");
+}
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}
+a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+a.card:active,.card:has(a:active),.side a:active,.toc a:active,.nav a:active{filter:brightness(.82)}
+[data-nav-busy]:is(.card,.lot,[data-nav]){position:relative;cursor:progress;box-shadow:var(--ring)}
+[data-nav-busy]:is(.card,.lot,[data-nav])::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}
+.w-live{position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+@media (forced-colors:active){a.brand::before{background:CanvasText!important}}:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}</style>
 <style>
-/* 深色版式（2026-10-14 由绿色版改为 Kraken Pro 式深色，基准 hashport/site/home.css）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
+/* 深色版式（2026-10-14 由绿色版改为 Kraken Pro 式深色）。本页与 282.732.tape 链上那份是同一文件：只用系统字体、不连链外资源。 */
 :root{
   color-scheme:dark;
-  --ground:#050506; --surface:#111114; --surface-2:#17171C; --ink:#FFFFFF; --ink-2:#CBCBD3; --ink-3:#9C9DAE;
-  --rule:rgba(112,113,135,.24); --rule-soft:rgba(112,113,135,.14); --rule-strong:rgba(112,113,135,.45);
-  --brand:#5741D8; --accent:#A496FF; --accent-soft:rgba(87,65,216,.16); --pos:#00DA80; --neg:#F0616D;
+  --ground:var(--bg); --surface:var(--panel); --surface-2:var(--sel);  --ink-2:var(--text); --ink-3:var(--text-dim);
+  --rule:color-mix(in srgb,var(--field) 24%,transparent); --rule-soft:color-mix(in srgb,var(--field) 14%,transparent); --rule-strong:color-mix(in srgb,var(--field) 45%,transparent);
+   --accent:var(--brand-text); --accent-soft:color-mix(in srgb,var(--brand) 16%,transparent); --pos:var(--ok); --neg:var(--bad);
   --cost:#E39A55; --cost-soft:rgba(227,154,85,.12);
   --s1:#3987e5; --s2:#d95926; --s3:#2FB56A; --s4:#c98500;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -20,78 +96,76 @@
   --display:var(--sans);
 }
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%) no-repeat,var(--ground);background-size:100% 900px,auto;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:20px;padding-block:0 96px}
+body{margin:0;background:radial-gradient(70% 90% at 25% 0%,color-mix(in srgb,var(--brand) 28%,transparent),color-mix(in srgb,var(--brand) 0%,transparent) 70%) no-repeat,var(--ground);background-size:100% 900px,auto;color:var(--ink);font-family:var(--sans);font-size:1rem;line-height:1.65;padding-inline:1.25rem;padding-block:0 6rem}
 .wrap{max-width:76ch;margin:0 auto}
 /* 页头：近黑底 + 页面顶部一层淡紫光（光晕在 body 上） */
-header{padding-block:22px 40px;border-bottom:1px solid var(--rule-soft);color:var(--ink);position:relative}
-.mark{display:inline-grid;line-height:1.1;color:var(--ink);text-decoration:none;padding-bottom:26px;margin-bottom:34px;border-bottom:1px solid var(--rule-soft);width:100%}
-.mark b{font:800 20px/1.1 var(--sans);letter-spacing:.02em}
-.mark small{font:400 11px/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);margin-top:5px}
+header{padding-block:1.375rem 2.5rem;border-bottom:1px solid var(--rule-soft);color:var(--ink);position:relative}
+.mark{display:inline-grid;line-height:1.1;color:var(--ink);text-decoration:none;padding-bottom:1.625rem;margin-bottom:2.125rem;border-bottom:1px solid var(--rule-soft);width:100%}
+.mark b{font:800 1.25rem/1.1 var(--sans);letter-spacing:.02em}
+.mark small{font:400 .6875rem/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);margin-top:.3125rem}
 /* 语言切换（全站共用 localStorage 键 nand-driver-lang） */
-.langsw{position:absolute;top:22px;right:0;z-index:1;font:400 12px/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);background:transparent;border:1px solid var(--rule-strong);border-radius:4px;padding:6px 10px;cursor:pointer}
+.langsw{position:absolute;top:1.375rem;right:0;z-index:1;font:400 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--ink-3);background:transparent;border:1px solid var(--rule-strong);border-radius:var(--r);padding:.375rem .625rem;cursor:pointer}
 .langsw:hover{border-color:var(--accent);color:var(--ink-2)}
 html:not([lang^="en"]) .langsw .lz,html[lang^="en"] .langsw .le{font-weight:800;color:var(--ink)}
 html[lang^="en"] .zh{display:none!important}
 html:not([lang^="en"]) .en{display:none!important}
-.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);display:flex;gap:18px;flex-wrap:wrap}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.04em;color:var(--ink-2);display:flex;gap:1.125rem;flex-wrap:wrap}
 .eyebrow .live{color:var(--accent)}
-h1{font-family:var(--sans);font-weight:800;font-size:clamp(34px,5.5vw,56px);line-height:1.12;margin:16px 0 14px;letter-spacing:-.01em;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
-.sub{font-size:18px;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
-.threeq{margin-top:22px;font-size:14px;background:transparent}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
-.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin-top:28px;background:var(--surface)}
-.thesis div{padding:16px 18px;border-right:1px solid var(--rule-soft)}
+h1{font-family:var(--sans);font-weight:800;font-size:clamp(2.125rem,5.5vw,3.5rem);line-height:1.12;margin:1rem 0 .875rem;letter-spacing:-.01em;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}
+.sub{font-size:1.125rem;color:var(--ink-2);max-width:60ch;margin:0;text-wrap:balance}
+.threeq{margin-top:1.375rem;font-size:.875rem;background:transparent}.threeq th{width:11em;white-space:nowrap;vertical-align:top;color:var(--ink-2)}.threeq td{color:var(--ink)}
+.thesis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;margin-top:1.75rem;background:var(--surface)}
+.thesis div{padding:1rem 1.125rem;border-right:1px solid var(--rule-soft)}
 .thesis div:last-child{border-right:0}
-.thesis .n{font-family:var(--sans);font-size:34px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--ink)}
-.thesis .l{font-size:13px;color:var(--ink-2);margin-top:4px}
-.thesis .l small{display:block;color:var(--ink-3);font-size:12px}
-h2{font-family:var(--sans);font-weight:800;font-size:clamp(24px,3vw,32px);line-height:1.25;margin:64px 0 10px;letter-spacing:0;text-wrap:balance;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
-h2 small{display:block;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--accent);margin-bottom:8px}
-p{margin:10px 0;max-width:68ch;color:var(--ink-2)}
+.thesis .n{font-family:var(--sans);font-size:2.125rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--ink)}
+.thesis .l{font-size:.8125rem;color:var(--ink-2);margin-top:.25rem}
+.thesis .l small{display:block;color:var(--ink-3);font-size:.75rem}
+h2{font-family:var(--sans);font-weight:800;font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:4rem 0 .625rem;letter-spacing:0;text-wrap:balance;color:var(--ink);word-break:keep-all;overflow-wrap:anywhere}
+h2 small{display:block;font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.04em;color:var(--accent);margin-bottom:.5rem}
+p{margin:.625rem 0;max-width:68ch;color:var(--ink-2)}
 strong,b{color:var(--ink)}
 li{color:var(--ink-2)}
-.note{border-left:3px solid var(--brand);border-radius:0 8px 8px 0;padding:8px 14px;background:var(--accent-soft);color:var(--ink);margin:16px 0;font-size:15px}
+.note{border-left:3px solid var(--brand);border-radius:0 8px 8px 0;padding:.5rem .875rem;background:var(--accent-soft);color:var(--ink);margin:1rem 0;font-size:.9375rem}
 .warn{border-left:3px solid var(--cost);background:var(--cost-soft)}
-table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0 6px;background:var(--surface)}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
-th{font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.04em;color:var(--ink-3);border-bottom:1px solid var(--rule-strong)}
+table{border-collapse:collapse;width:100%;font-size:.9062rem;margin:.875rem 0 .375rem;background:var(--surface)}
+th,td{text-align:left;padding:.5625rem .625rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+th{font-family:var(--mono);font-weight:600;font-size:.75rem;letter-spacing:.04em;color:var(--ink-3);border-bottom:1px solid var(--rule-strong)}
 td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 td.k{font-weight:600}
 .tw{overflow-x:auto}
-.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:1px 7px;border:1px dashed var(--rule-strong);border-radius:4px;color:var(--ink-2);vertical-align:middle}
+.tag{display:inline-block;font-family:var(--mono);font-size:.6875rem;letter-spacing:.04em;padding:1px .4375rem;border:1px dashed var(--rule-strong);border-radius:var(--r);color:var(--ink-2);vertical-align:middle}
 .tag.m{color:var(--accent);border:1px solid var(--accent)}
 .tag.e{color:var(--cost);border:1px solid var(--cost)}
-code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);border:1px solid var(--rule);padding:0 5px;border-radius:4px;color:var(--ink)}
-pre{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--brand);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:14px 0;color:var(--ink-2)}
+code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);border:1px solid var(--rule);padding:0 .3125rem;border-radius:var(--r);color:var(--ink)}
+pre{font-family:var(--mono);font-size:.875rem;background:var(--surface);border:1px solid var(--rule);border-left:3px solid var(--brand);border-radius:var(--r);padding:.875rem 1rem;overflow-x:auto;margin:.875rem 0;color:var(--ink-2)}
 pre code{background:none;border:0;padding:0}
-figure{margin:18px 0 8px}
-figcaption{font-size:13px;color:var(--ink-2);margin-top:8px}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
-.bar{display:flex;height:34px;gap:2px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+figure{margin:1.125rem 0 .5rem}
+figcaption{font-size:.8125rem;color:var(--ink-2);margin-top:.5rem}
+.legend{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8125rem;color:var(--ink-2);margin-top:.5rem}
+.legend i{display:inline-block;width:.625rem;height:.625rem;border-radius:var(--r);margin-right:.375rem;vertical-align:-1px}
+.bar{display:flex;height:2.125rem;gap:2px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
 .bar span{display:block;height:100%;position:relative;min-width:2px}
-.bar span[data-l]::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:#fff;font-variant-numeric:tabular-nums}
+.bar span[data-l]::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.75rem;color:#fff;font-variant-numeric:tabular-nums}
 html[lang^="en"] .bar span[data-len]::after{content:attr(data-len)}
-.hbars{display:grid;grid-template-columns:minmax(120px,auto) 1fr auto;gap:8px 12px;align-items:center;font-size:14px}
-.hbars .lbl{font-family:var(--mono);color:var(--ink-2);font-size:13px;white-space:nowrap}
-.hbars .trk{height:14px;background:var(--surface-2);border:1px solid var(--rule);border-radius:4px;position:relative}
-.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:3px}
-.hbars .trk i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--cost)}
+.hbars{display:grid;grid-template-columns:minmax(7.5rem,auto) 1fr auto;gap:.5rem .75rem;align-items:center;font-size:.875rem}
+.hbars .lbl{font-family:var(--mono);color:var(--ink-2);font-size:.8125rem;white-space:nowrap}
+.hbars .trk{height:.875rem;background:var(--surface-2);border:1px solid var(--rule);border-radius:var(--r);position:relative}
+.hbars .trk b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:var(--r);color:var(--on-accent)}
+.hbars .trk i{position:absolute;top:-.25rem;bottom:-.25rem;width:2px;background:var(--cost)}
 .hbars .v{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
 .hbars .v small{color:var(--ink-3)}
 ol,ul{padding-left:1.3em}
-li{margin:6px 0}
-footer{margin-top:72px;padding-top:16px;border-top:1px solid var(--rule-strong);font-size:13px;color:var(--ink-2)}
+li{margin:.375rem 0}
+footer{margin-top:4.5rem;padding-top:1rem;border-top:1px solid var(--rule-strong);font-size:.8125rem;color:var(--ink-2)}
 a{color:var(--accent)}
-a:hover{color:#C2B9FF}
+a:hover{color:var(--brand-text)}
 footer a,p a{color:var(--accent)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:640px){.thesis{grid-template-columns:1fr}.thesis div{border-right:0;border-bottom:1px solid var(--rule-soft)}.thesis div:last-child{border-bottom:0}}
 @media (prefers-reduced-motion:no-preference){.bar span{transition:flex-basis .3s}}
+/* 390 px 不横向溢出——表格在自己的框里横向滚，长词可断 */
+@media (max-width:480px){table{display:block;max-width:100%;overflow-x:auto}p,li,td,th,span{overflow-wrap:anywhere}}
 </style>
-<script>/* 全站统一语言：localStorage 键 nand-driver-lang，值 'zh' 或 'en'；未设置时按浏览器语言 */
-(function(){var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN'; if(l==='en') document.title='TapeOut Gas Ledger';})();
-</script>
-<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
 </head>
 <body>
 <div class="wrap">
@@ -368,8 +442,7 @@ footer a,p a{color:var(--accent)}
       "measured_14_flip_gas_per_instruction_reduction": 0.1201630009162794,
       "scope_limit": "Original MiniCPM MAC-loop pre-state only; local direct execution gas. 32/64 flips exceed transaction cap and are counterfactual. This is not an interpreter optimization measurement.",
       "sources": [
-        "circuits/_scratch/tapeout_asic/minicpm/tick_batching.json",
-        "circuits/_scratch/tapeout_asic/minicpm/tick_batching14.json"
+        "internal repository (not public)"
       ]
     }
   },
@@ -468,9 +541,7 @@ footer a,p a{color:var(--accent)}
   },
   "provenance": {
     "repo_paths": [
-      "circuits/_scratch/riscv_machine/",
-      "circuits/_scratch/onchain_inference/",
-      "circuits/_scratch/tapeout_asic/minicpm/"
+      "internal repository (not public)"
     ],
     "sources": [
       "https://tapeout.net/linux.html",
@@ -538,7 +609,7 @@ footer a,p a{color:var(--accent)}
         "speedup": 1.3111719154567296
       }
     ],
-    "evidence": "optimizations.md; optimization_partial_results.json",
+    "evidence": "internal repository (not public)",
     "parked_reason": "User redirected H to ASIC design before remaining levers were within30min of completion."
   },
   "reference_model": "MiniCPM5-2B",
@@ -648,7 +719,7 @@ footer a,p a{color:var(--accent)}
         41832,
         248580
       ],
-      "arbiterEvidence": "../../riscv_machine/stateless/results.json",
+      "arbiterEvidence": "internal repository (not public)",
       "happy": [
         {
           "gas": 150000,
@@ -712,15 +783,15 @@ footer a,p a{color:var(--accent)}
             "USD": 0.25274557234875
           }
         ],
-        "evidence": "../../riscv_machine/stateless/deep_proofs.json"
+        "evidence": "internal repository (not public)"
       }
     },
     "hardware_baselines": {
       "status": "measured",
       "scope": "llama.cpp Q4_K_M benchmark, three32-token repetitions; not integer commitment throughput",
-      "m64_CPU_decode_tokens_per_s": 35.09719,
-      "m64_Vulkan_decode_tokens_per_s": 325.472112,
-      "m64_Vulkan_decode_stddev": 2.835777
+      "gpu_host_CPU_decode_tokens_per_s": 35.09719,
+      "gpu_host_Vulkan_decode_tokens_per_s": 325.472112,
+      "gpu_host_Vulkan_decode_stddev": 2.835777
     },
     "limits": [
       "All native full-token gas is modeled, not an entire deployed-bytecode replay.",
@@ -730,7 +801,7 @@ footer a,p a{color:var(--accent)}
       "Full contextual prefill counts are reported separately and must not be mistaken for a single cached decode token.",
       "Cold storage formula uses one transaction per page; a batch uploader would amortize intrinsic gas."
     ],
-    "evidence": "circuits/_scratch/tapeout_asic/minicpm/MILESTONE_2.md"
+    "evidence": "internal repository (not public)"
   },
   "stateless_arbiter": {
     "status": "measured",
@@ -779,7 +850,7 @@ footer a,p a{color:var(--accent)}
       "calldataFloorApplied": false
     },
     "next_gate": "Full-job initialization/terminal policy, production authorization/economics, DA/multiple challengers, MMIO and independent review; bank and tick local prototypes are separate measured entries.",
-    "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md",
+    "source": "internal repository (not public)",
     "suite_protocol_gas": {
       "status": "model",
       "min": 41832,
@@ -813,7 +884,7 @@ footer a,p a{color:var(--accent)}
   "optimistic_game": {
     "status": "measured",
     "scope": "local stateful single-game prototype: existing1712-instruction MLP trace, two immutable Merkle roots, cumulative clocks, final call into bounded Solidity arbiter. No bonds/payments/job registry/deployment/network transactions.",
-    "evidence": "stateless/game_results.json",
+    "evidence": "internal repository (not public)",
     "game_runtime_bytes": 4582,
     "mlp_instructions": 1712,
     "mlp_rounds": 11,
@@ -832,7 +903,7 @@ footer a,p a{color:var(--accent)}
         172930,
         177849
       ],
-      "evidence": "stateless/deep_proofs.json"
+      "evidence": "internal repository (not public)"
     },
     "full35_round_dispute": {
       "status": "model",
@@ -858,7 +929,7 @@ footer a,p a{color:var(--accent)}
       191233,
       202043
     ],
-    "evidence": "stateless/bank_all_events.json",
+    "evidence": "internal repository (not public)",
     "network_transactions": 0,
     "global_model_root": {
       "status": "measured",
@@ -867,14 +938,14 @@ footer a,p a{color:var(--accent)}
       "pages": 1373480,
       "bytes": 1406443520,
       "bank_witnesses": 9,
-      "evidence": "../tapeout_asic/minicpm/global_bank_root.json"
+      "evidence": "internal repository (not public)"
     },
     "pinned_segment": {
       "status": "measured",
       "scope": "Local immutable requester-role configuration for a real first-scale-page segment; constructor emulated in local VM, then open/join/resolve. No deployment/network transaction or production authorization.",
       "open_join_resolve_gas": 510432,
       "negative_cases": 13,
-      "evidence": "stateless/pinned_game_results.json"
+      "evidence": "internal repository (not public)"
     },
     "bond_prototype": {
       "status": "measured",
@@ -883,7 +954,7 @@ footer a,p a{color:var(--accent)}
       "cost_limit": "Includes extra adversarial deposits/withdrawals; not minimal happy path; constructor excluded.",
       "virtual_bond_wei": 1000,
       "real_funds": 0,
-      "evidence": "stateless/bonded_game_results.json"
+      "evidence": "internal repository (not public)"
     },
     "layer_output": {
       "status": "measured",
@@ -891,7 +962,7 @@ footer a,p a{color:var(--accent)}
       "expanded_transitions": 849045512,
       "output_acceptance_gas": 906240,
       "negative_cases": 17,
-      "evidence": "stateless/layer_game_results.json",
+      "evidence": "internal repository (not public)",
       "full_layer_dispute_executed": false
     }
   },
@@ -902,10 +973,10 @@ footer a,p a{color:var(--accent)}
     "rounds": 10,
     "total_gas": 1797373,
     "resolve_gas": 135620,
-    "evidence": "stateless/tick_game_results.json",
+    "evidence": "internal repository (not public)",
     "hardware_integrated": false,
     "wrapper_limit": "tick-state-v1 omits external cycle history, wrapper idle +1024 cycles, persistent syscon status and UART/input transcript; requires a new environment profile. Existing measured CSR-game gas unchanged.",
-    "wrapper_probe_evidence": "../tapeout_asic/referee/wrapper_observations_checked.json"
+    "wrapper_probe_evidence": "internal repository (not public)"
   },
   "environment_refinement_game": {
     "status": "measured",
@@ -922,12 +993,7 @@ footer a,p a{color:var(--accent)}
     "negativeGameTests": 8,
     "verifierRuntimeBytes": 11716,
     "limits": "RAM-only local prototype. No UART/input/syscon execution, full tick/model dispute, requester authorization, bonds/payments, DA policy, hardware integration or deployment. Existing tick-state-v1 measurements and format unchanged.",
-    "evidence": [
-      "stateless/ENVIRONMENT.md",
-      "stateless/environment_results.json",
-      "stateless/environment_ram_results.json",
-      "stateless/environment_game_results.json"
-    ],
+    "evidence": ["internal repository (not public)"],
     "verifierRuntimeSHA256": "3167f7268401035d881d36bd2bed4e63a64e1d0830a2fa71308fdf154c7d04b4",
     "hardware_validation": {
       "status": "measured",
@@ -937,7 +1003,7 @@ footer a,p a{color:var(--accent)}
       "rejected": 10,
       "maximumClocksPerWitness": 2953,
       "frequencyAreaPower": "unmeasured",
-      "evidence": "../tapeout_asic/referee/environment_rtl_results.json"
+      "evidence": "internal repository (not public)"
     }
   },
   "mmio_refinement_game": {
@@ -958,12 +1024,7 @@ footer a,p a{color:var(--accent)}
     "verifierRuntimeBytes": 13673,
     "verifierRuntimeSHA256": "37e317324c5dbbbe037ff9b78aa38f669fdaa5bcd226996842d7dee152e622ee",
     "limits": "Separate fixed-input profile. No live input append, full Linux/model dispute, requester authorization, bonds/payments, DA policy, Hazard3/SRAM integration or deployment. Existing profiles remain unchanged.",
-    "evidence": [
-      "stateless/ENVIRONMENT.md",
-      "stateless/mmio_results.json",
-      "stateless/mmio_boundary_results.json",
-      "stateless/mmio_game_results.json"
-    ],
+    "evidence": ["internal repository (not public)"],
     "hardware_validation": {
       "status": "measured",
       "scope": "Separate fixed-input MMIO hardware environment microstep and env-mmio-state-v1 hash. Caller holds all witness/context inputs stable until done; no live input append, Hazard3 integration, physical SRAM, attestation or new PPA claim.",
@@ -972,7 +1033,7 @@ footer a,p a{color:var(--accent)}
       "rejected": 14,
       "maximumClocksPerWitness": 2979,
       "frequencyAreaPower": "unmeasured",
-      "evidence": "../tapeout_asic/referee/mmio_rtl_results.json"
+      "evidence": "internal repository (not public)"
     }
   }
 }
@@ -1070,8 +1131,8 @@ sample range  F 3–5   I 1,620–4,447   L 62–132   D 7–20   per tx 4.35–
 <p><span class="zh">参考：<a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a>（机器 <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>，BSC）、<a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a>（冷热访问定价）、<a href="https://nand.aihashrate.stream/">21 门驾驶车</a>（#279/#280 的公开演示）。</span><span class="en">References: <a href="https://tapeout.net/linux.html">tapeout.net/linux.html</a> (machine <code>0x5Ec71579c67EB01755bE6da9C3a26995f144115A</code>, BSC), <a href="https://eips.ethereum.org/EIPS/eip-2929">EIP-2929</a> (cold/warm access pricing), <a href="https://nand.aihashrate.stream/">21 NAND Driver</a> (public demo of #279/#280).</span></p>
 
 <footer>
-  <div class="zh">版本 2026-09-13 r13（新增 mmio_refinement_game 实测：env-mmio-state-v1 固定输入（≤31 字节）配置，255 个已部署端点 5,572 微步 + 4 个新队列/控制台边界 57 步全部精确；错误的有符号 UART 字节装载争议一轮二分 587,428 gas（resolve 151,685），10 个反例被拒；MMIO 硬件微步 RTL 通过 5,747 见证（5,733 接受/14 拒绝，最多 2,979 时钟）；共享 Keccak 的 RAM 控制器 IHP ABC -fast 映射通过：720,365 标准单元、6.304 mm² 单元面积（不含布局布线/SRAM/IO/时钟树，无 Fmax/功耗声明）；仍无实时输入追加、无链上交易）· r12（environment_refinement_game 新增 hardware_validation 实测：独立的认证 RAM 硬件环境微步与 env-ram-state-v1 哈希 RTL 通过 5,197 个见证，单个最多 2,953 时钟；无 MMIO/输入/syscon、无 Hazard3 集成、无物理 SRAM、不含面积/频率/功耗声明）· r11（r10 修正：environment_refinement_game 钉住验证器运行时 SHA256（11,716 字节），实测总 gas 602,139、resolve 171,351；tick 博弈数值不变）· r10（新增 environment_refinement_game 实测：env-ram-state-v1 配置下 32 个已部署端点 5,147 微步 + 4 个新 RAM 写端点全部精确，跨页 store 后省略 wrapper 空转的争议一轮二分 602,139 gas（resolve 171,351，r11 修正），8 个反例被拒；tick_refinement_game 范围修正：tick-state-v1 不含外部周期历史、wrapper 空转与 syscon/UART 记录，实测 gas 不变；仍为本地 RAM 原型，无链上交易）· r9（新增 authenticated_bank_game 实测：MiniCPM 第 0 层两 token 的 14 个真实 bank 边界各自经本地 Solidity 验证器重放，107,534 页转换，前后 CPU48/RAM 端点全部精确；13 轮子博弈 2.28M–2.29M gas，含全局模型根、钉死段、虚拟保证金原型、层输出提取 906,240 gas；新增 tick_refinement_game 实测：1,024 指令 CSR/MIP 客体 10 轮 1,797,373 gas；均为本地博弈，无链上交易，硬件未集成）· r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（按 docs/fe-page-guide-antd.md 在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算，见 riscv_machine/ROADMAP_DEEPSEEK.md）· 数据由 Claude 与 codex 代理在 tapeout 仓库内测得，脚本与原始收据见 <code>circuits/_scratch/riscv_machine/</code> 与 <code>circuits/_scratch/onchain_inference/</code>。下一版将把"估算"替换为孪生实测值。</div>
-  <div class="en">Version 2026-09-13 r13 (adds mmio_refinement_game measurements: env-mmio-state-v1 fixed-input (≤31 bytes) profile; 255 deployed endpoints / 5,572 microsteps + 4 new queue/console boundaries / 57 steps, all exact; a dispute over incorrect signed UART byte loading resolves in one bisection round for 587,428 gas (resolve 151,685), 10 negative cases rejected; MMIO hardware microstep RTL passes 5,747 witnesses (5,733 accepted / 14 rejected, at most 2,979 clocks); the RAM controller with shared Keccak maps under IHP ABC -fast: 720,365 standard cells, 6.304 mm² cell area (excluding place-and-route/SRAM/IO/clock tree; no Fmax/power claim); still no live input append and no on-chain transactions) · r12 (adds hardware_validation measurements to environment_refinement_game: a separate authenticated RAM hardware environment microstep and env-ram-state-v1 hash RTL pass 5,197 witnesses, at most 2,953 clocks each; no MMIO/input/syscon, no Hazard3 integration, no physical SRAM, no area/frequency/power claims) · r11 (r10 correction: environment_refinement_game pins the verifier runtime SHA256 (11,716 bytes); measured total gas 602,139, resolve 171,351; tick game figures unchanged) · r10 (adds environment_refinement_game measurements: under env-ram-state-v1, 32 deployed endpoints / 5,147 microsteps + 4 new RAM-write endpoints, all exact; a dispute over omitted wrapper idle advancement after a cross-page store resolves in one bisection round for 602,139 gas (resolve 171,351, corrected in r11), 8 negative cases rejected; tick_refinement_game scope corrected: tick-state-v1 omits external cycle history, wrapper idle advancement and the syscon/UART transcript, measured gas unchanged; still a local RAM prototype, no on-chain transactions) · r9 (adds authenticated_bank_game measurements: each of the 14 real bank boundaries of MiniCPM layer 0 over two tokens replayed through the local Solidity verifier, 107,534 page transitions, all pre/post CPU48/RAM endpoints exact; 13-round subgames 2.28M–2.29M gas, plus a global model root, a pinned segment, a virtual-bond prototype and layer-output extraction at 906,240 gas; adds tick_refinement_game measurements: 1,024-instruction CSR/MIP guest, 10 rounds, 1,797,373 gas; all local games, no on-chain transactions, hardware not integrated) · r8 (adds optimistic_game measurements: a single TraceGame dispute on local PyEVM, 1,712-instruction MLP trace, 11 bisection rounds, honest challenger wins, full game 1,892,451 gas, unchallenged 308,087 gas; minicpm_bound.optimistic split into happy/dispute tiers citing measured arbiter gas of 41.8k–248.6k; the depth-35 full-model dispute at 6.62M–7.04M gas is a synthetic-fixture model value, not a measurement) · r7 (stateless_arbiter adds BSC BEP-496 protocol accounting: protocolTotalGas and calldataFloorGas alongside executionGas; 84 cases in the 41.8k–234k gas suite hit the calldata floor; all local measurements + protocol formula, not chain receipts) · r6 (adds long_term_model_bound, the measured stateless_arbiter MUL arbitration receipt, and measured 14-flip call batching at −12.02% gas/instruction; 32/64 flips exceed the BSC 2^24 transaction gas cap and are marked counterfactual) · r5 (data island adds measured MiniCPM5-2B instruction counts, fidelity and trace evidence) · r4 (adds the three questions at the top per docs/fe-page-guide-antd.md) · r3 (adds twin measurements of lazy allocation and jump-table decode) · r2 (large-model cost recomputed from a fixed model configuration, see riscv_machine/ROADMAP_DEEPSEEK.md) · Data measured by Claude and codex agents in the tapeout repository; scripts and raw receipts are in <code>circuits/_scratch/riscv_machine/</code> and <code>circuits/_scratch/onchain_inference/</code>. The next version will replace "estimate" entries with twin measurements.</div>
+  <div class="zh">版本 2026-09-13 r13（新增 mmio_refinement_game 实测：env-mmio-state-v1 固定输入（≤31 字节）配置，255 个已部署端点 5,572 微步 + 4 个新队列/控制台边界 57 步全部精确；错误的有符号 UART 字节装载争议一轮二分 587,428 gas（resolve 151,685），10 个反例被拒；MMIO 硬件微步 RTL 通过 5,747 见证（5,733 接受/14 拒绝，最多 2,979 时钟）；共享 Keccak 的 RAM 控制器 IHP ABC -fast 映射通过：720,365 标准单元、6.304 mm² 单元面积（不含布局布线/SRAM/IO/时钟树，无 Fmax/功耗声明）；仍无实时输入追加、无链上交易）· r12（environment_refinement_game 新增 hardware_validation 实测：独立的认证 RAM 硬件环境微步与 env-ram-state-v1 哈希 RTL 通过 5,197 个见证，单个最多 2,953 时钟；无 MMIO/输入/syscon、无 Hazard3 集成、无物理 SRAM、不含面积/频率/功耗声明）· r11（r10 修正：environment_refinement_game 钉住验证器运行时 SHA256（11,716 字节），实测总 gas 602,139、resolve 171,351；tick 博弈数值不变）· r10（新增 environment_refinement_game 实测：env-ram-state-v1 配置下 32 个已部署端点 5,147 微步 + 4 个新 RAM 写端点全部精确，跨页 store 后省略 wrapper 空转的争议一轮二分 602,139 gas（resolve 171,351，r11 修正），8 个反例被拒；tick_refinement_game 范围修正：tick-state-v1 不含外部周期历史、wrapper 空转与 syscon/UART 记录，实测 gas 不变；仍为本地 RAM 原型，无链上交易）· r9（新增 authenticated_bank_game 实测：MiniCPM 第 0 层两 token 的 14 个真实 bank 边界各自经本地 Solidity 验证器重放，107,534 页转换，前后 CPU48/RAM 端点全部精确；13 轮子博弈 2.28M–2.29M gas，含全局模型根、钉死段、虚拟保证金原型、层输出提取 906,240 gas；新增 tick_refinement_game 实测：1,024 指令 CSR/MIP 客体 10 轮 1,797,373 gas；均为本地博弈，无链上交易，硬件未集成）· r8（新增 optimistic_game 实测：本地 PyEVM 上 TraceGame 单局争议，1,712 指令 MLP 轨迹 11 轮二分、诚实挑战者胜、整局 1,892,451 gas、无人挑战 308,087 gas；minicpm_bound.optimistic 改为 happy/dispute 两档并引用仲裁器实测 41.8k–248.6k gas；深度 35 全模型争议 6.62M–7.04M gas 为合成夹具模型值，非实测）· r7（stateless_arbiter 增加 BSC BEP-496 协议口径：executionGas 之外给出 protocolTotalGas 与 calldataFloorGas，套件 41.8k–234k gas 中 84 例触及 calldata 下限，均为本地实测 + 协议公式，非链上收据）· r6（新增 long_term_model_bound 长期模型上界、stateless_arbiter 实测 MUL 仲裁收据、14 翻转调用批处理实测 −12.02% gas/指令；32/64 翻转超出 BSC 2^24 交易 gas 上限，标为反事实）· r5（数据岛并入 MiniCPM5-2B 的实测指令数、保真度与轨迹证据）· r4（在页首加入三问）· r3（新增懒分配与跳转表译码的孪生实测）· r2（大模型成本改为按固定模型配置精算）· 数据怎么来的：每一项标了「实测」或「估算」，实测来自链上交易收据、节点试算（eth_estimateGas）或本地逐步重放。怎么核对：协议规则和链的参数可以对照数据里列的公开来源；测量脚本和原始记录在我们的代码仓库里，还没公开，所以实测的数现在外人还不能重跑。下一版将把"估算"替换为孪生实测值。</div>
+  <div class="en">Version 2026-09-13 r13 (adds mmio_refinement_game measurements: env-mmio-state-v1 fixed-input (≤31 bytes) profile; 255 deployed endpoints / 5,572 microsteps + 4 new queue/console boundaries / 57 steps, all exact; a dispute over incorrect signed UART byte loading resolves in one bisection round for 587,428 gas (resolve 151,685), 10 negative cases rejected; MMIO hardware microstep RTL passes 5,747 witnesses (5,733 accepted / 14 rejected, at most 2,979 clocks); the RAM controller with shared Keccak maps under IHP ABC -fast: 720,365 standard cells, 6.304 mm² cell area (excluding place-and-route/SRAM/IO/clock tree; no Fmax/power claim); still no live input append and no on-chain transactions) · r12 (adds hardware_validation measurements to environment_refinement_game: a separate authenticated RAM hardware environment microstep and env-ram-state-v1 hash RTL pass 5,197 witnesses, at most 2,953 clocks each; no MMIO/input/syscon, no Hazard3 integration, no physical SRAM, no area/frequency/power claims) · r11 (r10 correction: environment_refinement_game pins the verifier runtime SHA256 (11,716 bytes); measured total gas 602,139, resolve 171,351; tick game figures unchanged) · r10 (adds environment_refinement_game measurements: under env-ram-state-v1, 32 deployed endpoints / 5,147 microsteps + 4 new RAM-write endpoints, all exact; a dispute over omitted wrapper idle advancement after a cross-page store resolves in one bisection round for 602,139 gas (resolve 171,351, corrected in r11), 8 negative cases rejected; tick_refinement_game scope corrected: tick-state-v1 omits external cycle history, wrapper idle advancement and the syscon/UART transcript, measured gas unchanged; still a local RAM prototype, no on-chain transactions) · r9 (adds authenticated_bank_game measurements: each of the 14 real bank boundaries of MiniCPM layer 0 over two tokens replayed through the local Solidity verifier, 107,534 page transitions, all pre/post CPU48/RAM endpoints exact; 13-round subgames 2.28M–2.29M gas, plus a global model root, a pinned segment, a virtual-bond prototype and layer-output extraction at 906,240 gas; adds tick_refinement_game measurements: 1,024-instruction CSR/MIP guest, 10 rounds, 1,797,373 gas; all local games, no on-chain transactions, hardware not integrated) · r8 (adds optimistic_game measurements: a single TraceGame dispute on local PyEVM, 1,712-instruction MLP trace, 11 bisection rounds, honest challenger wins, full game 1,892,451 gas, unchallenged 308,087 gas; minicpm_bound.optimistic split into happy/dispute tiers citing measured arbiter gas of 41.8k–248.6k; the depth-35 full-model dispute at 6.62M–7.04M gas is a synthetic-fixture model value, not a measurement) · r7 (stateless_arbiter adds BSC BEP-496 protocol accounting: protocolTotalGas and calldataFloorGas alongside executionGas; 84 cases in the 41.8k–234k gas suite hit the calldata floor; all local measurements + protocol formula, not chain receipts) · r6 (adds long_term_model_bound, the measured stateless_arbiter MUL arbitration receipt, and measured 14-flip call batching at −12.02% gas/instruction; 32/64 flips exceed the BSC 2^24 transaction gas cap and are marked counterfactual) · r5 (data island adds measured MiniCPM5-2B instruction counts, fidelity and trace evidence) · r4 (adds the three questions at the top) · r3 (adds twin measurements of lazy allocation and jump-table decode) · r2 (large-model cost recomputed from a fixed model configuration) · Where the data comes from: every entry is marked "measured" or "estimate"; measured entries come from on-chain receipts, node gas estimation (eth_estimateGas) or exact local replay. How to check: protocol rules and chain parameters can be compared with the public sources listed in the data; the measurement scripts and raw records are in our code repository, not public yet, so outsiders cannot rerun the measured numbers for now. The next version will replace "estimate" entries with twin measurements.</div>
 </footer>
 </div>
 <script>/* 语言切换：写回 nand-driver-lang，只改 <html lang>，不刷新；CSS 按 lang 显示 .zh/.en */

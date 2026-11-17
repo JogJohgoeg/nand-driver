@@ -3,127 +3,328 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>21 NAND · 把 AI 拆成最基础的开关</title>
-<meta name="description" content="把一个开源 AI 模型完全换成门电路，在你电脑上一位一位算出答案；我们的第一颗芯片「吟游诗人」设计图已存上链。">
-<link rel="stylesheet" href="home.css">
-<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
-(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
-if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
-if(l!==document.documentElement.lang.slice(0,2))location.replace("en/"+location.hash);
-document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--r:2px;--t-fast:.12s;--t-med:.25s}:root{color-scheme:dark}h1,h2,h3,button,summary,time,nav{font-family:var(--head)}code,pre{font-family:var(--mono)}h1,h2,h3{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text-2);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--brand-text)}code,pre{font-family:var(--mono)}.shell{max-width:73.75rem;margin:0 auto;padding:0 1.75rem}.bar{position:sticky;top:0;z-index:5;background:var(--bar-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft,transparent)}.bar .shell{display:flex;align-items:center;gap:1.75rem;height:3.625rem}.brand{color:var(--ink);font-weight:700;font-family:var(--head);text-decoration:none;white-space:nowrap}.nav{display:flex;gap:.875rem;margin-left:.875rem}.nav a{color:var(--text-2);text-decoration:none;font-size:.9375rem}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.375rem;font:700 .9375rem var(--head);text-decoration:none;white-space:nowrap;border:1px solid var(--line,transparent);color:var(--ink)}.bar .btn{padding:.4375rem .875rem;font-size:.875rem}.lang{margin-left:auto;background:none;border:1px solid var(--line,transparent);color:var(--ink);font:700 .8125rem var(--head);padding:.25rem .875rem;cursor:pointer}html[data-lang="en"] .zh,html:not([data-lang="en"]) .en{display:none}.badge{display:inline-block;border:1px solid var(--line,transparent);border-radius:var(--r);padding:.25rem .875rem;font-size:.8125rem;color:var(--text-2);text-decoration:none;background:var(--card)}.badge b{color:var(--pos);font-weight:600;margin-right:.375rem}.hero h1{color:var(--ink);font-family:var(--head);letter-spacing:-.01em}.hero p{max-width:40rem}.hero .acts{display:flex;gap:.875rem;flex-wrap:wrap}.chipstrip{display:grid;grid-auto-flow:column;grid-auto-columns:9.375rem;gap:.875rem;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;max-width:100%;margin:2.125rem auto 0;padding:.25rem 2px .625rem;text-align:left;justify-content:safe center}.chipstrip a{scroll-snap-align:start;text-decoration:none;color:var(--text)}.chipstrip .pic{display:block;aspect-ratio:1;border:1px solid var(--line,transparent);overflow:hidden}.chipstrip img{display:block;width:100%;height:100%}.chipstrip b{display:block;margin-top:.5rem;font:700 .875rem/1.35 var(--head);color:var(--ink)}.chipstrip small{display:block;font:.75rem/1.5 var(--head);color:var(--muted)}.feat .shell{display:grid;gap:clamp(1.75rem,6vw,5.25rem);align-items:center}.feat:nth-child(even) .copy{order:2}.feat h2{margin:.375rem 0 .875rem;color:var(--ink);font-family:var(--head)}.feat p{margin:0 0 .875rem}.stat{display:flex;align-items:baseline;gap:.875rem;flex-wrap:wrap;border-top:1px solid var(--line-soft,transparent);border-bottom:1px solid var(--line-soft,transparent)}.stat b{font:700 1.875rem var(--head);white-space:nowrap}.stat>span{font-size:.8125rem;color:var(--muted);flex:1 1 12.5rem}.cmd{margin:0 0 .875rem;background:var(--card);border:1px solid var(--line-soft,transparent);border-radius:var(--r);overflow:hidden}.cmd pre{margin:0;padding:.875rem .875rem;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);font-size:.8125rem;line-height:1.6}.cmd .exp{padding:.5rem .875rem;border-top:1px solid var(--line-soft,transparent);font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}.cmd .exp code{color:var(--pos);font-size:.7812rem}.shot{display:block}.shot img{display:block;width:100%;height:auto}.more{font-weight:600;text-decoration:none}.feat .acts{display:flex;gap:.875rem;flex-wrap:wrap}.chk{border:1px solid var(--line-soft,transparent);border-radius:var(--r)}.chk summary{cursor:pointer;padding:.5625rem .875rem;color:var(--pos);font-weight:600;list-style:none}.chk summary::-webkit-details-marker{display:none}.chk summary .when{color:var(--muted);font-weight:400;margin-left:.375rem}.chk[open] summary{border-bottom:1px solid var(--line-soft,transparent)}.chk>p{margin:.875rem .875rem;font-size:.875rem}.chk .cmd{margin:0 .875rem .875rem}.chk .src{color:var(--muted);font-size:.8125rem}.news{padding:3.5rem 0;border-top:1px solid var(--line-soft,transparent)}.news h2,.cta h2{color:var(--ink);font-family:var(--head);font-size:1.625rem;margin:0 0 .875rem}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.875rem}.card{display:block;border:1px solid var(--line-soft,transparent);border-radius:var(--r);padding:.875rem .875rem;text-decoration:none;color:var(--text-2);font-size:.9375rem}.card time{display:block;font:.8125rem var(--mono);color:var(--muted);margin-bottom:.375rem}.cta{padding:4.375rem 0;border-top:1px solid var(--line-soft,transparent)}.cta p{color:var(--muted);margin:0 0 1.75rem}.cta .acts{display:flex;gap:.875rem;flex-wrap:wrap}.foot{border-top:1px solid var(--line-soft,transparent);padding:2.625rem 0 3.5rem;font-size:.875rem}.foot .shell{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:1.75rem}.foot h3{color:var(--muted);margin:0 0 .875rem;font-weight:700}.foot ul{list-style:none;margin:0;padding:0}.foot li{margin:.25rem 0}.foot a{color:var(--text-2);text-decoration:none}.foot .addr{font:.75rem var(--mono);color:var(--muted);overflow-wrap:anywhere}@media (max-width:860px){.nav{display:none}.hero{padding:3.5rem 0 2.625rem}.hero p{font-size:1rem}.feat{padding:2.625rem 0}.feat .shell{grid-template-columns:minmax(0,1fr);gap:1.75rem}.feat:nth-child(even) .copy{order:0}.feat h2{font-size:1.5rem}.cards{grid-template-columns:minmax(0,1fr)}.foot .shell{grid-template-columns:1fr 1fr}}@media (max-width:480px){.shell{padding:0 .875rem}.bar .btn{display:none}}.bar .shell,.shell{max-width:82.5rem}.brand{font-size:1.0625rem}.btn{border-radius:2px;padding:.75rem 1.125rem;background:transparent;transition:background var(--t-fast),border-color var(--t-fast)}.btn.primary{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent)}.lang{border-radius:2px}.hero{text-align:left;padding:clamp(2.5rem,7vw,6rem) 0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:112px 112px;background-position:-1px -1px;background-color:var(--bg);box-shadow:inset 0 0 0 100vmax color-mix(in srgb,var(--bg) 62%,transparent)}.hero .shell{display:grid;grid-template-rows:1fr auto auto auto auto 1fr auto;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);column-gap:clamp(1.75rem,5vw,5.25rem);align-items:center;position:relative}.hero .badge{justify-self:start;border-radius:2px;background:var(--panel);font-family:var(--mono),var(--cjk);font-size:.75rem}.hero .badge b{color:var(--brand-text)}.hero h1{margin:1.5rem 0 1.125rem;max-width:none;font-size:clamp(2.25rem,4.6vw,4.125rem);line-height:1.14;font-weight:700;text-wrap:initial}.hero p{margin:0;font-size:1.125rem;color:var(--text)}.hero .acts{justify-content:flex-start;margin-top:1.875rem}.hero .badge{grid-column:1;grid-row:2}.hero h1{grid-column:1;grid-row:3}.hero p{grid-column:1;grid-row:4}.hero .acts{grid-column:1;grid-row:5}.herofig{grid-column:2;grid-row:1/7;margin:0;position:relative}.herofig img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;filter:var(--img-rest,opacity(0))}.herofig::before,.herofig::after{content:"";position:absolute;width:1.625rem;height:1.625rem;z-index:1;pointer-events:none}.herofig::before{left:-.4375rem;top:-.4375rem;border-left:2px solid var(--brand,transparent);border-top:2px solid var(--brand,transparent)}.herofig::after{right:-.4375rem;bottom:1.375rem;border-right:2px solid var(--brand,transparent);border-bottom:2px solid var(--brand,transparent)}.herofig figcaption{display:flex;justify-content:space-between;gap:.875rem;flex-wrap:wrap;padding-top:.625rem;font:.75rem/1.5 var(--mono),var(--cjk);color:var(--text-dim)}.feat{padding:clamp(2.5rem,6vw,5.25rem) 0;border-top:1px solid var(--line,transparent);background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat}.feat .shell{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}.num{display:block;font:700 clamp(3.25rem,6vw,5.5rem)/1 var(--mono);color:var(--brand-text);letter-spacing:-.04em;margin-bottom:.875rem}.feat h2{font-size:clamp(1.625rem,2.6vw,2.25rem);font-weight:700;line-height:1.2}.stat{border:0;border-left:3px solid var(--brand,transparent);padding:2px 0 2px .875rem;margin:1.375rem 0}.stat b{color:var(--ink);font-size:2.375rem;line-height:1.1}.feat .acts{margin:0 0 .875rem}.chk,.cmd,.card,.badge{border-radius:2px}.chk{background:var(--bg-deep);border-color:var(--line,transparent)}.chk summary{font-family:var(--mono),var(--cjk);font-size:.8125rem}.shot{position:relative;overflow:visible;border:0;border-radius:0;background:var(--plate)}.shot img{border:1px solid var(--line,transparent)}#brain .shot img{filter:var(--shot-rest,opacity(0));transition:filter var(--t-med)}.shot::before,.shot::after{content:"";position:absolute;width:1.375rem;height:1.375rem;pointer-events:none}.shot::before{left:-.375rem;top:-.375rem;border-left:2px solid var(--brand,transparent);border-top:2px solid var(--brand,transparent)}.shot::after{right:-.375rem;bottom:-.375rem;border-right:2px solid var(--brand,transparent);border-bottom:2px solid var(--brand,transparent)}.card{background:var(--panel)}.news,.cta,.foot{border-top:1px solid var(--line,transparent)}.cta{text-align:left}.cta .acts{justify-content:flex-start}.cta h2{font-size:clamp(1.625rem,3vw,2.5rem)}.foot h3{font-family:var(--mono),var(--cjk);font-size:.6875rem;letter-spacing:.14em}.hero .chipstrip{grid-column:1/-1;grid-row:7;margin-top:clamp(1.75rem,4vw,3.5rem);grid-auto-columns:minmax(9.375rem,1fr)}.chipstrip .pic{background:var(--plate);border-radius:2px}.chipstrip img{padding:0;object-fit:cover;filter:var(--img-rest,opacity(0));transition:filter var(--t-med)}@media (max-width:860px){.hero .chipstrip{grid-column:1;grid-row:auto;order:3;grid-auto-columns:9.375rem}.hero .acts{order:1}.herofig{order:2}.hero .shell{grid-template-columns:minmax(0,1fr)}.hero .shell{grid-template-rows:none}.hero .badge,.hero h1,.hero p,.hero .acts{grid-row:auto}.herofig{grid-column:1;grid-row:auto;margin-top:1.875rem}.feat .shell{grid-template-columns:minmax(0,1fr)}.num{font-size:3.25rem}}@media (max-width:480px){.hero{background-size:56px 56px}.shot::after,.herofig::after{right:-3px}.shot::before,.herofig::before{left:-3px}.stat b{font-size:2rem}}.h1v{display:block;width:100%;height:auto;fill:currentColor}.h1a{fill:var(--brand-text)}.tmark{grid-column:1;grid-row:1;align-self:end;margin:0 0 1.75rem}.tmark svg{display:block;width:min(100%,21rem);height:auto;fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}.tmark .h1a{fill:none;stroke:var(--brand-text)}.h1t{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}</style>
+<title>21 NAND</title>
+<link rel="icon" href="favicon.ico">
+<meta name="description" content="把 AI 做成门电路，放上链，谁都能核对。每个模块点开就能用，不用钱包；打开时自动和链上记录核对。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="21 NAND">
+<meta property="og:description" content="把 AI 做成门电路，放上链，谁都能核对。Turn AI into logic gates, put it on chain, let anyone check it.">
+<meta property="og:image" content="https://nand.aihashrate.stream/assets/home/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="text/markdown" href="index.md">
+<script>/* 第一下画面之前定好语言：先看本地记下的选择，没有就看浏览器报的语言；都读不到就是中文 */try{var l;try{l=localStorage.getItem("lang")}catch(e){}if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"zh")?"zh":"en";if(l==="en"){document.documentElement.setAttribute("data-lang","en");document.documentElement.lang="en"}}catch(e){}</script>
+<link rel="preload" as="style" href="assets/theme.css">
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="logo" href="./">21 NAND</a>
-    <nav class="nav" aria-label="主导航">
-      <a href="#bard">吟游诗人</a>
-      <a href="https://nand.aihashrate.stream/gate/">试一试</a>
-      <a href="build/">做电路</a>
-      <a href="faq/">常见问题</a>
-      <a href="progress/">进度</a>
-      <a href="verify/">核对</a>
-      <a class="hi" href="en/" lang="en" hreflang="en">EN</a>
-    </nav>
-  </div>
-</header>
-
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="core" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2.2 2.2 2.2 0 -1.9"/></filter></svg>
+<header class="bar"><div class="shell">
+  <a class="brand" href="index.html">21 NAND</a>
+  <nav class="nav" aria-label="主导航"><a href="app/"><span class="zh">应用</span><span class="en" lang="en">App</span></a><a href="start/index.html"><span class="zh">文档</span><span class="en" lang="en">Docs</span></a><a href="start/verify.html"><span class="zh">自己核对</span><span class="en" lang="en">Verify</span></a><a href="updates/index.html"><span class="zh">进度</span><span class="en" lang="en">Updates</span></a></nav>
+  <button class="lang" id="lang" type="button" aria-label="中文 / English"><span class="zh">EN</span><span class="en" lang="en">中文</span></button>
+  <a class="btn primary" href="app/"><span class="zh">打开应用</span><span class="en" lang="en">Open app</span></a>
+</div></header>
 <main>
-<section class="hero">
-  <div class="wrap">
-    <div class="hero-t">
-      <h1>把一个 AI 拆成最基础的开关，在你电脑上跑起来</h1>
-      <p>我们把一个开源 AI 模型完全换成了门电路，也就是最基础的开和关。打开网页，它就在你自己的显卡上一位一位算出答案，每一步都能核对。</p>
-      <div class="btns only-desk">
-        <a class="btn" href="https://nand.aihashrate.stream/gate/">在我电脑上试试</a>
-        <a class="link-w" href="faq/#pc">我的电脑够不够？</a>
-      </div>
-      <p class="small only-desk">免费 · 不用钱包 · 不上链 · 要用电脑上的 Chrome 或 Edge</p>
-      <p class="small only-phone">手机跑不动这个模型。想亲自试，请在电脑的 Chrome 或 Edge 里打开 <b>21nand.bem.city</b>。</p>
-    </div>
-    <figure class="chat" aria-label="一次真实回答">
-      <div class="bub q">问一个常识题</div>
-      <div class="bub a">The capital of France is Paris.</div>
-      <div class="mono">它的一次真实回答，和原模型逐位一致 · 每个字约 0.5–1.5 秒</div>
-    </figure>
-  </div>
-</section>
-
-<div class="wrap">
-  <section class="clear" aria-labelledby="clear-h">
-    <h2 id="clear-h">先说清楚</h2>
-    <div><strong>只在你电脑上跑</strong><span>体验门电路大脑不会上链，也不会生成任何属于你的链上资产。</span></div>
-    <div><strong>代币没有任何权益</strong><span>持币人对电路、工具收入、未来芯片没有分红或分成。</span></div>
-    <div><strong>芯片设计好了，还没生产</strong><span>吟游诗人已通过工厂的规则检查，哪家厂造、什么时候造还没定。<a href="progress/">看进度</a></span></div>
-  </section>
-
-  <section id="bard" class="sec" aria-labelledby="bard-h">
-    <div class="bard">
-      <figure><img src="bard.webp" width="560" height="843" alt="吟游诗人芯片的完整版图，下方三排条状区域存着它学到的知识"></figure>
-      <div class="bard-t">
-        <span class="kicker">我们的第一颗芯片 · BARD</span>
-        <h2 id="bard-h">吟游诗人</h2>
-        <p>一个会讲英文小故事的 AI，直接做成了一颗芯片。芯片里没有处理器，也没有程序，它学到的东西刻在芯片上，通电就能开口。完整的设计图已经存上了链，谁都能取回来核对，谁也改不了。</p>
-        <div class="nums">
-          <div><b>15 mm²</b><span>比小指甲盖还小</span></div>
-          <div><b>约 100 万</b><span>刻进芯片的参数</span></div>
-          <div><b>0 元</b><span>设计软件费用，全用开源工具</span></div>
-        </div>
-        <p class="note">2026-10-12 设计通过工厂的全部制造规则检查，设计图存上 X Layer。还没送厂生产。</p>
-        <div class="btns">
-          <a class="btn" href="https://x.com/zhuoning293/article/2109614055484756114">读它的故事</a>
-          <a class="link-w" href="https://1-2-245.aihashrate.stream/bard/v8g/">从链上取回设计图并核对</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" aria-labelledby="paths-h">
-    <h2 class="big" id="paths-h">你想做什么？</h2>
-    <div class="grid">
-      <article class="card">
-        <span class="tag">体验 · 5 分钟</span>
-        <h3>看它答一个问题</h3>
-        <p>打开网页，等它在你电脑上搭好电路，然后随便问。跑完可以一键提交你电脑的速度，帮我们补全设备数据。</p>
-        <a class="go" href="https://nand.aihashrate.stream/gate/">去试试 →</a>
-      </article>
-      <article class="card">
-        <span class="tag">动手 · 1 小时起</span>
-        <h3>做一个自己的小电路</h3>
-        <p>在 TapeOut 上把一个几十到几千个门的小电路放上链。我们一次 3,800 个门的流片，净花费约 0.0023 OKB。</p>
-        <a class="go" href="build/">看流程和花费 →</a>
-      </article>
-      <article class="card">
-        <span class="tag">核对 · 给懂行的人</span>
-        <h3>自己验证我们说的</h3>
-        <p>所有页面、链上站点、合约地址和每个文件的指纹，以及「21 个门开车」竞技场，都在这里。</p>
-        <a class="go" href="verify/">打开核对页 →</a>
-      </article>
-    </div>
-  </section>
-
-  <section class="sec" aria-labelledby="scale-h">
-    <h2 class="big" id="scale-h">有多大？</h2>
-    <div class="grid">
-      <div class="stat"><b>2,600 亿</b><strong>算一个字要用的门</strong><span>相当于全世界每个人各按 30 多次开关，才得出一个字。</span></div>
-      <div class="stat"><b>约 2.5 万</b><strong>链上一个电路能放的门</strong><span>差了一千万倍，所以整个模型放不上链，链上只放小电路。</span></div>
-      <div class="stat"><b>0 处不同</b><strong>和原模型逐位比对</strong><span>门电路算出的每一位，都和原模型的结果一样。</span></div>
-    </div>
-    <details class="raw">
-      <summary>给懂行的人：原始数字</summary>
-      <p>模型 BitCPM4-1B · 每 token 261,022,627,596 NAND + 109,052,458 LATCH · WebGPU 逐门执行 · 与 RefB 金标逐 token 一致 · BSC 区块约 7,000 万 gas</p>
+<section class="hero"><div class="shell">
+  <!--@logo 标志是生成的，不要手改；真实文字在 .h1t 里--><div class="tmark"><span class="h1t">21 NAND</span><svg viewBox="-1.6 -1.6 673.2 157.2" aria-hidden="true" focusable="false"><path class="h1a" d="M5 11L80 11A5 5 0 0 1 85 16L85 72A5 5 0 0 1 80 77L10 77A5 5 0 0 0 5 82L5 138A5 5 0 0 0 10 143L85 143M125 11L140 11A5 5 0 0 1 145 16L145 143"/><path d="M225 143L225 16A5 5 0 0 1 230 11L260 11A5 5 0 0 1 265 16L265 138A5 5 0 0 0 270 143L300 143A5 5 0 0 0 305 138L305 11M345 143L345 16A5 5 0 0 1 350 11L420 11A5 5 0 0 1 425 16L425 143M345 77L425 77M465 143L465 16A5 5 0 0 1 470 11L500 11A5 5 0 0 1 505 16L505 138A5 5 0 0 0 510 143L540 143A5 5 0 0 0 545 138L545 11M585 11L660 11A5 5 0 0 1 665 16L665 138A5 5 0 0 1 660 143L585 143Z"/></svg></div><!--@/logo-->
+  <a class="badge" href="gallery/"><b><span class="zh">新</span><span class="en" lang="en">New</span></b><span class="zh">芯片图库上线：真实版图，逐张核对</span><span class="en" lang="en">Chip gallery is live: real layouts, each image checked</span></a>
+  <h1><span class="h1t"><span class="zh">把 AI 做成门电路，放上链，谁都能核对</span><span class="en" lang="en">Turn AI into logic gates, put it on chain, let anyone check it</span></span><svg class="h1v zh" viewBox="0 -900 9000 2320" aria-hidden="true" focusable="false"><defs><path id="z0" transform="scale(1 -1)" d="M523 685H608V418H523ZM399 803V119C399 -31 442 -68 581 -68C614 -68 765 -68 800 -68C925 -68 964 -13 980 138C945 146 893 167 864 186C855 74 845 48 788 48C757 48 624 48 595 48C532 48 523 57 523 118V304H806V242H933V803ZM806 418H719V685H806ZM147 850V661H40V550H147V368L23 339L52 224L147 249V37C147 25 143 21 131 21C120 20 86 20 54 22C68 -9 83 -58 86 -88C149 -88 192 -84 224 -66C255 -48 265 -18 265 38V281L378 311L363 422L265 397V550H357V661H265V850Z"/><path id="z1" transform="scale(1 -1)" d="M35 0 219 730H380L565 0H437L397 177H203L163 0ZM226 279H374L330 475Q319 524 311 564Q303 603 300 621Q297 603 289 564Q281 524 270 476Z"/><path id="z2" transform="scale(1 -1)" d="M90 0V113H237V617H90V730H510V617H363V113H510V0Z"/><path id="z3" transform="scale(1 -1)" d="M690 849C669 687 630 530 561 429L585 396H509V560H614V668H509V837H396V668H281V560H396V396H296V-50H399V21H589C576 12 563 3 549 -5C571 -24 609 -66 622 -86C683 -45 733 4 773 61C807 4 850 -46 903 -86C918 -57 953 -12 973 8C912 47 866 102 831 166C880 274 907 406 923 564H970V664H765C778 718 788 775 797 831ZM399 294H502V123H399ZM606 364 627 327C639 344 651 362 662 382C675 310 694 238 720 170C691 117 653 72 606 34ZM737 564H821C812 466 798 379 775 302C751 378 737 459 728 534ZM210 848C166 702 92 556 12 462C30 430 60 361 69 332C90 356 110 383 130 413V-89H240V610C271 678 299 748 321 815Z"/><path id="z4" transform="scale(1 -1)" d="M514 848C514 799 516 749 518 700H108V406C108 276 102 100 25 -20C52 -34 106 -78 127 -102C210 21 231 217 234 364H365C363 238 359 189 348 175C341 166 331 163 318 163C301 163 268 164 232 167C249 137 262 90 264 55C311 54 354 55 381 59C410 64 431 73 451 98C474 128 479 218 483 429C483 443 483 473 483 473H234V582H525C538 431 560 290 595 176C537 110 468 55 390 13C416 -10 460 -60 477 -86C539 -48 595 -3 646 50C690 -32 747 -82 817 -82C910 -82 950 -38 969 149C937 161 894 189 867 216C862 90 850 40 827 40C794 40 762 82 734 154C807 253 865 369 907 500L786 529C762 448 730 373 690 306C672 387 658 481 649 582H960V700H856L905 751C868 785 795 830 740 859L667 787C708 763 759 729 795 700H642C640 749 639 798 640 848Z"/><path id="z5" transform="scale(1 -1)" d="M110 795C161 734 225 651 253 598L351 669C321 721 253 799 202 856ZM80 628V-88H203V628ZM365 817V702H802V48C802 28 795 22 776 22C756 21 687 21 628 24C645 -6 663 -57 669 -89C762 -90 825 -88 867 -69C909 -50 924 -19 924 46V817Z"/><path id="z6" transform="scale(1 -1)" d="M429 381V288H235V381ZM558 381H754V288H558ZM429 491H235V588H429ZM558 491V588H754V491ZM111 705V112H235V170H429V117C429 -37 468 -78 606 -78C637 -78 765 -78 798 -78C920 -78 957 -20 974 138C945 144 906 160 876 176V705H558V844H429V705ZM854 170C846 69 834 43 785 43C759 43 647 43 620 43C565 43 558 52 558 116V170Z"/><path id="z7" transform="scale(1 -1)" d="M182 710H314V582H182ZM26 64 47 -52C161 -25 312 11 454 45L442 151L324 125V258H434V287C449 268 464 246 472 230L495 240V-87H605V-53H794V-84H909V245L911 244C927 274 962 322 986 345C905 370 836 410 779 456C839 531 887 621 917 726L841 759L820 755H680C689 777 698 799 705 822L591 850C558 740 498 633 424 564V812H78V480H218V102L168 91V409H71V72ZM605 50V183H794V50ZM769 653C749 611 725 571 697 535C668 569 644 604 624 639L632 653ZM579 284C623 310 664 341 702 375C739 341 781 310 827 284ZM626 457C569 404 504 361 434 331V363H324V480H424V545C451 525 489 493 505 475C525 496 545 519 564 545C582 516 603 486 626 457Z"/><path id="z8" transform="scale(1 -1)" d="M194 -138C318 -101 391 -9 391 105C391 189 354 242 283 242C230 242 185 208 185 152C185 95 230 62 280 62L291 63C285 11 239 -32 162 -57Z"/><path id="z9" transform="scale(1 -1)" d="M591 850C567 688 521 533 448 430V440C449 454 449 488 449 488H251V586H482V697H264L346 720C336 756 317 811 298 853L191 827C207 788 225 734 233 697H39V586H137V392C137 263 123 118 15 -6C44 -26 83 -59 103 -85C227 52 250 219 251 379H335C331 143 325 58 311 37C304 25 295 22 282 22C267 22 238 23 206 25C223 -5 234 -51 237 -84C279 -85 319 -85 345 -80C373 -74 393 -64 412 -36C436 -1 443 106 447 386C473 362 504 328 518 309C538 333 556 361 573 390C593 315 617 247 648 185C596 112 526 55 434 13C456 -12 490 -66 501 -92C588 -47 658 9 714 77C763 10 825 -44 901 -84C919 -52 956 -5 983 19C901 56 836 114 786 186C840 288 875 410 897 557H972V668H679C693 721 705 776 714 831ZM646 557H778C765 464 745 382 716 311C685 384 661 465 645 553Z"/><path id="za" transform="scale(1 -1)" d="M403 837V81H43V-40H958V81H532V428H887V549H532V837Z"/><path id="zb" transform="scale(1 -1)" d="M345 797C368 733 394 648 404 592L507 626C496 681 469 763 444 827ZM47 356V255H139V102C139 49 111 11 89 -6C107 -22 136 -61 147 -83C163 -62 191 -37 350 81C339 102 324 144 317 172L245 120V255H345V356H245V462H318V563H112C129 589 145 618 160 649H340V752H202C210 775 217 797 223 820L123 848C102 760 65 673 18 616C35 590 63 532 71 507L88 528V462H139V356ZM537 310V208H713V68H817V208H960V310H817V400H942V499H817V605H713V499H645C665 541 684 589 702 639H963V739H735C745 770 753 801 760 832L649 853C644 815 636 776 627 739H526V639H600C587 597 575 564 569 549C553 513 539 489 521 483C533 456 550 406 556 385C565 394 601 400 637 400H713V310ZM506 521H331V412H398V101C365 83 331 56 300 24L374 -89C404 -39 443 20 469 20C488 20 517 -4 552 -26C607 -59 667 -74 752 -74C814 -74 904 -71 953 -67C954 -37 969 21 980 53C914 44 813 38 753 38C677 38 615 47 565 77C541 91 523 105 506 113Z"/><path id="zc" transform="scale(1 -1)" d="M80 762C135 714 206 645 237 600L319 683C285 727 212 791 157 835ZM669 369V284H534V369ZM642 798C665 759 688 710 702 671H555C578 719 599 767 616 814L498 846C462 728 385 573 297 482C319 458 351 413 368 387C387 406 405 428 422 451V-91H534V-25H966V86H781V177H920V284H781V369H920V476H781V563H944V671H751L814 700C801 739 773 797 743 840ZM669 476H534V563H669ZM669 177V86H534V177ZM35 541V426H153V138C153 76 116 28 91 5C111 -10 150 -49 163 -72C181 -47 214 -18 398 139C383 162 361 208 351 240L270 171V541Z"/><path id="zd" transform="scale(1 -1)" d="M581 794V776L475 805C461 766 444 729 426 693V744H323V842H212V744H81V640H212V558H37V454H251C182 386 101 330 12 288C33 264 67 213 80 188L130 217V-87H239V-35H401V-73H515V380H334C357 404 379 428 400 454H549V558H474C516 623 552 694 581 770V-89H699V681H825C801 604 767 503 738 431C819 353 842 280 842 225C842 191 835 167 817 157C806 150 791 148 775 147C758 147 737 147 712 149C730 117 742 66 743 33C774 31 806 32 830 35C857 39 882 47 901 61C941 88 957 137 957 212C957 277 940 356 855 446C895 534 940 648 976 744L889 798L871 794ZM323 640H397C380 611 362 584 342 558H323ZM239 61V131H401V61ZM239 221V285H401V221Z"/><path id="ze" transform="scale(1 -1)" d="M350 390V337H201V390ZM90 488V-88H201V101H350V34C350 22 347 19 334 19C321 18 282 17 246 19C261 -9 279 -56 285 -87C345 -87 391 -86 425 -67C459 -50 469 -20 469 32V488ZM201 248H350V190H201ZM848 787C800 759 733 728 665 702V846H547V544C547 434 575 400 692 400C716 400 805 400 830 400C922 400 954 436 967 565C934 572 886 590 862 609C858 520 851 505 819 505C798 505 725 505 709 505C671 505 665 510 665 545V605C753 630 847 663 924 700ZM855 337C807 305 738 271 667 243V378H548V62C548 -48 578 -83 695 -83C719 -83 811 -83 836 -83C932 -83 964 -43 977 98C944 106 896 124 871 143C866 40 860 22 825 22C804 22 729 22 712 22C674 22 667 27 667 63V143C758 171 857 207 934 249ZM87 536C113 546 153 553 394 574C401 556 407 539 411 524L520 567C503 630 453 720 406 788L304 750C321 724 338 694 353 664L206 654C245 703 285 762 314 819L186 852C158 779 111 707 95 688C79 667 63 652 47 648C61 617 81 561 87 536Z"/><path id="zf" transform="scale(1 -1)" d="M839 373C757 214 569 76 333 10C355 -15 388 -62 403 -90C524 -52 633 3 726 72C786 21 852 -39 886 -81L978 -3C941 38 873 96 812 143C872 199 923 262 963 329ZM595 825C609 797 621 762 630 731H395V622H562C531 572 492 512 476 494C457 474 421 466 397 461C406 436 421 380 425 352C447 360 480 367 630 378C560 316 475 261 383 224C404 202 435 159 450 133C641 217 799 364 893 527L780 565C765 537 747 508 726 480L593 474C624 520 658 575 687 622H965V731H759C751 768 728 820 707 859ZM165 850V663H43V552H163C134 431 81 290 20 212C40 180 66 125 77 91C109 139 139 207 165 282V-89H279V368C298 328 316 288 326 260L395 341C379 369 306 484 279 519V552H380V663H279V850Z"/><path id="z10" transform="scale(1 -1)" d="M479 386C524 317 568 226 582 167L686 219C670 280 622 367 575 432ZM64 442C122 391 184 331 241 270C187 157 117 67 32 10C60 -12 98 -57 116 -88C202 -22 273 63 328 169C367 121 399 75 420 35L513 126C484 176 438 235 384 294C428 413 457 552 473 712L394 735L374 730H65V616H342C330 536 312 461 289 391C241 437 192 481 146 519ZM741 850V627H487V512H741V60C741 43 734 38 717 38C700 38 646 37 590 40C606 4 624 -54 627 -89C711 -89 771 -84 809 -63C847 -43 860 -8 860 60V512H967V627H860V850Z"/></defs><use href="#z0" x="0" y="0"/><use href="#z1" x="1400" y="0"/><use href="#z2" x="2000" y="0"/><use href="#z3" x="3000" y="0"/><use href="#z4" x="4000" y="0"/><use href="#z5" x="5000" y="0"/><use href="#z6" x="6000" y="0"/><use href="#z7" x="7000" y="0"/><use href="#z8" x="8000" y="0"/><use href="#z9" x="0" y="1180"/><use href="#za" x="1000" y="1180"/><use href="#zb" x="2000" y="1180"/><use href="#z8" x="3000" y="1180"/><use href="#zc" x="4000" y="1180"/><use href="#zd" x="5000" y="1180"/><use href="#ze" x="6000" y="1180"/><use href="#zf" x="7000" y="1180" class="h1a"/><use href="#z10" x="8000" y="1180" class="h1a"/></svg><svg class="h1v en" viewBox="0 -900 14200 3500" aria-hidden="true" focusable="false"><defs><path id="e0" transform="scale(1 -1)" d="M237 0V617H46V730H554V617H363V0Z"/><path id="e1" transform="scale(1 -1)" d="M300 -10Q195 -10 135 48Q75 107 75 208V550H200V209Q200 157 226 128Q252 99 300 99Q347 99 374 128Q400 157 400 209V550H525V208Q525 107 464 48Q403 -10 300 -10Z"/><path id="e2" transform="scale(1 -1)" d="M97 0V550H219V443Q229 497 268 528Q308 560 371 560Q455 560 502 506Q549 452 549 355V303H424V349Q424 399 398 426Q372 452 324 452Q274 452 248 422Q222 392 222 337V0Z"/><path id="e3" transform="scale(1 -1)" d="M77 0V550H199V447Q209 499 248 530Q287 560 347 560Q428 560 476 506Q525 452 525 361V0H400V346Q400 397 374 424Q347 452 302 452Q255 452 228 424Q202 396 202 344V0Z"/><path id="e4" transform="scale(1 -1)" d="M35 0 219 730H380L565 0H437L397 177H203L163 0ZM226 279H374L330 475Q319 524 311 564Q303 603 300 621Q297 603 289 564Q281 524 270 476Z"/><path id="e5" transform="scale(1 -1)" d="M90 0V113H237V617H90V730H510V617H363V113H510V0Z"/><path id="e6" transform="scale(1 -1)" d="M76 0V113H264V437H96V550H389V113H558V0ZM318 642Q280 642 258 662Q236 681 236 714Q236 747 258 766Q280 786 318 786Q356 786 378 766Q400 747 400 714Q400 681 378 662Q356 642 318 642Z"/><path id="e7" transform="scale(1 -1)" d="M355 0Q278 0 232 44Q187 89 187 165V437H35V550H187V705H313V550H532V437H313V168Q313 144 326 128Q340 113 364 113H527V0Z"/><path id="e8" transform="scale(1 -1)" d="M300 -9Q194 -9 132 50Q70 110 70 211V339Q70 441 132 500Q194 559 300 559Q406 559 468 500Q530 441 530 339V211Q530 110 468 50Q406 -9 300 -9ZM300 100Q350 100 378 128Q405 155 405 207V343Q405 395 378 422Q350 450 300 450Q250 450 222 422Q195 395 195 343V207Q195 155 222 128Q250 100 300 100Z"/><path id="e9" transform="scale(1 -1)" d="M389 0Q307 0 258 49Q208 98 208 178V617H27V730H333V181Q333 150 350 132Q368 113 398 113H559V0Z"/><path id="ea" transform="scale(1 -1)" d="M152 -180V-76H307Q351 -76 375 -52Q399 -29 399 11V44L401 130Q384 84 346 58Q309 33 255 33Q171 33 122 90Q72 146 72 243V350Q72 446 122 503Q171 560 255 560Q309 560 346 534Q384 509 401 462V550H523V8Q523 -79 466 -130Q408 -180 309 -180ZM297 140Q345 140 372 168Q398 197 398 248V344Q398 395 372 424Q345 452 297 452Q249 452 223 424Q197 397 197 348V244Q197 195 223 168Q249 140 297 140Z"/><path id="eb" transform="scale(1 -1)" d="M309 -10Q238 -10 186 16Q133 43 104 92Q75 140 75 206V344Q75 410 104 458Q133 507 186 534Q238 560 309 560Q412 560 474 506Q537 453 540 361H417Q414 404 384 428Q355 451 309 451Q258 451 229 424Q200 396 200 345V206Q200 155 229 127Q258 99 309 99Q356 99 385 122Q414 146 417 189H540Q537 97 474 44Q412 -10 309 -10Z"/><path id="ec" transform="scale(1 -1)" d="M239 -10Q155 -10 106 38Q58 85 58 162Q58 242 113 290Q168 337 264 337H398V376Q398 459 301 459Q257 459 231 442Q205 425 202 394H82Q86 468 144 514Q203 560 302 560Q407 560 465 511Q523 462 523 373V0H401V103Q394 50 351 20Q308 -10 239 -10ZM279 92Q334 92 366 119Q398 146 398 191V256H270Q229 256 205 233Q181 210 181 174Q181 137 206 114Q232 92 279 92Z"/><path id="ed" transform="scale(1 -1)" d="M301 -10Q231 -10 179 17Q127 44 98 94Q70 143 70 210V340Q70 407 98 456Q127 506 179 533Q231 560 301 560Q370 560 422 533Q473 506 502 458Q530 409 530 344V244H190V206Q190 150 219 122Q248 93 301 93Q340 93 368 106Q395 120 400 146H524Q511 75 450 32Q389 -10 301 -10ZM190 344V325L410 326V345Q410 402 382 433Q354 464 301 464Q246 464 218 432Q190 401 190 344Z"/><path id="ee" transform="scale(1 -1)" d="M277 -9Q179 -9 122 36Q65 80 65 156H188Q188 124 212 107Q235 90 277 90H321Q366 90 390 107Q415 124 415 156Q415 186 398 200Q381 215 346 220L209 238Q143 247 108 289Q72 331 72 398Q72 476 124 518Q176 559 274 559H320Q412 559 468 517Q524 475 526 405H402Q401 431 379 446Q357 462 320 462H274Q234 462 213 446Q192 429 192 401Q192 376 208 364Q223 352 253 349L382 331Q458 322 496 278Q535 233 535 158Q535 78 480 34Q426 -9 321 -9Z"/><path id="ef" transform="scale(1 -1)" d="M190 -160 243 146H386L310 -160Z"/><path id="e10" transform="scale(1 -1)" d="M77 -180V550H199V449Q214 501 253 530Q292 560 350 560Q403 560 444 534Q484 508 506 460Q529 413 529 350V201Q529 106 480 48Q431 -10 350 -10Q292 -10 252 20Q213 50 198 104L202 -26V-180ZM303 98Q351 98 378 124Q404 150 404 204V346Q404 400 378 426Q351 452 303 452Q255 452 228 423Q202 394 202 341V209Q202 156 228 127Q255 98 303 98Z"/><path id="e11" transform="scale(1 -1)" d="M77 0V730H202V550L199 448Q209 500 248 530Q287 560 347 560Q428 560 476 506Q525 452 525 361V0H400V346Q400 397 374 424Q347 452 302 452Q255 452 228 424Q202 396 202 344V0Z"/><path id="e12" transform="scale(1 -1)" d="M165 -180 243 30 36 550H168L274 269Q283 244 292 214Q301 185 305 160Q308 185 316 214Q325 244 334 269L432 550H564L296 -180Z"/><path id="e13" transform="scale(1 -1)" d="M82 0V730H207V334H295L426 550H565L402 284L571 0H429L295 228H207V0Z"/></defs><use href="#e0" x="0" y="0"/><use href="#e1" x="600" y="0"/><use href="#e2" x="1200" y="0"/><use href="#e3" x="1800" y="0"/><use href="#e4" x="2800" y="0"/><use href="#e5" x="3400" y="0"/><use href="#e6" x="4400" y="0"/><use href="#e3" x="5000" y="0"/><use href="#e7" x="5600" y="0"/><use href="#e8" x="6200" y="0"/><use href="#e9" x="7200" y="0"/><use href="#e8" x="7800" y="0"/><use href="#ea" x="8400" y="0"/><use href="#e6" x="9000" y="0"/><use href="#eb" x="9600" y="0"/><use href="#ea" x="10600" y="0"/><use href="#ec" x="11200" y="0"/><use href="#e7" x="11800" y="0"/><use href="#ed" x="12400" y="0"/><use href="#ee" x="13000" y="0"/><use href="#ef" x="13600" y="0"/><use href="#e10" x="0" y="1180"/><use href="#e1" x="600" y="1180"/><use href="#e7" x="1200" y="1180"/><use href="#e6" x="2200" y="1180"/><use href="#e7" x="2800" y="1180"/><use href="#e8" x="3800" y="1180"/><use href="#e3" x="4400" y="1180"/><use href="#eb" x="5400" y="1180"/><use href="#e11" x="6000" y="1180"/><use href="#ec" x="6600" y="1180"/><use href="#e6" x="7200" y="1180"/><use href="#e3" x="7800" y="1180"/><use href="#ef" x="8400" y="1180"/><use href="#e9" x="0" y="2360"/><use href="#ed" x="600" y="2360"/><use href="#e7" x="1200" y="2360"/><use href="#ec" x="2200" y="2360"/><use href="#e3" x="2800" y="2360"/><use href="#e12" x="3400" y="2360"/><use href="#e8" x="4000" y="2360"/><use href="#e3" x="4600" y="2360"/><use href="#ed" x="5200" y="2360"/><use href="#eb" x="6200" y="2360" class="h1a"/><use href="#e11" x="6800" y="2360" class="h1a"/><use href="#ed" x="7400" y="2360" class="h1a"/><use href="#eb" x="8000" y="2360" class="h1a"/><use href="#e13" x="8600" y="2360" class="h1a"/><use href="#e6" x="9600" y="2360" class="h1a"/><use href="#e7" x="10200" y="2360" class="h1a"/></svg></h1>
+  <p><span class="zh">每个模块点开就能用，在你的浏览器里跑，不用钱包。打开时自动和链上记录核对，对上了才运行。</span><span class="en" lang="en">Every module works with one tap, runs in your browser and needs no wallet. Each file is checked against its on-chain record first and only runs if it matches.</span></p>
+  <div class="chipstrip" aria-label="链上芯片"><a href="gallery/chip.html?tid=285.732"><span class="pic"><img src="assets/home/chips/285.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">续写模型 第 1 版</span><span class="en" lang="en">Next-character model v1</span></b><small><span class="zh">5,069 门 · BNB Chain #285</span><span class="en" lang="en">5,069 gates · BNB Chain #285</span></small></a><a href="gallery/chip.html?tid=279.732"><span class="pic"><img src="assets/home/chips/279.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">小车控制器</span><span class="en" lang="en">Car controller</span></b><small><span class="zh">21 门 · BNB Chain #279</span><span class="en" lang="en">21 gates · BNB Chain #279</span></small></a><a href="gallery/chip.html?tid=282.732"><span class="pic"><img src="assets/home/chips/282.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">组合大脑 · 官网</span><span class="en" lang="en">Combined brain · this site</span></b><small><span class="zh">25 门 · BNB Chain #282</span><span class="en" lang="en">25 gates · BNB Chain #282</span></small></a><a href="gallery/chip.html?tid=287.732"><span class="pic"><img src="assets/home/chips/287.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">走格子策略</span><span class="en" lang="en">Grid-walking policy</span></b><small><span class="zh">386 门 · BNB Chain #287</span><span class="en" lang="en">386 gates · BNB Chain #287</span></small></a><a href="gallery/chip.html?tid=281.732"><span class="pic"><img src="assets/home/chips/281.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">鸭子转向大脑</span><span class="en" lang="en">Duck steering brain</span></b><small><span class="zh">39 门 · BNB Chain #281</span><span class="en" lang="en">39 gates · BNB Chain #281</span></small></a><a href="gallery/chip.html?tid=280.732"><span class="pic"><img src="assets/home/chips/280.732.webp" width="240" height="240" alt="" loading="lazy"></span><b><span class="zh">带记忆的小车</span><span class="en" lang="en">Car with memory</span></b><small><span class="zh">90 门 · BNB Chain #280</span><span class="en" lang="en">90 gates · BNB Chain #280</span></small></a></div>
+  <div class="acts"><a class="btn primary" href="gallery/"><span class="zh">看全部芯片</span><span class="en" lang="en">See all chips</span></a><a class="btn" href="app/"><span class="zh">打开应用</span><span class="en" lang="en">Open app</span></a></div>
+  <figure class="herofig"><a href="gallery/chip.html?tid=285.732"><img src="assets/hero.webp" alt="" width="640" height="640"></a><figcaption><span><span class="zh">续写模型 第 1 版 · 5,069 门 · BNB Chain #285</span><span class="en" lang="en">Next-character model v1 · 5,069 gates · BNB Chain #285</span></span></figcaption></figure>
+</div></section>
+<div class="feats">
+<section class="feat" id="machine"><div class="shell">
+  <div class="copy">
+    <span class="num">01</span>
+    <h2><span class="zh">模型机在浏览器里出字</span><span class="en" lang="en">A model that writes in your browser</span></h2>
+    <p><span class="zh">一个玩具模型在浏览器里一个字节一个字节往外写。写出来还不通顺，不是故事；页面每次都核对：写出的字节和标准输出逐字节相同。</span><span class="en" lang="en">A toy model runs in your browser and writes one byte at a time. The text is not fluent and not a story. Each run, the page checks that the bytes match the reference output exactly.</span></p>
+    <div class="stat"><b><span class="zh">200 字</span><span class="en" lang="en">200 chars</span></b><span><span class="zh">每次写出的都和标准答案逐字节一致</span><span class="en" lang="en">identical to the reference output, byte for byte, every time</span></span></div>
+    <div class="acts"><a class="btn primary" href="app/#machine"><span class="zh">写 200 个字</span><span class="en" lang="en">Write 200 characters</span></a><a class="btn" href="machine/index.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>curl -s https://282-732.aihashrate.stream/machine/toy_bmlp.tbw1 | shasum -a 256</code></pre><div class="exp"><span class="zh">应输出 <code>11c1c4b177a2308ee64732335335e044e4cf32ce0ddef75210b0d5fa4f5ed568</code>（模型文件，和页面上写的一样）</span><span class="en" lang="en">Expected: <code>11c1c4b177a2308ee64732335335e044e4cf32ce0ddef75210b0d5fa4f5ed568</code> (the model file, same as shown on the page)</span></div></div>
+      <p class="src"><span class="zh">这条命令核的是模型文件本身。写字时，页面自己算输出的指纹，和标准答案 0aef22df… 比。Linux 把 shasum -a 256 换成 sha256sum。</span><span class="en" lang="en">This checks the model file itself. While writing, the page fingerprints its output and compares it with the reference 0aef22df…. On Linux use sha256sum instead of shasum -a 256.</span></p>
     </details>
-  </section>
-</div>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <b>21 NAND · TapeOut 上的开源实验</b>
-    <a href="faq/">常见问题</a>
-    <a href="progress/">进度</a>
-    <a href="verify/">核对</a>
   </div>
-</footer>
+  <a class="shot" href="app/#machine"><img src="assets/home/01_machine.webp" width="748" height="208" loading="lazy" alt="模型机在浏览器里出字 · A model that writes in your browser"></a>
+</div></section>
+<section class="feat" id="squared"><div class="shell">
+  <div class="copy">
+    <span class="num">02</span>
+    <h2><span class="zh">NAND 玩 Squared</span><span class="en" lang="en">NAND plays Squared</span></h2>
+    <p><span class="zh">链上的一块电路自己玩 11×11 小游戏。点「链上跑一步」，区块链用同一个局面再算一次。</span><span class="en" lang="en">A circuit on chain plays an 11×11 game by itself. Tap &quot;Run one step on chain&quot; and the blockchain computes the same move again.</span></p>
+    <div class="stat"><b><span class="zh">178 / 178</span><span class="en" lang="en">178 / 178</span></b><span><span class="zh">链上算的和你浏览器里算的完全一样</span><span class="en" lang="en">the chain and your browser computed exactly the same moves</span></span></div>
+    <div class="acts"><a class="btn primary" href="app/#squared"><span class="zh">开始玩</span><span class="en" lang="en">Play</span></a><a class="btn" href="control/squared.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
+  &quot;circuitInfo(uint256)(uint32,uint32,uint32,uint32)&quot; 287 \
+  --rpc-url https://bsc-rpc.publicnode.com</code></pre><div class="exp"><span class="zh">应输出 <code>14、3、0、386</code>（输入位、输出位、锁存器、与非门）</span><span class="en" lang="en">Expected: <code>14,</code> 3, 0, 386 (input bits, output bits, latches, NAND gates)</span></div></div>
+      <p class="src"><span class="zh">这条命令读出链上第 287 号电路的形状：14 位输入、3 位输出、386 个门。另外 178 个局面逐个让链上算一步，结果都和浏览器里一样。</span><span class="en" lang="en">This reads the shape of circuit 287 on chain: 14 input bits, 3 output bits, 386 gates. Separately, 178 positions were each run one step on chain, and every result matched the browser.</span></p>
+    </details>
+  </div>
+  <a class="shot" href="app/#squared"><img src="assets/home/02_squared.webp" width="960" height="540" loading="lazy" alt="NAND 玩 Squared · NAND plays Squared"></a>
+</div></section>
+<section class="feat" id="brain"><div class="shell">
+  <div class="copy">
+    <span class="num">03</span>
+    <h2><span class="zh">门电路大脑</span><span class="en" lang="en">Gate brain</span></h2>
+    <p><span class="zh">在你自己的电脑上向一个小 AI 提问，一问一答。回答和这个模型的整数参考实现一字不差，问题不会离开你的电脑。用电脑上新版 Chrome 或 Edge；第一次下载约 580 MB，以后不用再下；浏览器要占约 6 GB 内存；手机打不开。</span><span class="en" lang="en">Ask a small AI questions on your own computer, one at a time. Its answers match this model&#x27;s integer reference implementation word for word, and your questions never leave your machine. Use a recent desktop Chrome or Edge; the first download is about 580 MB and is not repeated; the browser needs about 6 GB of memory; phones can&#x27;t run it.</span></p>
+    <div class="stat"><b><span class="zh">3 / 3</span><span class="en" lang="en">3 / 3</span></b><span><span class="zh">标准题的回答和整数参考实现逐字一致</span><span class="en" lang="en">reference questions answered word for word like the integer reference implementation</span></span></div>
+    <div class="acts"><a class="btn primary" href="https://nand.aihashrate.stream/gate/" rel="noopener"><span class="zh">打开门电路大脑 ↗</span><span class="en" lang="en">Open the gate brain ↗</span></a><a class="btn" href="gate-ai/index.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>curl -s https://nand.aihashrate.stream/gate/evidence/2026-09-26-b31/check-cold.json \
+  | grep -o &#x27;&quot;pass&quot;: true&#x27; | wc -l</code></pre><div class="exp"><span class="zh">应输出 <code>4</code>（三道题各一个，加上总的一个）</span><span class="en" lang="en">Expected: <code>4</code> (one per question, plus the overall result)</span></div></div>
+      <p class="src"><span class="zh">这是门电路大脑公开的实测记录（2026-09-26）：三道标准题全部通过，每个字都和这个模型的整数参考实现相同。</span><span class="en" lang="en">This is the gate brain&#x27;s public test record (2026-09-26): all three reference questions pass, every token identical to the model&#x27;s integer reference implementation.</span></p>
+    </details>
+  </div>
+  <a class="shot" href="https://nand.aihashrate.stream/gate/" rel="noopener"><img src="assets/home/03_brain.webp" width="960" height="660" loading="lazy" alt="门电路大脑 · Gate brain"></a>
+</div></section>
+<section class="feat" id="arena"><div class="shell">
+  <div class="copy">
+    <span class="num">04</span>
+    <h2><span class="zh">开车竞技场</span><span class="en" lang="en">Driving arena</span></h2>
+    <p><span class="zh">一辆只靠 21 个门开车的小车，在弯道上自己绕圈。点一下就开，不用钱包。</span><span class="en" lang="en">A car driven by just 21 gates laps a winding track by itself. One tap to drive, no wallet.</span></p>
+    <div class="stat"><b><span class="zh">24 / 24</span><span class="en" lang="en">24 / 24</span></b><span><span class="zh">固定起点全部跑完一圈</span><span class="en" lang="en">every fixed start finishes a full lap</span></span></div>
+    <div class="acts"><a class="btn primary" href="app/#arena"><span class="zh">开一圈</span><span class="en" lang="en">Drive a lap</span></a><a class="btn" href="control/arena.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>cast call 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 \
+  &quot;eval(uint256,bytes)(bytes)&quot; 279 0xff7f \
+  --rpc-url https://bsc-rpc.publicnode.com</code></pre><div class="exp"><span class="zh">应输出 <code>0x02</code>（右转）</span><span class="en" lang="en">Expected: <code>0x02</code> (turn right)</span></div></div>
+      <p class="src"><span class="zh">这条命令让区块链用链上第 279 号电路算一步：输入 0xff7f，输出 0x02，意思是右转。竞技场里点「让链上也算这一步」做的是同一件事。</span><span class="en" lang="en">This asks the blockchain to run one step of circuit 279: input 0xff7f, output 0x02, meaning turn right. &quot;Ask the chain for this step&quot; in the arena does the same thing.</span></p>
+    </details>
+  </div>
+  <a class="shot" href="app/#arena"><img src="assets/home/04_arena.webp" width="892" height="640" loading="lazy" alt="开车竞技场 · Driving arena"></a>
+</div></section>
+<section class="feat" id="verify"><div class="shell">
+  <div class="copy">
+    <span class="num">05</span>
+    <h2><span class="zh">自己核对</span><span class="en" lang="en">Check it yourself</span></h2>
+    <p><span class="zh">应用打开每个模块时，都在后台把文件和链上记录比一遍，对上了才运行。你也可以挑任何一个文件自己比。</span><span class="en" lang="en">When the app opens a module it checks every file against the on-chain record in the background and only runs it if they match. You can check any file yourself too.</span></p>
+    <div class="stat"><b><span class="zh">217 / 217</span><span class="en" lang="en">217 / 217</span></b><span><span class="zh">本站文件都登记在链上，下载下来逐字节一致</span><span class="en" lang="en">every file on this site is recorded on chain and downloads byte for byte</span></span></div>
+    <div class="acts"><a class="btn primary" href="app/#verify"><span class="zh">核对一个文件</span><span class="en" lang="en">Check a file</span></a><a class="btn" href="start/verify.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>curl -s https://282-732.aihashrate.stream/home.css | shasum -a 256</code></pre><div class="exp"><span class="zh">应输出 <code>bd39b1d07903e4b607dd1fae25ab46d22c6038fe10100ce4ff966df694cd9873</code>（和链上登记的一样）</span><span class="en" lang="en">Expected: <code>bd39b1d07903e4b607dd1fae25ab46d22c6038fe10100ce4ff966df694cd9873</code> (same as the on-chain record)</span></div></div>
+      <p class="src"><span class="zh">用 curl 从 282-732.aihashrate.stream 下载，217 个文件个个和链上登记一致。Linux 把 shasum -a 256 换成 sha256sum。</span><span class="en" lang="en">Downloaded with curl from 282-732.aihashrate.stream, every one of the 217 files matches its on-chain record. On Linux use sha256sum instead of shasum -a 256.</span></p>
+    </details>
+  </div>
+  <a class="shot" href="app/#verify"><img src="assets/home/05_verify.webp" width="960" height="645" loading="lazy" alt="自己核对 · Check it yourself"></a>
+</div></section>
+<section class="feat" id="build"><div class="shell">
+  <div class="copy">
+    <span class="num">06</span>
+    <h2><span class="zh">做电路</span><span class="en" lang="en">Build a circuit</span></h2>
+    <p><span class="zh">挑一个小电路，先在浏览器里把所有输入都试一遍，再用你的钱包写上链；之后谁都能运行、核对。只有这一步要用钱包。</span><span class="en" lang="en">Pick a small circuit, test every input in your browser, then write it on chain with your wallet; after that anyone can run and check it. This is the only step that needs a wallet.</span></p>
+    <div class="stat"><b><span class="zh">3,829 门</span><span class="en" lang="en">3,829 gates</span></b><span><span class="zh">我们放上链的一个计算电路，谁都能查到</span><span class="en" lang="en">a computing circuit we put on chain; anyone can look it up</span></span></div>
+    <div class="acts"><a class="btn primary" href="app/build.html"><span class="zh">开始做电路</span><span class="en" lang="en">Start building</span></a><a class="btn" href="build/index.html"><span class="zh">看文档</span><span class="en" lang="en">Docs</span></a></div>
+    <details class="chk"><summary><span class="zh">已核对 ✓</span><span class="en" lang="en">Verified ✓</span> <span class="when"><span class="zh">11-05 · 点开看怎么核</span><span class="en" lang="en">11-05 · open to see how</span></span></summary>
+      <p><span class="zh">自己跑一遍这条命令：</span><span class="en" lang="en">Run this command yourself:</span></p>
+      <div class="cmd"><pre><code>cast call 0xA93E807fAB41431827EBBa57443Fb687a95E2AA3 \
+  &quot;circuitInfo(uint256)(uint32,uint32,uint32,uint32)&quot; 3 \
+  --rpc-url https://rpc.xlayer.tech</code></pre><div class="exp"><span class="zh">应输出 <code>320、32、0、3829</code>（输入位、输出位、锁存器、与非门）</span><span class="en" lang="en">Expected: <code>320,</code> 32, 0, 3829 (input bits, output bits, latches, NAND gates)</span></div></div>
+      <p class="src"><span class="zh">这条命令读出 X Layer 上电路 3.2.245 的形状：320 位输入、32 位输出、3,829 个门。</span><span class="en" lang="en">This reads the shape of circuit 3.2.245 on X Layer: 320 input bits, 32 output bits, 3,829 gates.</span></p>
+    </details>
+  </div>
+  <a class="shot" href="app/build.html"><img src="assets/home/06_build.webp" width="864" height="427" loading="lazy" alt="做电路 · Build a circuit"></a>
+</div></section>
+</div>
+<section class="news"><div class="shell">
+  <h2><span class="zh">最近</span><span class="en" lang="en">Recent updates (in Chinese)</span></h2>
+  <div class="cards">
+    <a class="card" href="index.html"><time>2026-11-12</time>入口页现在会按浏览器语言选中英文</a>
+    <a class="card" href="bard/nodes.html"><time>2026-11-04</time>吟游诗人芯片逻辑</a>
+    <a class="card" href="machine/index.html"><time>2026-11-04</time>模型机在浏览器里出字</a>
+  </div>
+  <p><a class="more" href="updates/index.html"><span class="zh">全部进度 →</span><span class="en" lang="en">All updates →</span></a></p>
+</div></section>
+<section class="cta"><div class="shell">
+  <h2><span class="zh">想自己动手核对？</span><span class="en" lang="en">Want to check it yourself?</span></h2>
+  <p><span class="zh">装好 curl 和 Foundry 的 cast，几分钟就能核完第一个文件。</span><span class="en" lang="en">With curl and Foundry's cast installed, you can check your first file in a few minutes.</span></p>
+  <div class="acts"><a class="btn primary" href="start/quickstart.html"><span class="zh">快速上手</span><span class="en" lang="en">Quickstart</span></a><a class="btn" href="reference/contracts.html"><span class="zh">合约地址</span><span class="en" lang="en">Contract addresses</span></a></div>
+</div></section>
+</main>
+<footer class="foot"><div class="shell">
+  <div><a class="brand" href="index.html">21 NAND</a><p class="addr"><span class="zh">本站文件登记在 BNB Chain</span><span class="en" lang="en">This site's files are recorded on BNB Chain</span><br><span class="zh">容器</span><span class="en" lang="en">Container</span> 0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3<br>SiteRegistry 0xd006ffdd5ae313b17729621a00999cd3c71ce5e6</p></div>
+  <div><h3><span class="zh">模块</span><span class="en" lang="en">Modules</span></h3><ul><li><a href="app/"><span class="zh">应用</span><span class="en" lang="en">App</span></a></li><li><a href="machine/index.html"><span class="zh">模型机</span><span class="en" lang="en">Model machine</span></a></li><li><a href="control/squared.html"><span class="zh">NAND 玩 Squared</span><span class="en" lang="en">NAND plays Squared</span></a></li><li><a href="gate-ai/index.html"><span class="zh">门电路大脑</span><span class="en" lang="en">Gate brain</span></a></li><li><a href="control/arena.html"><span class="zh">开车竞技场</span><span class="en" lang="en">Driving arena</span></a></li><li><a href="bard/index.html"><span class="zh">吟游诗人</span><span class="en" lang="en">The Bard</span></a></li></ul></div>
+  <div><h3><span class="zh">文档</span><span class="en" lang="en">Docs</span></h3><ul><li><a href="start/index.html"><span class="zh">是什么</span><span class="en" lang="en">What it is</span></a></li><li><a href="start/quickstart.html"><span class="zh">快速上手</span><span class="en" lang="en">Quickstart</span></a></li><li><a href="start/verify.html"><span class="zh">自己核对</span><span class="en" lang="en">Verify</span></a></li><li><a href="build/index.html"><span class="zh">做电路</span><span class="en" lang="en">Build a circuit</span></a></li></ul></div>
+  <div><h3><span class="zh">给程序看</span><span class="en" lang="en">For programs</span></h3><ul><li><a href="index.md"><span class="zh">这页的 Markdown 版</span><span class="en" lang="en">This page as Markdown</span></a></li><li><a href="llms.txt">llms.txt</a></li><li><a href="reference/contracts.html"><span class="zh">合约地址</span><span class="en" lang="en">Contract addresses</span></a></li></ul></div>
+</div></footer>
+<script>
+/* 中英切换：选择存在 localStorage「lang」，应用和做电路页共用；刷新后保持 */
+/* 文档链接跟语言走：英文时指向 en/ 下同一页，文档首页对 en/index.html */
+function docLinks(en) {
+  Array.prototype.forEach.call(document.querySelectorAll("a[href]"), function (a) {
+    var h = a.getAttribute("data-zh") || a.getAttribute("href");
+    if (!/^(start|bard|machine|gate-ai|control|build|reference|updates)\/[^?#]*\.html/.test(h)) return;
+    a.setAttribute("data-zh", h);
+    a.setAttribute("href", en ? (h === "start/index.html" ? "en/index.html" : "en/" + h) : h);
+  });
+}
+docLinks(document.documentElement.getAttribute("data-lang") === "en");
+document.getElementById("lang").addEventListener("click", function () {
+  var en = document.documentElement.getAttribute("data-lang") !== "en";
+  document.documentElement.setAttribute("data-lang", en ? "en" : "zh"); document.documentElement.lang = en ? "en" : "zh-CN";
+  docLinks(en);
+  try { localStorage.setItem("lang", en ? "en" : "zh"); } catch (e) {}
+});
+</script>
+<link rel="stylesheet" href="assets/theme.css">
+<style id="fpx">
+/* 21 NAND 入口页：版式参考常见的「编号功能段」产品首页；颜色、字体沿用本站文档站同一套。单文件，不连外部资源。 */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text-2);font:var(--fs)/var(--lh) var(--sans)}
+a{color:var(--brand-text)}
+code,pre{font-family:var(--mono)}
+.shell{max-width:73.75rem;margin:0 auto;padding:0 1.75rem}
+.bar{position:sticky;top:0;z-index:5;background:var(--bar-bg);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft)}
+.bar .shell{display:flex;align-items:center;gap:1.75rem;height:3.625rem}
+.brand{color:var(--ink);font-weight:700;font-size:1.125rem;font-family:var(--head);text-decoration:none;white-space:nowrap}
+.nav{display:flex;gap:.875rem;margin-left:.875rem}
+.nav a{color:var(--text-2);text-decoration:none;font-size:.9375rem}
+.nav a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.375rem;border-radius:var(--r);padding:.875rem .875rem;font:700 .9375rem var(--head);text-decoration:none;white-space:nowrap;border:1px solid var(--line);color:var(--ink);background:var(--card)}
+.btn:hover{border-color:var(--brand-text)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}
+.btn.primary:hover{background:var(--brand-hover);color:var(--on-accent)}
+.bar .btn{padding:.4375rem .875rem;font-size:.875rem}
+.lang{margin-left:auto;background:none;border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:700 .8125rem var(--head);padding:.25rem .875rem;cursor:pointer}
+.lang:hover{border-color:var(--brand-text)}
+html[data-lang="en"] .zh,html:not([data-lang="en"]) .en{display:none}
+.hero{padding:5.25rem 0 3.5rem;text-align:center}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:var(--r);padding:.25rem .875rem;font-size:.8125rem;color:var(--text-2);text-decoration:none;background:var(--card)}
+.badge b{color:var(--pos);font-weight:600;margin-right:.375rem}
+.hero h1{margin:1.75rem auto .875rem;max-width:56.25rem;color:var(--ink);font-family:var(--head);font-size:clamp(2rem,5.4vw,3.5rem);line-height:1.15;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.hero p{margin:0 auto;max-width:40rem;font-size:1.125rem;color:var(--muted)}
+.hero .acts{margin-top:1.75rem;display:flex;gap:.875rem;justify-content:center;flex-wrap:wrap}
+/* 首屏芯片带：真实版图缩略图，黑底淡光；只在带内横滑，不撑宽页面。灰色芯片底由 #core 滤镜变透明，门和走线的轮廓跳出来 */
+.chipstrip{display:grid;grid-auto-flow:column;grid-auto-columns:9.375rem;gap:.875rem;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;max-width:100%;margin:2.125rem auto 0;padding:.25rem 2px .625rem;text-align:left;justify-content:safe center}
+.chipstrip a{scroll-snap-align:start;text-decoration:none;color:var(--text)}
+.chipstrip .pic{display:block;aspect-ratio:1;border:1px solid var(--line);border-radius:var(--r);background:radial-gradient(closest-side,var(--thumb-glow),var(--thumb-glow-2) 60%,var(--thumb-bg) 100%) var(--thumb-bg);overflow:hidden}
+.chipstrip img{display:block;width:100%;height:100%;object-fit:contain;padding:10%;filter:url(#core) drop-shadow(0 0 6px var(--thumb-halo))}
+.chipstrip b{display:block;margin-top:.5rem;font:700 .875rem/1.35 var(--head);color:var(--ink)}
+.chipstrip small{display:block;font:.75rem/1.5 var(--head);color:var(--muted)}
+.feat{padding:4.375rem 0;border-top:1px solid var(--line-soft)}
+.feat .shell{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:clamp(1.75rem,6vw,5.25rem);align-items:center}
+.feat:nth-child(even) .copy{order:2}
+.num{font:600 .875rem var(--mono);color:var(--brand-text);letter-spacing:.08em}
+.feat h2{margin:.375rem 0 .875rem;color:var(--ink);font-family:var(--head);font-size:1.875rem;line-height:1.25;font-weight:700}
+.feat p{margin:0 0 .875rem}
+.stat{display:flex;align-items:baseline;gap:.875rem;flex-wrap:wrap;margin:0 0 .875rem;padding:.875rem 0;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+.stat b{color:var(--pos);font:700 1.875rem var(--head);white-space:nowrap}
+.stat>span{font-size:.8125rem;color:var(--muted);flex:1 1 12.5rem}  /* 只管标签；数字里的中英 span 不受影响（11-06 修：上一版数字被这条变小变灰） */
+.cmd{margin:0 0 .875rem;background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.cmd pre{margin:0;padding:.875rem .875rem;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);font-size:.8125rem;line-height:1.6}
+.cmd .exp{padding:.5rem .875rem;border-top:1px solid var(--line-soft);font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
+.cmd .exp code{color:var(--pos);font-size:.7812rem}
+.shot{display:block;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--card)}
+.shot img{display:block;width:100%;height:auto}
+.more{font-weight:600;text-decoration:none}
+.feat .acts{display:flex;gap:.875rem;flex-wrap:wrap;margin:0 0 .875rem}
+.chk{border:1px solid var(--line-soft);border-radius:var(--r);background:var(--card)}
+.chk summary{cursor:pointer;padding:.5625rem .875rem;color:var(--pos);font-weight:600;font-size:.875rem;list-style:none}
+.chk summary::-webkit-details-marker{display:none}
+.chk summary .when{color:var(--muted);font-weight:400;margin-left:.375rem}
+.chk[open] summary{border-bottom:1px solid var(--line-soft)}
+.chk>p{margin:.875rem .875rem;font-size:.875rem}
+.chk .cmd{margin:0 .875rem .875rem}
+.chk .src{color:var(--muted);font-size:.8125rem}
+.news{padding:3.5rem 0;border-top:1px solid var(--line-soft)}
+.news h2,.cta h2{color:var(--ink);font-family:var(--head);font-size:1.625rem;margin:0 0 .875rem}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.875rem}
+.card{display:block;background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r);padding:.875rem .875rem;text-decoration:none;color:var(--text-2);font-size:.9375rem}
+.card:hover{border-color:var(--brand-text)}
+.card time{display:block;font:.8125rem var(--mono);color:var(--muted);margin-bottom:.375rem}
+.cta{padding:4.375rem 0;border-top:1px solid var(--line-soft);text-align:center}
+.cta p{color:var(--muted);margin:0 0 1.75rem}
+.cta .acts{display:flex;gap:.875rem;justify-content:center;flex-wrap:wrap}
+.foot{border-top:1px solid var(--line-soft);padding:2.625rem 0 3.5rem;font-size:.875rem}
+.foot .shell{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:1.75rem}
+.foot h3{font-size:.8125rem;color:var(--muted);letter-spacing:.06em;margin:0 0 .875rem;font-weight:700}
+.foot ul{list-style:none;margin:0;padding:0}
+.foot li{margin:.25rem 0}
+.foot a{color:var(--text-2);text-decoration:none}
+.foot a:hover{color:var(--ink)}
+.foot .addr{font:.75rem var(--mono);color:var(--muted);overflow-wrap:anywhere}
+@media (max-width:860px){
+  .nav{display:none}
+  .hero{padding:3.5rem 0 2.625rem}
+  .hero p{font-size:1rem}
+  .feat{padding:2.625rem 0}
+  .feat .shell{grid-template-columns:minmax(0,1fr);gap:1.75rem}
+  .feat:nth-child(even) .copy{order:0}
+  .feat h2{font-size:1.5rem}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .foot .shell{grid-template-columns:1fr 1fr}
+}
+@media (max-width:480px){.shell{padding:0 .875rem}.bar .btn{display:none}}
+
+/* 黄光室 */
+.bar .shell,.shell{max-width:82.5rem}
+.brand{font-size:1.0625rem}
+.btn{border-radius:2px;padding:.75rem 1.125rem;background:transparent;transition:background var(--t-fast),border-color var(--t-fast)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}
+.btn.primary:hover{background:var(--brand-hover)}
+.lang{border-radius:2px}
+.hero{text-align:left;padding:clamp(2.5rem,7vw,6rem) 0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:112px 112px;background-position:-1px -1px;background-color:var(--bg);box-shadow:inset 0 0 0 100vmax color-mix(in srgb,var(--bg) 62%,transparent)}
+.hero .shell{display:grid;grid-template-rows:1fr auto auto auto auto 1fr auto;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);column-gap:clamp(1.75rem,5vw,5.25rem);align-items:center;position:relative}
+.hero .badge{justify-self:start;border-radius:2px;background:var(--panel);font-family:var(--mono),var(--cjk);font-size:.75rem}
+.hero .badge b{color:var(--brand-text)}
+.hero h1{margin:1.5rem 0 1.125rem;max-width:none;font-size:clamp(2.25rem,4.6vw,4.125rem);line-height:1.14;font-weight:700;text-wrap:initial}
+.hero p{margin:0;font-size:1.125rem;color:var(--text)}
+.hero .acts{justify-content:flex-start;margin-top:1.875rem}
+.hero .badge{grid-column:1;grid-row:2}.hero h1{grid-column:1;grid-row:3}.hero p{grid-column:1;grid-row:4}.hero .acts{grid-column:1;grid-row:5}
+.herofig{grid-column:2;grid-row:1/7;margin:0;position:relative}
+.herofig img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;filter:var(--img-rest)}
+.herofig::before,.herofig::after{content:"";position:absolute;width:1.625rem;height:1.625rem;z-index:1;pointer-events:none}
+.herofig::before{left:-.4375rem;top:-.4375rem;border-left:2px solid var(--brand);border-top:2px solid var(--brand)}
+.herofig::after{right:-.4375rem;bottom:1.375rem;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand)}
+.herofig figcaption{display:flex;justify-content:space-between;gap:.875rem;flex-wrap:wrap;padding-top:.625rem;font:.75rem/1.5 var(--mono),var(--cjk);color:var(--text-dim)}
+.feat{padding:clamp(2.5rem,6vw,5.25rem) 0;border-top:1px solid var(--line);background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat}
+.feat .shell{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+.num{display:block;font:700 clamp(3.25rem,6vw,5.5rem)/1 var(--mono);color:var(--brand-text);letter-spacing:-.04em;margin-bottom:.875rem}
+.feat h2{font-size:clamp(1.625rem,2.6vw,2.25rem);font-weight:700;line-height:1.2}
+.stat{border:0;border-left:3px solid var(--brand);padding:2px 0 2px .875rem;margin:1.375rem 0}
+.stat b{color:var(--ink);font-size:2.375rem;line-height:1.1}
+.feat .acts{margin:0 0 .875rem}
+.chk,.cmd,.card,.badge{border-radius:2px}
+.chk{background:var(--bg-deep);border-color:var(--line)}
+.chk summary{font-family:var(--mono),var(--cjk);font-size:.8125rem}
+.shot{position:relative;overflow:visible;border:0;border-radius:0;background:var(--plate)}
+.shot img{border:1px solid var(--line)}
+#brain .shot img{filter:var(--shot-rest);transition:filter var(--t-med)}
+#brain .shot:hover img{filter:none}
+.shot::before,.shot::after{content:"";position:absolute;width:1.375rem;height:1.375rem;pointer-events:none}
+.shot::before{left:-.375rem;top:-.375rem;border-left:2px solid var(--brand);border-top:2px solid var(--brand)}
+.shot::after{right:-.375rem;bottom:-.375rem;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand)}
+.card{background:var(--panel)}.card:hover{border-color:var(--brand);box-shadow:var(--glow)}
+.news,.cta,.foot{border-top:1px solid var(--line)}
+.cta{text-align:left}.cta .acts{justify-content:flex-start}
+.cta h2{font-size:clamp(1.625rem,3vw,2.5rem)}
+.foot h3{font-family:var(--mono),var(--cjk);font-size:.6875rem;letter-spacing:.14em}
+.hero .chipstrip{grid-column:1/-1;grid-row:7;margin-top:clamp(1.75rem,4vw,3.5rem);grid-auto-columns:minmax(9.375rem,1fr)}
+.chipstrip .pic{background:var(--plate);border-radius:2px}
+.chipstrip img{padding:0;object-fit:cover;filter:var(--img-rest);transition:filter var(--t-med)}
+.chipstrip a:hover img{filter:none}
+.chipstrip a:hover .pic{border-color:var(--brand)}
+@media (max-width:860px){
+  .hero .chipstrip{grid-column:1;grid-row:auto;order:3;grid-auto-columns:9.375rem}.hero .acts{order:1}.herofig{order:2}
+  .hero .shell{grid-template-columns:minmax(0,1fr)}.hero .shell{grid-template-rows:none}
+  .hero .badge,.hero h1,.hero p,.hero .acts{grid-row:auto}.herofig{grid-column:1;grid-row:auto;margin-top:1.875rem}
+  .feat .shell{grid-template-columns:minmax(0,1fr)}
+  .num{font-size:3.25rem}
+}
+@media (max-width:480px){.hero{background-size:56px 56px}.shot::after,.herofig::after{right:-3px}.shot::before,.herofig::before{left:-3px}.stat b{font-size:2rem}}
+.h1v{display:block;width:100%;height:auto;fill:currentColor}.h1a{fill:var(--brand-text)}
+.tmark{grid-column:1;grid-row:1;align-self:end;margin:0 0 1.75rem}.tmark svg{display:block;width:min(100%,21rem);height:auto;fill:none;stroke:var(--ink);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}.tmark .h1a{fill:none;stroke:var(--brand-text)}
+.h1t{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+</style>
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
 </body>
 </html>

@@ -55,13 +55,13 @@ largest size that fits is **27,527 NAND** (63.2 M gas, exact 0.4190) and the spe
 1,115,394 bytes, 90/10 split (1,003,822 train windows, 111,508 held out); alphabet 64 symbols in
 [alphabet.json](alphabet.json); gas from `../netlist/gas_model.py` (read-only fit on 284 burned
 circuits) and the block limit from `../netlist/chain_block_limit.json`. Training ran on the local
-machine's CPU and on m64; the GPU path for a learned DLGN variant is set up but not yet folded in.
+machine's CPU and on a second build machine; the GPU path for a learned DLGN variant is set up but not yet folded in.
 
 **Next judgement / 下一步判断:** burn one size to get a real `estimateGas` — the cheapest useful
 anchor is **tiny2k** (4,370 NAND, 0.3526) and the best executable demo is **small9k** (10,890 NAND,
 0.3902, 25.1 M = 37% of a block) or **fits29k** (27,527 NAND, 0.4190, 63.2 M = 92% of a block,
-almost no headroom). That burn is the same user decision as `tp-2ea.8`. Quality work that is worth
-more than size: train the differentiable DLGN on the m64 GPU (a different family, may beat the rule
+almost no headroom). That burn is the same open user decision. Quality work that is worth
+more than size: train the differentiable DLGN on the second build machine's GPU (a different family, may beat the rule
 list at equal gates) and/or let the model learn a *joint* argmax head.
 
 ## v0.1 sampling, the single-transaction ladder, and measured gas (added 2026-09-14 late)
@@ -135,7 +135,7 @@ The two measured slopes: **2,293 gas per NAND per step** (the chain fit says 2,2
 burned locally either — the PyEVM burn of a 190 kB netlist did not finish in half an hour — which is
 the same constraint from the other side, and the reason the ladder stops at 23 k.
 
-### difflogic vs the n-gram table at equal gate count (tp-2ea.15)
+### difflogic vs the n-gram table at equal gate count
 
 The original difflogic package does not build here (its C/CUDA extension needs a matching toolchain),
 so its released pure-Python implementation was imported from the sdist (`implementation="python"`)
@@ -158,7 +158,7 @@ below where differentiable logic networks start to learn (that line of work uses
 while an n-gram table gets the right inductive bias for free. difflogic 0.1.0 also only offers
 `connections ∈ {random, unique}`, so learnable wiring is not available in this version.
 
-### Reachability of the 37 k netlist (read-only, tp-2ea.14 groundwork)
+### Reachability of the 37 k netlist (read-only groundwork)
 
 `reachability_readonly.py` records three findings: (1) **eth_call is not capped by the block gas
 limit** — a call with `gas = 85,734,891` (1.25 blocks) is answered normally, so an RPC cannot be used
@@ -228,7 +228,7 @@ backoff predictor, not a bug.
 ## Gas: what is measured, what is modelled, and the extrapolation risk
 
 * Measured on chain: nothing. `estimateGas` can only be evaluated for a circuit **registered** on
-  the CPU, and no netlist here is burned — that is the open user decision `tp-2ea.8`.
+  the CPU, and no netlist here is burned — that is the open user decision.
 * Modelled: `gas = 24,587 + 2,294.2·NAND + 2,636.0·LATCH + 285.8·nIn + 416.3·nOut`, a fit on 284
   burned circuits (leave-one-out 1.96%, extrapolation error 0.60% when fitting ≤250 NAND and
   predicting the larger burned ones, data-pattern band 1.3%).
@@ -240,7 +240,7 @@ backoff predictor, not a bug.
 * Calldata cost is included in the design (the input is calldata, 16 gas/byte); the netlist itself
   is 261,338 bytes for v0, so a `tapeout` burn of that size is a large transaction by itself.
 
-## Artifacts (all in `circuits/_scratch/tapeout_asic/onestep_lm/`)
+## Artifacts (all in the `onestep_lm/` source folder)
 
 `SPEC.md` (frozen interface), `alphabet.json`, `data/tinyshakespeare.txt`, `train.py` (corpus,
 windows, baselines, and the differentiable-DLGN trainer), `rule_model.py` (v0: selection, reference
@@ -270,7 +270,7 @@ them in the browser; its JS self-checks against the Python netlists at load (48/
 chat-style 续写 box shows the gas per reply.
 
 **Next judgement:** burn v0_4k_resyn first as the cheap anchor, then g44 or s41 (both under 0.9 of a block
-to burn and under 0.7 to step); the burn decision stays tp-2ea.8.
+to burn and under 0.7 to step); the burn decision stays with the user.
 
 ### Measured receipts for the re-synthesised rungs (round 43-44)
 

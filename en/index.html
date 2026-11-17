@@ -3,127 +3,62 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>21 NAND · An AI taken apart into switches</title>
-<meta name="description" content="An open-source AI model rebuilt entirely from logic gates, computing bit by bit on your own computer; our first chip, the Bard, has its full blueprint on chain.">
-<link rel="stylesheet" href="../home.css">
-<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
-(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
-if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
-if(l!==document.documentElement.lang.slice(0,2))location.replace("../"+location.hash);
-document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--fs-sm:.8125rem;--r:2px;--r-sm:2px;--t-fast:.12s;--bar:3.5rem}:root{color-scheme:dark}h1,h2,button,input[type=button],input[type=submit],nav{font-family:var(--head)}code,pre,kbd{font-family:var(--mono)}h1,h2{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--bar) + .875rem)}body{margin:0;background:var(--bg);color:var(--text-2);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--brand-text)}code{font:.88em var(--mono);background:var(--card-2);border:1px solid var(--line-soft,transparent);border-radius:var(--r);padding:.1em .4em;color:var(--ink)}.bar{position:sticky;top:0;z-index:5;height:var(--bar);display:flex;align-items:center;gap:.875rem;padding:0 .875rem;background:var(--bar-bg);backdrop-filter:blur(8px)}.brand{color:var(--ink);font-weight:800;text-decoration:none;white-space:nowrap}.brand span{color:var(--muted);font-weight:500;margin-left:.25rem}.langsw{margin-left:.875rem;font:600 var(--fs-sm)/1 var(--head);color:var(--ink);text-decoration:none;border:1px solid var(--line,transparent);border-radius:var(--r-sm);padding:.4375rem .625rem;white-space:nowrap}.search{margin-left:auto;display:flex;align-items:center;gap:1.75rem;min-width:13.75rem;justify-content:space-between;background:var(--card);border:1px solid var(--line,transparent);border-radius:var(--r);color:var(--muted);font:.875rem var(--sans);padding:.4375rem .875rem;cursor:pointer}kbd{font:.75rem var(--mono);border:1px solid var(--line,transparent);border-radius:var(--r);padding:1px .375rem;color:var(--muted)}.menu{display:none;background:none;border:0;color:var(--ink);font-size:1.25rem;cursor:pointer;padding:.25rem}.layout{display:grid;grid-template-columns:16.25rem minmax(0,1fr) 13.75rem;margin:0 auto}.side,.toc{position:sticky;top:var(--bar);align-self:start;max-height:calc(100dvh - var(--bar));overflow:auto;padding:1.75rem .875rem 2.625rem;scrollbar-width:thin}.side{border-right:1px solid var(--line-soft,transparent)}.sg{margin:.875rem .5rem .375rem;font-size:.75rem;font-weight:700}.side ul,.toc ul{list-style:none;margin:0;padding:0}.side a{display:block;border-radius:var(--r);color:var(--text-2);text-decoration:none}.toc a{display:block;padding:.25rem .5rem;color:var(--muted);text-decoration:none;font-size:.8125rem;border-left:1px solid var(--line-soft,transparent)}.doc{padding:2.625rem 2.625rem 4.375rem;min-width:0;max-width:53.75rem}.doc h1{margin:0;color:var(--ink)}.lead{margin:.875rem 0 1.75rem}.doc h2{margin:2.625rem 0 .875rem;color:var(--ink)}.anchor{text-decoration:none;margin-right:.5rem;font-weight:400}.doc p{margin:.875rem 0}.doc ul{padding-left:1.3em}.doc li{margin:.375rem 0}.code{margin:.875rem 0;border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden}.code-h{display:flex;align-items:center;gap:.875rem;justify-content:space-between;padding:.375rem .5rem .375rem .875rem;border-bottom:1px solid var(--line-soft,transparent);color:var(--muted)}.copy{flex-shrink:0;white-space:nowrap;background:var(--card-2);border:1px solid var(--line,transparent);color:var(--text-2);border-radius:var(--r);font:.75rem var(--sans);padding:3px .875rem;cursor:pointer}.code pre{margin:0;padding:.875rem .875rem}.code pre code{background:none;border:0;padding:0;font-size:.8438rem;line-height:1.6}.tabs{margin:.875rem 0}.tab-bar{display:flex;gap:.25rem;border-bottom:1px solid var(--line,transparent);overflow-x:auto}.tab-bar button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:600 .875rem var(--head);padding:.5rem .875rem;cursor:pointer;white-space:nowrap}.tab-bar button[aria-selected=true]{color:var(--ink)}.buttons{display:flex;flex-wrap:wrap;gap:.875rem;margin:.875rem 0}.btn{display:inline-block;padding:.5625rem .875rem;border-radius:var(--r);border:1px solid var(--line,transparent);color:var(--ink);text-decoration:none;font-weight:600;font-size:.9375rem}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.75rem,1fr));gap:.875rem;margin:.875rem 0}.card{display:flex;flex-direction:column;gap:.25rem;padding:.875rem;border:1px solid var(--line,transparent);border-radius:var(--r);text-decoration:none;color:var(--text-2)}.card strong{color:var(--ink);font-size:1rem}.card span{font-size:.875rem;color:var(--muted)}.sdlg{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg-deeper) 70%,transparent);display:flex;justify-content:center;align-items:flex-start;padding:10vh .875rem}.sdlg[hidden]{display:none}.sbox{width:min(40rem,100%);background:var(--card);border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden}.sbox input{width:100%;background:var(--card-2);border:0;border-bottom:1px solid var(--line,transparent);color:var(--ink);font:1.0625rem var(--sans);padding:.875rem .875rem;outline:0}.sbox ul{list-style:none;margin:0;padding:.375rem;max-height:55vh;overflow:auto}.sbox li a{display:block;padding:.5rem .875rem;border-radius:var(--r);text-decoration:none;color:var(--text-2)}.shint{margin:0;padding:.5rem .875rem;border-top:1px solid var(--line-soft,transparent);font-size:.75rem;color:var(--muted)}button.btn{cursor:pointer;font-family:var(--head)}@media (max-width:1100px){.layout{grid-template-columns:15rem minmax(0,1fr)}.toc{display:none}}@media (max-width:760px){.layout{display:block}.menu{display:block}.doc{padding:1.75rem .875rem 2.625rem}.doc h1{font-size:1.75rem}.side{position:fixed;top:var(--bar);left:0;bottom:0;width:min(18.75rem,85vw);z-index:6;background:var(--bg);transform:translateX(-100%);transition:transform var(--t-fast);max-height:none}.search{min-width:0}.search span{display:none}}@media (prefers-reduced-motion:reduce){.side{transition:none}}.doc,.doc>*{min-width:0;max-width:100%}.doc p,.doc li,.lead,.card{overflow-wrap:anywhere}.doc :not(pre)>code{overflow-wrap:anywhere;word-break:break-all}.code,.tabs,.buttons{max-width:100%;min-width:0}.code pre{max-width:100%;overflow-x:auto}.tab-bar{max-width:100%}.bar{border-bottom:1px solid var(--line,transparent)}.brand{font-family:var(--head);font-size:1rem}.search,.btn,.card,.code,.copy,kbd,.sbox,.side a,code{border-radius:2px}.layout{max-width:90rem}.sg{font:700 .6875rem/1.4 var(--mono),var(--cjk);letter-spacing:.14em;color:var(--text-dim);margin-top:1.5rem}.side a{padding:.3125rem .75rem;font-size:.875rem}.side a[aria-current=page]{background:var(--sel);box-shadow:inset 3px 0 0 var(--brand);color:var(--ink);font-weight:700}.doc{padding-top:3rem}.doc h1{font-size:2.75rem;line-height:1.15;font-weight:700;letter-spacing:-.01em}.lead{color:var(--text-dim);font-size:1.125rem}.doc h2{font-size:1.5rem;margin-top:3.5rem;padding-top:1.125rem;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat;border-top:1px solid var(--line,transparent)}.anchor{color:var(--brand-text);opacity:.55}.btn.primary{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent);font-weight:700}.card{position:relative;background:var(--panel);border-color:var(--line,transparent);transition:border-color var(--t-fast)}.card::before{content:"";position:absolute;left:-1px;top:-1px;width:.625rem;height:.625rem;border-left:2px solid var(--brand,transparent);border-top:2px solid var(--brand,transparent)}.code{background:var(--bg-deep)}.code-h{font-family:var(--mono),var(--cjk);font-size:.75rem}.tab-bar button[aria-selected=true]{border-bottom-color:var(--brand,transparent)}@media (max-width:760px){.doc h1{font-size:2.125rem}}.menu{min-width:2.75rem;min-height:2.75rem}.bar .brand{flex:0 1 auto;min-width:0;overflow:hidden}.bar .search,.bar .langsw,.bar .menu{flex:none}@media (max-width:760px){.search{gap:0}}</style>
+<title>21 NAND docs</title>
+<meta name="description" content="We turn AI into the most basic logic gates and put them on a blockchain, so anyone can check them.">
+<link rel="preload" as="style" href="../assets/theme.css">
+<link rel="icon" href="../favicon.ico">
+<link rel="alternate" type="text/markdown" href="index.md">
+<link rel="preload" as="style" href="../assets/docs.css">
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="logo" href="./">21 NAND</a>
-    <nav class="nav" aria-label="Main">
-      <a href="#bard">The Bard</a>
-      <a href="https://nand.aihashrate.stream/gate/">Try it</a>
-      <a href="build/">Build</a>
-      <a href="faq/">FAQ</a>
-      <a href="progress/">Progress</a>
-      <a href="verify/">Verify</a>
-      <a class="hi" href="../" lang="zh-CN" hreflang="zh-CN">中文</a>
-    </nav>
-  </div>
+<header class="bar">
+  <button class="menu" type="button" aria-label="Contents" aria-controls="side" aria-expanded="false">☰</button>
+  <a class="brand" href="../en/index.html">21 NAND <span>Docs</span></a>
+  <button class="search" type="button" aria-label="Search"><span>Search the docs</span><kbd>⌘K</kbd></button>
+  <a class="langsw" href="../start/index.html" aria-label="这页的中文版">中文</a>
 </header>
-
-<main>
-<section class="hero">
-  <div class="wrap">
-    <div class="hero-t">
-      <h1>An AI taken apart into the simplest switches, running on your computer</h1>
-      <p>We rebuilt an open-source AI model entirely out of logic gates: nothing but on and off. Open the page and it works out answers bit by bit on your own graphics card, and every step can be checked.</p>
-      <div class="btns only-desk">
-        <a class="btn" href="https://nand.aihashrate.stream/gate/">Try it on my computer</a>
-        <a class="link-w" href="faq/#pc">Is my computer good enough?</a>
-      </div>
-      <p class="small only-desk">Free · no wallet · nothing goes on chain · needs desktop Chrome or Edge</p>
-      <p class="small only-phone">Phones can’t run this model. To try it yourself, open <b>21nand.bem.city</b> in Chrome or Edge on a computer.</p>
-    </div>
-    <figure class="chat" aria-label="A real answer">
-      <div class="bub q">A general-knowledge question</div>
-      <div class="bub a">The capital of France is Paris.</div>
-      <div class="mono">A real answer, identical bit for bit to the original model · about 0.5–1.5 s per word</div>
-    </figure>
-  </div>
-</section>
-
-<div class="wrap">
-  <section class="clear" aria-labelledby="clear-h">
-    <h2 id="clear-h">Straight answers first</h2>
-    <div><strong>It runs only on your computer</strong><span>Trying the gate brain puts nothing on chain and creates no on-chain asset for you.</span></div>
-    <div><strong>Tokens carry no rights</strong><span>Holders get no dividends or share of the circuits, tool income or future chips.</span></div>
-    <div><strong>The chip is designed, not yet made</strong><span>The Bard passed the factory’s rule checks; which fab and when are not decided. <a href="progress/">See progress</a></span></div>
-  </section>
-
-  <section id="bard" class="sec" aria-labelledby="bard-h">
-    <div class="bard">
-      <figure><img src="../bard.webp" width="560" height="843" alt="Full layout of the Bard chip; the three rows of strips at the bottom hold what it has learned"></figure>
-      <div class="bard-t">
-        <span class="kicker">OUR FIRST CHIP · BARD</span>
-        <h2 id="bard-h">The Bard</h2>
-        <p>An AI that tells short stories, made directly into a chip. There is no processor and no program inside: what it learned is carved into the silicon, and it starts talking as soon as it powers on. Its complete blueprint is already on chain, where anyone can fetch and check it and no one can change it.</p>
-        <div class="nums">
-          <div><b>15 mm²</b><span>smaller than a little fingernail</span></div>
-          <div><b>~1 million</b><span>parameters carved into the chip</span></div>
-          <div><b>$0</b><span>spent on design software; all open source</span></div>
-        </div>
-        <p class="note">On 2026-10-12 the design passed every manufacturing-rule check and its blueprint was stored on X Layer. It has not been sent to a fab yet.</p>
-        <div class="btns">
-          <a class="btn" href="https://x.com/zhuoning293/article/2109613608728465866">Read its story</a>
-          <a class="link-w" href="https://1-2-245.aihashrate.stream/bard/v8g/">Fetch the blueprint from chain and check it</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" aria-labelledby="paths-h">
-    <h2 class="big" id="paths-h">What would you like to do?</h2>
-    <div class="grid">
-      <article class="card">
-        <span class="tag">TRY · 5 MINUTES</span>
-        <h3>Watch it answer a question</h3>
-        <p>Open the page, let it build the circuit on your computer, then ask anything. Afterwards you can submit your computer’s speed in one click to help us cover more devices.</p>
-        <a class="go" href="https://nand.aihashrate.stream/gate/">Try it →</a>
-      </article>
-      <article class="card">
-        <span class="tag">BUILD · FROM 1 HOUR</span>
-        <h3>Make a small circuit of your own</h3>
-        <p>Put a circuit of tens to thousands of gates on chain with TapeOut. Our 3,800-gate tapeout cost about 0.0023 OKB net.</p>
-        <a class="go" href="build/">See the steps and costs →</a>
-      </article>
-      <article class="card">
-        <span class="tag">VERIFY · FOR EXPERTS</span>
-        <h3>Check what we say yourself</h3>
-        <p>Contract addresses, transactions and file fingerprints for everything we have on chain, plus the 21-gate driving arena.</p>
-        <a class="go" href="verify/">Open the verify page →</a>
-      </article>
-    </div>
-  </section>
-
-  <section class="sec" aria-labelledby="scale-h">
-    <h2 class="big" id="scale-h">How big is it?</h2>
-    <div class="grid">
-      <div class="stat"><b>260 billion</b><strong>gates to produce one word</strong><span>As if every person on Earth flipped a switch more than 30 times for each word.</span></div>
-      <div class="stat"><b>~25,000</b><strong>gates fit in one on-chain circuit</strong><span>Ten million times too small, so the whole model can’t go on chain; only small circuits do.</span></div>
-      <div class="stat"><b>0 differences</b><strong>compared bit by bit with the original</strong><span>Every bit the gates compute matches the original model.</span></div>
-    </div>
-    <details class="raw">
-      <summary>For experts: the raw numbers</summary>
-      <p>Model BitCPM4-1B · 261,022,627,596 NAND + 109,052,458 LATCH per token · gate-by-gate on WebGPU · token-for-token identical to the RefB reference · BSC block gas limit about 70 million</p>
-    </details>
-  </section>
-</div>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <b>21 NAND · an open experiment on TapeOut</b>
-    <a href="faq/">FAQ</a>
-    <a href="progress/">Progress</a>
-    <a href="verify/">Verify</a>
-  </div>
+<script>(function(){var m=document.querySelector(".menu");if(!m)return;m.__inl=1;m.addEventListener("click",function(){var s=document.getElementById("side");if(!s)return;var o=s.classList.toggle("open");m.setAttribute("aria-expanded",o?"true":"false")})})()</script>
+<div class="layout">
+<nav class="side" id="side" aria-label="Docs contents">
+<p class="sg">Start</p><ul><li><a href="../en/index.html" aria-current="page">What it is</a></li><li><a href="../en/start/quickstart.html">Quickstart</a></li><li><a href="../en/start/verify.html">Check it yourself</a></li><li><a href="../en/start/faq.html">FAQ</a></li></ul>
+<p class="sg">The Bard chip</p><ul><li><a href="../en/bard/index.html">Overview</a></li><li><a href="../en/bard/fetch.html">Fetch the design files from the chain</a></li><li><a href="../en/bard/nodes.html">Process ladder</a></li><li><a href="../en/bard/fpga.html">FPGA port</a></li><li><a href="../en/bard/storybox.html">Story box</a></li></ul>
+<p class="sg">Model machine</p><ul><li><a href="../en/machine/index.html">Run it in your browser</a></li><li><a href="../en/machine/arch.html">Full-machine architecture</a></li><li><a href="../en/machine/tapeboot.html">Fetch firmware from the chain</a></li><li><a href="../en/machine/sbc.html">A large model on a small computer</a></li></ul>
+<p class="sg">Gate-level AI</p><ul><li><a href="../en/gate-ai/index.html">Gate brain</a></li><li><a href="../en/gate-ai/ncd2net.html">From graph to gates</a></li><li><a href="../en/gate-ai/tiny-llm.html">A tiny language model</a></li><li><a href="../en/gate-ai/cost.html">What a large model on chain would cost</a></li></ul>
+<p class="sg">Circuits that drive</p><ul><li><a href="../en/control/index.html">21 gates that drive</a></li><li><a href="../en/control/arena.html">Arena rules</a></li><li><a href="../en/control/duck.html">Microduck</a></li><li><a href="../en/control/squared.html">NAND plays Squared</a></li><li><a href="../en/control/fly.html">Fruit fly connectome</a></li></ul>
+<p class="sg">Build a circuit</p><ul><li><a href="../en/build/index.html">Build a small circuit</a></li><li><a href="../en/build/notes.html">Worked examples</a></li><li><a href="../en/build/proofs.html">Proven lower bounds</a></li><li><a href="../en/build/agents-api.html">Agents-API circuits #283, #284</a></li></ul>
+<p class="sg">Reference</p><ul><li><a href="../en/reference/contracts.html">Contract addresses</a></li><li><a href="../en/reference/tbw1.html">TBW1 weight format</a></li><li><a href="../en/reference/tapeboot.html">TapeBoot spec</a></li><li><a href="../en/reference/commands.html">Commands you can check</a></li><li><a href="../en/reference/netlist.html">Netlist format</a></li></ul>
+<p class="sg">Updates</p><ul><li><a href="../en/updates/index.html">Progress</a></li></ul>
+</nav>
+<main class="doc">
+<h1>21 NAND docs</h1><p class="lead">We turn AI into the most basic logic gates and put them on a blockchain, so anyone can check them.</p>
+<div class="buttons"><a class="btn primary" href="start/quickstart.html">Quickstart</a><a class="btn" href="machine/index.html">Run the model machine in your browser</a><a class="btn" href="reference/contracts.html">Contract addresses</a><a class="btn" href="../gallery/en/index.html">Layouts of our chips on chain</a></div>
+<h2 id="latest"><a class="anchor" href="#latest" aria-hidden="true">#</a>Latest</h2>
+<div class="cards"><a class="card" href="machine/index.html"><strong>Model machine: writes in your browser</strong><span>11-04 · A toy binary model runs in the page and matches the reference implementation byte for byte.</span></a><a class="card" href="bard/fetch.html"><strong>The Bard: design files on chain</strong><span>10-12 · The full layout is stored on X Layer; fetch it and check it byte for byte.</span></a><a class="card" href="control/index.html"><strong>21 gates that drive</strong><span>09-08 · Circuit #279 is written on BNB Chain, and the arena scores cars by the circuit on chain.</span></a></div>
+<h2 id="quickstart"><a class="anchor" href="#quickstart" aria-hidden="true">#</a>Quickstart</h2>
+<p>Read the fingerprint recorded on chain for a file, then download the file and compute it yourself. If the two match, the file has not been changed. Read-only, no wallet.</p>
+<div class="code" data-lang="sh"><div class="code-h"><span>Read the sha256 recorded on chain (needs Foundry's cast)</span><button class="copy" type="button" aria-label="Copy">Copy</button></div><pre><code>cast call 0xd006ffdd5ae313b17729621a00999cd3c71ce5e6 \
+  &quot;fileInfo(address,string)(uint32,string,bytes32,uint40,uint256)&quot; \
+  0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3 home.css \
+  --rpc-url https://bsc-rpc.publicnode.com</code></pre></div>
+<div class="tabs"><div class="tab-bar" role="tablist"><button type="button" role="tab" aria-selected="true">macOS</button><button type="button" role="tab" aria-selected="false">Linux</button><button type="button" role="tab" aria-selected="false">Windows</button></div><div role="tabpanel"><div class="code" data-lang="sh"><div class="code-h"><span>Download the same file and compute its sha256</span><button class="copy" type="button" aria-label="Copy">Copy</button></div><pre><code>curl -s https://282-732.aihashrate.stream/home.css | shasum -a 256</code></pre></div></div><div role="tabpanel" hidden><div class="code" data-lang="sh"><div class="code-h"><span>Download the same file and compute its sha256</span><button class="copy" type="button" aria-label="Copy">Copy</button></div><pre><code>curl -s https://282-732.aihashrate.stream/home.css | sha256sum</code></pre></div></div><div role="tabpanel" hidden><div class="code" data-lang="powershell"><div class="code-h"><span>Download the same file and compute its sha256</span><button class="copy" type="button" aria-label="Copy">Copy</button></div><pre><code>Invoke-WebRequest https://282-732.aihashrate.stream/home.css -OutFile home.css; Get-FileHash home.css -Algorithm SHA256</code></pre></div></div></div><script>(function(b){var n;try{n=localStorage.getItem("nand-docs-tab")}catch(e){}n=n||(/Mac/.test(navigator.platform)?"macOS":/Win/.test(navigator.platform)?"Windows":/Linux/.test(navigator.platform)?"Linux":"");var t=b.querySelectorAll(".tab-bar button"),p=b.querySelectorAll("[role=tabpanel]"),k=-1,i;for(i=0;i<t.length;i++)if(t[i].textContent===n)k=i;if(k<0)return;for(i=0;i<t.length;i++){t[i].setAttribute("aria-selected",i===k?"true":"false");p[i].hidden=i!==k}})(document.currentScript.previousElementSibling)</script>
+<p>If the two sha256 values are the same, it checks out. Step by step: see <a href="start/quickstart.html">Quickstart</a>.</p>
+<h2 id="where-to-go"><a class="anchor" href="#where-to-go" aria-hidden="true">#</a>Where to go</h2>
+<div class="cards"><a class="card" href="bard/index.html"><strong>The Bard chip</strong><span>A language model that writes sentences in the style of children's stories, built directly as a chip.</span></a><a class="card" href="machine/index.html"><strong>Model machine</strong><span>A small computer that runs binary models.</span></a><a class="card" href="gate-ai/index.html"><strong>Gate-level AI</strong><span>A whole model turned into logic gates, computed in your browser.</span></a><a class="card" href="control/index.html"><strong>Circuits that drive</strong><span>21 gates drive a car; 39 gates steer a little duck.</span></a><a class="card" href="build/index.html"><strong>Build a circuit</strong><span>Put your own small circuit on chain.</span></a><a class="card" href="reference/contracts.html"><strong>Reference</strong><span>Contract addresses, file formats, commands to check things.</span></a></div>
+<h2 id="further-reading"><a class="anchor" href="#further-reading" aria-hidden="true">#</a>Further reading</h2>
+<p><a href="https://x.com/zhuoning293/article/2109613608728465866" rel="noopener">The story of the Bard chip</a>, told by the person who built it.</p>
+<footer class="doc-foot">
+  <a href="index.md">This page as Markdown</a> · <a href="../en/llms.txt">llms.txt</a> · <a href="../en/start/quickstart.html">Quickstart →</a>
 </footer>
+</main>
+<aside class="toc" aria-label="On this page">
+<p class="sg">On this page</p><ul><li class="l2"><a href="#latest">Latest</a></li><li class="l2"><a href="#quickstart">Quickstart</a></li><li class="l2"><a href="#where-to-go">Where to go</a></li><li class="l2"><a href="#further-reading">Further reading</a></li></ul>
+</aside>
+</div>
+<div class="sdlg" hidden><div class="sbox" role="dialog" aria-label="Search"><input type="search" placeholder="Search the docs…" aria-label="Search the docs"><ul></ul><p class="shint">↑↓ select · Enter open · Esc close</p></div></div>
+<link rel="stylesheet" href="../assets/docs.css">
+<script src="../en/search-index.js"></script>
+<script src="../assets/docs.js"></script>
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
 </body>
 </html>

@@ -67,7 +67,7 @@ does not help: 0.168 is below the bigram baseline (0.2621). Far bits change the 
 of flips. Honest reading: a far character is nearly uncorrelated with the next character once the
 last character is known, so skip features add gates without adding accuracy.
 
-### Shape 3 — difflogic learned network (GPU venv /var/tmp/joj2/venvs/tcu, m64)
+### Shape 3 — difflogic learned network (GPU venv, a second build machine)
 
 | model | gates | bits read | held-out top-1 |
 |---|---:|---:|---:|
@@ -98,5 +98,5 @@ mainnet cap that means a split netlist (5,723 records per circuit, SPLIT_DESIGN.
 numbers, ~10^5-10^6 NAND — i.e. a different architecture, not a parameter tweak.
 
 Artifacts: measure_context_use.py (fan-in), skip_model.py (shape 2), model_skip*.json,
-probe2_ng5..8.json + resynth_ng5.json (shape 1), m64 /var/tmp/joj2/onestep_lm/df_20k_deep_report.json
+probe2_ng5..8.json + resynth_ng5.json (shape 1), second build machine: onestep_lm/df_20k_deep_report.json
 (shape 3).

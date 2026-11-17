@@ -1,0 +1,29 @@
+/* 模型机页面（machine/、en/machine/）：在 home.css 之上只加演示框，颜色都取 home.css 的变量 */
+.mm{padding-top:52px;padding-bottom:72px}
+.mm-head{max-width:760px;margin-bottom:28px}
+.mm-head h1{margin:0;font-size:40px;font-weight:900}
+.demo{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:40px}
+.demo h2{margin:0 0 16px;font-size:22px}
+.demo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-bottom:16px}
+.demo-bar .btn:disabled{opacity:.5;cursor:default}
+.demo-bar .link-w{background:none;border:0;font:inherit;cursor:pointer;padding:0}
+.pick{color:var(--brand-text);font-size:15px;cursor:pointer;border-bottom:1px solid currentColor}
+.pick:hover{color:#C2B9FF}
+.pick:focus-within{outline:2px solid var(--brand-text);outline-offset:3px}
+.pick input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.out{margin:0;min-height:9em;max-height:22em;overflow:auto;background:var(--bg);border:1px solid var(--line-soft);border-radius:12px;
+  padding:16px;font-family:var(--mono);font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.out .p{color:var(--brand-text)}
+.out .cur{display:inline-block;width:.55em;height:1.1em;vertical-align:text-bottom;background:var(--pos);margin-left:1px;animation:mm-blink 1s steps(1) infinite}
+@keyframes mm-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.out .cur{animation:none}}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 24px;margin:20px 0 8px}
+.facts div{min-width:0}
+.facts dt{color:var(--muted);font-size:13px}
+.facts dd{margin:2px 0 0;color:var(--text-2);font-size:14px;overflow-wrap:anywhere}
+.demo .small{color:var(--muted);font-size:13px;margin:12px 0 0}
+.mm-sec{max-width:760px}
+.mm-sec ul{padding-left:1.2em;color:var(--text-2)}
+.mm-sec li{margin:8px 0}
+.mm-sec code{font-size:13px;overflow-wrap:anywhere;color:var(--text-2)}
+.mm-sec .small{color:var(--muted);font-size:13px}

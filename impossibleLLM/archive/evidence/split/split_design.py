@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tp-2ea.14 follow-on: multi-circuit split design for the 19.6k g44 model.
+"""Multi-circuit split design for the 19.6k g44 model.
 
 Mainnet cap: 5,723 NAND records (40,061 B) per tape-out, so the 19,567-record g44
 netlist must be split.  This slices the combinational DAG along topological levels

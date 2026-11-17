@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the page on-chain character path (item 2, tp-2ea.18).
+"""Verify the page on-chain character path (item 2).
 
 Rebuilds exactly the calldata the page sends for cid 285, eth_calls the public RPC,
 decodes the returned symbol and compares it with the independent Python evaluator.

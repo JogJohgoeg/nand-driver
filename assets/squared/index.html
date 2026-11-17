@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NAND 玩 Squared · 386 个 NAND</title>
+<link rel="icon" href="../../favicon.ico">
+<style>
+:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  }
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root { --dim:var(--text-dim); --acc:var(--ok); }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:.875rem/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif; }
+header { padding:1.25rem 1.5rem .5rem; max-width:67.5rem; margin:0 auto; }
+h1 { font-size:1.25rem; margin:0 0 .25rem; }
+header p { margin:0; color:var(--dim); }
+.wrap { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; padding:1rem 1.5rem; max-width:67.5rem; margin:0 auto; }
+@media (max-width:760px) { .wrap { grid-template-columns:1fr; } }
+section { background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:1rem; }
+h2 { font-size:.9375rem; margin:0 0 .625rem; }
+canvas { width:100%; max-width:27.5rem; height:auto; display:block; background:var(--bg); border:1px solid var(--line); border-radius:var(--r); image-rendering:pixelated; }
+.controls { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin-top:.625rem; }
+button { background:var(--sel); color:var(--ink); border:1px solid var(--line); border-radius:var(--r); padding:.4375rem .75rem; cursor:pointer; }
+button:hover { border-color:var(--acc); }
+button:disabled { opacity:.5; cursor:not-allowed; }
+#score { margin-left:auto; color:var(--dim); font-variant-numeric:tabular-nums; }
+table { width:100%; border-collapse:collapse; font-size:.8125rem; }
+th,td { text-align:left; padding:.375rem .5rem; border-bottom:1px solid var(--line); }
+th { color:var(--dim); font-weight:500; }
+.ok { color:var(--acc); }
+.bad { color:var(--bad); }
+#agree { margin:.625rem 0; font-size:.8125rem; }
+#chain-status { margin-top:.5rem; font-size:.75rem; color:var(--dim); word-break:break-all; }
+.facts li { margin:.375rem 0; }
+code { background:var(--bg); padding:1px .375rem; border-radius:var(--r); font-size:.75rem; }
+.scope p { color:var(--dim); font-size:.8125rem; margin:0; }
+.invite { margin-top:.625rem; color:var(--acc); font-size:.875rem; }
+/* 窄屏不许整页横向滚动（文档站 390 px 检查）：长网址、长十六进制断行，宽的块只在自己框里滚动 */
+.wrap>*{min-width:0} body{overflow-wrap:anywhere} pre,table{max-width:100%} pre{overflow-x:auto} input{max-width:100%}
+</style>
+</head>
+<body>
+<header>
+  <h1>一个 386 个 NAND 门的链上网表，在浏览器里玩 Squared</h1>
+  <p>就在你的浏览器里算，没有后端，不用任何密钥。</p>
+</header>
+<div class="wrap">
+  <section class="game">
+    <h2>Squared · 11×11</h2>
+    <canvas id="cv" width="440" height="440"></canvas>
+    <div class="controls">
+      <button id="play">▶ 播放</button>
+      <button id="step">走一步</button>
+      <button id="reset">重来</button>
+      <label style="color:var(--dim)">速度 <input id="speed" type="range" min="1" max="30" value="10"></label>
+      <span id="score">得分 0 · 回合 0</span>
+    </div>
+    <div class="invite" id="invite">点「播放」，看这份网表每一步怎么走。</div>
+  </section>
+  <section class="proof">
+    <h2>三方对照</h2>
+    <table>
+      <tr><th>谁算的</th><th>动作</th><th>输出位</th></tr>
+      <tr><td>本页按网表逐门算</td><td id="a-net">—</td><td id="o-net">—</td></tr>
+      <tr><td>电路的规格（先走到同一行，再走到同一列；本页按规则算）</td><td id="a-ref">—</td><td id="o-ref">—</td></tr>
+      <tr><td>链上（只读调用第 287 号电路）</td><td id="a-chain">—</td><td id="o-chain">—</td></tr>
+    </table>
+    <div id="agree">本页网表和规格：不一致 <b id="mism">0</b> 步，共 <b id="steps">0</b> 步</div>
+    <label style="color:var(--dim)">电路编号 <input id="cid" type="number" value="287" style="width:90px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:5px"></label>
+    <button id="chain">链上跑一步</button>
+    <div id="chain-status">只有点这个按钮才联网：向公共节点（bsc-rpc.publicnode.com，连不上就换 bnbchain、binance 的）发一次只读 eth_call，不用钱包。这份网表已写上链：BNB Chain 处理器 0x6Fb4…5B38 第 287 号电路。点一下用当前局面跑一步，和本页网表算的动作比。</div>
+  </section>
+</div>
+<section class="facts">
+  <h2>这个玩家是什么</h2>
+  <ul>
+    <li>门数：<b>386</b> 个 NAND，0 个锁存器 · 输入 14 位（自己格、目标格的编号各 7 位，低位在前；编号 = 行 × 11 + 列）· 输出 3 位（动作 0–4）</li>
+    <li>链上每走一步的 gas：<b>937,314</b>（约 0.013 个区块；09-15 实测 3 次取中位数）</li>
+    <li>网表文件：<code>netlist_resyn_squared14_struct.json</code>，写上链的调用数据也由它生成（函数选择器 <code>0x7bd3ac1d</code>）</li>
+    <li>网表 SHA-256（页面打开时校验）：<code id="sha">5e9d7d28766d0e51f0e1c59a552969bb88bd1b0534b8cc3abe4b0d031723d1aa</code></li>
+    <li>写上链的调用数据（前 80 个十六进制字符）：<code id="tcd">7bd3ac1d000000000000000000000000000000000000000000000000000000000000006000000000…</code></li>
+  </ul>
+</section>
+<section class="scope">
+  <h2>范围（说清它不做什么）</h2>
+  <p>这一页只做一件事：把你看到的那份网表按位求值，驱动游戏。它不训练、不采样、没有后端、不用任何密钥、不保存任何东西。链上按钮用只读调用，对自建处理器 0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38 调 step()；这份网表已写上链，是第 287 号电路（写上链的交易 <a href="https://bscscan.com/tx/0x8d46c603524de56ed67b78463edda40c0f0defc80ed7d522177ddbbc982b7a25" rel="noopener" style="overflow-wrap:anywhere">0x8d46c603524de56ed67b78463edda40c0f0defc80ed7d522177ddbbc982b7a25</a>）。</p>
+</section>
+<script>
+const TK = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();   // canvas 的颜色运行时读 tokens
+
+const CPU = "0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38";
+const STEP_SEL = "0xe8281a1a";
+const NET = {"nl_hex":"0000000600000600000003000003000000020000020000000a00000a0000000d00000d000000080000080000000f00000f000000090000090000000e00000e000000070000070000000c00000c0000000b00000b00000004000004000000050000050000000d00000e0000001e00001e0000000f00001f0000001400000e000000210000210000000f000022000000230000230000000c00000b000000250000250000000a0000260000002700002700000024000028000000200000290000002a00002a0000001a00001b0000002c00002c0000000a0000090000002e00002e0000002d00002e000000240000300000001600001800000032000032000000140000160000003400003400000025000035000000320000360000003700003700000013000017000000390000390000002d00003a0000002200003b0000001300001a0000000d00002c0000003e00003e0000003d00003f00000033000040000000410000410000000c00002f0000001400001800000044000044000000250000450000004600004600000043000047000000420000480000003c0000490000003700004a0000001a00002e0000001f00002c0000004d00004d0000004c00004e0000001600004f000000500000500000004b0000510000001800001a00000044000053000000540000540000000f0000550000005600005600000013000045000000580000580000002d0000590000000f00005a0000005b00005b0000003a0000450000004600005d0000005c00005e0000005600005f000000600000600000005200006100000031000062000000630000630000002b00006300000065000065000000060000070000006700006700000008000068000000100000070000006a00006a0000000800006b0000006c00006c000000040000050000006e00006e0000000300006f000000700000700000006d00007100000069000072000000730000730000001c00001d000000750000750000000300000200000077000077000000760000770000006d000079000000100000190000007b00007b0000001900001d0000000800007d0000007e00007e0000007b00007f000000800000800000001100001d00000011000076000000830000830000007c00008400000008000085000000150000190000008700008700000010000015000000890000890000006e00008a0000008700008b0000008c00008c00000011000012000000120000840000006b00008f0000000600008200000091000091000000750000920000008800009300000094000094000000050000780000006e000096000000970000970000007c000098000000950000990000009000009a0000008c00009b0000001d000077000000680000750000009e00009e0000009d00009f000000150000a0000000a10000a10000009c0000a2000000860000a30000006f00008e0000007c0000a5000000080000a6000000a40000a7000000800000a80000007a0000a9000000aa0000aa000000740000aa000000ac0000ac000000650000ad0000003800005b00000041000056000000b00000b0000000af0000b1000000b20000b20000002b0000b2000000b40000b40000008600008d000000800000b6000000b70000b7000000940000b8000000b90000b9000000740000b9000000bb0000bb000000b50000bb000000ae0000bd000000be0000be000000660000ac0000003700008d000000800000c1000000560000c200000038000056000000c40000c40000008000008d000000c60000c6000000c50000c6000000c80000c800000057000080000000c30000ca000000cb0000cb000000c80000cc000000cd0000cd000000b40000bc000000ce0000cf000000d00000d0000000c00000d1000000d20000d2000000bf0000d3000000d40000d4000000660000b3000000d60000d6000000640000b5000000d60000d8000000d90000d90000000a0000d9000000130000da000000db0000dc000000dd0000dd00000017000066000000df0000df000000de0000df000000dd0000e0000000e10000e2000000e30000e3000000ad0000ba000000e50000e5000000ab0000bc000000e50000e7000000e80000e8000000030000e8000000110000e9000000ea0000eb000000ec0000ec000000120000ad000000ee0000ee000000ed0000ee000000ec0000ef000000f00000f1000000f20000f2000000e40000f2000000e30000f300000009000065000000df0000f6000000f70000f7000000020000ac000000ee0000f9000000fa0000fa000000f80000fa000000f40000fc000000fd0000fd000000f50000fe000000ff0000ff000000f40000ff000000db0000e100000102000102000000c40000d7000000b40000c4000000af00010500000106000106000000d600010700000104000108000001090001090000000b0001090000001b00010a0000010b00010c0000010d00010d0000010200010e0000010300010d0000010f00011000000111000111000000ea0000f000000113000113000000bb0000c6000000b600011500000116000116000000e6000116000000e5000117000001180001190000011a00011a0000000400011a0000001c00011b0000011c00011d0000011e00011e0000011300011f0000011400011e000001200001210000012200012200000112000122000000b40000c5000000560000af000001260001260000006500012700000066000126000001280001290000012a00012a0000010400012b0000012c00012c0000000c00012c0000001a00012d0000012e00012f000001300001300000010b00010f0000013200013200000131000132000001300001330000013400013500000136000136000000ac0000b8000000ad0000b7000001380001390000013a00013a0000011800013b0000013c00013c0000000500013c0000001d00013d0000013e00013f000001400001400000011c000120000001420001420000014100014200000140000143000001440001450000014600014600000137000146000001240001480000014900014900000136000147000001110001230000014b00014c0000014d00014d0000012e0001340000002b000057000000b20001500000015100015100000125000129000001530001530000015100015300000152000154000001550001560000015700015700000104000158000001590001590000001400015a0000000d0001590000015b00015c0000014f00015d0000015e00015e0000013e00014400000074000081000000b900016100000162000162000000bb0000c70000013900016400000165000165000001620001650000016300016600000167000168000001690001690000011800016a0000016b00016b0000001000016c0000000600016b0000016d00016e0000016000016f000001700001700000015e0001710000014a000172000001730001730000014e00017400000175000175000001010001760000015f0001700000014900014b000001780001790000017200017a0000017700017b0000017c00017c000000d500017c0000017e00017e000000f70000fb00000100000180000001810001810000017800018200000183000183000001760001840000017f000185000000be0000cf000000ce000187000000800000c9000000ca0001890000018a00018a0000018800018b000000d500017d0000017e00018c0000018e00018e0000018c00018d00000186000186","nIn":14,"nOut":3,"nNand":386};
+const EXPECT_SHA = "5e9d7d28766d0e51f0e1c59a552969bb88bd1b0534b8cc3abe4b0d031723d1aa";
+const RPCS = ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.binance.org"];   // 一家连不上就换下一家
+const NCELL = 121, SIZE = 11;
+const ANAME = ["停","下","上","左","右"];
+
+const workerSrc = `
+function evalNAND(hex, nIn, nOut, bits) {
+  const nRec = hex.length / 14;
+  const w = new Uint8Array(2 + nIn + nRec); w[0]=0; w[1]=1;
+  for (let i=0;i<nIn;i++) w[2+i]=bits[i];
+  for (let i=0;i<nRec;i++) {
+    const o=i*14;
+    const a=parseInt(hex.substr(o+2,6),16), b=parseInt(hex.substr(o+8,6),16);
+    w[2+nIn+i] = 1 - (w[a] & w[b]);
+  }
+  let out=0; for (let k=0;k<nOut;k++) out |= w[2+nIn+nRec-nOut+k] << k;
+  return out;
+}
+function evalRef(bits) {   // 规格：输入是自己格、目标格的编号（各 7 位，低位在前）；先走到目标那一行，再走到那一列，重合就停
+  let a=0, t=0; for (let k=0;k<7;k++) { a |= bits[k]<<k; t |= bits[7+k]<<k; }
+  const r=Math.floor(a/11), c=a%11, tr=Math.floor(t/11), tc=t%11;
+  return tr>r ? 1 : tr<r ? 2 : tc>c ? 4 : tc<c ? 3 : 0;
+}
+onmessage = e => {
+  const {id, nl_hex, nIn, nOut, bits} = e.data;
+  const a = evalNAND(nl_hex, nIn, nOut, bits);
+  const r = evalRef(bits);
+  postMessage({id, action:a, ref:r});
+};
+`;
+const worker = new Worker(URL.createObjectURL(new Blob([workerSrc], {type:'application/javascript'})));
+let seq = 0; const waiting = {};   // 按 id 对回答：播放和「链上跑一步」同时在算也不会串
+function evalBoth(bits) {
+  return new Promise(resolve => {
+    const id = ++seq; waiting[id] = resolve;
+    worker.postMessage({id, nl_hex:NET.nl_hex, nIn:NET.nIn, nOut:NET.nOut, bits});
+  });
+}
+worker.onmessage = e => { const f = waiting[e.data.id]; delete waiting[e.data.id]; f && f(e.data); };
+
+// game state
+let agent = {r:5,c:5}, target = {r:0,c:0}, tick=0, score=0, episodes=0, playing=false, timer=null, steps=0, mism=0;
+function newTarget() {
+  let t; do { t = Math.floor(Math.random()*NCELL); } while (t === agent.r*SIZE+agent.c);
+  target = {r:Math.floor(t/SIZE), c:t%SIZE};
+}
+function reset() { agent={r:5,c:5}; tick=0; newTarget(); draw(); }
+function obsBits() {   // 14 位：自己格编号 7 位 + 目标格编号 7 位，低位在前（编号 = 行 × 11 + 列）
+  const bits = new Uint8Array(NET.nIn), a = agent.r*SIZE+agent.c, t = target.r*SIZE+target.c;
+  for (let k=0;k<7;k++) { bits[k] = (a>>k)&1; bits[7+k] = (t>>k)&1; }
+  return bits;
+}
+function apply(a) {
+  if (a===1) agent.r++; else if (a===2) agent.r--; else if (a===3) agent.c--; else if (a===4) agent.c++;
+  tick++;
+  if (agent.r<0||agent.c<0||agent.r>=SIZE||agent.c>=SIZE||tick>3*SIZE) { score--; episodes++; reset(); return; }
+  if (agent.r===target.r && agent.c===target.c) { score++; episodes++; reset(); }
+}
+function draw() {
+  const cv=document.getElementById('cv'), x=cv.getContext('2d'), s=cv.width/SIZE;
+  x.fillStyle=TK('--bg'); x.fillRect(0,0,cv.width,cv.height);
+  for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) {
+    x.strokeStyle=TK('--panel'); x.strokeRect(c*s,r*s,s,s);
+  }
+  x.fillStyle=TK('--ok'); x.fillRect(target.c*s+2,target.r*s+2,s-4,s-4);
+  x.fillStyle=TK('--ink'); x.fillRect(agent.c*s+6,agent.r*s+6,s-12,s-12);
+}
+function setCell(id, v, ok) { const el=document.getElementById(id); el.textContent=v; el.className=ok?"ok":"bad"; }
+function setOut(prefix, out) {
+  const a = out;
+  document.getElementById('a-'+prefix).textContent = a+' '+ANAME[a];
+  document.getElementById('o-'+prefix).textContent = (a&1)+""+((a>>1)&1)+""+((a>>2)&1);
+}
+async function oneStep(auto) {
+  const bits = obsBits();
+  const {action, ref} = await evalBoth(bits);
+  setOut('net', action); setOut('ref', ref);
+  const same = action === ref;
+  setCell('a-net', action+' '+ANAME[action], same);
+  setCell('a-ref', ref+' '+ANAME[ref], same);
+  steps++; if (!same) mism++;
+  document.getElementById('mism').textContent = mism;
+  document.getElementById('steps').textContent = steps;
+  apply(action); draw();
+  document.getElementById('score').textContent = '得分 '+score+' · 回合 '+episodes;
+}
+// 链上 step(uint256 cid, bytes state, bytes input) 的调用数据：输入 14 位按低位在前装进字节，状态为空
+function stepCalldata(cid, bits) {
+  const inp = new Uint8Array((bits.length+7)>>3);
+  for (let i=0;i<bits.length;i++) if (bits[i]) inp[i>>3] |= 1 << (i&7);
+  const hex = Array.from(inp).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const u = n => n.toString(16).padStart(64,'0');
+  const dyn = h => u(h.length/2) + h + '00'.repeat((32-(h.length/2)%32)%32);
+  return '0x' + STEP_SEL.slice(2) + u(cid) + u(96) + u(128) + u(0) + dyn(hex);
+}
+// step 返回 (bytes 新状态, bytes 输出)：按第 2 个偏移找到输出，取第一个字节的低 3 位（低位在前 = 动作编号）。
+// 不能取返回值最后两个十六进制字符：那是 ABI 补的零，永远是 0。
+function stepOutput(result) {
+  const b = result.slice(2), off = parseInt(b.slice(64,128),16)*2;
+  if (parseInt(b.slice(off,off+64),16) < 1) throw new Error('输出是空的');
+  return parseInt(b.slice(off+64,off+66),16) & 7;
+}
+const limited = (status, r) => status === 429 || !!(r && r.error && (r.error.code === -32005 || r.error.code === 429 || /rate|limit|too many|capacity/i.test(r.error.message || '')));
+async function askChain(data) {   // 三家公共节点依次问，每家最多等 15 秒；连不上或限流（429）就换下一家
+  let busy = false;
+  for (const url of RPCS) {
+    try {
+      const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 15000);
+      const resp = await fetch(url, {method:'POST', signal: ac.signal, headers:{'Content-Type':'application/json'}, body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:CPU,data},"latest"]})}).finally(() => clearTimeout(tm));
+      const r = await resp.json().catch(() => null);
+      if (limited(resp.status, r)) { busy = true; continue; }
+      if (!r) continue;
+      return r;
+    } catch (e) { /* 换下一家 */ }
+  }
+  throw new Error(busy ? 'busy' : 'net');
+}
+async function chainStep() {
+  const bits = obsBits();
+  const cid = parseInt(document.getElementById('cid').value,10);
+  const status = document.getElementById('chain-status');
+  if (!(cid >= 0)) { status.textContent = '先填电路编号'; return; }
+  status.textContent = '链上在算第 '+cid+' 号电路…';
+  try {
+    const [{action, ref}, r] = await Promise.all([evalBoth(bits),
+      askChain(stepCalldata(cid, bits))]);
+    if (r.error) { status.textContent = '链上没跑成这一步：检查电路编号是不是 287，再点一次。'; setCell('a-chain','—',false); setCell('o-chain','—',false); return; }
+    const out = stepOutput(r.result);
+    setOut('net', action); setOut('ref', ref);   // 三行都是同一个局面：表里不再一行新一行旧
+    setOut('chain', out);
+    const same = out === action;     // 同一个局面，本页网表算的动作；都是数字，不比位串
+    setCell('a-chain', out+' '+(ANAME[out]||'?'), same);
+    status.textContent = '链上输出 '+out+'（'+(ANAME[out]||'?')+'），本页网表同一局面 '+action+'（'+ANAME[action]+'）· '+(same ? '一致' : '不一致');
+  } catch (e) { setCell('a-chain','—',false); setCell('o-chain','—',false);
+    if (e.message === 'busy') { status.textContent = '节点太忙，这一步链上没算成。稍等一会儿再点一次。'; return; }
+    status.textContent = '连不上区块链节点，这一步没法让链上算。检查网络后再点一次；一直不行就过几分钟再试。'; }
+}
+function loop() { if (playing) oneStep(true); }
+document.getElementById('play').onclick = () => { playing=!playing; document.getElementById('play').textContent = playing?'⏸ 暂停':'▶ 播放'; if (playing) { timer=setInterval(loop, Math.max(40, 400 - 10*parseInt(document.getElementById('speed').value,10))); } else clearInterval(timer); };
+document.getElementById('step').onclick = () => oneStep(true);
+document.getElementById('reset').onclick = () => { score=0; episodes=0; reset(); document.getElementById('score').textContent='得分 0 · 回合 0'; };
+document.getElementById('chain').onclick = chainStep;
+// verify embedded netlist SHA-256 against the file that produced the burn calldata
+crypto.subtle.digest('SHA-256', new TextEncoder().encode(NET.nl_hex)).then(buf => {
+  const got = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const el = document.getElementById('sha');
+  if (got === EXPECT_SHA) { el.textContent = EXPECT_SHA + ' ✓'; el.className='ok'; }
+  else { el.textContent = 'MISMATCH '+got; el.className='bad'; }
+});
+reset(); draw();
+</script>
+</body>
+</html>

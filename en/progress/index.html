@@ -3,122 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Progress · 21 NAND</title>
-<link rel="stylesheet" href="../../home.css">
-<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
-(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
-if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
-if(l!==document.documentElement.lang.slice(0,2))location.replace("../../progress/"+location.hash);
-document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+<title>Moved · 21 NAND docs</title>
+<meta http-equiv="refresh" content="0; url=../../en/updates/index.html">
+<link rel="canonical" href="../../en/updates/index.html">
+<script>location.replace("../../en/updates/index.html"+location.hash)</script>
+<style>:root{color-scheme:dark}body{font:15px/1.6 system-ui,sans-serif;padding:42px 28px}</style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="logo" href="../">21 NAND</a>
-    <nav class="nav" aria-label="Main">
-      <a href="../#bard">The Bard</a>
-      <a href="https://nand.aihashrate.stream/gate/">Try it</a>
-      <a href="../build/">Build</a>
-      <a href="../faq/">FAQ</a>
-      <a href="./" aria-current="page">Progress</a>
-      <a href="../verify/">Verify</a>
-      <a class="hi" href="../../progress/" lang="zh-CN" hreflang="zh-CN">中文</a>
-    </nav>
-  </div>
-</header>
-
-<main class="wrap" style="padding-top:52px">
-  <div style="max-width:760px;margin-bottom:32px">
-    <h1 style="margin:0;font-size:40px;font-weight:900">Where we are</h1>
-    <p class="lead">Done items come with a date and something you can check; work in progress has no deadline; what we haven’t done is said plainly.</p>
-    <p class="mono" style="font-size:13px;color:var(--muted);margin:8px 0 0">Updated 2026-10-14</p>
-  </div>
-
-  <div class="cols">
-    <section class="col" aria-labelledby="done">
-      <h2 id="done"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00DA80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Done</h2>
-      <article class="item dark">
-        <span class="d">2026-10-12</span>
-        <strong>Bard chip design finished, blueprint on chain</strong>
-        <span>Passed every manufacturing-rule check the factory requires; the full 11-million-byte blueprint was stored on X Layer and read back byte for byte.</span>
-        <a href="https://1-2-245.aihashrate.stream/bard/v8g/">Fetch and check</a>
-      </article>
-      <article class="item">
-        <span class="d">2026-10-05</span>
-        <strong>First on-chain AI math component</strong>
-        <span>A 3,829-gate compute circuit taped out on X Layer; every on-chain spot check was correct.</span>
-        <a href="../verify/">Verify</a>
-      </article>
-      <article class="item">
-        <span class="d">2026-09-26</span>
-        <strong>Gate brain slimmed to about one fifth</strong>
-        <span>Gates per word went from about 1.4 trillion to about 260 billion, with every bit unchanged.</span>
-      </article>
-      <article class="item">
-        <span class="d">2026-09-24</span>
-        <strong>Gate-level AI answers on its own in the browser</strong>
-        <span>With the whole model turned into gates, it answered questions in a web page, bit for bit identical to the original.</span>
-        <a href="https://nand.aihashrate.stream/gate/">Try it</a>
-      </article>
-      <article class="item">
-        <span class="d">2026-09-08</span>
-        <strong>The 21-gate driver went on chain</strong>
-        <span>A driving circuit of just 21 gates was taped out on BNB Chain, with an open circuit race.</span>
-        <a href="https://nand.aihashrate.stream/arena.html">Watch it</a>
-      </article>
-    </section>
-
-    <section class="col" aria-labelledby="doing">
-      <h2 id="doing"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A496FF" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>In progress</h2>
-      <article class="item">
-        <strong>The Bard: finishing touches before fab</strong>
-        <span>Two kinds of minor electrical issues still need a fix-or-not decision; the fab and the cost are not chosen yet.</span>
-      </article>
-      <article class="item">
-        <strong>Putting the Bard’s circuit on chain</strong>
-        <span>Tape out the chip’s circuit itself on TapeOut, with the blueprint’s fingerprint built in, so chip and chain can be checked against each other.</span>
-      </article>
-      <article class="item">
-        <strong>Moving to a newer process</strong>
-        <span>Studying how to move the Bard from the 130 nm process to more advanced ones.</span>
-      </article>
-      <article class="item">
-        <strong>On-chain AI math library</strong>
-        <span>A set of basic AI operations as circuits anyone can call on chain; five in the first batch.</span>
-        <div class="bar" role="img" aria-label="1 of 5 on chain"><i class="on"></i><i></i><i></i><i></i><i></i></div>
-        <span style="font-size:13px">1 of 5 on chain</span>
-      </article>
-    </section>
-
-    <section class="col" aria-labelledby="not">
-      <h2 id="not"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F0616D" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Not done, not promised</h2>
-      <article class="item">
-        <strong>Putting the whole AI model on chain</strong>
-        <span>Too big: ten million times what one on-chain circuit can hold.</span>
-      </article>
-      <article class="item">
-        <strong>Dividends or rights for tokens</strong>
-        <span>Holders have no contractual rights to circuits, income or chips. <a href="../faq/#token">Details</a></span>
-      </article>
-      <article class="item">
-        <strong>A date or sales for the Bard</strong>
-        <span>No timeline and no pre-orders until the fab and the cost are settled.</span>
-      </article>
-      <article class="item">
-        <strong>A public model-to-circuit tutorial</strong>
-        <span>The tools aren’t ready for outside users; not promised for now.</span>
-      </article>
-    </section>
-  </div>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <b>21 NAND · an open experiment on TapeOut</b>
-    <a href="../">Home</a>
-    <a href="../faq/">FAQ</a>
-    <a href="../verify/">Verify</a>
-  </div>
-</footer>
+<p>This page has moved to <a href="../../en/updates/index.html">../../en/updates/index.html</a>.</p>
 </body>
 </html>

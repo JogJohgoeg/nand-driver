@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>文档 · 21 NAND</title>
+<meta name="description" content="项目的公开文档，按主题分组：吟游诗人芯片、模型机、门电路 AI、会开车的电路、做电路、链上网站与核对。">
+<link rel="stylesheet" href="../home.css">
+<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+</head>
+<body>
+<!-- 由生成脚本从项目索引生成，别手改；改排除规则或说明请改脚本后重跑 -->
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="../">21 NAND</a>
+    <nav class="nav" aria-label="主导航">
+      <a href="../bard/">吟游诗人芯片</a>
+      <a href="../machine/">模型机</a>
+      <a href="../gate-ai/">门电路 AI</a>
+      <a href="../control/">会开车的电路</a>
+      <a href="../build/">做电路</a>
+      <a href="../verify/">核对</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap page">
+  <h1>文档</h1>
+  <p class="lead">项目的公开文档，按主题分组，每篇一句话。都是工作文档的去敏副本：内网机器名和个人路径换成了通用说法，有些文件里的相对链接在这里打不开。</p>
+  <p class="mono" style="font-size:13px;color:var(--muted)">由项目索引生成于 2026-11-04 · 共 126 篇</p>
+  <section class="grp" id="bard" aria-labelledby="bard-h">
+    <h2 id="bard-h">吟游诗人芯片 <span style="color:var(--muted);font-size:15px;font-weight:400">40 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">写儿童故事风格句子的芯片：从网表到版图、工艺阶梯、FPGA 和故事机</p>
+    <ul>
+      <li><a href="src/tapeout_asic/h3/node_phys/fetch_whatif/README.md">取指环 B 档 what-if</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-11-01</span></li>
+      <li><a href="src/tapeout_asic/h3/bard/storybox/README.md">吟游诗人故事机</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-19</span></li>
+      <li><a href="src/tapeout_asic/h3/AIO_COATER.md">镀膜一体机全球调研</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-13</span></li>
+      <li><a href="src/tapeout_asic/h3/antenna_hand/README.md">v8 整机天线手写修复与整片签核脚本</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-12</span></li>
+      <li><a href="src/tapeout_asic/h3/ROUTE_ONE_LAYER.md">我们自己的路线：通用底片 + 只换一层通孔</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-11</span></li>
+      <li><a href="src/tapeout_asic/h3/research_mac_eda.md">Mac跑开源后端 EDA 调研 — 2026</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-11</span></li>
+      <li><a href="src/tapeout_asic/h3/research_weight_storage_raw.md">权重存储方案调研原始记录</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-11</span></li>
+      <li><a href="src/tapeout_asic/h3/INT_SPEC.md">INT-C16 integer contract v1.1 / 整数模型契约</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-06</span></li>
+      <li><a href="src/tapeout_asic/h3/INT_SPEC_P12.md">TC16-P12-v1：12 位前缀候选 / 12-bit prefix candidate</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-06</span></li>
+      <li><a href="src/tapeout_asic/h3/INT_SPEC_P16.md">TC16-P16-v1：前缀存储候选 / Prefix storage candidate</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-06</span></li>
+      <li><a href="src/tapeout_asic/h3/bard/SCRIPT.md">《吟游诗人》短片剧本</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-06</span></li>
+      <li><a href="src/tapeout_asic/h3/bard/orbit/README.md">吟游诗人 · 轨道长镜头</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-06</span></li>
+      <li><a href="src/tapeout_asic/h2/SUBMISSION.md">First-chip submission checklist / 首片提交前清单</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-05</span></li>
+      <li><a href="src/tapeout_asic/h2/evidence/physical_b49b49e/precheck-results.md">Tiny Tapeout Precheck Results</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-05</span></li>
+      <li><a href="src/tapeout_asic/h2/evidence/physical_b49b49e/precheck_results.md">Tiny Tapeout Precheck Results</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-05</span></li>
+      <li><a href="src/tapeout_asic/h2/evidence/physical_bd1876b/precheck-results.md">Tiny Tapeout Precheck Results</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-05</span></li>
+      <li><a href="src/tapeout_asic/h3/int_review/REVIEW.md">INT-C16 独立复核</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-05</span></li>
+      <li><a href="src/tapeout_asic/SEMANTICS.md">TapeOut transition ISA v1 / 状态转移规范</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/minicpm/MILESTONE_2.md">MiniCPM milestone 2: full integer model and local dispute loop</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/minicpm/README.md">README</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/nandtool_ws/README.md">Pi browser workspace - MiniCPM5-2B, plus a NAND netlist tool</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/CONTEXT_USE.md">CONTEXTUSE — how much of the 192-bit context each TapeoutLLM rung actually uses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/LM_BURN_KIT.md">One-step LM burn kit</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/SPLIT_DESIGN.md">Multi-circuit split for the 19.6k g44 model</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/minicpm_cascade/CONTAINER_REPORT.md">CONTAINER REPORT — 34-slice CascadeContainer for the K=2400 cascade</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/public/CONTEXT_USE.md">CONTEXTUSE — how much of the 192-bit context each TapeoutLLM rung actually uses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/public/LM_BURN_KIT.md">One-step LM burn kit</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/public/README.md">TapeoutLLM evidence</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/public/SPLIT_DESIGN.md">Multi-circuit split for the 19.6k g44 model</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/onestep_lm/v2/REPORT.md">impossible LLM v2 — 重训报告</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/puf/demo/README.md">NAND 玩 Squared</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/referee/CSR_COMPAT.md">Mini-compatible architectural state: Hazard3 adapter contract</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/referee/REPORT.md">Referee prototype: authenticated mini steps and Hazard3 compatibility</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tapeoutllm_ws/README.md">TapeoutLLM · 浏览器工作台</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/DOC_REVIEW.md">Documentation organization review</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/LINEAR32.md">Actual prompt projection with linear group scales</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/PLAN.md">Tiny Tapeout submission plan</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/REPORT.md">One-tile MiniCPM datapath and RLT-mini submission candidate</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/REPRODUCE.md">Reproduce the one-tile candidate</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/tapeout_asic/tt/docs/info.md">TapeOut MiniCPM MAC and RLT-mini</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+    </ul>
+  </section>
+  <section class="grp" id="machine" aria-labelledby="machine-h">
+    <h2 id="machine-h">模型机 <span style="color:var(--muted);font-size:15px;font-weight:400">1 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">跑二值模型的小电脑、权重格式、从链上取回固件</p>
+    <ul>
+      <li><a href="src/model_machine/hw/font/README.md">控制台字库</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-22</span></li>
+    </ul>
+  </section>
+  <section class="grp" id="gate-ai" aria-labelledby="gate-ai-h">
+    <h2 id="gate-ai-h">门电路 AI <span style="color:var(--muted);font-size:15px;font-weight:400">21 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">把神经网络编译成 NAND 门、链上推理</p>
+    <ul>
+      <li><a href="src/pyncd_net/out/_obsolete/README.md">out/obsolete —— 已废弃的构建产物</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-19</span></li>
+      <li><a href="src/distill/STATEKEY_CURVE.md">State vs Key Width, and Tool-Call Decision Points -- closed measurements</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_llm/FLY_CALIBRATION_REVIEW.md">Fly teacher calibration review / 果蝇教师校准审查</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/llm_relay/DEPTH_REPORT.md">Depth-targeted relay search / 深度定向搜索</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/llm_relay/POLICY.md">Partition and policy / 分区与规则</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/llm_relay/SURVEY.md">One API request path / 中转站请求路径调查</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/llm_relay/call_a_final/ANALYSIS.md">Final calla analysis</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/llm_relay/randopt/RUNNING.md">FINAL: all relay searches stopped</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/onchain_inference/cost_model.md">Cost model / 成本模型 — round 1</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/onchain_inference/scale.md">Scale study / 规模研究</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/onchain_inference/rv32/REPORT.md">RISC-V inference route / RISC-V软件推理路线</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/INPUTS.md">User steering / 用户补充</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/REPORT.md">TapeOut RISC-V machine / 链上通用计算研究</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/ROADMAP.md">First target: MiniCPM5-2B / 第一目标</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/ROADMAP_MINICPM.md">MiniCPM5-2B first: executable roadmap / 首个真实模型路线图</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/machine.md">Machine reverse engineering / 机器逆向 — round 1</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/optimizations.md">Interpreter optimization measurements — PARTIAL, parked for ASIC mission</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/deepseek/inference.md">Minimal inference</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/deepseek/model_card.md">DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/riscv_machine/stateless/ENVIRONMENT.md">Deployed environment refinement: RAM and fixed-input MMIO</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/v2_m3_int_primitive.md">M3 — INT primitive selection</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-03</span></li>
+    </ul>
+  </section>
+  <section class="grp" id="control" aria-labelledby="control-h">
+    <h2 id="control-h">会开车的电路 <span style="color:var(--muted);font-size:15px;font-weight:400">15 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">可微逻辑网络控制器、竞技场、小鸭、果蝇连接组</p>
+    <ul>
+      <li><a href="src/dlgn_ctrl/arena/RULES.md">Arena v1 — Rules / 竞技场 v1 规则</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-27</span></li>
+      <li><a href="src/dlgn_ctrl/arena/V3_1.md">Arena v3.1 — draft, not deployed / 草案，未部署</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/marble/APEX_PROMPT.md">APEX-look generation — one approved submission</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/marble/AUDIO_REF.md">APEX audio reference and synthesis revision</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/marble/EUROBEAT.md">Original Eurobeat and browser-only music</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/v2/README.md">Driver v2: measured results / 实测结果</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/v2/README_v2b.md">Driver v2b / 带惯性的记忆控制器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/v2/RULES_v2.md">Driver v2 / 有记忆的驾驶控制器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/dlgn_ctrl/v2/RULES_v2b.md">Driver v2b / 带惯性的驾驶环境</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/duck/EVALUATION.md">Course 2 and seeded evaluation / 场地 2 与种子评估</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/duck/INTERFACE.md">Microduck / TapeOut interface audit</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/duck/LICENSES.pages.md">Credits and licenses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/fly_brain/REPORT_rounds_1_7.md">Fly CNS → logic circuits / 果蝇全中枢神经系统逻辑蒸馏</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/fly_brain/pathways/feeding/Readme.md">Model for the Drosophila brain</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/fly_brain/pathways/walking/README.md">VNC Network Simulation</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+    </ul>
+  </section>
+  <section class="grp" id="build" aria-labelledby="build-h">
+    <h2 id="build-h">做电路 <span style="color:var(--muted);font-size:15px;font-weight:400">28 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">TapeOut 电路题的设计笔记、形式证明、Agents-API 电路</p>
+    <ul>
+      <li><a href="src/agent_api_netlist/v2/REPORT.md">Agents-API session controller v2 — report</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/agent_api_netlist/v2/RESULTS.md">drive283 — other agents as clerks of circuit 283</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/agent_api_netlist/v3/REPORT3.md">Agents-API session controller v3 — the fuses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/agent_api_netlist/v4/REPORT4.md">Agents-API session controller v4 — complete fuses, reason codes, proved safety</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/agent_api_netlist/v5/REPORT5.md">Agents-API session controller v5 — final feature set</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/attacks/proofs/carry3_d5/codex_carry3_depth6_proof.md">Three-bit positive carry has minimum NAND2 depth6</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-16</span></li>
+      <li><a href="src/circuits/task042_sub8.md">题42: 8 位减法器带借位 — 持平</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task043_addsub4.md">任务 43 — 4 位加减法器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task071_alu.md">Task 71 — 4位 ALU</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task144_cmp5.md">任务 144 — 5 位比较器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task145_cmp6.md">任务 145 — 6 位比较器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task151_153_gt56.md">题153/151: 6/5 位大于判定 — 首创候选 ★★</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task162_163_maxmin.md">任务 162/ 163 — 8 位取大/取小 MAX/MIN</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task167_popcount16.md">题167: 16 位 popcount— 首创候选 ★★★</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task226_satadd8.md">任务 226 — 8 位饱和加法</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task227_sat_sub8.md">题227: 8 位饱和减法 satsub8</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-24</span></li>
+      <li><a href="src/circuits/task001_and.md">题1 与门 AND</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task003_xor.md">题3 异或门 XOR</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task013_mux2.md">题13 二选一选择器 MUX2</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task018_half_adder.md">题18 半加器 Half Adder</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task022_decoder38.md">题22: 3-8 译码器— 最优首创候选 ★</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task024_penc8.md">题24: 8-3 优先编码器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task048_popcount4.md">题48: 4 位 1 的个数 popcount4— 最优首创候选 ★★</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task061_mult44.md">Task 061 — 4×4 乘法器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task075_div2.md">题75 二分频 Divide-by-2</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task100_add168.md">Task 100 — 16 位 + 8 位加法</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task209_penc16.md">题209: 16-4 优先编码器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+      <li><a href="src/circuits/task254_seq1010.md">题254: 序列检测 1010</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-08-23</span></li>
+    </ul>
+  </section>
+  <section class="grp" id="web" aria-labelledby="web-h">
+    <h2 id="web-h">链上网站 <span style="color:var(--muted);font-size:15px;font-weight:400">21 篇</span></h2>
+    <p style="color:var(--text-2);margin:0 0 8px">把网站存上链、芯片图库、链上数学库</p>
+    <ul>
+      <li><a href="src/hashport/site/README.md">21 NAND Driver</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/RULES.md">Arena v1 — Rules / 竞技场 v1 规则</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/duck/EVALUATION.md">Course 2 and seeded evaluation / 场地 2 与种子评估</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/duck/LICENSES.md">Credits and licenses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/gate/README.md">门电路版 BitCPM4-1B</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/gate/LICENSES/BitCPM4-1B-README.md">BitCPM4-1B-README</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/impossibleLLM/archive/evidence/CONTEXT_USE.md">CONTEXTUSE — how much of the 192-bit context each TapeoutLLM rung actually uses</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/impossibleLLM/archive/evidence/LM_BURN_KIT.md">One-step LM burn kit</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/impossibleLLM/archive/evidence/README.md">TapeoutLLM evidence</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/impossibleLLM/archive/evidence/SPLIT_DESIGN.md">Multi-circuit split for the 19.6k g44 model</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/impossibleLLM/archive/ws/README.md">TapeoutLLM · 浏览器工作台</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/nandtool/README.md">Pi browser workspace - with impossible LLM as its brain, plus a NAND netlist tool</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/rules/RULES_v2b.md">Driver v2b / 带惯性的驾驶环境</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/rules/V3_1.md">Arena v3.1 — draft, not deployed / 草案，未部署</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/site/xlayer-bench/README.md">Pi browser workspace - with impossible LLM as its brain, plus a NAND netlist tool</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-14</span></li>
+      <li><a href="src/hashport/theme/README.md">全站绿色版式规范</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-01</span></li>
+      <li><a href="src/hashport/web2tape/contracts/README.md">Web2TapeOpener</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-01</span></li>
+      <li><a href="src/hashport/web2tape/store/STORE.md">Chrome 应用商店上架资料</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-10-01</span></li>
+      <li><a href="src/hashport/flipbook/README.md">翻书 · 动态容器</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-30</span></li>
+      <li><a href="src/hashport/tape/README.md">tape · TapeOut 上的 Vercel</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-30</span></li>
+      <li><a href="src/hashport/vendor/README.md">ethers 6.13.2</a> <span class="mono" style="color:var(--muted);font-size:12px;overflow-wrap:anywhere">2026-09-25</span></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <b>21 NAND · TapeOut 上的开源实验</b>
+    <a href="../faq/">常见问题</a>
+    <a href="../progress/">进度</a>
+    <a href="https://nand.aihashrate.stream/docs/">文档</a>
+    <a href="https://nand.aihashrate.stream/sites/">全部页面</a>
+  </div>
+</footer>
+</body>
+</html>

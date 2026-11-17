@@ -35,7 +35,7 @@ auditable against the convention.
 ## How the netlist is evaluated
 
 The netlist comes from
-`circuits/_scratch/tapeout_asic/puf/netlist_resyn_squared14_struct.json`
+`netlist_resyn_squared14_struct.json`
 (386 NAND gates, 0 latches, 14 inputs, 3 outputs, stored as a hex string of
 2-bit gate descriptors). `assets/nand.worker.js` is self-contained: it holds
 the hex, decodes it into a gate table, and evaluates the gates **in index

@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--fs-sm:.8125rem;--fs-xs:.75rem;--s1:.875rem;--s2:1.75rem;--s3:2.625rem;--r:2px;--t-fast:.12s}:root{color-scheme:dark}h1,h2,h3,input[type=button],input[type=submit],label,summary,nav{font-family:var(--head)}pre{font-family:var(--mono)}h1,h2,h3{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--text);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--accent)}.wrap{margin:0 auto}.top{position:sticky;top:0;z-index:5;background:var(--bg)}.top .wrap{display:flex;align-items:center;gap:.75rem;height:3.25rem}.top .langlink{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .brand{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .here{font-family:var(--head);color:var(--text-dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.warn{color:var(--warn)}.dim{color:var(--text-dim)}.badge{font-family:var(--head);font-size:var(--fs-sm);white-space:nowrap}.top .badge{flex:1 1 0;min-width:0;align-self:stretch;display:flex;align-items:center;justify-content:flex-end;text-align:right;overflow:hidden}.top .langlink{order:1}h1{color:var(--ink);margin:var(--s2) 0 .5rem}h2{font-size:1.125rem;color:var(--ink);margin:var(--s2) 0 var(--s1)}.lede{margin:0 0 var(--s1)}.btn{display:inline-block;font:600 var(--fs-sm)/1 var(--head);padding:.625rem .875rem;border:1px solid var(--line,transparent);color:var(--ink);text-decoration:none;cursor:pointer}.thumb{position:relative;aspect-ratio:1;background:var(--bg-deeper);border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden;display:grid;place-items:center}.thumb .msg{font-size:var(--fs-xs);color:var(--text-dim);padding:.5rem;text-align:center}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.search{margin:var(--s1) 0 .625rem}.search input{width:100%;font:1rem/1.4 var(--sans);color:var(--ink);border:1px solid var(--field,transparent);padding:.75rem .875rem}.search input::placeholder{color:var(--text-dim)}.note{font-size:var(--fs-sm);color:var(--text-dim);margin:.375rem 0 0}.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 var(--s1)}@media (max-width:599px){.tags{flex-wrap:nowrap;overflow-x:auto;padding-bottom:.375rem;max-width:100%}}.tag{font:var(--fs-sm)/1 var(--head);color:var(--text);border:1px solid var(--line,transparent);padding:.5rem .75rem;text-decoration:none;white-space:nowrap}.sec{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .75rem;margin:var(--s2) 0 0}.sec h2,.sec h3{margin:0;color:var(--ink)}.sec h3{font-size:1rem}.sec .more,.sec .back{margin-left:auto;font:var(--fs-sm) var(--head);text-decoration:none;white-space:nowrap}.shelf.group .sec{margin-top:var(--s3)}.rail{display:grid;grid-auto-flow:column;gap:var(--s1);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:.75rem 2px .875rem;max-width:100%;-webkit-overflow-scrolling:touch}.rail>.card{scroll-snap-align:start}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:var(--s1);margin-top:var(--s1)}.card{border:1px solid var(--line,transparent);border-radius:var(--r);display:flex;flex-direction:column;min-width:0}.card .pic{display:block}.card .thumb{border:0;border-radius:0}.card .body{padding:.75rem .875rem .875rem;display:flex;flex-direction:column;gap:.375rem;flex:1;min-width:0}.card strong{font:700 1.0625rem/1.35 var(--head);color:var(--ink);overflow-wrap:anywhere}.card .say{margin:0;line-height:1.55;color:var(--text)}.card .meta,.card .open{font:var(--fs-xs)/1.5 var(--head);color:var(--text-dim);overflow-wrap:anywhere}.card .meta{margin-top:auto}.card .open.lic{color:var(--ok);font-weight:700}.card .btns{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;min-height:2.375rem;margin-top:.25rem}.card .btns .btn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:2.375rem;padding:.375rem .5rem;line-height:1.3}.card .btns .nobtn{grid-column:1/-1;align-self:center;font-size:var(--fs-xs)}.check{background:var(--panel);border:1px solid var(--line,transparent);border-radius:var(--r);padding:.75rem .875rem;margin:var(--s1) 0}.check p{margin:0}details{margin-top:.5rem}summary{cursor:pointer;color:var(--text-dim);font-size:var(--fs-sm)}details pre{font-size:var(--fs-xs);overflow-wrap:anywhere;white-space:pre-wrap}footer{margin:var(--s3) 0 var(--s2);font-size:var(--fs-xs);color:var(--faint)}.grid .card .thumb{aspect-ratio:16/10}.wrap{max-width:82.5rem;padding:0 1.75rem}.top{border-bottom:1px solid var(--line,transparent)}h1{font-size:clamp(1.875rem,3.6vw,3rem);line-height:1.15;margin-top:2.625rem}.lede{font-size:1rem;max-width:44em}.search input{background:var(--bg-deep);border-radius:2px}.tag{border-radius:2px;background:transparent;font-family:var(--mono),var(--cjk);font-size:.75rem}.tag[aria-current=true]{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent);font-weight:700}.sec h2{font-size:1.375rem}.sec{padding-top:1.125rem;border-top:1px solid var(--line,transparent);background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat}.rail{grid-auto-columns:min(82%,19rem)}.card{position:relative;background:var(--panel);overflow:visible;transition:border-color var(--t-fast)}.card::before{content:"";position:absolute;left:-1px;top:-1px;width:.875rem;height:.875rem;z-index:1;border-left:2px solid var(--brand,transparent);border-top:2px solid var(--brand,transparent)}.card .thumb{aspect-ratio:1;background:var(--plate);border-bottom:1px solid var(--line,transparent)}.card strong{font-size:1.125rem}.card .say{font-size:.875rem}.card .open{color:var(--text-dim)}.btn{border-radius:2px;background:transparent}.btn.primary{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent)}@media (max-width:599px){.wrap{padding:0 1rem}.top .here{display:none}.top .badge{white-space:normal;line-height:1.3}}.sec .more,.sec .back{display:inline-flex;align-items:center;min-height:1.5rem}summary{min-height:1.5rem;display:list-item}</style>
+<title>链上芯片 · 21 NAND</title>
+<link rel="icon" href="../favicon.ico">
+<link rel="preload" as="style" href="../assets/theme.css">
+<link rel="preload" as="style" href="gallery.css">
+</head>
+<body>
+<!-- 版图缩略图用：把版图里灰色的芯片底（约 rgb 58,57,64）和四周近黑处变透明，只留门和走线，轮廓才从黑底淡光里跳出来 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="core" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2.2 2.2 2.2 0 -1.9"/></filter></svg>
+<header class="top"><div class="wrap">
+  <a class="brand" href="../index.html">21 NAND</a><span class="here">链上芯片</span>
+  <a class="langlink" id="lang" href="en/index.html" lang="en">English</a>
+  <span class="badge" id="lockbadge" role="status">核对中…</span>
+</div></header>
+<script>var langA = document.getElementById("lang"); langA.href = langA.getAttribute("href") + location.search + location.hash;</script>
+<main class="wrap">
+  <h1>我们做上链的芯片，<wbr>每张图都能核对</h1>
+  <p class="lede">每颗芯片都是 BNB Chain 或 X Layer 上的一份门电路网表，这里是它们真实的版图。打开就能看，不用登录；图片先和登记清单比对，一致了才显示。</p>
+  <div class="search">
+    <label class="sr" for="q">搜索芯片和板子</label>
+    <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="搜 16 颗芯片和板子">
+    <p class="note" id="total">16 项 = 链上电路 13 个 + 不上链的版图和板子 3 个</p>
+  </div>
+  <nav class="tags" id="tags" aria-label="分类"><a class="tag" href="#" data-cat="">全部（16 个）</a><a class="tag" href="#cat=drive" data-cat="drive">竞技场与机器人驱动（6 个）</a><a class="tag" href="#cat=agent" data-cat="agent">智能体控制（3 个）</a><a class="tag" href="#cat=lm" data-cat="lm">语言模型（4 个）</a><a class="tag" href="#cat=kit" data-cat="kit">运算组件（1 个）</a><a class="tag" href="#cat=site" data-cat="site">网站容器（3 个）</a><a class="tag" href="#cat=chip" data-cat="chip">芯片版图（1 个）</a><a class="tag" href="#cat=board" data-cat="board">电路板（2 个）</a></nav>
+  <div id="home" data-pre="1"><section class="shelf" id="sh-hot">
+    <div class="sec"><h2>热门</h2><a class="more" href="#shelf=hot">看全部 6 个 →</a></div>
+    <p class="note">第一次来，先看这几颗：能跑、能玩、能看懂。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="热门，左右滑"><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.1 的版图"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 1 版</strong>
+      <p class="say">一个小语言模型，每个字都在链上算出来；写出来多是词串，还不成句。</p>
+      <span class="meta" data-meta>5,069 门 · BNB Chain #285</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="NAND 驱动 v1 · 小车控制器 的版图"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>小车控制器</strong>
+      <p class="say">控制一辆小车在赛道上跑，是竞技场的第一位参赛者。</p>
+      <span class="meta" data-meta>21 门 · BNB Chain #279</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="组合大脑 Part B · 21nand 官网容器 的版图"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>组合大脑 · 官网</strong>
+      <p class="say">给鸭子大脑加上记忆；21 NAND 官网也放在它这里。</p>
+      <span class="meta" data-meta>25 门 · BNB Chain #282</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">看版图</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">打开官网</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article><article class="card" data-tid="bard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-v8g-whole.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></div>
+    <div class="body">
+      <strong>吟游诗人</strong>
+      <p class="say">写儿童故事风格句子的语言模型，句子常不连贯；直接做成了芯片版图。</p>
+      <span class="meta" data-meta>不上链</span>
+      
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/bard/v8g/" target="_blank" rel="noopener" title="链上版图取回页">看演示</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Microduck 转向大脑 的版图"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>鸭子转向大脑</strong>
+      <p class="say">替一只会走路的机器鸭子决定往哪边走。</p>
+      <span class="meta" data-meta>39 门 · BNB Chain #281</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="鸭子演示">看鸭子走</a></div>
+    </div></article></div></section><section class="shelf" id="sh-arena">
+    <div class="sec"><h2>竞技场与小车</h2><a class="more" href="#shelf=arena">看全部 4 个 →</a></div>
+    <p class="note">在赛道上开小车、在格子里找目标，都由链上的门电路做决定。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="竞技场与小车，左右滑"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="NAND 驱动 v1 · 小车控制器 的版图"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>小车控制器</strong>
+      <p class="say">控制一辆小车在赛道上跑，是竞技场的第一位参赛者。</p>
+      <span class="meta" data-meta>21 门 · BNB Chain #279</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="NAND 驱动 v2b · 带记忆 的版图"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>带记忆的小车</strong>
+      <p class="say">能记住刚才发生了什么的小车控制器，跑得更快。</p>
+      <span class="meta" data-meta>90 门 · BNB Chain #280</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>TapeID 容器</strong>
+      <p class="say">X Layer 上的小车控制器；TapeID 网站和吟游诗人的版图存在这里。</p>
+      <span class="meta" data-meta>21 门 · X Layer #1</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">打开网站</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article></div></section><section class="shelf" id="sh-brain">
+    <div class="sec"><h2>大脑</h2><a class="more" href="#shelf=brain">看全部 5 个 →</a></div>
+    <p class="note">替机器鸭子或智能体做决定的小电路。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="大脑，左右滑"><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Microduck 转向大脑 的版图"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>鸭子转向大脑</strong>
+      <p class="say">替一只会走路的机器鸭子决定往哪边走。</p>
+      <span class="meta" data-meta>39 门 · BNB Chain #281</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="鸭子演示">看鸭子走</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="组合大脑 Part B · 21nand 官网容器 的版图"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>组合大脑 · 官网</strong>
+      <p class="say">给鸭子大脑加上记忆；21 NAND 官网也放在它这里。</p>
+      <span class="meta" data-meta>25 门 · BNB Chain #282</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">看版图</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">打开官网</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 2 版</strong>
+      <p class="say">帮智能体管对话轮次和工具调用，不让它乱来。</p>
+      <span class="meta" data-meta>282 门 · BNB Chain #900283</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 3 版</strong>
+      <p class="say">公开版智能体管家：出错重试、调用次数都有上限。</p>
+      <span class="meta" data-meta>350 门 · BNB Chain #900284</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article></div></section><section class="shelf" id="sh-lm">
+    <div class="sec"><h2>语言模型</h2><a class="more" href="#shelf=lm">看全部 4 个 →</a></div>
+    <p class="note">把语言模型整颗做成门电路。吟游诗人写儿童故事风格的句子，常不连贯；另外两颗每个字都在链上算，写出来多是词串。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="语言模型，左右滑"><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.1 的版图"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 1 版</strong>
+      <p class="say">一个小语言模型，每个字都在链上算出来；写出来多是词串，还不成句。</p>
+      <span class="meta" data-meta>5,069 门 · BNB Chain #285</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.2 的版图"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 2 版</strong>
+      <p class="say">续写模型的第二版，演示页默认用它。</p>
+      <span class="meta" data-meta>5,120 门 · BNB Chain #286</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article><article class="card" data-tid="bard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-v8g-whole.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></div>
+    <div class="body">
+      <strong>吟游诗人</strong>
+      <p class="say">写儿童故事风格句子的语言模型，句子常不连贯；直接做成了芯片版图。</p>
+      <span class="meta" data-meta>不上链</span>
+      
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/bard/v8g/" target="_blank" rel="noopener" title="链上版图取回页">看演示</a></div>
+    </div></article><article class="card" data-tid="bard-storybox">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-storybox-pcb.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></div>
+    <div class="body">
+      <strong>故事机小板</strong>
+      <p class="say">给吟游诗人设计的故事机电路板，还没打样。</p>
+      <span class="meta" data-meta>自有板 · 未打板</span>
+      
+      <div class="btns"><span class="dim nobtn">只有图，没有演示</span></div>
+    </div></article></div></section><section class="shelf" id="sh-site">
+    <div class="sec"><h2>官网与工具</h2><a class="more" href="#shelf=site">看全部 6 个 →</a></div>
+    <p class="note">放网站的容器、给别的电路当零件的组件，和跑通芯片用的板子。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="官网与工具，左右滑"><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="组合大脑 Part B · 21nand 官网容器 的版图"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>组合大脑 · 官网</strong>
+      <p class="say">给鸭子大脑加上记忆；21 NAND 官网也放在它这里。</p>
+      <span class="meta" data-meta>25 门 · BNB Chain #282</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">看版图</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">打开官网</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>身份验证器</strong>
+      <p class="say">放链上身份验证器网站的地方，类似手机上的两步验证码。</p>
+      <span class="meta" data-meta>1 门 · BNB Chain #288</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">打开网站</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>TapeID 容器</strong>
+      <p class="say">X Layer 上的小车控制器；TapeID 网站和吟游诗人的版图存在这里。</p>
+      <span class="meta" data-meta>21 门 · X Layer #1</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">打开网站</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article><article class="card" data-tid="3.2.245">
+    <a class="pic" href="chip.html?tid=3.2.245" aria-label="21nandkit DOT32_T · 三值点积 的版图"><div class="thumb" data-img="img/3.2.245-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>三值点积</strong>
+      <p class="say">一次把两串数对应相乘再加起来，给更大的电路当零件。</p>
+      <span class="meta" data-meta>3,829 门 · X Layer #3</span>
+      <span class="open lic">网表公开 · MIT 许可，可以拿去改</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=3.2.245">看版图</a></div>
+    </div></article><article class="card" data-tid="xc7a100t-miniboard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/xc7a100t-miniboard-pcb.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></div>
+    <div class="body">
+      <strong>验证小板</strong>
+      <p class="say">用来在芯片做出来之前先跑通电路的板子，还没打样。</p>
+      <span class="meta" data-meta>自有板 · 未打板</span>
+      
+      <div class="btns"><span class="dim nobtn">只有图，没有演示</span></div>
+    </div></article></div></section><section class="shelf" id="sh-easy">
+    <div class="sec"><h2>适合从这里开始改</h2><a class="more" href="#shelf=easy">看全部 4 个 →</a></div>
+    <p class="note">门数少（不超过 100 个），网表在链上谁都能读，改起来最容易看懂。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="适合从这里开始改，左右滑"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="NAND 驱动 v1 · 小车控制器 的版图"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>小车控制器</strong>
+      <p class="say">控制一辆小车在赛道上跑，是竞技场的第一位参赛者。</p>
+      <span class="meta" data-meta>21 门 · BNB Chain #279</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="组合大脑 Part B · 21nand 官网容器 的版图"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>组合大脑 · 官网</strong>
+      <p class="say">给鸭子大脑加上记忆；21 NAND 官网也放在它这里。</p>
+      <span class="meta" data-meta>25 门 · BNB Chain #282</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">看版图</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">打开官网</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Microduck 转向大脑 的版图"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>鸭子转向大脑</strong>
+      <p class="say">替一只会走路的机器鸭子决定往哪边走。</p>
+      <span class="meta" data-meta>39 门 · BNB Chain #281</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="鸭子演示">看鸭子走</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="NAND 驱动 v2b · 带记忆 的版图"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>带记忆的小车</strong>
+      <p class="say">能记住刚才发生了什么的小车控制器，跑得更快。</p>
+      <span class="meta" data-meta>90 门 · BNB Chain #280</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article></div></section><section class="shelf" id="sh-new">
+    <div class="sec"><h2>最近上链</h2><a class="more" href="#shelf=new">看全部 11 个 →</a></div>
+    <p class="note">BNB Chain 上按电路编号倒排，编号越大上链越晚。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="最近上链，左右滑"><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 3 版</strong>
+      <p class="say">公开版智能体管家：出错重试、调用次数都有上限。</p>
+      <span class="meta" data-meta>350 门 · BNB Chain #900284</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 2 版</strong>
+      <p class="say">帮智能体管对话轮次和工具调用，不让它乱来。</p>
+      <span class="meta" data-meta>282 门 · BNB Chain #900283</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="290.732">
+    <a class="pic" href="chip.html?tid=290.732" aria-label="格子策略（蒸馏版）· 11×11 的版图"><div class="thumb" data-img="img/290.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>只会上下的格子电路</strong>
+      <p class="say">想学会在格子里走到目标，实际只会往下或往上走；小游戏现在改用 287 号电路。</p>
+      <span class="meta" data-meta>375 门 · BNB Chain #290</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=290.732">看版图</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>身份验证器</strong>
+      <p class="say">放链上身份验证器网站的地方，类似手机上的两步验证码。</p>
+      <span class="meta" data-meta>1 门 · BNB Chain #288</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">打开网站</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.2 的版图"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 2 版</strong>
+      <p class="say">续写模型的第二版，演示页默认用它。</p>
+      <span class="meta" data-meta>5,120 门 · BNB Chain #286</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article></div></section><section class="shelf group"><div class="sec"><h2>按链看</h2></div><p class="note">我们的电路在两条链上：BNB Chain 11 颗、X Layer 2 颗。</p></section><section class="shelf" id="sh-chain-bsc">
+    <div class="sec"><h3>BNB Chain（11 颗）</h3><a class="more" href="#shelf=chain-bsc">看全部 11 个 →</a></div>
+    <p class="note">BNB Chain 上的电路。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="BNB Chain（11 颗），左右滑"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="NAND 驱动 v1 · 小车控制器 的版图"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>小车控制器</strong>
+      <p class="say">控制一辆小车在赛道上跑，是竞技场的第一位参赛者。</p>
+      <span class="meta" data-meta>21 门 · BNB Chain #279</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="NAND 驱动 v2b · 带记忆 的版图"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>带记忆的小车</strong>
+      <p class="say">能记住刚才发生了什么的小车控制器，跑得更快。</p>
+      <span class="meta" data-meta>90 门 · BNB Chain #280</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="竞技场演示">看它跑</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Microduck 转向大脑 的版图"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>鸭子转向大脑</strong>
+      <p class="say">替一只会走路的机器鸭子决定往哪边走。</p>
+      <span class="meta" data-meta>39 门 · BNB Chain #281</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="鸭子演示">看鸭子走</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="组合大脑 Part B · 21nand 官网容器 的版图"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>组合大脑 · 官网</strong>
+      <p class="say">给鸭子大脑加上记忆；21 NAND 官网也放在它这里。</p>
+      <span class="meta" data-meta>25 门 · BNB Chain #282</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">看版图</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">打开官网</a></div>
+    </div></article><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.1 的版图"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 1 版</strong>
+      <p class="say">一个小语言模型，每个字都在链上算出来；写出来多是词串，还不成句。</p>
+      <span class="meta" data-meta>5,069 门 · BNB Chain #285</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="TapeoutLLM 一步模型 · 采样 v0.2 的版图"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>续写模型 第 2 版</strong>
+      <p class="say">续写模型的第二版，演示页默认用它。</p>
+      <span class="meta" data-meta>5,120 门 · BNB Chain #286</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">看版图</a><a class="btn" href="../lm/index.html" target="_blank" rel="noopener" title="续写演示">试试续写</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="nand_step · 11×11 走格子策略 的版图"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>走格子策略</strong>
+      <p class="say">在格子地图上告诉你下一步往哪走，智能体拿它当工具。</p>
+      <span class="meta" data-meta>386 门 · BNB Chain #287</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">看版图</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND 工具台">打开工具台</a></div>
+    </div></article><article class="card" data-tid="290.732">
+    <a class="pic" href="chip.html?tid=290.732" aria-label="格子策略（蒸馏版）· 11×11 的版图"><div class="thumb" data-img="img/290.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>只会上下的格子电路</strong>
+      <p class="say">想学会在格子里走到目标，实际只会往下或往上走；小游戏现在改用 287 号电路。</p>
+      <span class="meta" data-meta>375 门 · BNB Chain #290</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=290.732">看版图</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 2 版</strong>
+      <p class="say">帮智能体管对话轮次和工具调用，不让它乱来。</p>
+      <span class="meta" data-meta>282 门 · BNB Chain #900283</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">版图排队中</span></div></div>
+    <div class="body">
+      <strong>智能体管家 第 3 版</strong>
+      <p class="say">公开版智能体管家：出错重试、调用次数都有上限。</p>
+      <span class="meta" data-meta>350 门 · BNB Chain #900284</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">看演示</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>身份验证器</strong>
+      <p class="say">放链上身份验证器网站的地方，类似手机上的两步验证码。</p>
+      <span class="meta" data-meta>1 门 · BNB Chain #288</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">打开网站</a></div>
+    </div></article></div></section><section class="shelf" id="sh-chain-xlayer">
+    <div class="sec"><h3>X Layer（2 颗）</h3><a class="more" href="#shelf=chain-xlayer">看全部 2 个 →</a></div>
+    <p class="note">X Layer 上的电路。</p>
+    <div class="rail" role="region" tabindex="0" aria-label="X Layer（2 颗），左右滑"><article class="card" data-tid="3.2.245">
+    <a class="pic" href="chip.html?tid=3.2.245" aria-label="21nandkit DOT32_T · 三值点积 的版图"><div class="thumb" data-img="img/3.2.245-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">核对中…</span></div></a>
+    <div class="body">
+      <strong>三值点积</strong>
+      <p class="say">一次把两串数对应相乘再加起来，给更大的电路当零件。</p>
+      <span class="meta" data-meta>3,829 门 · X Layer #3</span>
+      <span class="open lic">网表公开 · MIT 许可，可以拿去改</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=3.2.245">看版图</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">网站容器，没有单独版图</span></div></div>
+    <div class="body">
+      <strong>TapeID 容器</strong>
+      <p class="say">X Layer 上的小车控制器；TapeID 网站和吟游诗人的版图存在这里。</p>
+      <span class="meta" data-meta>21 门 · X Layer #1</span>
+      <span class="open">网表公开</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">打开网站</a></div>
+    </div></article></div></section></div>
+  <section id="results" hidden>
+    <div class="sec"><h2 id="rtitle">结果</h2><span class="note" id="rcount"></span><a class="back" href="#">← 回到首页</a></div>
+    <p class="note" id="rsay"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+  <div class="check" id="lockinfo"><p class="dim" id="locksay">正在读登记清单…</p><p class="warn" id="lockchain" hidden></p>
+    <details><summary>怎么核的</summary><p class="dim">每张图先下载字节，算 sha256，和登记清单里的那一行比，一致了才显示。</p>
+    <pre id="lockpre">登记清单 gallery.lock.json
+正在读…</pre></details></div>
+  <footer><a href="../index.html">21 NAND</a> · <a href="../app/">打开应用</a> · <a href="../start/verify.html">自己核对</a></footer>
+</main>
+<script src="chips.js"></script>
+<script>
+// 页面脚本（含依赖）加载失败或一直不回时说清楚，不让徽标永远停在「核对中」
+function galleryBootFail(badge, box) { if (window.GALLERY_BOOTED) return; var b = document.getElementById(badge), c = document.getElementById(box);
+  if (b) { b.className = 'badge bad'; b.textContent = '页面没加载成功'; } var s = document.getElementById('locksay') || c;      // 只换那一行结论，下面的折叠说明留着
+  if (s) { s.className = 'bad'; s.textContent = '这个页面的脚本没加载成功，所以图和核对都没有开始。刷新再试一次；还不行就过几分钟再来。'; } }
+setTimeout(function () { galleryBootFail('lockbadge', 'lockinfo'); }, 25000);
+</script>
+<script type="module" src="index.js" onerror="galleryBootFail('lockbadge', 'lockinfo')"></script>
+<link rel="stylesheet" href="gallery.css">
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
+</body>
+</html>

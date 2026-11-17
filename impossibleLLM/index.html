@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050506">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235741D8'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
 <style>
-/* Kraken Pro 式深色（2026-10-14 起，配色基准 circuits/_scratch/hashport/site/home.css；取代 10-01 的绿色版式）：近黑底、深灰圆角卡片、
+/* Kraken Pro 式深色（2026-10-14 起，配色基准 home.css；取代 10-01 的绿色版式）：近黑底、深灰圆角卡片、
    细边框、品牌紫、系统字体；只有这一套深色。旧变量名 --fg --dim --card --acc --warn 保留：行内样式和脚本生成的元素还在用它们。 */
 :root{color-scheme:dark;
   --bg:#050506;--panel:#111114;--panel2:#17171C;--ink:#FFFFFF;--ink2:#CBCBD3;--ink3:#9C9DAE;
@@ -92,7 +92,8 @@ html[lang^="en"] .zh{display:none!important} html:not([lang^="en"]) .en{display:
 </style>
 <script>var l; try{ l=localStorage.getItem('nand-driver-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN';</script>
 <!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
-</head><body>
+</head><body><!--tk-old--><div role="note" style="position:relative;z-index:2147482990;box-sizing:border-box;margin:0;padding:8px 16px;background:#2A2410;color:#F3E6B0;border-bottom:1px solid #5A4A1A;font:400 14px/1.5 system-ui,-apple-system,sans-serif;text-align:center;overflow-wrap:anywhere;letter-spacing:0;text-transform:none">这是旧页，不再更新。<a href="../" style="color:#FFD666;text-decoration:underline;border:0">回首页</a><span lang="en" style="color:#C9BC8C"> · Old page, no longer updated.</span></div><!--/tk-old-->
+
 <header class="site g"><div class="in">
 <a class="mark" href="../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
 <div class="hdr-r"><span class="crumb">impossible LLM · v2</span><button type="button" class="langbtn" id="langbtn" aria-label="切换语言 / Switch language"><span data-l="zh">中文</span> / <span data-l="en">EN</span></button></div>
@@ -170,8 +171,8 @@ It still can't write coherent sentences, and it is <b>not on-chain</b>.</span></
     <li><span class="zh"><b>不会调用工具、没有记忆、没有上链。</b></span><span class="en"><b>No tool use, no memory, not on-chain.</b></span></li>
   </ul>
   <p class="muted" style="margin-top:12px"><span class="zh">相关页面：<a href="../nandtool/">Pi 工作台（大脑换成本网表）</a> · <a href="v1/">v1 存档（54,147 门）</a> ·
-  源码在 tapeout 仓库 <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code>（建表 <code>v2_build.py</code>、分块综合 <code>v2_chunk_synth.py</code>、验证 <code>v2_verify.py</code> + <code>nleval.c</code>）。</span><span class="en">Related: <a href="../nandtool/">Pi workbench (with this netlist as its brain)</a> · <a href="v1/">v1 archive (54,147 gates)</a> ·
-  Source is in the tapeout repo at <code>circuits/_scratch/tapeout_asic/onestep_lm/v2/</code> (table builder <code>v2_build.py</code>, chunked synthesis <code>v2_chunk_synth.py</code>, verification <code>v2_verify.py</code> + <code>nleval.c</code>).</span></p>
+  源码在 tapeout 仓库 <code>onestep_lm/v2/</code>（建表 <code>v2_build.py</code>、分块综合 <code>v2_chunk_synth.py</code>、验证 <code>v2_verify.py</code> + <code>nleval.c</code>）。</span><span class="en">Related: <a href="../nandtool/">Pi workbench (with this netlist as its brain)</a> · <a href="v1/">v1 archive (54,147 gates)</a> ·
+  Source is in the tapeout repo at <code>onestep_lm/v2/</code> (table builder <code>v2_build.py</code>, chunked synthesis <code>v2_chunk_synth.py</code>, verification <code>v2_verify.py</code> + <code>nleval.c</code>).</span></p>
 </div>
 </div>
 
@@ -204,7 +205,7 @@ const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const T = (zh, en) => '<span class="zh">' + zh + '</span><span class="en">' + en + '</span>';
 const SUGGEST = ['I like cats because', 'The album was released in', 'Hello, how are you?', 'def fibonacci(n):', '今天天气很好，我们', '中国的首都是'];
 for (const s of SUGGEST) {
-  const b = document.createElement('button'); b.textContent = s;
+  const b = document.createElement('button'); b.textContent = s; b.disabled = true;   // 网表读完前点了也没法跑：先置灰，就绪后放开
   b.onclick = () => { MSG.value = s; if (!GO.disabled) GO.click(); };
   $('chips').append(b);
 }
@@ -223,7 +224,7 @@ try {
     makeTokenizer: (tj, tc) => new PreTrainedTokenizer(tj, tc),
   });
   OUT.innerHTML = '<span class="muted">' + T('就绪：' + brain.info.gates.toLocaleString() + ' 个门，' + brain.info.randomBits + ' 个随机位。点「生成」。', 'Ready: ' + brain.info.gates.toLocaleString() + ' gates, ' + brain.info.randomBits + ' random bits. Press “Generate”.') + '</span>';
-  GO.disabled = false;
+  GO.disabled = false; for (const b of $('chips').children) b.disabled = false;
 } catch (err) {
   OUT.innerHTML = '<span class="warn">' + T('加载失败：', 'Load failed: ') + esc(String(err.message || err)) + '</span>';
 }

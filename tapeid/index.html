@@ -3,194 +3,288 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#050506">
 <title>TapeID 发币</title>
 <meta name="description" content="把你在 TapeOut 上做的电路，一键在 Base 链上发成代币。">
-<link rel="icon" href="https://nand.aihashrate.stream/tapeid/tapeid-default.png">
+<link rel="icon" href="/tapeid/tapeid-default.svg">
+<style id="theme">:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  --logo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2.2 -2.2 354.4 70.4' fill='none' stroke-width='4.4' stroke-linecap='round' stroke-linejoin='round' stroke='%23000'%3E%3Cpath d='M5 11L40 11A5 5 0 0 1 45 16L45 28A5 5 0 0 1 40 33L10 33A5 5 0 0 0 5 38L5 50A5 5 0 0 0 10 55L45 55M65 11L80 11A5 5 0 0 1 85 16L85 55M125 55L125 16A5 5 0 0 1 130 11L140 11A5 5 0 0 1 145 16L145 50A5 5 0 0 0 150 55L160 55A5 5 0 0 0 165 50L165 11M185 55L185 16A5 5 0 0 1 190 11L220 11A5 5 0 0 1 225 16L225 55M185 33L225 33M245 55L245 16A5 5 0 0 1 250 11L260 11A5 5 0 0 1 265 16L265 50A5 5 0 0 0 270 55L280 55A5 5 0 0 0 285 50L285 11M305 11L340 11A5 5 0 0 1 345 16L345 50A5 5 0 0 1 340 55L305 55Z'/%3E%3C/svg%3E");
+}
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}
+a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+a.card:active,.card:has(a:active),.side a:active,.toc a:active,.nav a:active{filter:brightness(.82)}
+[data-nav-busy]:is(.card,.lot,[data-nav]){position:relative;cursor:progress;box-shadow:var(--ring)}
+[data-nav-busy]:is(.card,.lot,[data-nav])::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}
+.w-live{position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+@media (forced-colors:active){a.brand::before{background:CanvasText!important}}:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}</style>
 <style>
-  /* Kraken Pro 式深色（2026-10-14，与新官网 site/home.css 同一套配色）。也是链上页面：只用系统字体、不连链外资源。 */
+  /* Kraken Pro 式深色（2026-10-14，与新官网同一套配色）。也是链上页面：只用系统字体、不连链外资源。 */
   :root {
     color-scheme:dark;
-    --bg:#050506; --card:#111114; --card-2:#17171C; --fg:#FFFFFF; --text-2:#CBCBD3; --dim:#9C9DAE;
-    --line:rgba(112,113,135,.24); --line-soft:rgba(112,113,135,.14);
-    --brand:#5741D8; --brand-hover:#6A55E8; --acc:#A496FF; --acc-fg:#FFFFFF; --acc-soft:rgba(87,65,216,.16);
-    --ok:#00DA80; --bad:#F0616D; --focus:#A496FF;
-    --r:16px; --gap:14px; --done:rgba(164,150,255,.42);
+     --card:var(--panel); --card-2:var(--sel); --fg:var(--ink); --text-2:var(--text); --dim:var(--text-dim);
+    --line:color-mix(in srgb,var(--field) 24%,transparent); --line-soft:color-mix(in srgb,var(--field) 14%,transparent);
+      --acc:var(--brand-text); --acc-fg:var(--ink); --acc-soft:color-mix(in srgb,var(--brand) 16%,transparent);
+      --focus:var(--brand-text);
+    --r:1rem; --gap:.875rem; --done:color-mix(in srgb,var(--brand-text) 42%,transparent);
     --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
     --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:radial-gradient(70% 90% at 25% 0%, rgba(87,65,216,.28), rgba(87,65,216,0) 70%) top / 100% 520px no-repeat, var(--bg); color:var(--fg); font:15px/1.6 var(--sans); }
-  main { max-width:720px; margin:0 auto; padding:0 16px 80px; }
-  header { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; padding:18px 0 26px; margin-bottom:8px; border-bottom:1px solid var(--line-soft); color:var(--fg); }
+  body { margin:0; background:radial-gradient(70% 90% at 25% 0%, color-mix(in srgb,var(--brand) 28%,transparent), color-mix(in srgb,var(--brand) 0%,transparent) 70%) top / 100% 520px no-repeat, var(--bg); color:var(--fg); font:.9375rem/1.6 var(--sans); }
+  main { max-width:45rem; margin:0 auto; padding:0 1rem 5rem; }
+  header { display:flex; flex-wrap:wrap; gap:.75rem; align-items:flex-start; padding:1.125rem 0 1.625rem; margin-bottom:.5rem; border-bottom:1px solid var(--line-soft); color:var(--fg); }
   header > div { flex:1 1 0; min-width:0; }
-  .mark { flex-basis:100%; display:grid; line-height:1.1; color:var(--fg); text-decoration:none; padding-bottom:16px; margin-bottom:6px; border-bottom:1px solid var(--line-soft); }
-  .mark b { font:800 20px/1.1 var(--sans); letter-spacing:.01em; }
-  .mark small { font:400 11px/1 var(--mono); letter-spacing:.04em; color:var(--dim); margin-top:6px; }
-  header img { width:56px; height:56px; border-radius:50%; flex:none; }
-  h1 { font:800 clamp(28px,5.4vw,40px)/1.15 var(--sans); letter-spacing:-.01em; margin:2px 0 8px; word-break:keep-all; overflow-wrap:anywhere; }
+  .mark { flex-basis:100%; display:grid; line-height:1.1; color:var(--fg); text-decoration:none; padding-bottom:1rem; margin-bottom:.375rem; border-bottom:1px solid var(--line-soft); }
+  .mark b { font:800 1.25rem/1.1 var(--sans); letter-spacing:.01em; }
+  .mark small { font:400 .6875rem/1 var(--mono); letter-spacing:.04em; color:var(--dim); margin-top:.375rem; }
+  header img { width:3.5rem; height:3.5rem; border-radius:50%; flex:none; }
+  h1 { font:800 clamp(1.75rem,5.4vw,2.5rem)/1.15 var(--sans); letter-spacing:-.01em; margin:2px 0 .5rem; word-break:keep-all; overflow-wrap:anywhere; }
   .lead { color:var(--text-2); margin:0; }
   #lang { margin-left:auto; flex:none; }
-  ol.dots { list-style:none; display:flex; gap:6px; padding:0; margin:18px 0; }
-  ol.dots li { flex:1; height:4px; border-radius:2px; background:var(--line); }
+  ol.dots { list-style:none; display:flex; gap:.375rem; padding:0; margin:1.125rem 0; }
+  ol.dots li { flex:1; height:.25rem; border-radius:var(--r); background:var(--line); }
   ol.dots li.done { background:var(--done); } ol.dots li.now { background:var(--acc); }
-  section { background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:18px; margin-bottom:var(--gap); }
-  section h2 { font:700 19px/1.3 var(--sans); margin:0 0 12px; display:flex; gap:10px; align-items:center; }
-  section h2 .n { width:26px; height:26px; border-radius:8px; background:var(--brand); color:#fff; font:600 13px/1 var(--mono); display:inline-grid; place-items:center; flex:none; }
-  button, .btn { font:600 16px/1.2 var(--sans); border-radius:12px; border:1px solid var(--brand); background:var(--brand); color:#fff; padding:10px 18px; cursor:pointer; text-decoration:none; display:inline-block; text-align:center; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:1.125rem; margin-bottom:var(--gap); }
+  section h2 { font:700 1.1875rem/1.3 var(--sans); margin:0 0 .75rem; display:flex; gap:.625rem; align-items:center; }
+  section h2 .n { width:1.625rem; height:1.625rem; border-radius:var(--r); background:var(--brand); color:#fff; font:600 .8125rem/1 var(--mono); display:inline-grid; place-items:center; flex:none; }
+  button, .btn { font:600 1rem/1.2 var(--sans); border-radius:var(--r); border:1px solid var(--brand); background:var(--brand); color:#fff; padding:.625rem 1.125rem; cursor:pointer; text-decoration:none; display:inline-block; text-align:center; }
   button:not(.ghost):not(.circ):not(.coinrow):not(:disabled):hover, .btn:hover { background:var(--brand-hover); border-color:var(--brand-hover); color:#fff; }
-  button.big, .btn.big { width:100%; padding:14px; font-size:18px; font-weight:600; }
-  button.ghost { background:transparent; color:var(--fg); border-color:var(--line); padding:6px 12px; font-weight:500; }
+  button.big, .btn.big { width:100%; padding:.875rem; font-size:1.125rem; font-weight:600; }
+  button.ghost { background:transparent; color:var(--fg); border-color:var(--line); padding:.375rem .75rem; font-weight:500; }
   button.ghost:not(:disabled):hover { border-color:var(--acc); color:var(--acc); }
-  header button.ghost { font:500 12px/1.4 var(--mono); background:var(--card-2); color:var(--text-2); border-color:var(--line); }
+  header button.ghost { font:500 .75rem/1.4 var(--mono); background:var(--card-2); color:var(--text-2); border-color:var(--line); }
   button:disabled { opacity:.45; cursor:not-allowed; }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
   a { color:var(--acc); }
-  .dim { color:var(--dim); } .mono { font-family:var(--mono); font-size:13px; word-break:break-all; }
-  .note { background:var(--acc-soft); border:1px solid var(--line-soft); border-left:3px solid var(--brand); border-radius:10px; padding:10px 12px; margin-top:10px; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-  input, textarea { width:100%; font:inherit; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--fg); }
-  textarea { min-height:90px; }
-  label { display:block; font-weight:600; margin:12px 0 4px; }
-  .hint { color:var(--dim); font-size:13px; margin:4px 0 0; }
-  #circuits { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:8px; margin-top:10px; }
-  @media (max-width:560px) { #circuits { grid-template-columns:1fr 1fr; } .circ .meta { font-size:12px; } }
+  .dim { color:var(--dim); } .mono { font-family:var(--mono); font-size:.8125rem; word-break:break-all; }
+  .note { background:var(--acc-soft); border:1px solid var(--line-soft); border-left:3px solid var(--brand); border-radius:var(--r); padding:.625rem .75rem; margin-top:.625rem; }
+  .row { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+  input, textarea { width:100%; font:inherit; padding:.5625rem .6875rem; border:1px solid var(--line); border-radius:var(--r); background:var(--bg); color:var(--fg); }
+  textarea { min-height:5.625rem; }
+  label { display:block; font-weight:600; margin:.75rem 0 .25rem; }
+  .hint { color:var(--dim); font-size:.8125rem; margin:.25rem 0 0; }
+  #circuits { display:grid; grid-template-columns:repeat(auto-fill, minmax(11.875rem, 1fr)); gap:.5rem; margin-top:.625rem; }
+  @media (max-width:560px) { #circuits { grid-template-columns:1fr 1fr; } .circ .meta { font-size:.75rem; } }
   #pickerWrap.picked .circ:not(.on), #pickerWrap.picked #searchRow, #pickerWrap.picked #more { display:none !important; }
   #pickerWrap:not(.picked) #change { display:none; }
-  .circ { font:inherit; font-family:var(--sans); letter-spacing:0; text-transform:none; text-align:left; background:var(--card-2); color:var(--fg); border:1px solid var(--line); border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:2px; }
-  .circ:hover { border-color:rgba(164,150,255,.5); }
+  .circ { font:inherit; font-family:var(--sans); letter-spacing:0; text-transform:none; text-align:left; background:var(--card-2); color:var(--fg); border:1px solid var(--line); border-radius:var(--r); padding:.625rem .75rem; display:flex; flex-direction:column; gap:2px; }
+  .circ:hover { border-color:color-mix(in srgb,var(--brand-text) 50%,transparent); }
   .circ.on { border-color:var(--acc); box-shadow:0 0 0 2px var(--acc) inset; }
-  .circ .tid { font-weight:700; font-size:16px; } .circ .nm { color:var(--acc); font-weight:600; } .circ .meta { color:var(--dim); font-size:12.5px; }
-  .preview { display:flex; gap:14px; align-items:center; }
-  .preview img { width:84px; height:84px; border-radius:50%; flex:none; background:var(--card-2); object-fit:cover; }
-  .preview .pn { font:700 26px/1.15 var(--sans); } .preview .ps { color:var(--acc); font-weight:700; }
-  ul.earn-list { margin:12px 0 0; padding-left:20px; }
-  details { margin-top:14px; border-top:1px dashed var(--line); padding-top:10px; }
+  .circ .tid { font-weight:700; font-size:1rem; } .circ .nm { color:var(--acc); font-weight:600; } .circ .meta { color:var(--dim); font-size:.7812rem; }
+  .preview { display:flex; gap:.875rem; align-items:center; }
+  .preview img { width:5.25rem; height:5.25rem; border-radius:50%; flex:none; background:var(--card-2); object-fit:cover; }
+  .preview .pn { font:700 1.625rem/1.15 var(--sans); } .preview .ps { color:var(--acc); font-weight:700; }
+  ul.earn-list { margin:.75rem 0 0; padding-left:1.25rem; }
+  details { margin-top:.875rem; border-top:1px dashed var(--line); padding-top:.625rem; }
   summary::marker { color:var(--acc); }
   summary { cursor:pointer; color:var(--dim); }
-  pre { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px; max-height:260px; overflow:auto; font-size:12px; white-space:pre-wrap; word-break:break-all; }
-  .chk { display:flex; gap:10px; align-items:center; padding:6px 0; }
-  .chk::before { content:"…"; width:22px; height:22px; border-radius:50%; display:inline-grid; place-items:center; background:var(--card-2); border:1px solid var(--line); color:var(--dim); font-size:13px; flex:none; }
-  .chk.ok::before { content:"✓"; background:var(--ok); border-color:var(--ok); color:#050506; }
-  .chk.bad::before { content:"!"; background:var(--bad); border-color:var(--bad); color:#050506; }
+  pre { background:var(--bg); border:1px solid var(--line); border-radius:var(--r); padding:.625rem; max-height:16.25rem; overflow:auto; font-size:.75rem; white-space:pre-wrap; word-break:break-all; }
+  .chk { display:flex; gap:.625rem; align-items:center; padding:.375rem 0; }
+  .chk::before { content:"…"; width:1.375rem; height:1.375rem; border-radius:50%; display:inline-grid; place-items:center; background:var(--card-2); border:1px solid var(--line); color:var(--dim); font-size:.8125rem; flex:none; }
+  .chk.ok::before { content:"✓"; background:var(--ok); border-color:var(--ok); color:var(--bg); }
+  .chk.bad::before { content:"!"; background:var(--bad); border-color:var(--bad); color:var(--bg); }
   .chk.bad span { color:var(--bad); }
-  .earn { display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center; padding:10px 0; border-top:1px dashed var(--line); }
+  .earn { display:grid; grid-template-columns:1fr auto auto; gap:.625rem; align-items:center; padding:.625rem 0; border-top:1px dashed var(--line); }
   .earn .amt { font-weight:700; }
-  .coinrow { width:100%; font:inherit; font-family:var(--sans); letter-spacing:0; text-transform:none; text-align:left; background:transparent; color:var(--fg); border:0; border-top:1px dashed var(--line); border-radius:0; padding:10px 0; }
-  .toast { position:fixed; left:50%; bottom:20px; transform:translate(-50%, 40px); opacity:0; transition:.2s; background:var(--card-2); color:var(--fg); border:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.5);
-    padding:10px 16px; border-radius:12px; max-width:calc(100% - 32px); pointer-events:none; }
-  .toast.show { transform:translate(-50%, 0); opacity:1; } .toast.bad { background:var(--bad); border-color:var(--bad); color:#050506; } .toast.ok { background:var(--ok); border-color:var(--ok); color:#050506; }
-  footer { color:var(--dim); font-size:12.5px; text-align:center; margin-top:24px; }
+  .coinrow { width:100%; font:inherit; font-family:var(--sans); letter-spacing:0; text-transform:none; text-align:left; background:transparent; color:var(--fg); border:0; border-top:1px dashed var(--line); border-radius:0; padding:.625rem 0; }
+  .toast { position:fixed; left:50%; bottom:1.25rem; transform:translate(-50%, 40px); opacity:0; transition:.2s; background:var(--card-2); color:var(--fg); border:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.5);
+    padding:.625rem 1rem; border-radius:var(--r); max-width:calc(100% - 2rem); pointer-events:none; }
+  .toast.show { transform:translate(-50%, 0); opacity:1; } .toast.bad { background:var(--bad); border-color:var(--bad); color:var(--bg); } .toast.ok { background:var(--ok); border-color:var(--ok); color:var(--bg); }
+  footer { color:var(--dim); font-size:.7812rem; text-align:center; margin-top:1.5rem; }
   [hidden] { display:none !important; }
+#tapeBoot{position:fixed;left:0;right:0;bottom:0;z-index:9;margin:0!important;padding:.5rem 1rem;background:var(--bg-deep);border-top:1px solid var(--line);font-size:var(--fs-sm)}
 </style>
-<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+<style>/* 中文标题按词断行，手机上不把词拆开 */h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}@media (max-width:480px){h1{font-size:1.25rem}}</style>
 </head>
 <body>
 <main>
+  <p id="tapeBoot" style="text-align:center;color:#888;margin:8px 0 16px">正在从链上加载（约 0.3 MB）… / Loading from chain…</p>
   <header>
     <a class="mark" href="https://nand.aihashrate.stream/" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain · X Layer</small></a>
-    <img src="https://nand.aihashrate.stream/tapeid/tapeid-default.png" alt="">
+    <img src="/tapeid/tapeid-default.svg" alt="">
     <div>
-      <h1 data-i="title"></h1>
-      <p class="lead" data-i="lead"></p>
+      <h1 data-i="title">给你的电路发一个币</h1>
+      <p class="lead" data-i="lead">在 TapeOut 上做过电路？选一个，一键在 Base 链上发成代币，放进 X 帖子里能直接点开看价格。每笔买卖都给你分钱。</p>
     </div>
-    <button id="lang" class="ghost" type="button" data-i="lang"></button>
+    <button id="lang" disabled data-wait class="ghost" type="button" data-i="lang">EN</button>
   </header>
 
   <ol class="dots" aria-hidden="true"><li id="dot1"></li><li id="dot2"></li><li id="dot3"></li><li id="dot4"></li><li id="dot5"></li></ol>
 
   <section id="st1">
-    <h2><span class="n">1</span><span data-i="s1"></span></h2>
-    <button id="connect" class="big" type="button" data-i="connect"></button>
+    <h2><span class="n">1</span><span data-i="s1">连接钱包</span></h2>
+    <button id="connect" disabled data-wait class="big" type="button" data-i="connect">连接钱包</button>
     <p id="connected" class="mono" hidden></p>
     <div id="noWallet" class="note" hidden>
-      <p data-i="noWallet" style="margin:0 0 8px"></p>
+      <p data-i="noWallet" style="margin:0 0 8px">没检测到钱包。电脑上装 MetaMask 或 OKX 钱包扩展后刷新；手机上请在 OKX / MetaMask App 自带的浏览器里打开本页。</p>
       <div class="row">
-        <a class="btn" href="https://metamask.io/download/" target="_blank" rel="noopener" data-i="getMetamask"></a>
-        <a class="btn" href="https://www.okx.com/web3" target="_blank" rel="noopener" data-i="getOkx"></a>
+        <a class="btn" href="https://metamask.io/download/" target="_blank" rel="noopener" data-i="getMetamask">安装 MetaMask</a>
+        <a class="btn" href="https://www.okx.com/web3" target="_blank" rel="noopener" data-i="getOkx">安装 OKX 钱包</a>
       </div>
     </div>
   </section>
 
   <section id="st2" hidden>
-    <h2><span class="n">2</span><span data-i="s2"></span></h2>
+    <h2><span class="n">2</span><span data-i="s2">选一个电路</span></h2>
     <p id="scanState" class="dim"></p>
-    <div id="scanErr" class="note" hidden><p id="scanErrText" style="margin:0 0 8px"></p><button id="rescan" class="ghost" type="button" data-i="rescan"></button></div>
+    <div id="scanErr" class="note" hidden><p id="scanErrText" style="margin:0 0 8px"></p><button id="rescan" disabled data-wait class="ghost" type="button" data-i="rescan">重新找一遍</button></div>
     <div id="none" class="note" hidden>
-      <p data-i="none" style="margin:0 0 8px"></p>
-      <a class="btn" href="https://www.tapeout.net/" target="_blank" rel="noopener" data-i="makeOne"></a>
+      <p data-i="none" style="margin:0 0 8px">这个钱包还没有电路。电路是在 TapeOut 上用 NAND 门搭的小程序，先去做一个，再回来发币。</p>
+      <a class="btn" href="https://www.tapeout.net/" target="_blank" rel="noopener" data-i="makeOne">去 tapeout.net 做一个电路</a>
     </div>
     <div id="pickerWrap" hidden>
-      <div class="row" id="searchRow"><input id="search" data-ph="search" style="flex:1"><span id="found" class="dim"></span></div>
+      <div class="row" id="searchRow"><input id="search" data-ph="search" style="flex:1" placeholder="搜电路号、名字、门数…"><span id="found" class="dim"></span></div>
       <div id="circuits"></div>
-      <p><button id="more" class="ghost" type="button" hidden></button> <button id="change" class="ghost" type="button" data-i="change"></button></p>
+      <p><button id="more" disabled data-wait class="ghost" type="button" hidden></button> <button id="change" disabled data-wait class="ghost" type="button" data-i="change">换一个电路</button></p>
     </div>
   </section>
 
   <section id="st3" hidden>
-    <h2><span class="n">3</span><span data-i="s3"></span></h2>
+    <h2><span class="n">3</span><span data-i="s3">看看你的币</span></h2>
     <div class="preview">
       <img id="pvLogo" alt="">
       <div><div class="pn" id="pvName"></div><div class="ps" id="pvSymbol"></div><div class="dim" id="pvTid"></div></div>
     </div>
     <ul class="earn-list">
       <li id="earnYou"></li>
-      <li data-i="earnBem"></li>
-      <li class="dim" data-i="earnPlatform"></li>
+      <li data-i="earnBem"><b>0.16%</b> 用来回购 $BEM</li>
+      <li class="dim" data-i="earnPlatform">另有 0.2% 归发币平台 Clanker</li>
     </ul>
-    <label for="name" data-i="nameLabel"></label><input id="name" maxlength="60">
-    <label for="symbol" data-i="symbolLabel"></label><input id="symbol" maxlength="6" autocapitalize="characters" style="text-transform:uppercase">
-    <p class="hint" data-i="symbolHint"></p>
+    <label for="name" data-i="nameLabel">名字</label><input id="name" maxlength="60">
+    <label for="symbol" data-i="symbolLabel">代码（$ 后面那串）</label><input id="symbol" maxlength="6" autocapitalize="characters" style="text-transform:uppercase">
+    <p class="hint" data-i="symbolHint">只能用 1–6 个英文字母。同名没关系，X 按合约地址区分。</p>
     <details>
-      <summary data-i="advanced"></summary>
-      <label for="image" data-i="imageLabel"></label><input id="image">
-      <label for="desc" data-i="descLabel"></label><textarea id="desc"></textarea>
-      <label for="site" data-i="siteLabel"></label><input id="site">
-      <label for="handle" data-i="handleLabel"></label><input id="handle" placeholder="@">
-      <label for="devbuy" data-i="devbuyLabel"></label><input id="devbuy" inputmode="decimal" placeholder="0">
-      <p class="hint" data-i="devbuyHint"></p>
-      <label for="addrAuthor" data-i="addrAuthor"></label><input id="addrAuthor" class="mono" readonly>
-      <label for="addrBuyback" data-i="addrBuyback"></label><input id="addrBuyback" class="mono" readonly>
-      <p class="hint" data-i="sniper"></p>
-      <label data-i="config"></label><pre id="config"></pre>
+      <summary data-i="advanced">高级设置（不懂可以不看）</summary>
+      <label for="image" data-i="imageLabel">图片地址</label><input id="image">
+      <label for="desc" data-i="descLabel">简介</label><textarea id="desc"></textarea>
+      <label for="site" data-i="siteLabel">网站</label><input id="site">
+      <label for="handle" data-i="handleLabel">你的 X 用户名（可选）</label><input id="handle" placeholder="@">
+      <label for="devbuy" data-i="devbuyLabel">发币时顺便买一点（ETH，可选）</label><input id="devbuy" inputmode="decimal" placeholder="0">
+      <p class="hint" data-i="devbuyHint">有了第一笔成交，价格网站才会收录，X 上才显示价格。</p>
+      <label for="addrAuthor" data-i="addrAuthor">80% 收款地址</label><input id="addrAuthor" class="mono" readonly>
+      <label for="addrBuyback" data-i="addrBuyback">20% 回购地址（你钱包专属的 Safe，只有你能动）</label><input id="addrBuyback" class="mono" readonly>
+      <p class="hint" data-i="sniper">开盘前 15 秒有防抢跑手续费（从 66.7% 降到 4.2%，之后恢复 1%）。两份收款地址以后由你的钱包管理。</p>
+      <label data-i="config">完整发币参数</label><pre id="config"></pre>
     </details>
   </section>
 
   <section id="st4" hidden>
-    <h2><span class="n">4</span><span data-i="s4"></span></h2>
-    <div id="cNet" class="chk"><span data-i="checkNet"></span></div>
-    <div id="cGas" class="chk"><span data-i="checkGas"></span></div>
-    <div id="cSim" class="chk"><span data-i="checkSim"></span></div>
+    <h2><span class="n">4</span><span data-i="s4">发币</span></h2>
+    <div id="cNet" class="chk"><span data-i="checkNet">钱包在 Base 网络</span></div>
+    <div id="cGas" class="chk"><span data-i="checkGas">钱包里的 ETH 够付手续费（约 {cost} ETH）</span></div>
+    <div id="cSim" class="chk"><span data-i="checkSim">试发一遍（不花钱）通过</span></div>
     <div id="needEth" class="note" hidden>
       <p id="needText" style="margin:0 0 8px"></p>
-      <div class="row"><span id="myAddr" class="mono" style="flex:1"></span><button id="copyMine" class="ghost" type="button" data-i="copy"></button></div>
-      <p><button id="recheck" class="ghost" type="button" data-i="recheck"></button></p>
+      <div class="row"><span id="myAddr" class="mono" style="flex:1"></span><button id="copyMine" disabled data-wait class="ghost" type="button" data-i="copy">复制</button></div>
+      <p><button id="recheck" disabled data-wait class="ghost" type="button" data-i="recheck">转好了，重新检查</button></p>
     </div>
-    <p><button id="launch" class="big" type="button" disabled data-i="launch"></button></p>
+    <p><button id="launch" class="big" type="button" disabled data-i="launch">发币</button></p>
     <p id="txLink" class="mono dim"></p>
   </section>
 
   <section id="st5" hidden>
-    <h2><span class="n">5</span><span data-i="s5"></span></h2>
+    <h2><span class="n">5</span><span data-i="s5">分享和收钱</span></h2>
     <p><b id="coinName"></b></p>
-    <div class="row"><span class="dim" data-i="tokenAddr"></span><span id="coinAddr" class="mono" style="flex:1"></span><button id="copyToken" class="ghost" type="button" data-i="copy"></button></div>
+    <div class="row"><span class="dim" data-i="tokenAddr">你的币</span><span id="coinAddr" class="mono" style="flex:1"></span><button id="copyToken" disabled data-wait class="ghost" type="button" data-i="copy">复制</button></div>
     <p id="coinLinks"></p>
-    <a id="shareX" class="btn big" target="_blank" rel="noopener" data-i="shareX"></a>
-    <p class="hint" data-i="shareTip"></p>
-    <h3 data-i="earnings" style="margin:18px 0 0;font-size:15px"></h3>
+    <a id="shareX" class="btn big" target="_blank" rel="noopener" data-i="shareX">发到 X</a>
+    <p class="hint" data-i="shareTip">在 X 里发帖时输入 $ 再粘贴合约地址，选中弹出的币，读者就能直接点开看价格。</p>
+    <h3 data-i="earnings" style="margin:18px 0 0;font-size:15px">收益</h3>
     <div id="earnRows"></div>
   </section>
 
   <section id="myCoinsWrap" hidden>
-    <h2 id="myCoinsTitle" data-i="myCoins"></h2>
+    <h2 id="myCoinsTitle" data-i="myCoins">我发过的币</h2>
     <div id="myCoins"></div>
-    <label for="lookupAddr" data-i="lookup"></label>
-    <div class="row"><input id="lookupAddr" class="mono" placeholder="0x…" style="flex:1"><button id="lookupBtn" class="ghost" type="button" data-i="lookupBtn"></button></div>
+    <label for="lookupAddr" data-i="lookup">查一个币（粘贴合约地址）</label>
+    <div class="row"><input id="lookupAddr" class="mono" placeholder="0x…" style="flex:1"><button id="lookupBtn" disabled data-wait class="ghost" type="button" data-i="lookupBtn">查看</button></div>
   </section>
 
   <footer>TapeID · Clanker v4 on Base · 本页不含自有合约，每笔交易都由你的钱包签名 / no custom contracts, every transaction is signed by your wallet</footer>
 </main>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script type="module" src="./tapeid_coin.bundle.js?v=edb50ad15e"></script>
+<script type="module">
+// 链上版：脚本以 gzip 存在容器里，浏览器里解压后运行（网关若已自动解压则直接运行）。
+// 一律用绝对路径：地址少了结尾斜杠（…/tapeid）时相对路径会指到根目录，网关回的是引导页 HTML。
+if (!location.pathname.endsWith('/')) history.replaceState(null, '', location.pathname + '/' + location.search + location.hash);
+const boot = document.getElementById('tapeBoot');
+try {
+  const res = await fetch('/tapeid/app.js.gz');
+  const buf = new Uint8Array(await res.arrayBuffer());
+  if (!res.ok || buf[0] === 0x3c) throw new Error(`app.js.gz ${res.status}`);
+  const code = buf[0] === 0x1f && buf[1] === 0x8b
+    ? await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text()
+    : new TextDecoder().decode(buf);
+  await import(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })));
+  // 网页里先带着停用的那几个按钮：点击处理在上面这份脚本里，它挂好了才点亮
+  for (const b of document.querySelectorAll('[data-wait]')) { b.disabled = false; b.removeAttribute('data-wait'); }
+  boot.remove();
+} catch (e) {
+  boot.innerHTML = `链上脚本没加载成功（${e.message}）。请刷新重试，或打开普通网址 / Failed to load from chain — reload or use `
+    + '<a href="https://nand.aihashrate.stream/tapeid/">nand.aihashrate.stream/tapeid</a>';
+}
+</script>
 </body>
 </html>

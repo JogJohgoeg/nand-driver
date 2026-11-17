@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>开车竞技场</title>
+<style>
+:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  }
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t2);font:var(--fs)/var(--lh) var(--sans);padding:.875rem}
+button{font:600 .875rem var(--head);border-radius:var(--r);padding:.5rem .875rem;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+button:disabled{opacity:.5;cursor:default}#go{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .875rem}
+.wrap{display:grid;max-width:53.75rem;grid-template-columns:minmax(0,35rem) minmax(13.75rem,1fr);gap:.875rem;align-items:start}
+canvas{display:block;width:100%;max-width:35rem;aspect-ratio:1;background:var(--bg-deeper);border:1px solid var(--line);border-radius:var(--r)}
+.say{font-weight:600;color:var(--ink);min-height:1.6em;margin:0 0 .375rem}.ok{color:var(--pos)}.bad{color:var(--neg)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.875rem .875rem;font-size:.875rem}
+.box b{color:var(--ink)}.mu{color:var(--mu);font-size:.8125rem}.mu.ok{color:var(--ok)}.mu.bad{color:var(--bad)}  /* 「链上也说 ✓」要是绿的 */
+details{margin-top:.875rem;font-size:.8125rem;color:var(--mu)}summary{cursor:pointer}
+code{font:.75rem var(--mono);color:var(--t2);overflow-wrap:anywhere}
+@media (max-width:640px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+</style>
+</head>
+<body>
+<div class="row">
+  <button id="go" type="button" disabled data-en="Drive a lap">开一圈</button>
+  <button id="next" type="button" disabled data-en="New start">换个起点</button>
+  <button id="all" type="button" disabled data-en="Run all 24 starts">24 个起点都跑一遍</button>
+</div>
+<div class="wrap">
+  <canvas id="cv" width="560" height="560" aria-label="赛道俯视图：小车和它的 5 条测距线" data-en-aria="Track from above: the car and its 5 distance rays"></canvas>
+  <div>
+    <p class="say" id="say" aria-live="polite" data-en="Tap &quot;Drive a lap&quot; and watch 21 gates drive.">点「开一圈」，看 21 个门自己开车。</p>
+    <div class="box">
+      <div><span data-en="Start">起点</span> <b id="s-n">1</b> / 24</div>
+      <div><span data-en="Steps">走了</span> <b id="s-steps">0</b> <span data-en="· lap">步 · 一圈进度</span> <b id="s-prog">0%</b></div>
+      <div><span data-en="This step:">这一步：</span><b id="s-act">—</b></div>
+      <p class="mu" data-en="The car only has 5 distance rays, each measuring how much room is ahead; 21 NAND gates read them and decide: straight, left or right.">车上只有 5 条测距线，每条看前面空出多远；21 个与非门根据这些读数决定直行、左转还是右转。</p>
+      <button id="chain" type="button" disabled data-en="Ask the chain for this step">让链上也算这一步</button>
+      <p class="mu" id="c-say" aria-live="polite" data-en="Read-only: asks a public blockchain node, no wallet.">只读：问一下公共区块链节点，不用钱包。</p>
+    </div>
+    <details><summary data-en="Details">细节</summary>
+      <div><span data-en="15 sensor bits:">传感器 15 位：</span><code id="d-bits">—</code></div>
+      <div><span data-en="Gate outputs (left, right):">门的输出（左、右）：</span><code id="d-out">—</code></div>
+      <div id="d-chain"><span data-en="On chain: CPU">链上：处理器</span> <code>0x6Fb4…5B38</code> <span data-en="circuit 279, function">第 279 号电路，函数</span> <code>eval(uint256,bytes)</code>.</div>
+      <div data-en="The driving rules and the source of 24/24 are in the docs page on the 21-gate driver.">开车规则和 24/24 的出处见文档「21 个门开车」。</div>
+    </details>
+  </div>
+</div>
+<script>
+const TK = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();   // canvas 的颜色运行时读 tokens
+const TKA = (n, a) => { const h = TK(n); return "rgba(" + [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)).join(",") + "," + a + ")"; };
+var EN=(function(){var m=document.querySelector('meta[name="app-lang"]');if(m)return m.content==="en";try{return localStorage.getItem("lang")==="en"}catch(e){return false}})();
+function L(zh,en){return EN?en:zh}
+if(EN){document.documentElement.lang="en";Array.prototype.forEach.call(document.querySelectorAll("[data-en]"),function(e){e.textContent=e.getAttribute("data-en")});var cvs=document.getElementById("cv");cvs.setAttribute("aria-label",cvs.getAttribute("data-en-aria"));}</script>
+<script src="car.js"></script>
+<script>
+"use strict";
+/* 画布不认 CSS 变量：颜色直接写 Tokyo Night 的色值（同 theme/tokens.css） */
+var C = window.Car, cv = document.getElementById("cv"), g = cv.getContext("2d"), $ = function (id) { return document.getElementById(id); };
+var CPU = "0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38", CID = 279, SEL = "934d06ea";
+var RPCS = ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.binance.org"], rpcAt = 0;
+var NAMES = EN ? ["straight", "left", "right"] : ["直行", "左转", "右转"], si = 0, car = new C.Car(C.STARTS[0]), trail = [], timer = null, busy = false;
+var S = 560 / 26, O = 280;                                   // 世界坐标 → 画布
+function px(x) { return O + x * S; } function py(y) { return O - y * S; }
+
+function draw() {
+  g.clearRect(0, 0, 560, 560);
+  g.lineCap = g.lineJoin = "round";
+  g.beginPath(); for (var i = 0; i <= C.N; i++) { var k = i % C.N; (i ? g.lineTo : g.moveTo).call(g, px(C.cx[k]), py(C.cy[k])); }
+  g.strokeStyle = TK("--panel"); g.lineWidth = 2 * C.W * S; g.stroke();
+  g.strokeStyle = TK("--line"); g.lineWidth = 1; g.setLineDash([4, 6]); g.stroke(); g.setLineDash([]);
+  var s = C.STARTS[si], c = s[0];                              // 起点线
+  g.strokeStyle = TK("--brand"); g.lineWidth = 2; g.beginPath();
+  g.moveTo(px(C.cx[c] + C.W * -C.ty[c]), py(C.cy[c] + C.W * C.tx[c])); g.lineTo(px(C.cx[c] - C.W * -C.ty[c]), py(C.cy[c] - C.W * C.tx[c])); g.stroke();
+  if (trail.length > 1) { g.strokeStyle = TKA("--ok",.6); g.lineWidth = 2; g.beginPath(); trail.forEach(function (p, i) { (i ? g.lineTo : g.moveTo).call(g, px(p[0]), py(p[1])); }); g.stroke(); }
+  [60, 30, 0, -30, -60].forEach(function (deg, r) {           // 5 条测距线
+    var a = car.th + deg * Math.PI / 180, d = car.dists[r];
+    g.strokeStyle = d > 3 ? TKA("--brand",.75) : d > 1.6 ? TKA("--warn",.85) : TKA("--bad",.9); g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(px(car.x), py(car.y)); g.lineTo(px(car.x + Math.cos(a) * d), py(car.y + Math.sin(a) * d)); g.stroke();
+  });
+  g.save(); g.translate(px(car.x), py(car.y)); g.rotate(-car.th);
+  g.fillStyle = car.crashed ? TK("--bad") : TK("--ink"); g.beginPath(); g.moveTo(9, 0); g.lineTo(-6, 5); g.lineTo(-6, -5); g.closePath(); g.fill(); g.restore();
+  $("s-n").textContent = si + 1; $("s-steps").textContent = car.steps;
+  $("s-prog").textContent = Math.max(0, Math.min(100, Math.floor(car.progress / C.N * 100))) + "%";
+  var out = C.nand(car.bits); $("s-act").textContent = car.done ? (car.lap ? L("到终点", "finished") : L("出界", "off track")) : NAMES[C.action(out)];
+  $("d-bits").textContent = car.bits.join(""); $("d-out").textContent = out.join("、");
+}
+function reset() { stop(); car = new C.Car(C.STARTS[si]); trail = [[car.x, car.y]]; draw(); }
+function stop() { if (timer) clearInterval(timer); timer = null; $("go").textContent = L("开一圈", "Drive a lap"); }
+function say(t, cls) { var e = $("say"); e.textContent = t; e.className = "say" + (cls ? " " + cls : ""); }
+function finish() {
+  stop();
+  if (car.lap) say(L("跑完一圈 ✓ 用了 " + car.steps + " 步，没出界。", "Lap complete ✓ in " + car.steps + " steps, never left the track."), "ok");
+  else if (car.crashed) say(L("出界了（第 " + car.steps + " 步）。点「换个起点」再试。", "Off the track at step " + car.steps + ". Tap \"New start\" to try again."), "bad");
+  else say(L("走了 " + car.steps + " 步还没跑完一圈。", car.steps + " steps and the lap isn't finished."), "bad");
+}
+$("go").onclick = function () {
+  if (timer) { stop(); say(L("停了。再点「开一圈」接着开。", "Paused. Tap \"Drive a lap\" to continue.")); return; }
+  if (car.done) reset();
+  say(L("正在开…", "Driving…")); $("go").textContent = L("停", "Stop");
+  timer = setInterval(function () {
+    for (var k = 0; k < 2 && !car.done; k++) { car.step(car.decide()); trail.push([car.x, car.y]); }
+    draw(); if (car.done) finish();
+  }, 40);
+};
+$("next").onclick = function () { si = (si + 1) % C.STARTS.length; reset(); say(L("换到起点 " + (si + 1) + "。点「开一圈」。", "Start " + (si + 1) + ". Tap \"Drive a lap\".")); };
+$("all").onclick = function () {
+  stop(); var laps = 0, worst = 0;
+  C.STARTS.forEach(function (s) { var c = new C.Car(s); while (!c.done) c.step(c.decide()); laps += c.lap; worst = Math.max(worst, c.steps); });
+  say(laps === C.STARTS.length ? L("24 个起点都跑完一圈 ✓（" + laps + " / 24，最多用了 " + worst + " 步）", "All 24 starts finish a lap ✓ (" + laps + " / 24, at most " + worst + " steps)") : L("跑完一圈的起点：", "Starts that finish a lap: ") + laps + " / 24", laps === C.STARTS.length ? "ok" : "bad");
+};
+
+// 只读问链：eval(279, 这一步的 15 位读数)，和浏览器里 21 个门算的比
+function u(n) { return n.toString(16).padStart(64, "0"); }
+function calldata(hex) { return "0x" + SEL + u(CID) + u(64) + u(hex.length / 2) + hex.padEnd(64, "0"); }
+var late = false;      /* 这一次问链上有没有哪家是等到 15 秒超时才算没回的 */
+function ask(rpc, data) {
+  var ctl = new AbortController(), tm = setTimeout(function () { late = true; ctl.abort(); }, 15000);
+  return fetch(rpc, { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CPU, data: data }, "latest"] }) })
+    .then(function (r) { return r.json(); }).finally(function () { clearTimeout(tm); })
+    .then(function (j) { if (!j.result) throw new Error("no result"); return j.result; });
+}
+function outByte(res) {                                       // 返回值是 bytes：偏移、长度、内容
+  var b = res.slice(2), off = parseInt(b.slice(0, 64), 16) * 2, len = parseInt(b.slice(off, off + 64), 16);
+  if (len < 1) throw new Error("empty output");
+  return parseInt(b.slice(off + 64, off + 66), 16);
+}
+/* wait-tick:begin */
+// Elapsed-time ticker for a real wait: start before the request, stop() when it settles.
+function waitTick(node, label, more) {
+  var t0 = performance.now(), span = document.createElement("span"), last = null, id = 0;
+  span.setAttribute("aria-hidden", "true"); span.className = "tick";
+  node.textContent = label; node.appendChild(span);
+  function draw() { var t = " " + more(((performance.now() - t0) / 1000).toFixed(1)); if (t !== last) span.textContent = last = t; }
+  draw(); id = setInterval(draw, 100);
+  return { draw: draw, stop: function () { clearInterval(id); id = 0; } };
+}
+/* wait-tick:end */
+function secs(s) { return L(s + " 秒", s + " s"); }
+function csay(t, cls) { var e = $("c-say"); e.textContent = t; e.className = "mu" + (cls ? " " + cls : ""); }
+$("chain").onclick = function () {
+  if (busy) return; busy = true; stop();
+  var bits = car.bits.slice(), hex = C.packBits(bits), local = C.nand(bits), la = C.action(local), tries = 0;
+  /* 等的时候在那句话后面走已用时间；每问一家开一次表，那一家回了、没回都先停表 */
+  $("chain").disabled = true; csay(""); late = false; var t0 = performance.now(), w = waitTick($("c-say"), L("正在问区块链…", "Asking the blockchain…"), secs);
+  function attempt() {
+    var rpc = RPCS[(rpcAt + tries) % RPCS.length];
+    return ask(rpc, calldata(hex)).finally(function () { w.stop(); }).then(function (res) {
+      var v = outByte(res), ca = C.action([v & 1, (v >> 1) & 1]);
+      $("d-chain").innerHTML = L("链上：处理器 ", "On chain: CPU ") + "<code>0x6Fb4…5B38</code> " + L("第 279 号电路，", "circuit 279, ") + "<code>eval(279, 0x" + hex + ")</code> = <code>0x" + v.toString(16).padStart(2, "0") + "</code> (" + L("节点 ", "node ") + "<code>" + rpc.replace("https://", "") + "</code>).";
+      if (ca === la) csay(L("链上也说「" + NAMES[ca] + "」✓ 和你浏览器里算的一样。", "The chain also says \"" + NAMES[ca] + "\" ✓ same as your browser."), "ok");
+      else csay(L("链上说「" + NAMES[ca] + "」，浏览器算的是「" + NAMES[la] + "」，对不上。请截图告诉我们。", "The chain says \"" + NAMES[ca] + "\" but your browser says \"" + NAMES[la] + "\". They don't match; please send us a screenshot."), "bad");
+    }).catch(function () {
+      tries++;
+      if (tries < RPCS.length) { csay(""); w = waitTick($("c-say"), L("这家节点没回应，换一家再问…", "No answer from this node, asking another…"), secs); return attempt(); }
+      rpcAt = (rpcAt + 1) % RPCS.length;
+      csay((late ? L("等了 " + Math.round((performance.now() - t0) / 1000) + " 秒没有回应：", "No response after " + Math.round((performance.now() - t0) / 1000) + " s: ") : "") + L("连不上区块链节点，这一步没法让链上算。检查网络后再点一次；一直不行就过几分钟再试，公共节点有时会忙。", "Can't reach any blockchain node, so the chain couldn't compute this step. Check your connection and tap again; if it keeps failing, try in a few minutes. Public nodes are sometimes busy."), "bad");
+    });
+  }
+  attempt().finally(function () { busy = false; $("chain").disabled = false; });
+};
+reset();
+/* 四个按钮在网页里先带着停用（样式在页头，第一屏就是淡的）；点击处理都挂上了才点亮 */
+["go", "next", "all", "chain"].forEach(function (id) { $(id).disabled = false; });
+</script>
+</body>
+</html>

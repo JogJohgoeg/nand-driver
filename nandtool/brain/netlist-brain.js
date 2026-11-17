@@ -64,7 +64,7 @@ export function decodeNetlist(net, records) {
   return { evaluate, gates: n, nIn, nOut };
 }
 
-// nlz1 (circuits/_scratch/hashport/nlz.py): per gate two LEB128 varints,
+// nlz1 (nlz.py): per gate two LEB128 varints,
 // ((cur - max(a,b)) << 1 | (a > b)) and max(a,b) - min(a,b); cur = 2 + nIn + i.
 // Rebuilds the exact 7-byte records.
 export function nlz1Records(v, nIn) {

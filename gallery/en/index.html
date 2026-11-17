@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--fs-sm:.8125rem;--fs-xs:.75rem;--s1:.875rem;--s2:1.75rem;--s3:2.625rem;--r:2px;--t-fast:.12s}:root{color-scheme:dark}h1,h2,h3,input[type=button],input[type=submit],label,summary,nav{font-family:var(--head)}pre{font-family:var(--mono)}h1,h2,h3{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--text);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--accent)}.wrap{margin:0 auto}.top{position:sticky;top:0;z-index:5;background:var(--bg)}.top .wrap{display:flex;align-items:center;gap:.75rem;height:3.25rem}.top .langlink{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .brand{font-family:var(--head);font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .here{font-family:var(--head);color:var(--text-dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.warn{color:var(--warn)}.dim{color:var(--text-dim)}.badge{font-family:var(--head);font-size:var(--fs-sm);white-space:nowrap}.top .badge{flex:1 1 0;min-width:0;align-self:stretch;display:flex;align-items:center;justify-content:flex-end;text-align:right;overflow:hidden}.top .langlink{order:1}h1{color:var(--ink);margin:var(--s2) 0 .5rem}h2{font-size:1.125rem;color:var(--ink);margin:var(--s2) 0 var(--s1)}.lede{margin:0 0 var(--s1)}.btn{display:inline-block;font:600 var(--fs-sm)/1 var(--head);padding:.625rem .875rem;border:1px solid var(--line,transparent);color:var(--ink);text-decoration:none;cursor:pointer}.thumb{position:relative;aspect-ratio:1;background:var(--bg-deeper);border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden;display:grid;place-items:center}.thumb .msg{font-size:var(--fs-xs);color:var(--text-dim);padding:.5rem;text-align:center}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.search{margin:var(--s1) 0 .625rem}.search input{width:100%;font:1rem/1.4 var(--sans);color:var(--ink);border:1px solid var(--field,transparent);padding:.75rem .875rem}.search input::placeholder{color:var(--text-dim)}.note{font-size:var(--fs-sm);color:var(--text-dim);margin:.375rem 0 0}.tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 var(--s1)}@media (max-width:599px){.tags{flex-wrap:nowrap;overflow-x:auto;padding-bottom:.375rem;max-width:100%}}.tag{font:var(--fs-sm)/1 var(--head);color:var(--text);border:1px solid var(--line,transparent);padding:.5rem .75rem;text-decoration:none;white-space:nowrap}.sec{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .75rem;margin:var(--s2) 0 0}.sec h2,.sec h3{margin:0;color:var(--ink)}.sec h3{font-size:1rem}.sec .more,.sec .back{margin-left:auto;font:var(--fs-sm) var(--head);text-decoration:none;white-space:nowrap}.shelf.group .sec{margin-top:var(--s3)}.rail{display:grid;grid-auto-flow:column;gap:var(--s1);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:.75rem 2px .875rem;max-width:100%;-webkit-overflow-scrolling:touch}.rail>.card{scroll-snap-align:start}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:var(--s1);margin-top:var(--s1)}.card{border:1px solid var(--line,transparent);border-radius:var(--r);display:flex;flex-direction:column;min-width:0}.card .pic{display:block}.card .thumb{border:0;border-radius:0}.card .body{padding:.75rem .875rem .875rem;display:flex;flex-direction:column;gap:.375rem;flex:1;min-width:0}.card strong{font:700 1.0625rem/1.35 var(--head);color:var(--ink);overflow-wrap:anywhere}.card .say{margin:0;line-height:1.55;color:var(--text)}.card .meta,.card .open{font:var(--fs-xs)/1.5 var(--head);color:var(--text-dim);overflow-wrap:anywhere}.card .meta{margin-top:auto}.card .open.lic{color:var(--ok);font-weight:700}.card .btns{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;min-height:2.375rem;margin-top:.25rem}.card .btns .btn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:2.375rem;padding:.375rem .5rem;line-height:1.3}.card .btns .nobtn{grid-column:1/-1;align-self:center;font-size:var(--fs-xs)}.check{background:var(--panel);border:1px solid var(--line,transparent);border-radius:var(--r);padding:.75rem .875rem;margin:var(--s1) 0}.check p{margin:0}details{margin-top:.5rem}summary{cursor:pointer;color:var(--text-dim);font-size:var(--fs-sm)}details pre{font-size:var(--fs-xs);overflow-wrap:anywhere;white-space:pre-wrap}footer{margin:var(--s3) 0 var(--s2);font-size:var(--fs-xs);color:var(--faint)}.grid .card .thumb{aspect-ratio:16/10}.wrap{max-width:82.5rem;padding:0 1.75rem}.top{border-bottom:1px solid var(--line,transparent)}h1{font-size:clamp(1.875rem,3.6vw,3rem);line-height:1.15;margin-top:2.625rem}.lede{font-size:1rem;max-width:44em}.search input{background:var(--bg-deep);border-radius:2px}.tag{border-radius:2px;background:transparent;font-family:var(--mono),var(--cjk);font-size:.75rem}.tag[aria-current=true]{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent);font-weight:700}.sec h2{font-size:1.375rem}.sec{padding-top:1.125rem;border-top:1px solid var(--line,transparent);background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat}.rail{grid-auto-columns:min(82%,19rem)}.card{position:relative;background:var(--panel);overflow:visible;transition:border-color var(--t-fast)}.card::before{content:"";position:absolute;left:-1px;top:-1px;width:.875rem;height:.875rem;z-index:1;border-left:2px solid var(--brand,transparent);border-top:2px solid var(--brand,transparent)}.card .thumb{aspect-ratio:1;background:var(--plate);border-bottom:1px solid var(--line,transparent)}.card strong{font-size:1.125rem}.card .say{font-size:.875rem}.card .open{color:var(--text-dim)}.btn{border-radius:2px;background:transparent}.btn.primary{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent)}@media (max-width:599px){.wrap{padding:0 1rem}.top .here{display:none}.top .badge{white-space:normal;line-height:1.3}}.sec .more,.sec .back{display:inline-flex;align-items:center;min-height:1.5rem}summary{min-height:1.5rem;display:list-item}</style>
+<script>try { localStorage.setItem("lang", "en"); } catch (e) {}</script>
+<title>On-chain chips · 21 NAND</title>
+<link rel="icon" href="../../favicon.ico">
+<link rel="preload" as="style" href="../../assets/theme.css">
+<link rel="preload" as="style" href="../gallery.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="core" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2.2 2.2 2.2 0 -1.9"/></filter></svg>
+<header class="top"><div class="wrap">
+  <a class="brand" href="../../en/index.html">21 NAND</a><span class="here">On-chain chips</span>
+  <a class="langlink" id="lang" href="../index.html" lang="zh-CN" onclick="try { localStorage.setItem('lang', 'zh'); } catch (e) {}">中文</a>
+  <span class="badge" id="lockbadge" role="status">Checking…</span>
+</div></header>
+<script>var langA = document.getElementById("lang"); langA.href = langA.getAttribute("href") + location.search + location.hash;</script>
+<main class="wrap">
+  <h1>The chips we put on chain, <wbr>every image checkable</h1>
+  <p class="lede">Each chip is a gate-level netlist on BNB Chain or X Layer, and these are their real layouts. Open and look, no login needed; each image is compared with the record list first and shown only if it matches.</p>
+  <div class="search">
+    <label class="sr" for="q">Search chips and boards</label>
+    <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search 16 chips and boards">
+    <p class="note" id="total">16 items = 13 circuits on chain + 3 layouts and boards not on chain</p>
+  </div>
+  <nav class="tags" id="tags" aria-label="Categories"><a class="tag" href="#" data-cat="">All (16)</a><a class="tag" href="#cat=drive" data-cat="drive">Arena and robot drivers (6)</a><a class="tag" href="#cat=agent" data-cat="agent">Agent control (3)</a><a class="tag" href="#cat=lm" data-cat="lm">Language models (4)</a><a class="tag" href="#cat=kit" data-cat="kit">Computing components (1)</a><a class="tag" href="#cat=site" data-cat="site">Website containers (3)</a><a class="tag" href="#cat=chip" data-cat="chip">Chip layouts (1)</a><a class="tag" href="#cat=board" data-cat="board">Circuit boards (2)</a></nav>
+  <div id="home" data-pre="1"><section class="shelf" id="sh-hot">
+    <div class="sec"><h2>Popular</h2><a class="more" href="#shelf=hot">See all 6 →</a></div>
+    <p class="note">New here? Start with these: they run, you can play with them, and they are easy to follow.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Popular, swipe sideways"><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.1"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v1</strong>
+      <p class="say">A small language model. Every character is computed on chain. The output is mostly strings of words, not yet sentences.</p>
+      <span class="meta" data-meta>5,069 gates · BNB Chain #285</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="Layout of NAND driver v1 · car controller"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car controller</strong>
+      <p class="say">Drives a small car around a track; the first entry in the arena.</p>
+      <span class="meta" data-meta>21 gates · BNB Chain #279</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="Layout of Combined brain Part B · 21nand site container"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Combined brain · site</strong>
+      <p class="say">Adds memory to the duck brain; the 21 NAND site lives here too.</p>
+      <span class="meta" data-meta>25 gates · BNB Chain #282</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">See layout</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article><article class="card" data-tid="bard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-v8g-whole.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></div>
+    <div class="body">
+      <strong>The Bard</strong>
+      <p class="say">A language model that writes sentences in the style of children's stories, often incoherent, built directly as a chip layout.</p>
+      <span class="meta" data-meta>Not on chain</span>
+      
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/bard/v8g/" target="_blank" rel="noopener" title="Fetch the layout from chain">See demo</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Layout of Microduck steering brain"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Duck steering brain</strong>
+      <p class="say">Decides which way a walking robot duck goes.</p>
+      <span class="meta" data-meta>39 gates · BNB Chain #281</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="Duck demo">Watch the duck</a></div>
+    </div></article></div></section><section class="shelf" id="sh-arena">
+    <div class="sec"><h2>Arena and cars</h2><a class="more" href="#shelf=arena">See all 4 →</a></div>
+    <p class="note">Cars on a track and moves on a grid, all decided by gate circuits on chain.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Arena and cars, swipe sideways"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="Layout of NAND driver v1 · car controller"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car controller</strong>
+      <p class="say">Drives a small car around a track; the first entry in the arena.</p>
+      <span class="meta" data-meta>21 gates · BNB Chain #279</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="Layout of NAND driver v2b · with memory"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car with memory</strong>
+      <p class="say">A car controller that remembers what just happened, and drives faster.</p>
+      <span class="meta" data-meta>90 gates · BNB Chain #280</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>TapeID container</strong>
+      <p class="say">The car controller on X Layer; the TapeID site and the Bard layout are stored here.</p>
+      <span class="meta" data-meta>21 gates · X Layer #1</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article></div></section><section class="shelf" id="sh-brain">
+    <div class="sec"><h2>Brains</h2><a class="more" href="#shelf=brain">See all 5 →</a></div>
+    <p class="note">Small circuits that decide for a robot duck or an agent.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Brains, swipe sideways"><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Layout of Microduck steering brain"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Duck steering brain</strong>
+      <p class="say">Decides which way a walking robot duck goes.</p>
+      <span class="meta" data-meta>39 gates · BNB Chain #281</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="Duck demo">Watch the duck</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="Layout of Combined brain Part B · 21nand site container"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Combined brain · site</strong>
+      <p class="say">Adds memory to the duck brain; the 21 NAND site lives here too.</p>
+      <span class="meta" data-meta>25 gates · BNB Chain #282</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">See layout</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v2</strong>
+      <p class="say">Keeps an agent's conversation turns and tool calls in line.</p>
+      <span class="meta" data-meta>282 gates · BNB Chain #900283</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v3</strong>
+      <p class="say">The public agent manager: retries and call counts all have limits.</p>
+      <span class="meta" data-meta>350 gates · BNB Chain #900284</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article></div></section><section class="shelf" id="sh-lm">
+    <div class="sec"><h2>Language models</h2><a class="more" href="#shelf=lm">See all 4 →</a></div>
+    <p class="note">Language models built whole as gate circuits. The Bard writes sentences in the style of children's stories that often don't hang together. The other two compute every character on chain and mostly produce strings of words.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Language models, swipe sideways"><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.1"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v1</strong>
+      <p class="say">A small language model. Every character is computed on chain. The output is mostly strings of words, not yet sentences.</p>
+      <span class="meta" data-meta>5,069 gates · BNB Chain #285</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.2"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v2</strong>
+      <p class="say">The second version of the text model; the demo page uses it by default.</p>
+      <span class="meta" data-meta>5,120 gates · BNB Chain #286</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article><article class="card" data-tid="bard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-v8g-whole.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></div>
+    <div class="body">
+      <strong>The Bard</strong>
+      <p class="say">A language model that writes sentences in the style of children's stories, often incoherent, built directly as a chip layout.</p>
+      <span class="meta" data-meta>Not on chain</span>
+      
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/bard/v8g/" target="_blank" rel="noopener" title="Fetch the layout from chain">See demo</a></div>
+    </div></article><article class="card" data-tid="bard-storybox">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/bard-storybox-pcb.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></div>
+    <div class="body">
+      <strong>Story machine board</strong>
+      <p class="say">A story machine circuit board designed for the Bard; not fabricated yet.</p>
+      <span class="meta" data-meta>Our own board · not fabricated</span>
+      
+      <div class="btns"><span class="dim nobtn">Image only, no demo</span></div>
+    </div></article></div></section><section class="shelf" id="sh-site">
+    <div class="sec"><h2>Sites and tools</h2><a class="more" href="#shelf=site">See all 6 →</a></div>
+    <p class="note">Containers that hold websites, components for other circuits, and boards for trying out chips.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Sites and tools, swipe sideways"><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="Layout of Combined brain Part B · 21nand site container"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Combined brain · site</strong>
+      <p class="say">Adds memory to the duck brain; the 21 NAND site lives here too.</p>
+      <span class="meta" data-meta>25 gates · BNB Chain #282</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">See layout</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>Authenticator</strong>
+      <p class="say">Holds the on-chain authenticator site, like the two-step codes on your phone.</p>
+      <span class="meta" data-meta>1 gate · BNB Chain #288</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>TapeID container</strong>
+      <p class="say">The car controller on X Layer; the TapeID site and the Bard layout are stored here.</p>
+      <span class="meta" data-meta>21 gates · X Layer #1</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article><article class="card" data-tid="3.2.245">
+    <a class="pic" href="chip.html?tid=3.2.245" aria-label="Layout of 21nandkit DOT32_T · ternary dot product"><div class="thumb" data-img="img/3.2.245-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Ternary dot product</strong>
+      <p class="say">Multiplies two lists of numbers pair by pair and adds them up; a part for larger circuits.</p>
+      <span class="meta" data-meta>3,829 gates · X Layer #3</span>
+      <span class="open lic">Netlist public · MIT license, free to modify</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=3.2.245">See layout</a></div>
+    </div></article><article class="card" data-tid="xc7a100t-miniboard">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img="img/xc7a100t-miniboard-pcb.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></div>
+    <div class="body">
+      <strong>Test board</strong>
+      <p class="say">A board for running the circuit before the chip exists; not fabricated yet.</p>
+      <span class="meta" data-meta>Our own board · not fabricated</span>
+      
+      <div class="btns"><span class="dim nobtn">Image only, no demo</span></div>
+    </div></article></div></section><section class="shelf" id="sh-easy">
+    <div class="sec"><h2>Good places to start modifying</h2><a class="more" href="#shelf=easy">See all 4 →</a></div>
+    <p class="note">Few gates (at most 100), and anyone can read the netlist on chain, so they are the easiest to follow.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Good places to start modifying, swipe sideways"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="Layout of NAND driver v1 · car controller"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car controller</strong>
+      <p class="say">Drives a small car around a track; the first entry in the arena.</p>
+      <span class="meta" data-meta>21 gates · BNB Chain #279</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="Layout of Combined brain Part B · 21nand site container"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Combined brain · site</strong>
+      <p class="say">Adds memory to the duck brain; the 21 NAND site lives here too.</p>
+      <span class="meta" data-meta>25 gates · BNB Chain #282</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">See layout</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Layout of Microduck steering brain"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Duck steering brain</strong>
+      <p class="say">Decides which way a walking robot duck goes.</p>
+      <span class="meta" data-meta>39 gates · BNB Chain #281</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="Duck demo">Watch the duck</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="Layout of NAND driver v2b · with memory"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car with memory</strong>
+      <p class="say">A car controller that remembers what just happened, and drives faster.</p>
+      <span class="meta" data-meta>90 gates · BNB Chain #280</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article></div></section><section class="shelf" id="sh-new">
+    <div class="sec"><h2>Recently on chain</h2><a class="more" href="#shelf=new">See all 11 →</a></div>
+    <p class="note">On BNB Chain, by circuit number, highest first: a higher number went on chain later.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="Recently on chain, swipe sideways"><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v3</strong>
+      <p class="say">The public agent manager: retries and call counts all have limits.</p>
+      <span class="meta" data-meta>350 gates · BNB Chain #900284</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v2</strong>
+      <p class="say">Keeps an agent's conversation turns and tool calls in line.</p>
+      <span class="meta" data-meta>282 gates · BNB Chain #900283</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="290.732">
+    <a class="pic" href="chip.html?tid=290.732" aria-label="Layout of Grid policy (distilled) · 11×11"><div class="thumb" data-img="img/290.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Up-and-down grid circuit</strong>
+      <p class="say">Meant to learn to reach a target on a grid, but it only moves down or up; NAND plays Squared now uses 287.</p>
+      <span class="meta" data-meta>375 gates · BNB Chain #290</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=290.732">See layout</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>Authenticator</strong>
+      <p class="say">Holds the on-chain authenticator site, like the two-step codes on your phone.</p>
+      <span class="meta" data-meta>1 gate · BNB Chain #288</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.2"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v2</strong>
+      <p class="say">The second version of the text model; the demo page uses it by default.</p>
+      <span class="meta" data-meta>5,120 gates · BNB Chain #286</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article></div></section><section class="shelf group"><div class="sec"><h2>By chain</h2></div><p class="note">Our circuits are on two chains: BNB Chain 11, X Layer 2.</p></section><section class="shelf" id="sh-chain-bsc">
+    <div class="sec"><h3>BNB Chain (11)</h3><a class="more" href="#shelf=chain-bsc">See all 11 →</a></div>
+    <p class="note">Circuits on BNB Chain.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="BNB Chain (11), swipe sideways"><article class="card" data-tid="279.732">
+    <a class="pic" href="chip.html?tid=279.732" aria-label="Layout of NAND driver v1 · car controller"><div class="thumb" data-img="img/279.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car controller</strong>
+      <p class="say">Drives a small car around a track; the first entry in the arena.</p>
+      <span class="meta" data-meta>21 gates · BNB Chain #279</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=279.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="280.732">
+    <a class="pic" href="chip.html?tid=280.732" aria-label="Layout of NAND driver v2b · with memory"><div class="thumb" data-img="img/280.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Car with memory</strong>
+      <p class="say">A car controller that remembers what just happened, and drives faster.</p>
+      <span class="meta" data-meta>90 gates · BNB Chain #280</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=280.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/arena.html" target="_blank" rel="noopener" title="Arena demo">Watch it drive</a></div>
+    </div></article><article class="card" data-tid="281.732">
+    <a class="pic" href="chip.html?tid=281.732" aria-label="Layout of Microduck steering brain"><div class="thumb" data-img="img/281.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Duck steering brain</strong>
+      <p class="say">Decides which way a walking robot duck goes.</p>
+      <span class="meta" data-meta>39 gates · BNB Chain #281</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=281.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/duck/" target="_blank" rel="noopener" title="Duck demo">Watch the duck</a></div>
+    </div></article><article class="card" data-tid="282.732">
+    <a class="pic" href="chip.html?tid=282.732" aria-label="Layout of Combined brain Part B · 21nand site container"><div class="thumb" data-img="img/282.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Combined brain · site</strong>
+      <p class="say">Adds memory to the duck brain; the 21 NAND site lives here too.</p>
+      <span class="meta" data-meta>25 gates · BNB Chain #282</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=282.732">See layout</a><a class="btn" href="https://282-732.tapekit.org/" target="_blank" rel="noopener" title="282.732.tape">Open the site</a></div>
+    </div></article><article class="card" data-tid="285.732">
+    <a class="pic" href="chip.html?tid=285.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.1"><div class="thumb" data-img="img/285.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v1</strong>
+      <p class="say">A small language model. Every character is computed on chain. The output is mostly strings of words, not yet sentences.</p>
+      <span class="meta" data-meta>5,069 gates · BNB Chain #285</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=285.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article><article class="card" data-tid="286.732">
+    <a class="pic" href="chip.html?tid=286.732" aria-label="Layout of TapeoutLLM one-step model · sampler v0.2"><div class="thumb" data-img="img/286.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Text model v2</strong>
+      <p class="say">The second version of the text model; the demo page uses it by default.</p>
+      <span class="meta" data-meta>5,120 gates · BNB Chain #286</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=286.732">See layout</a><a class="btn" href="../../lm/index.html?lang=en" target="_blank" rel="noopener" title="Text continuation demo">Try it</a></div>
+    </div></article><article class="card" data-tid="287.732">
+    <a class="pic" href="chip.html?tid=287.732" aria-label="Layout of nand_step · 11×11 grid walking policy"><div class="thumb" data-img="img/287.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Grid walking policy</strong>
+      <p class="say">Tells you the next move on a grid map; agents use it as a tool.</p>
+      <span class="meta" data-meta>386 gates · BNB Chain #287</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=287.732">See layout</a><a class="btn" href="https://nand.aihashrate.stream/nandtool/" target="_blank" rel="noopener" title="NAND tool bench">Open the tool bench</a></div>
+    </div></article><article class="card" data-tid="290.732">
+    <a class="pic" href="chip.html?tid=290.732" aria-label="Layout of Grid policy (distilled) · 11×11"><div class="thumb" data-img="img/290.732-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Up-and-down grid circuit</strong>
+      <p class="say">Meant to learn to reach a target on a grid, but it only moves down or up; NAND plays Squared now uses 287.</p>
+      <span class="meta" data-meta>375 gates · BNB Chain #290</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=290.732">See layout</a></div>
+    </div></article><article class="card" data-tid="900283.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v2</strong>
+      <p class="say">Keeps an agent's conversation turns and tool calls in line.</p>
+      <span class="meta" data-meta>282 gates · BNB Chain #900283</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="900284.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Layout queued</span></div></div>
+    <div class="body">
+      <strong>Agent manager v3</strong>
+      <p class="say">The public agent manager: retries and call counts all have limits.</p>
+      <span class="meta" data-meta>350 gates · BNB Chain #900284</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://nand.aihashrate.stream/agents-api/" target="_blank" rel="noopener" title="Agents-API">See demo</a></div>
+    </div></article><article class="card" data-tid="288.732">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>Authenticator</strong>
+      <p class="say">Holds the on-chain authenticator site, like the two-step codes on your phone.</p>
+      <span class="meta" data-meta>1 gate · BNB Chain #288</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://288-732.tapekit.org/" target="_blank" rel="noopener" title="288.732.tape">Open the site</a></div>
+    </div></article></div></section><section class="shelf" id="sh-chain-xlayer">
+    <div class="sec"><h3>X Layer (2)</h3><a class="more" href="#shelf=chain-xlayer">See all 2 →</a></div>
+    <p class="note">Circuits on X Layer.</p>
+    <div class="rail" role="region" tabindex="0" aria-label="X Layer (2), swipe sideways"><article class="card" data-tid="3.2.245">
+    <a class="pic" href="chip.html?tid=3.2.245" aria-label="Layout of 21nandkit DOT32_T · ternary dot product"><div class="thumb" data-img="img/3.2.245-layout.webp"><span class="msg" style="place-self:stretch;display:grid;place-items:center">Checking…</span></div></a>
+    <div class="body">
+      <strong>Ternary dot product</strong>
+      <p class="say">Multiplies two lists of numbers pair by pair and adds them up; a part for larger circuits.</p>
+      <span class="meta" data-meta>3,829 gates · X Layer #3</span>
+      <span class="open lic">Netlist public · MIT license, free to modify</span>
+      <div class="btns"><a class="btn primary" href="chip.html?tid=3.2.245">See layout</a></div>
+    </div></article><article class="card" data-tid="1.2.245">
+    <div class="pic off" aria-disabled="true"><div class="thumb" data-img=""><span class="msg" style="place-self:stretch;display:grid;place-items:center">Website container, no layout of its own</span></div></div>
+    <div class="body">
+      <strong>TapeID container</strong>
+      <p class="say">The car controller on X Layer; the TapeID site and the Bard layout are stored here.</p>
+      <span class="meta" data-meta>21 gates · X Layer #1</span>
+      <span class="open">Netlist public</span>
+      <div class="btns"><a class="btn" href="https://1-2-245.tapekit.org/" target="_blank" rel="noopener" title="1.2.245.tape">Open the site</a></div>
+    </div></article></div></section></div>
+  <section id="results" hidden>
+    <div class="sec"><h2 id="rtitle">Results</h2><span class="note" id="rcount"></span><a class="back" href="#">← Back to the list</a></div>
+    <p class="note" id="rsay"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+  <div class="check" id="lockinfo"><p class="dim" id="locksay">Reading the record list…</p><p class="warn" id="lockchain" hidden></p>
+    <details><summary>How it is checked</summary><p class="dim">Each image is downloaded as bytes, its sha256 computed and compared with its row in the record list, and shown only if they match.</p>
+    <pre id="lockpre">Record list gallery.lock.json
+Reading…</pre></details></div>
+  <footer><a href="../../en/index.html">21 NAND</a> · <a href="../../app/">Open the app</a> · <a href="../../en/start/verify.html">Check it yourself</a></footer>
+</main>
+<script src="../chips.js"></script>
+<script src="chips_en.js"></script>
+<script>
+
+function galleryBootFail(badge, box) { if (window.GALLERY_BOOTED) return; var b = document.getElementById(badge), c = document.getElementById(box);
+  if (b) { b.className = 'badge bad'; b.textContent = 'Page did not load'; } var s = document.getElementById('locksay') || c;      
+  if (s) { s.className = 'bad'; s.textContent = 'The scripts of this page did not load, so neither the images nor the checks started. Reload to try again; if that does not help, come back in a few minutes.'; } }
+setTimeout(function () { galleryBootFail('lockbadge', 'lockinfo'); }, 25000);
+</script>
+<script type="module" src="index.js" onerror="galleryBootFail('lockbadge', 'lockinfo')"></script>
+<link rel="stylesheet" href="../gallery.css">
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
+</body>
+</html>

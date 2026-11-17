@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--r:2px}:root{color-scheme:dark}h1,h2,button,input[type=button],input[type=submit],select,label,summary{font-family:var(--head)}pre{font-family:var(--mono)}h1,h2{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}button:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--t2);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--bt)}pre,textarea,input{font-family:var(--mono)}h1,h2,button,.num,.facts b,.brand,.lang{font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",var(--head)}.bar{display:flex;align-items:center;gap:.875rem;height:3.5rem;padding:0 .875rem;border-bottom:1px solid var(--soft,transparent)}.brand{color:var(--ink);font-weight:800;text-decoration:none}.bar a.back{margin-left:auto;font-size:.875rem;text-decoration:none}.lang{background:none;border:1px solid var(--line,transparent);border-radius:var(--r);color:var(--ink);font:600 .8125rem var(--sans);padding:3px .875rem;cursor:pointer}main{max-width:53.75rem;margin:0 auto;padding:1.75rem .875rem 4.375rem}h1{color:var(--ink);font-size:1.875rem;margin:0 0 .375rem}h2{color:var(--ink);font-size:1.1875rem;margin:0 0 .875rem}.lead{margin:0 0 .875rem;color:var(--mu)}.chk{border:1px solid var(--soft,transparent);border-radius:var(--r);background:var(--card);margin:0 0 1.75rem}.chk summary{cursor:pointer;padding:.5625rem .875rem;font-weight:600;font-size:.875rem;list-style:none;color:var(--mu)}.chk summary::-webkit-details-marker{display:none}.chk .in{padding:.25rem .875rem .875rem;font-size:.8125rem;color:var(--mu);overflow-wrap:anywhere}.step{background:var(--card);border:1px solid var(--soft,transparent);border-radius:var(--r);padding:.875rem;margin:0 0 .875rem}.step.off{opacity:.55}.num{font:600 .8125rem ui-monospace,monospace;color:var(--bt);letter-spacing:.08em}label{display:block;font-size:.875rem;margin:.875rem 0 .25rem}select,input,textarea{width:100%;background:var(--bg-deeper);color:var(--ink);border:1px solid var(--line,transparent);border-radius:var(--r);padding:.5rem .875rem;font-size:.875rem}textarea{min-height:5.5em;resize:vertical}.row{display:flex;gap:.875rem;flex-wrap:wrap;align-items:center;margin-top:.875rem}button{font:600 .9375rem var(--head);border-radius:var(--r);padding:.875rem .875rem;border:1px solid var(--line,transparent);background:none;color:var(--ink);cursor:pointer}button.primary{background:var(--brand);border-color:var(--brand,transparent);color:var(--on-accent)}button:disabled{opacity:.45;cursor:default}.say{margin:.875rem 0 0;font-weight:600;color:var(--ink)}.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.375rem,1fr));gap:.875rem;margin:.875rem 0 0}.facts div{border:1px solid var(--soft,transparent);border-radius:var(--r);padding:.5rem .875rem}.facts b{display:block;color:var(--ink);font-size:1.25rem}.facts span{font-size:.8125rem;color:var(--mu)}details.more{margin-top:.875rem;font-size:.8125rem;color:var(--mu)}details.more summary{cursor:pointer}pre{background:var(--bg-deeper);border:1px solid var(--soft,transparent);border-radius:var(--r);padding:.875rem .875rem;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--t2);font-size:.7812rem;margin:.5rem 0}.note{font-size:.8125rem;color:var(--mu)}</style>
+<title>做电路 · 21 NAND</title>
+<link rel="icon" href="../favicon.ico">
+<meta name="description" content="挑一个小电路，先在浏览器里把所有输入都试一遍；全对了，再用你的钱包把它写上链，之后谁都能运行、核对。">
+<link rel="preload" as="style" href="../assets/theme.css">
+</head>
+<body>
+<header class="bar"><a class="brand" href="../index.html">21 NAND</a><button class="lang" id="lang" type="button">EN</button><a class="back" href="./" data-en="← Back to the app">← 回到应用</a></header>
+<main>
+  <h1 data-en="Build a circuit">做电路</h1>
+  <p class="lead" data-en="Pick a small circuit, test every input in your browser; once all are right, write it on chain with your wallet. After that anyone can run and check it.">挑一个小电路，先在浏览器里把所有输入都试一遍；全对了，再用你的钱包把它写上链。之后谁都能运行、核对它。</p>
+  <details class="chk" id="self"><summary id="self-sum" data-en="Checking this page…">正在核对这个页面…</summary><div class="in" id="self-in"></div></details>
+
+  <section class="step" id="s1">
+    <span class="num" data-en="Step 1 · no wallet">第 1 步 · 不用钱包</span>
+    <h2 data-en="Make a circuit and test it in your browser">做一个电路，在浏览器里试一遍</h2>
+    <label for="pick" data-en="What it does">做什么</label>
+    <select id="pick">
+      <option value="add2" data-en="Add two 2-bit numbers (4 inputs, 3 outputs)">两个 2 位数相加（4 个输入，3 个输出）</option>
+      <option value="vote" data-en="Three people vote, majority wins (3 inputs, 1 output)">三个人投票，多数说了算（3 个输入，1 个输出）</option>
+      <option value="gt2" data-en="Compare: is a bigger than b (2 bits, 4 inputs, 1 output)">比大小：a 比 b 大吗（2 位，4 个输入，1 个输出）</option>
+      <option value="xor" data-en="Light is on when two switches differ (2 inputs, 1 output)">两个开关不一样时灯亮（2 个输入，1 个输出）</option>
+      <option value="own" data-en="Write your own truth table">自己填真值表</option>
+    </select>
+    <div id="own" hidden>
+      <label for="own-n" data-en="How many input bits (1–6)">输入有几位（1–6）</label>
+      <input id="own-n" type="number" min="1" max="6" value="3">
+      <label for="own-t" data-en="One line per output: going through the inputs from 0 upward, write whether this output is 0 or 1">每行写一个输出：按输入从 0 数到最大，依次写这个输出该是 0 还是 1</label>
+      <textarea id="own-t" spellcheck="false">00010111</textarea>
+      <p class="note" data-en="Input bit 1 is the lowest bit. For 3 input bits write eight 0/1s; the 4th digit is input 011 (bits 1 and 2 set).">输入第 1 位是最低位。比如 3 位输入要写 8 个 0/1；第 4 个数字对应输入 011（第 1、2 位是 1）。</p>
+    </div>
+    <div class="row"><button class="primary" id="make" type="button" data-en="Make a circuit">做一个电路</button></div>
+    <p class="say" id="s1-say" aria-live="polite"></p>
+    <div class="facts" id="s1-facts" hidden>
+      <div><b id="f-gates">—</b><span data-en="NAND gates">与非门</span></div>
+      <div><b id="f-tests">—</b><span data-en="inputs tested">种输入都试过</span></div>
+      <div><b id="f-bytes">—</b><span data-en="bytes of netlist to put on chain">字节，写上链的网表</span></div>
+    </div>
+    <details class="more" id="s1-more" hidden><summary data-en="Details: truth table, netlist and fingerprint">细节：真值表、网表和指纹</summary><div id="s1-table"></div><pre id="s1-net"></pre></details>
+  </section>
+
+  <section class="step off" id="s2">
+    <span class="num" data-en="Step 2 · the only step that needs a wallet">第 2 步 · 只有这一步要用钱包</span>
+    <h2 data-en="Write it on chain">写上链</h2>
+    <p class="note" data-en="Writing on chain costs two things: the tape-out fee set by the contract, and the network fee. It also uses up transistors you hold on this processor, one per gate. These are usage fees: you don't get them back and they bring no return.">写上链要付两样：流片费（合约里定的）和交易手续费。还要用掉你在这个处理器上的晶体管，一个门一个。这些钱是使用费，拿不回来，也不带来收益。</p>
+    <label for="cpu" data-en="Processor (TapeOut processor contract address on BNB Chain)">处理器（BNB Chain 上的 TapeOut 处理器合约地址）</label>
+    <input id="cpu" value="0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38" spellcheck="false" autocomplete="off">
+    <div class="row"><button class="primary" id="connect" type="button" disabled data-en="Connect wallet and see the cost">连接钱包，算一下要花多少</button><button id="send" type="button" disabled data-en="Sign and write on chain">签名，写上链</button></div>
+    <p class="say" id="s2-say" aria-live="polite"></p>
+    <div class="facts" id="s2-facts" hidden>
+      <div><b id="g-need">—</b><span id="g-have" data-en="transistors needed">个晶体管要用</span></div>
+      <div><b id="g-fee">—</b><span data-en="BNB tape-out fee">BNB 流片费</span></div>
+      <div><b id="g-gas">—</b><span data-en="BNB network fee (est.)">BNB 手续费（估）</span></div>
+    </div>
+    <details class="more" id="s2-more" hidden><summary data-en="Details: where this transaction goes and what it carries">细节：这笔交易发给谁、带什么</summary><pre id="s2-tx"></pre></details>
+  </section>
+
+  <section class="step off" id="s3">
+    <span class="num" data-en="Step 3 · no wallet">第 3 步 · 不用钱包</span>
+    <h2 data-en="Test it again on chain">在链上再试一遍</h2>
+    <p class="say" id="s3-say" aria-live="polite" data-en="Once it is on chain, this step runs every input through the on-chain circuit and compares with step 1.">写上链以后，这里会用链上的电路把所有输入再算一遍，和第 1 步对照。</p>
+    <details class="more" id="s3-more" hidden><summary data-en="Details: check it yourself with a command">细节：自己用命令核对</summary><pre id="s3-cmd"></pre></details>
+  </section>
+  <p class="note"><span data-en="How it works and a real cost breakdown: see the docs page">流程和真实花费见文档</span> <a href="../build/index.html" data-en="Build a small circuit">做一个小电路</a>.</p>
+</main>
+<script>
+"use strict";
+var EN = false; try { EN = localStorage.getItem("lang") === "en"; } catch (e) {}
+function L(zh, en) { return EN ? en : zh; }
+if (EN) { document.documentElement.lang = "en"; document.title = "Build a circuit · 21 NAND"; Array.prototype.forEach.call(document.querySelectorAll("[data-en]"), function (e) { e.textContent = e.getAttribute("data-en"); }); }
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var RPCS = ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.binance.org"];
+  var REGISTRY = "0xd006ffdd5ae313b17729621a00999cd3c71ce5e6", CONTAINER = "0x39d97ab281f04a5bc3aCc562f8DeA3f0b4266aA3", ME = "app/build.html";
+  // 只读函数（eth_call，经公共节点）和唯一的写函数（经钱包，用户签名）
+  var SEL = { fileInfo: "6c609107", fee: "adfb2b69", transistors: "6fbd1719", balanceOf: "00fdd58e", circuitInfo: "084d60f1", evalc: "934d06ea", tapeout: "7bd3ac1d" };
+  var TOPIC_TAPEDOUT = "0xc11215e417669c143c8a07aeb778034c0a0a85ebdf305d64a629b19a7a9ce031";
+  // 一笔交易装得下多大的电路。流片要在一笔交易里写完，所以上限不是门数，是这笔交易要用的 gas。
+  // 估算：GAS_BASE + GAS_PER_GATE × 与非门数，再留三成余量，就是这页交给钱包的 gas 上限。
+  var GAS_BASE = 192377, GAS_PER_GATE = 2875.5, GAS_MARGIN = 1.3;
+  // 各条链单笔交易的 gas 上限。BNB Chain：16,777,216（BEP-652，见 docs.bnbchain.org/announce/mendel-bsc/；2026-11-14 查）。
+  var TX_GAS_CAP = { "0x38": 16777216 };
+  // 没查到单笔上限的链：按协议官方客户端的做法，网表超过 34,000 字节不发（2026-11-14 查）。
+  var NL_BYTES_CAP = 34000, CHAIN = "0x38";
+  function gasFor(gates) { return Math.ceil((GAS_BASE + GAS_PER_GATE * gates) * GAS_MARGIN); }
+  // 装得下返回 null；装不下返回 { why, n, need, cap, text }，text 是写给人看的原因
+  function tooBig(gates, chain) {
+    var cap = TX_GAS_CAP[chain], g = gasFor(gates), b = gates * 7, f = function (x) { return x.toLocaleString("en-US"); };
+    if (cap) return g <= cap ? null : { why: "gas", n: gates, need: g, cap: cap, text:
+      L("这颗电路有 " + f(gates) + " 个门，估要 " + f(g) + " gas（含三成余量），超过这条链一笔交易能装的 " + f(cap) + " gas。没有发出任何交易；换一个小一点的电路。",
+        "This circuit has " + f(gates) + " gates and would need about " + f(g) + " gas (with a 30% margin), more than the " + f(cap) + " gas one transaction can carry on this chain. Nothing was sent; try a smaller circuit.") };
+    return b <= NL_BYTES_CAP ? null : { why: "bytes", n: gates, need: b, cap: NL_BYTES_CAP, text:
+      L("这颗电路有 " + f(gates) + " 个门，网表 " + f(b) + " 字节，超过一笔交易能装的 " + f(NL_BYTES_CAP) + " 字节。没有发出任何交易；换一个小一点的电路。",
+        "This circuit has " + f(gates) + " gates, a " + f(b) + "-byte netlist, more than the " + f(NL_BYTES_CAP) + " bytes one transaction can carry. Nothing was sent; try a smaller circuit.") };
+  }
+  var selfOk = false, made = null, acct = null, plan = null;
+
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join(""); }
+  function word(n) { var h = (typeof n === "bigint" ? n : BigInt(n)).toString(16); return "0".repeat(64 - h.length) + h; }
+  function addrw(a) { return "0".repeat(24) + a.slice(2).toLowerCase(); }
+/* wait-tick:begin */
+// Elapsed-time ticker for a real wait: start before the request, stop() when it settles.
+function waitTick(node, label, more) {
+  var t0 = performance.now(), span = document.createElement("span"), last = null, id = 0;
+  span.setAttribute("aria-hidden", "true"); span.className = "tick";
+  node.textContent = label; node.appendChild(span);
+  function draw() { var t = " " + more(((performance.now() - t0) / 1000).toFixed(1)); if (t !== last) span.textContent = last = t; }
+  draw(); id = setInterval(draw, 100);
+  return { draw: draw, stop: function () { clearInterval(id); id = 0; } };
+}
+/* wait-tick:end */
+  function say(id, t, cls) { var e = $(id); e.textContent = t; e.className = "say" + (cls ? " " + cls : ""); }
+  function bnb(wei) { var s = (Number(wei) / 1e18).toFixed(6); return s.replace(/0+$/, "").replace(/\.$/, ""); }
+  var rpcAt = 0;
+  function call(method, params, tries) {
+    tries = tries || 0;
+    var url = RPCS[(rpcAt + tries) % RPCS.length], ac = new AbortController(), t = setTimeout(function () { ac.abort(); }, 15000);
+    return fetch(url, { method: "POST", headers: { "content-type": "application/json" }, signal: ac.signal, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params }) })
+      .then(function (r) { return r.json(); }).finally(function () { clearTimeout(t); })
+      .then(function (j) { if (j.error) throw Object.assign(new Error(j.error.message || "rpc error"), { rpc: true }); return j.result; })
+      .catch(function (e) { if (e.rpc || tries + 1 >= RPCS.length) throw e; return call(method, params, tries + 1); });
+  }
+  function view(to, data) { return call("eth_call", [{ to: to, data: "0x" + data }, "latest"]); }
+
+  // ---------- 这个页面自己和链上记录核对（产品原则 2：只显示一行，点开看细节） ----------
+  function strArg(s) { var b = new TextEncoder().encode(s), h = hex(b); return word(b.length) + h + "0".repeat((64 - h.length % 64) % 64); }
+  function info(url) {
+    return fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call",
+      params: [{ to: REGISTRY, data: "0x" + SEL.fileInfo + addrw(CONTAINER) + word(64) + strArg(ME) }, "latest"] }) })
+      .then(function (r) { return r.json(); }).then(function (j) { var w = function (i) { return j.result.slice(2 + 64 * i, 2 + 64 * (i + 1)); };
+        return { size: parseInt(w(0), 16), sha: w(2), chunks: parseInt(w(4), 16) }; });
+  }
+  function pending() {    // 只在本机预览（127.0.0.1 / localhost）读「这批待上链」清单；正式网址上不读，网关伪造不了
+    if (!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) return Promise.resolve({});
+    return fetch("../pending.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : { files: {} }; }).then(function (j) { return j.files || {}; }, function () { return {}; });
+  }
+  function selfCheck() {
+    var sum = $("self-sum"), box = $("self"), inn = $("self-in");
+    var mine = fetch(location.pathname, { cache: "no-store" }).then(function (r) { return r.arrayBuffer(); })
+      .then(function (b) { return crypto.subtle.digest("SHA-256", b).then(function (d) { return { sha: hex(d), size: b.byteLength }; }); });
+    // 同时问每一家节点；答了的满两家就往下比，不等最慢的那家。晚到的那家照样比，和采用的不一样就收回「已核对」、不连钱包
+    var lateNo = false;
+    var regs = new Promise(function (res) {
+      var ok = [], left = RPCS.length, over = false, used = null;
+      RPCS.forEach(function (u) { info(u).catch(function () { return null; }).then(function (r) {
+        left--;
+        if (over) { if (r && used && (r.sha !== used.sha || r.size !== used.size)) { lateNo = true; plan = null; $("connect").disabled = true; $("send").disabled = true; selfBad(new Error("disagree")); } return; }
+        if (r) ok.push(r);
+        if (ok.length >= 2 || !left) { over = true; if (ok.length >= 2 && ok[0].sha === ok[1].sha && ok[0].size === ok[1].size) used = ok[0]; res(ok); }
+      }); });
+    });
+    return Promise.all([mine, regs, pending()]).then(function (r) {
+      var m = r[0], ok = r[1].filter(Boolean), p = r[2][ME];
+      if (lateNo) throw new Error("disagree");
+      if (ok.length < 2) throw new Error("net");
+      if (ok.some(function (x) { return x.sha !== ok[0].sha || x.size !== ok[0].size; })) throw new Error("disagree");
+      var reg = ok[0], onChain = reg.chunks > 0 && reg.sha === m.sha && reg.size === m.size;
+      var pend = !onChain && p && p.sha256 === m.sha && p.size === m.size;
+      if (!onChain && !pend) throw new Error(reg.chunks ? "mismatch" : "missing");
+      selfOk = true; box.className = "chk ok";
+      sum.textContent = pend ? L("已核对 ✓ 和待上链的清单一致（本机样板）", "Verified ✓ matches the pending list (local preview)") : L("已核对 ✓ 这个页面和链上记录一致", "Verified ✓ this page matches its on-chain record");
+      inn.textContent = L("本页 sha256 ", "This page sha256 ") + m.sha + ", " + m.size + L(" 字节。", " bytes. ") + (pend ? L("链上现在", "On chain now: ") + (reg.chunks ? L("是旧版 ", "older version ") + reg.sha.slice(0, 12) + "…" : L("还没有这个文件", "not recorded yet")) + L("；发布后会登记成这一份。", "; after release it will be this one.") : L("BNB Chain 网站文件仓库 ", "Same as recorded in the BNB Chain site registry ") + REGISTRY.slice(0, 6) + "…" + REGISTRY.slice(-4) + L(" 里登记的一样，", "; ") + ok.length + L(" 家公共节点说法一致。", " public nodes agree."));
+      $("connect").disabled = !made;
+    }).catch(selfBad);
+    function selfBad(e) {
+      selfOk = false; box.className = "chk bad";      // 不自动展开：展开会把下面的内容推下去；这一行已经写明没通过、点开看原因
+      var t = { net: L("连不上区块链节点，暂时没法核对这个页面。检查网络后刷新；不核对就不连钱包，第 1 步照样能用。", "Can't reach the blockchain nodes to check this page. Check your connection and reload; without a check the wallet stays off, but step 1 still works."),
+        disagree: L("几家区块链节点给的记录不一样，为了安全先不连钱包。过一会儿刷新再试。", "The blockchain nodes disagree, so the wallet stays off. Reload in a while."),
+        missing: L("链上没有找到这个页面的记录，为了安全不连钱包。第 1 步照样能用。", "This page isn't recorded on chain, so the wallet stays off. Step 1 still works."),
+        mismatch: L("这个页面和链上记录对不上，为了安全不连钱包。可能是网站缓存还没更新，过一会儿刷新；第 1 步照样能用。", "This page doesn't match its on-chain record, so the wallet stays off. The site cache may be stale: reload in a while. Step 1 still works.") }[e.message] || L("核对这个页面时出了错，为了安全不连钱包。刷新再试。", "Checking this page failed, so the wallet stays off. Reload and try again.");
+      sum.textContent = L("没通过核对：不连钱包（点开看为什么）", "Check failed: wallet stays off (open for why)"); inn.textContent = t;
+    }
+  }
+
+  // ---------- 第 1 步：真值表 → 只有与非门的网表 ----------
+  function tables(kind) {
+    var n, outs, i, f;
+    if (kind === "own") {
+      n = parseInt($("own-n").value, 10);
+      if (!(n >= 1 && n <= 6)) throw new Error(L("输入位数要在 1 到 6 之间。", "Input bits must be between 1 and 6."));
+      outs = $("own-t").value.split(/\n+/).map(function (s) { return s.replace(/\s+/g, ""); }).filter(Boolean);
+      if (!outs.length || outs.length > 8) throw new Error(L("要写 1 到 8 行，每行一个输出。", "Write 1 to 8 lines, one per output."));
+      outs.forEach(function (s, k) { if (s.length !== 1 << n || /[^01]/.test(s)) throw new Error(L("第 " + (k + 1) + " 行要正好 " + (1 << n) + " 个 0 或 1（现在是 " + s.length + " 个）。", "Line " + (k + 1) + " needs exactly " + (1 << n) + " zeros or ones (it has " + s.length + ").")); });
+      return { n: n, outs: outs.map(function (s) { return s.split("").map(Number); }) };
+    }
+    f = { xor: [2, 1, function (x) { return [(x & 1) ^ (x >> 1 & 1)]; }],
+      vote: [3, 1, function (x) { return [(x & 1) + (x >> 1 & 1) + (x >> 2 & 1) >= 2 ? 1 : 0]; }],
+      gt2: [4, 1, function (x) { return [(x & 3) > (x >> 2 & 3) ? 1 : 0]; }],
+      add2: [4, 3, function (x) { var s = (x & 3) + (x >> 2 & 3); return [s & 1, s >> 1 & 1, s >> 2 & 1]; }] }[kind];
+    n = f[0]; outs = [];
+    for (var k = 0; k < f[1]; k++) outs.push([]);
+    for (i = 0; i < 1 << n; i++) f[2](i).forEach(function (b, k) { outs[k].push(b); });
+    return { n: n, outs: outs };
+  }
+  // 线的编号照链上规矩：0、1 是常数线（这里不用），2..n+1 是输入，之后每个门一根线
+  function synth(n, outs) {
+    var gates = [], memo = new Map(), sub = new Map();
+    function nand(a, b) { if (a > b) { var t = a; a = b; b = t; } var k = a + "," + b; if (memo.has(k)) return memo.get(k); gates.push([a, b]); var w = n + 1 + gates.length; memo.set(k, w); return w; }
+    function inv(a) { return nand(a, a); }
+    function and(a, b) { return inv(nand(a, b)); }
+    function or(a, b) { return nand(inv(a), inv(b)); }
+    function one() { return nand(2, inv(2)); }
+    // 返回 "0"、"1" 或一根线；按最高位输入拆开（香农展开），同样的子表只做一次
+    function f(tt) {
+      if (tt.indexOf("1") < 0) return "0";
+      if (tt.indexOf("0") < 0) return "1";
+      if (sub.has(tt)) return sub.get(tt);
+      var h = tt.length / 2, lo = tt.slice(0, h), hi = tt.slice(h), x = 2 + Math.log2(tt.length) - 1, r;
+      if (lo === hi) r = f(lo);
+      else {
+        var f0 = f(lo), f1 = f(hi);
+        if (f0 === "0" && f1 === "1") r = x;
+        else if (f0 === "1" && f1 === "0") r = inv(x);
+        else if (f0 === "0") r = and(x, f1);
+        else if (f1 === "0") r = and(inv(x), f0);
+        else if (f1 === "1") r = or(x, f0);
+        else if (f0 === "1") r = or(inv(x), f1);
+        else r = nand(nand(x, f1), nand(inv(x), f0));
+      }
+      sub.set(tt, r); return r;
+    }
+    var ws = outs.map(function (o) { var r = f(o.join("")); return r === "1" ? one() : r === "0" ? inv(one()) : r; });
+    // 输出要是最后几根线：每个输出再接两个反相门（不复用），按顺序排在最后
+    var neg = ws.map(function (w) { gates.push([w, w]); return n + 1 + gates.length; });
+    neg.forEach(function (w) { gates.push([w, w]); });
+    return gates;
+  }
+  function run(gates, n, nOut, x) {
+    var w = [0, 1];
+    for (var i = 0; i < n; i++) w.push(x >> i & 1);
+    for (var g = 0; g < gates.length; g++) w.push(1 ^ (w[gates[g][0]] & w[gates[g][1]]));
+    return w.slice(w.length - nOut);
+  }
+  function encode(gates) {
+    return gates.map(function (g) { return "00" + g[0].toString(16).padStart(6, "0") + g[1].toString(16).padStart(6, "0"); }).join("");
+  }
+  function tapeoutData(nl, n, nOut) {
+    return "0x" + SEL.tapeout + word(96) + word(n) + word(nOut) + word(nl.length / 2) + nl + "0".repeat((64 - nl.length % 64) % 64);
+  }
+  function make() {
+    try {
+      var t = tables($("pick").value), nOut = t.outs.length, gates = synth(t.n, t.outs), bad = 0, rows = [];
+      var big = tooBig(gates.length, CHAIN); if (big) throw new Error(big.text);
+      for (var x = 0; x < 1 << t.n; x++) {
+        var got = run(gates, t.n, nOut, x), want = t.outs.map(function (o) { return o[x]; });
+        if (got.join("") !== want.join("")) bad++;
+        rows.push("<tr><td>" + x.toString(2).padStart(t.n, "0").split("").reverse().join("") + "</td><td>" + want.join("") + "</td><td>" + got.join("") + "</td></tr>");
+      }
+      var nl = encode(gates);
+      made = { n: t.n, nOut: nOut, gates: gates, nl: nl, outs: t.outs };
+      $("f-gates").textContent = gates.length; $("f-tests").textContent = (1 << t.n) + " / " + (1 << t.n); $("f-bytes").textContent = nl.length / 2;
+      $("s1-facts").hidden = false; $("s1-more").hidden = false;
+      $("s1-table").innerHTML = "<table><tr><th>" + L("输入（第 1 位在左）", "Input (bit 1 first)") + "</th><th>" + L("该是", "Expected") + "</th><th>" + L("电路算的", "Circuit") + "</th></tr>" + rows.join("") + "</table>";
+      if (bad) { made = null; say("s1-say", L("有 " + bad + " 种输入算错了，这个电路不能用。请截图告诉我们。", bad + " inputs came out wrong, so this circuit can't be used. Please send us a screenshot."), "bad"); return; }
+      crypto.subtle.digest("SHA-256", new Uint8Array(nl.match(/../g).map(function (h) { return parseInt(h, 16); }))).then(function (d) {
+        $("s1-net").textContent = L("输入 " + t.n + " 位，输出 " + nOut + " 位，" + gates.length + " 个与非门，网表 " + nl.length / 2 + " 字节", t.n + " input bits, " + nOut + " output bits, " + gates.length + " NAND gates, netlist " + nl.length / 2 + " bytes") + "\n" + L("网表 sha256 ", "netlist sha256 ") + hex(d) + "\n0x" + nl;
+      });
+      say("s1-say", L("做好了 ✓ 全部 " + (1 << t.n) + " 种输入都试过，每一种都对。", "Done ✓ all " + (1 << t.n) + " inputs tested, every one correct."), "ok");
+      $("s2").className = "step"; $("connect").disabled = !selfOk; plan = null; $("send").disabled = true; $("s2-facts").hidden = true; $("s2-more").hidden = true;
+      say("s2-say", selfOk ? "" : L("这个页面还没通过核对，先不连钱包。", "This page hasn't passed its check yet, so the wallet stays off."), selfOk ? "" : "warn");
+    } catch (e) { made = null; say("s1-say", e.message, "bad"); }
+  }
+  $("pick").onchange = function () { $("own").hidden = $("pick").value !== "own"; };
+  $("make").onclick = make;
+
+  // ---------- 第 2 步：连钱包，算花费，用户签名 ----------
+  var W = window.ethereum;
+  function walletErr(e) {
+    if (e && e.code === 4001) return L("你在钱包里取消了，没有发出任何交易。想写上链就再点一次。", "You cancelled in your wallet; nothing was sent. Tap again to write it on chain.");
+    if (e && e.code === -32002) return L("钱包里已经有一个请求在等你确认，先打开钱包处理它。", "Your wallet already has a request waiting. Open the wallet and handle it first.");
+    if (e && e.code === 4902) return L("你的钱包里还没有 BNB Chain。先在钱包里添加 BNB Chain，再回来点一次。", "Your wallet doesn't have BNB Chain yet. Add BNB Chain in your wallet, then tap again.");
+    return L("钱包没有完成这一步（", "The wallet didn't finish this step (") + ((e && e.message) || L("原因不明", "unknown reason")).slice(0, 80) + L("）。再点一次；还不行就刷新页面。", "). Tap again; if it still fails, reload the page.");
+  }
+  $("connect").onclick = function () {
+    if (!made || !selfOk) return;
+    var big = tooBig(made.gates.length, CHAIN);      // 装不下就不连钱包
+    if (big) { plan = null; $("send").disabled = true; say("s2-say", big.text, "bad"); return; }
+    var cpu = $("cpu").value.trim();
+    if (!/^0x[0-9a-fA-F]{40}$/.test(cpu)) { say("s2-say", L("处理器地址不对：要以 0x 开头、后面 40 位十六进制。", "That processor address isn't valid: it must be 0x followed by 40 hex digits."), "bad"); return; }
+    if (!W) { say("s2-say", L("没找到浏览器钱包。装 OKX Wallet 或 MetaMask 后刷新这页；不写上链的话，第 1 步照样能用。", "No browser wallet found. Install OKX Wallet or MetaMask and reload; step 1 works without one."), "bad"); return; }
+    $("connect").disabled = true; say("s2-say", L("请在钱包里确认连接…", "Confirm the connection in your wallet…"));
+    W.request({ method: "eth_requestAccounts" }).then(function (a) {
+      acct = a[0];
+      return W.request({ method: "eth_chainId" }).then(function (id) {
+        if (id === "0x38") return;
+        say("s2-say", L("请在钱包里切换到 BNB Chain…", "Switch to BNB Chain in your wallet…"));
+        return W.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }] });
+      });
+    }).then(function () {
+      say("s2-say", L("正在从链上读流片费和你的晶体管…", "Reading the fee and your transistors from the chain…"));
+      return Promise.all([view(cpu, SEL.fee), view(cpu, SEL.transistors), call("eth_gasPrice", []), call("eth_getBalance", [acct, "latest"])]);
+    }).then(function (r) {
+      var fee = BigInt(r[0]), tok = "0x" + r[1].slice(-40), gp = BigInt(r[2]), bal = BigInt(r[3]);
+      return view(tok, SEL.balanceOf + addrw(acct) + word(0)).then(function (h) {
+        var have = BigInt(h), need = made.gates.length, gas = BigInt(gasFor(need));
+        plan = { cpu: cpu, fee: fee, gas: gas, data: tapeoutData(made.nl, made.n, made.nOut), need: need };
+        $("g-need").textContent = need; $("g-have").textContent = L("个晶体管要用，你有 " + have.toString() + " 个", "transistors needed, you have " + have.toString());
+        $("g-fee").textContent = bnb(fee); $("g-gas").textContent = bnb(gas * gp);
+        $("s2-facts").hidden = false; $("s2-more").hidden = false;
+        $("s2-tx").textContent = L("发给（处理器）", "To (processor) ") + cpu + "\n" + L("函数 ", "Function ") + "tapeout(bytes nl, uint32 nIn=" + made.n + ", uint32 nOut=" + made.nOut + ")\n" + L("带的钱（流片费，合约 TAPEOUT_FEE() 读出）", "Value (tape-out fee from the contract's TAPEOUT_FEE()) ") + bnb(fee) + " BNB\n" + L("手续费上限 ", "Gas limit ") + gas + " gas\n" + L("从（你的钱包）", "From (your wallet) ") + acct;
+        if (have < BigInt(need)) { say("s2-say", L("你在这个处理器上的晶体管不够：要 " + need + " 个，你有 " + have + " 个。先在 TapeOut 官网（tapeout.net）买晶体管，或换一个你有晶体管的处理器。", "Not enough transistors on this processor: you need " + need + " and have " + have + ". Buy transistors on the TapeOut site (tapeout.net) first, or use a processor where you have some."), "bad"); return; }
+        if (bal < fee + gas * gp) { say("s2-say", L("钱包里的 BNB 不够：大约要 " + bnb(fee + gas * gp) + " BNB，你有 " + bnb(bal) + " BNB。", "Not enough BNB in your wallet: you need about " + bnb(fee + gas * gp) + " BNB and have " + bnb(bal) + " BNB."), "bad"); return; }
+        $("send").disabled = false; $("send").className = "primary"; $("connect").className = "";
+        say("s2-say", L("都够 ✓ 一共大约 " + bnb(fee + gas * gp) + " BNB。点「签名，写上链」，在钱包里看清楚再确认。", "All set ✓ about " + bnb(fee + gas * gp) + " BNB in total. Tap \"Sign and write on chain\" and read it carefully in your wallet before confirming."), "ok");
+      });
+    }).catch(function (e) {
+      var t = e && e.code !== undefined ? walletErr(e)
+        : e && e.rpc ? L("读不到这个处理器的信息。检查地址是不是 BNB Chain 上的 TapeOut 处理器，再点一次。", "Couldn't read this processor. Check that the address is a TapeOut processor on BNB Chain, then tap again.")
+        : L("连不上区块链节点，没读到流片费。检查网络后再点一次。", "Can't reach the blockchain nodes to read the fee. Check your connection and tap again.");
+      say("s2-say", t, "bad");
+    }).finally(function () { $("connect").disabled = !made || !selfOk; });
+  };
+  $("send").onclick = function () {
+    if (!plan || !acct) return;
+    var big = tooBig(plan.need, CHAIN);      // 发之前再拦一次
+    if (big) { $("send").disabled = true; say("s2-say", big.text, "bad"); return; }
+    $("send").disabled = true; say("s2-say", L("请在钱包里确认这笔交易…", "Confirm this transaction in your wallet…"));
+    W.request({ method: "eth_sendTransaction", params: [{ from: acct, to: plan.cpu, value: "0x" + plan.fee.toString(16), gas: "0x" + plan.gas.toString(16), data: plan.data }] })
+      .then(function (tx) {      // 等区块确认：那句话后面每 0.1 秒走一次已等时间（回执还是每 3 秒查一次）；确认了、没成、等满 5 分钟，都先停表再写结果
+        say("s2-say", ""); var w = waitTick($("s2-say"), L("交易发出去了，等区块确认…", "Sent. Waiting for the block to confirm…"), function (s) { return L("已等 " + s + " 秒", s + " s so far"); });
+        return wait(tx, Date.now(), w).finally(function () { w.stop(); }); })
+      .catch(function (e) { $("send").disabled = false; say("s2-say", e && e.code !== undefined ? walletErr(e) : e.message, "bad"); });
+  };
+  function wait(tx, t0, w) {
+    return call("eth_getTransactionReceipt", [tx]).catch(function () { return null; }).then(function (rc) {
+      var s = Math.round((Date.now() - t0) / 1000);
+      if (!rc) {
+        if (s > 300) throw new Error(L("等了 5 分钟还没确认。交易可能还在排队；稍后在区块浏览器里查 " + tx + "，不要重复发。", "Not confirmed after 5 minutes. It may still be queued; look up " + tx + " in a block explorer later and don't send it again."));
+        return new Promise(function (r) { setTimeout(r, 3000); }).then(function () { return wait(tx, t0, w); });
+      }
+      if (rc.status !== "0x1") throw new Error(L("交易没成功，电路没写上链（只扣了手续费）。常见原因是晶体管不够或处理器规则变了；点「连接钱包，算一下要花多少」重新检查。", "The transaction failed and nothing was written (only the network fee was charged). Usually there weren't enough transistors or the processor's rules changed; tap \"Connect wallet and see the cost\" to check again."));
+      var ev = (rc.logs || []).filter(function (l) { return l.address.toLowerCase() === plan.cpu.toLowerCase() && l.topics[0] === TOPIC_TAPEDOUT; })[0];
+      if (!ev) throw new Error(L("交易成功了，但没找到电路编号。在区块浏览器里查 " + tx + "。", "The transaction went through but no circuit number was found. Look up " + tx + " in a block explorer."));
+      var cid = parseInt(ev.topics[1], 16);
+      say("s2-say", L("写上链了 ✓ 你的电路是第 " + cid + " 号。", "On chain ✓ your circuit is number " + cid + "."), "ok");
+      $("s2-tx").textContent += "\n" + L("交易 ", "Transaction ") + tx + "\nhttps://bscscan.com/tx/" + tx;
+      return onchain(cid);
+    });
+  }
+
+  // ---------- 第 3 步：用链上的电路把所有输入再算一遍 ----------
+  function onchain(cid) {
+    var m = made, cpu = plan.cpu, nb = Math.ceil(m.n / 8), bad = 0, x = 0;
+    $("s3").className = "step"; $("s3-more").hidden = false;
+    $("s3-cmd").textContent = "cast call " + cpu + " \\\n  \"circuitInfo(uint256)(uint32,uint32,uint32,uint32)\" " + cid + " \\\n  --rpc-url " + RPCS[0] + "\n" + L("应输出 ", "Expected ") + m.n + ", " + m.nOut + ", 0, " + m.gates.length + L("（输入位、输出位、锁存器、与非门）", " (input bits, output bits, latches, NAND gates)");
+    function next() {
+      if (x >= 1 << m.n) {
+        say("s3-say", bad ? L("链上算的有 " + bad + " 种输入和第 1 步不一样。请截图告诉我们。", bad + " inputs differ between the chain and step 1. Please send us a screenshot.") : L("链上也对 ✓ 全部 " + (1 << m.n) + " 种输入，链上第 " + cid + " 号电路算的都和第 1 步一样。谁都能这样核对。", "Correct on chain too ✓ for all " + (1 << m.n) + " inputs, circuit " + cid + " on chain matches step 1. Anyone can check it this way."), bad ? "bad" : "ok");
+        return;
+      }
+      var inp = "";
+      for (var b = 0; b < nb; b++) inp += ((x >> (8 * b)) & 255).toString(16).padStart(2, "0");
+      say("s3-say", L("正在让链上算（", "Asking the chain (") + x + " / " + (1 << m.n) + L("）…", ")…"));
+      return view(cpu, SEL.evalc + word(cid) + word(64) + word(nb) + inp.padEnd(64, "0")).then(function (res) {
+        var h = res.slice(2), off = parseInt(h.slice(0, 64), 16) * 2, v = parseInt(h.slice(off + 64, off + 66), 16);
+        var want = m.outs.map(function (o) { return o[x]; }), got = want.map(function (_, k) { return v >> k & 1; });
+        if (got.join("") !== want.join("")) bad++;
+        x++; return next();
+      });
+    }
+    return Promise.resolve(next()).catch(function () { say("s3-say", L("连不上区块链节点，没能在链上再试一遍。电路已经写上链了，过几分钟刷新不会丢；也可以用下面的命令自己核对。", "Can't reach the blockchain nodes to re-test on chain. Your circuit is already on chain and won't be lost; try again in a few minutes or use the command below."), "warn"); });
+  }
+  $("lang").textContent = EN ? "中文" : "EN";
+  $("lang").onclick = function () { try { localStorage.setItem("lang", EN ? "zh" : "en"); } catch (e) {} location.reload(); };
+  window.__build = { tables: tables, synth: synth, run: run, encode: encode, tapeoutData: tapeoutData,   // 给自测用
+    gasFor: gasFor, tooBig: tooBig, put: function (m) { made = m; plan = null; $("connect").disabled = !selfOk; },
+    onchain: function (cid, cpu, m) { made = m; plan = { cpu: cpu }; return onchain(cid); } };
+  selfCheck();
+})();
+</script>
+<link rel="stylesheet" href="../assets/theme.css">
+<style id="fpx">
+/* 21 NAND「做电路」：应用里唯一连钱包的页面（单独的顶层页，不在沙箱里）。单文件，不连外部资源。
+   写交易只有一种：处理器合约的 tapeout(bytes,uint32,uint32)，金额是合约里读出的流片费；不 approve、不转账、不签消息。 */
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--t2);font:var(--fs)/var(--lh) var(--sans)}
+a{color:var(--bt)}
+code,pre,textarea,input{font-family:var(--mono)}
+h1,h2,button,.num,.facts b,.brand,.lang{font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",var(--head)}
+.bar{display:flex;align-items:center;gap:.875rem;height:3.5rem;padding:0 .875rem;border-bottom:1px solid var(--soft)}
+.brand{color:var(--ink);font-weight:800;text-decoration:none}
+.bar a.back{margin-left:auto;font-size:.875rem;text-decoration:none}
+.lang{background:none;border:1px solid var(--line);border-radius:var(--r);color:var(--ink);font:600 .8125rem var(--sans);padding:3px .875rem;cursor:pointer}
+main{max-width:53.75rem;margin:0 auto;padding:1.75rem .875rem 4.375rem}
+h1{color:var(--ink);font-size:1.875rem;margin:0 0 .375rem}
+h2{color:var(--ink);font-size:1.1875rem;margin:0 0 .875rem}
+.lead{margin:0 0 .875rem;color:var(--mu)}
+.chk{border:1px solid var(--soft);border-radius:var(--r);background:var(--card);margin:0 0 1.75rem}
+.chk summary{cursor:pointer;padding:.5625rem .875rem;font-weight:600;font-size:.875rem;list-style:none;color:var(--mu)}
+.chk summary::-webkit-details-marker{display:none}
+.chk.ok summary{color:var(--pos)}.chk.bad summary{color:var(--neg)}
+.chk .in{padding:.25rem .875rem .875rem;font-size:.8125rem;color:var(--mu);overflow-wrap:anywhere}
+.step{background:var(--card);border:1px solid var(--soft);border-radius:var(--r);padding:.875rem;margin:0 0 .875rem}
+.step.off{opacity:.55}
+.num{font:600 .8125rem ui-monospace,monospace;color:var(--bt);letter-spacing:.08em}
+label{display:block;font-size:.875rem;margin:.875rem 0 .25rem}
+select,input,textarea{width:100%;background:var(--bg-deeper);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:.5rem .875rem;font-size:.875rem}
+textarea{min-height:5.5em;resize:vertical}
+.row{display:flex;gap:.875rem;flex-wrap:wrap;align-items:center;margin-top:.875rem}
+button{font:600 .9375rem var(--head);border-radius:var(--r);padding:.875rem .875rem;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+button.primary{background:var(--brand);border-color:var(--brand);color:var(--on-accent)}button.primary:hover{background:var(--bh)}
+button:disabled{opacity:.45;cursor:default}
+.say{margin:.875rem 0 0;font-weight:600;color:var(--ink)}.say.ok{color:var(--pos)}.say.bad{color:var(--neg)}.say.warn{color:var(--warn)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.375rem,1fr));gap:.875rem;margin:.875rem 0 0}
+.facts div{border:1px solid var(--soft);border-radius:var(--r);padding:.5rem .875rem}
+.facts b{display:block;color:var(--ink);font-size:1.25rem}
+.facts span{font-size:.8125rem;color:var(--mu)}
+details.more{margin-top:.875rem;font-size:.8125rem;color:var(--mu)}details.more summary{cursor:pointer}
+pre{background:var(--bg-deeper);border:1px solid var(--soft);border-radius:var(--r);padding:.875rem .875rem;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--t2);font-size:.7812rem;margin:.5rem 0}
+table{border-collapse:collapse;font:.7812rem ui-monospace,monospace;margin:.5rem 0}
+td,th{border:1px solid var(--soft);padding:2px .5rem;text-align:center}
+th{color:var(--mu);font-weight:400}
+.note{font-size:.8125rem;color:var(--mu)}
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+</style>
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
+</body>
+</html>

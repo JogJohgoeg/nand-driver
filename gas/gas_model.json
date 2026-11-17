@@ -242,8 +242,7 @@
       "measured_14_flip_gas_per_instruction_reduction": 0.1201630009162794,
       "scope_limit": "Original MiniCPM MAC-loop pre-state only; local direct execution gas. 32/64 flips exceed transaction cap and are counterfactual. This is not an interpreter optimization measurement.",
       "sources": [
-        "circuits/_scratch/tapeout_asic/minicpm/tick_batching.json",
-        "circuits/_scratch/tapeout_asic/minicpm/tick_batching14.json"
+        "internal repository (not public)"
       ]
     }
   },
@@ -342,9 +341,7 @@
   },
   "provenance": {
     "repo_paths": [
-      "circuits/_scratch/riscv_machine/",
-      "circuits/_scratch/onchain_inference/",
-      "circuits/_scratch/tapeout_asic/minicpm/"
+      "internal repository (not public)"
     ],
     "sources": [
       "https://tapeout.net/linux.html",
@@ -412,7 +409,7 @@
         "speedup": 1.3111719154567296
       }
     ],
-    "evidence": "optimizations.md; optimization_partial_results.json",
+    "evidence": "internal repository (not public)",
     "parked_reason": "User redirected H to ASIC design before remaining levers were within30min of completion."
   },
   "reference_model": "MiniCPM5-2B",
@@ -522,7 +519,7 @@
         41832,
         248580
       ],
-      "arbiterEvidence": "../../riscv_machine/stateless/results.json",
+      "arbiterEvidence": "internal repository (not public)",
       "happy": [
         {
           "gas": 150000,
@@ -586,15 +583,15 @@
             "USD": 0.25274557234875
           }
         ],
-        "evidence": "../../riscv_machine/stateless/deep_proofs.json"
+        "evidence": "internal repository (not public)"
       }
     },
     "hardware_baselines": {
       "status": "measured",
       "scope": "llama.cpp Q4_K_M benchmark, three32-token repetitions; not integer commitment throughput",
-      "m64_CPU_decode_tokens_per_s": 35.09719,
-      "m64_Vulkan_decode_tokens_per_s": 325.472112,
-      "m64_Vulkan_decode_stddev": 2.835777
+      "gpu_host_CPU_decode_tokens_per_s": 35.09719,
+      "gpu_host_Vulkan_decode_tokens_per_s": 325.472112,
+      "gpu_host_Vulkan_decode_stddev": 2.835777
     },
     "limits": [
       "All native full-token gas is modeled, not an entire deployed-bytecode replay.",
@@ -604,7 +601,7 @@
       "Full contextual prefill counts are reported separately and must not be mistaken for a single cached decode token.",
       "Cold storage formula uses one transaction per page; a batch uploader would amortize intrinsic gas."
     ],
-    "evidence": "circuits/_scratch/tapeout_asic/minicpm/MILESTONE_2.md"
+    "evidence": "internal repository (not public)"
   },
   "stateless_arbiter": {
     "status": "measured",
@@ -653,7 +650,7 @@
       "calldataFloorApplied": false
     },
     "next_gate": "Full-job initialization/terminal policy, production authorization/economics, DA/multiple challengers, MMIO and independent review; bank and tick local prototypes are separate measured entries.",
-    "source": "circuits/_scratch/riscv_machine/stateless/REPORT.md",
+    "source": "internal repository (not public)",
     "suite_protocol_gas": {
       "status": "model",
       "min": 41832,
@@ -687,7 +684,7 @@
   "optimistic_game": {
     "status": "measured",
     "scope": "local stateful single-game prototype: existing1712-instruction MLP trace, two immutable Merkle roots, cumulative clocks, final call into bounded Solidity arbiter. No bonds/payments/job registry/deployment/network transactions.",
-    "evidence": "stateless/game_results.json",
+    "evidence": "internal repository (not public)",
     "game_runtime_bytes": 4582,
     "mlp_instructions": 1712,
     "mlp_rounds": 11,
@@ -706,7 +703,7 @@
         172930,
         177849
       ],
-      "evidence": "stateless/deep_proofs.json"
+      "evidence": "internal repository (not public)"
     },
     "full35_round_dispute": {
       "status": "model",
@@ -732,7 +729,7 @@
       191233,
       202043
     ],
-    "evidence": "stateless/bank_all_events.json",
+    "evidence": "internal repository (not public)",
     "network_transactions": 0,
     "global_model_root": {
       "status": "measured",
@@ -741,14 +738,14 @@
       "pages": 1373480,
       "bytes": 1406443520,
       "bank_witnesses": 9,
-      "evidence": "../tapeout_asic/minicpm/global_bank_root.json"
+      "evidence": "internal repository (not public)"
     },
     "pinned_segment": {
       "status": "measured",
       "scope": "Local immutable requester-role configuration for a real first-scale-page segment; constructor emulated in local VM, then open/join/resolve. No deployment/network transaction or production authorization.",
       "open_join_resolve_gas": 510432,
       "negative_cases": 13,
-      "evidence": "stateless/pinned_game_results.json"
+      "evidence": "internal repository (not public)"
     },
     "bond_prototype": {
       "status": "measured",
@@ -757,7 +754,7 @@
       "cost_limit": "Includes extra adversarial deposits/withdrawals; not minimal happy path; constructor excluded.",
       "virtual_bond_wei": 1000,
       "real_funds": 0,
-      "evidence": "stateless/bonded_game_results.json"
+      "evidence": "internal repository (not public)"
     },
     "layer_output": {
       "status": "measured",
@@ -765,7 +762,7 @@
       "expanded_transitions": 849045512,
       "output_acceptance_gas": 906240,
       "negative_cases": 17,
-      "evidence": "stateless/layer_game_results.json",
+      "evidence": "internal repository (not public)",
       "full_layer_dispute_executed": false
     }
   },
@@ -776,10 +773,10 @@
     "rounds": 10,
     "total_gas": 1797373,
     "resolve_gas": 135620,
-    "evidence": "stateless/tick_game_results.json",
+    "evidence": "internal repository (not public)",
     "hardware_integrated": false,
     "wrapper_limit": "tick-state-v1 omits external cycle history, wrapper idle +1024 cycles, persistent syscon status and UART/input transcript; requires a new environment profile. Existing measured CSR-game gas unchanged.",
-    "wrapper_probe_evidence": "../tapeout_asic/referee/wrapper_observations_checked.json"
+    "wrapper_probe_evidence": "internal repository (not public)"
   },
   "environment_refinement_game": {
     "status": "measured",
@@ -796,12 +793,7 @@
     "negativeGameTests": 8,
     "verifierRuntimeBytes": 11716,
     "limits": "RAM-only local prototype. No UART/input/syscon execution, full tick/model dispute, requester authorization, bonds/payments, DA policy, hardware integration or deployment. Existing tick-state-v1 measurements and format unchanged.",
-    "evidence": [
-      "stateless/ENVIRONMENT.md",
-      "stateless/environment_results.json",
-      "stateless/environment_ram_results.json",
-      "stateless/environment_game_results.json"
-    ],
+    "evidence": ["internal repository (not public)"],
     "verifierRuntimeSHA256": "3167f7268401035d881d36bd2bed4e63a64e1d0830a2fa71308fdf154c7d04b4",
     "hardware_validation": {
       "status": "measured",
@@ -811,7 +803,7 @@
       "rejected": 10,
       "maximumClocksPerWitness": 2953,
       "frequencyAreaPower": "unmeasured",
-      "evidence": "../tapeout_asic/referee/environment_rtl_results.json"
+      "evidence": "internal repository (not public)"
     }
   },
   "mmio_refinement_game": {
@@ -832,12 +824,7 @@
     "verifierRuntimeBytes": 13673,
     "verifierRuntimeSHA256": "37e317324c5dbbbe037ff9b78aa38f669fdaa5bcd226996842d7dee152e622ee",
     "limits": "Separate fixed-input profile. No live input append, full Linux/model dispute, requester authorization, bonds/payments, DA policy, Hazard3/SRAM integration or deployment. Existing profiles remain unchanged.",
-    "evidence": [
-      "stateless/ENVIRONMENT.md",
-      "stateless/mmio_results.json",
-      "stateless/mmio_boundary_results.json",
-      "stateless/mmio_game_results.json"
-    ],
+    "evidence": ["internal repository (not public)"],
     "hardware_validation": {
       "status": "measured",
       "scope": "Separate fixed-input MMIO hardware environment microstep and env-mmio-state-v1 hash. Caller holds all witness/context inputs stable until done; no live input append, Hazard3 integration, physical SRAM, attestation or new PPA claim.",
@@ -846,7 +833,7 @@
       "rejected": 14,
       "maximumClocksPerWitness": 2979,
       "frequencyAreaPower": "unmeasured",
-      "evidence": "../tapeout_asic/referee/mmio_rtl_results.json"
+      "evidence": "internal repository (not public)"
     }
   }
 }

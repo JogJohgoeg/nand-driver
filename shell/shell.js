@@ -34,6 +34,8 @@
   // 站点根：shell.js 自己在 <根>/shell/ 下，Cloudflare 与 Pages（/nand-driver/）都适用
   const me = document.currentScript || document.querySelector('script[src*="shell/shell.js"]');
   const ROOT = new URL('../', me ? me.src : location.href);
+  // 站根图标：站点挂在子路径（GitHub Pages）时浏览器默认去域名根取的 /favicon.ico 不是我们的；页面自己没写图标的，这里按站根补一个
+  if (!document.querySelector('link[rel~="icon"]')) { const ico = document.createElement('link'); ico.rel = 'icon'; ico.href = new URL('favicon.ico', ROOT).href; document.head.appendChild(ico); }
   const here = location.pathname.replace(/index\.html$/, '');
   const rel = ROOT.pathname;
 

@@ -6,6 +6,19 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=31536000, immutable
 
+# 图库（D-58 / D-60 / D-63）：链上页面（282-732 网关、镜像、Pages）跨站读主站的图、瓦片、pic 和清单，每个文件下载后按登记清单核 sha256
+/gallery/*
+  Access-Control-Allow-Origin: *
+
+/gallery/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/gallery/pic/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/gallery/tiles/*
+  Cache-Control: public, max-age=31536000, immutable
+
 # Cloudflare 不给 .md 带字符集，浏览器会按 GBK 猜成乱码
 /*.md
   Content-Type: text/markdown; charset=utf-8

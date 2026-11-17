@@ -9,8 +9,8 @@
     },
     {
       "path": "NAND-TOOL.md",
-      "bytes": 8018,
-      "sha256": "9d2847744c6a6e0fb05d85bf639583b2de23cbe2d9a9f6e1c7caf89d2b0c6151",
+      "bytes": 7983,
+      "sha256": "6f38097e2e5e06c6cc9b730f27ffbd15d834fcd4f49500c272e141d7e985857b",
       "chunks": 1
     },
     {
@@ -63,14 +63,14 @@
     },
     {
       "path": "brain/MAKE_A_BRAIN.md",
-      "bytes": 5890,
-      "sha256": "5493b7876406a5faa4c1b8dfeb2c292e4c8fd5fc308bc742a899f967f89e5d2e",
+      "bytes": 5868,
+      "sha256": "7f3f105679a8947049cc350570af118c1ead720a79ea3f8df5f984549ecd6f4d",
       "chunks": 1
     },
     {
       "path": "brain/bench-brain.js",
-      "bytes": 17446,
-      "sha256": "18e57a25f72bf5317c2f6e20b4cc5c15ba2d63a3d0a6bba96fcfa35715ccae7c",
+      "bytes": 17419,
+      "sha256": "1a156fbc4ca5ee9927aff1684d55deb95f449938cd1545b1729f26b63e8890ff",
       "chunks": 1
     },
     {
@@ -404,7 +404,7 @@
       "chunks": 89
     }
   ],
-  "totalBytes": 8429262,
+  "totalBytes": 8429178,
   "chunks": 402,
   "fileCap": 8400000
 }

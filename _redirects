@@ -1,0 +1,8 @@
+# 由 build_docs_site.py --site 生成（Cloudflare 静态资源跳转；282.732 链上靠旧路径的跳转页）
+/faq/ /start/faq.html 301
+/progress/ /updates/index.html 301
+/verify/ /start/verify.html 301
+/en/faq/ /en/start/faq.html 301
+/en/progress/ /en/updates/index.html 301
+/en/verify/ /en/start/verify.html 301
+/arena.html /app/m/arena/ 301

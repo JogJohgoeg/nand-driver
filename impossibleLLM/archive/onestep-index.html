@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#050506">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235741D8'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='16' font-weight='700' fill='white' text-anchor='middle'%3E21%3C/text%3E%3C/svg%3E">
 <style>
-/* Kraken Pro 式深色（2026-10-14 起，配色基准 circuits/_scratch/hashport/site/home.css；取代 10-01 的绿色版式）。存档页只做轻量统一：配色、字体、圆角、页头；内容与脚本不动。
+/* Kraken Pro 式深色（2026-10-14 起，配色基准 home.css；取代 10-01 的绿色版式）。存档页只做轻量统一：配色、字体、圆角、页头；内容与脚本不动。
    图里写死的颜色（fill / stroke 属性）用文末的属性选择器换成同一套颜色：主序列紫、第二序列橙、轴线灰。 */
 :root{color-scheme:dark;
   --bg:#050506;--fg:#FFFFFF;--mut:#CBCBD3;--mut3:#9C9DAE;--card:#111114;--card2:#17171C;--line:rgba(112,113,135,.14);--line2:rgba(112,113,135,.24);
@@ -60,7 +60,8 @@ svg [stroke="#4f8cff"]{stroke:var(--acc)} svg [stroke="#f5a623"]{stroke:var(--ch
 @media (pointer:coarse),(max-width:600px){button,input,select{min-height:44px;touch-action:manipulation}.lang{min-height:44px;min-width:44px}ul.small a{display:inline-flex;align-items:center;min-height:44px}}
 </style>
 <script>var l; try{ l=localStorage.getItem('nand-driver-lang'); if(l!=='zh'&&l!=='en') l=localStorage.getItem('tllm-lang') }catch(e){}; if(l!=='zh'&&l!=='en') l=/^zh/i.test(navigator.language||'')?'zh':'en'; document.documentElement.lang = l==='en'?'en':'zh-CN'; document.documentElement.setAttribute('data-lang', l==='en'?'en':'zh');</script>
-</head><body>
+</head><body><!--tk-old--><div role="note" style="position:relative;z-index:2147482990;box-sizing:border-box;margin:0;padding:8px 16px;background:#2A2410;color:#F3E6B0;border-bottom:1px solid #5A4A1A;font:400 14px/1.5 system-ui,-apple-system,sans-serif;text-align:center;overflow-wrap:anywhere;letter-spacing:0;text-transform:none">这是旧页，不再更新。<a href="../../" style="color:#FFD666;text-decoration:underline;border:0">回首页</a><span lang="en" style="color:#C9BC8C"> · Old page, no longer updated.</span></div><!--/tk-old-->
+
 <header class="site"><div class="in"><a class="mark" href="../../" aria-label="21 NAND Driver"><b>21 NAND<br>Driver</b><small>TapeOut · BNB Chain</small></a>
 <button type="button" class="lang" id="langBtn" aria-label="切换语言 / Switch language"><span data-l="zh">中文</span> / <span data-l="en">EN</span></button></div></header>
 <main>
@@ -142,7 +143,7 @@ svg [stroke="#4f8cff"]{stroke:var(--acc)} svg [stroke="#f5a623"]{stroke:var(--ch
 </table></div>
 <p class="small"><span class="zh">一句话：链上跑模型的价值不在效率，在于"被共识执行"这件事本身；效率是参数，会进化，性质不会退回。</span><span class="en">In one line: the value of a model on chain is not efficiency but the fact of being executed by consensus; efficiency is a parameter that evolves, the property does not regress.</span></p>
 
-<h2>7 · <span class="zh">证据</span><span class="en">Evidence</span><span class="zh">（circuits/_scratch/tapeout_asic/onestep_lm/）</span><span class="en"> (circuits/_scratch/tapeout_asic/onestep_lm/)</span></h2>
+<h2>7 · <span class="zh">证据</span><span class="en">Evidence</span><span class="zh">（onestep_lm/）</span><span class="en"> (onestep_lm/)</span></h2>
 <div class="tw"><table><tr><th><span class="zh">主题</span><span class="en">Topic</span></th><th><span class="zh">文件</span><span class="en">Files</span></th></tr>
 <tr><td><span class="zh">定义与规格</span><span class="en">Definition and spec</span></td><td>ONESTEP.md · SPEC.md · REPORT.md</td></tr>
 <tr><td><span class="zh">网表（官方编码）</span><span class="en">Netlists (official encoding)</span></td><td>netlist_resyn_v0_4k_resyn.json · netlist_resyn_cap_s.json · netlist_resyn_cap_g3.json · netlist_resyn_g44_resyn.json · netlist_resyn_s41_resyn.json · netlist_resyn_v2_resyn.json</td></tr>

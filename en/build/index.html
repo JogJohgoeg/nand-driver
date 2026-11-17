@@ -3,82 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Make a small circuit · 21 NAND</title>
-<link rel="stylesheet" href="../../home.css">
-<script>/* 全站统一语言（site/shell/lang.js 同一个键）：按 nand-driver-lang 跳到对应语言版本；点语言切换链接时记下选择 */
-(function(){var K="nand-driver-lang",l;try{l=localStorage.getItem(K)}catch(e){}
-if(l!=="zh"&&l!=="en")l=/^zh/i.test(navigator.language||"")?"zh":"en";
-if(l!==document.documentElement.lang.slice(0,2))location.replace("../../build/"+location.hash);
-document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[hreflang]");if(a)try{localStorage.setItem(K,/^en/.test(a.hreflang)?"en":"zh")}catch(x){}})})();</script>
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--lh:1.65;--fs-sm:.8125rem;--r:2px;--r-sm:2px;--t-fast:.12s;--bar:3.5rem}:root{color-scheme:dark}h1,h2,button,input[type=button],input[type=submit],th,nav{font-family:var(--head)}kbd{font-family:var(--mono)}h1,h2{word-break:keep-all;overflow-wrap:break-word}a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (forced-colors:active){a.brand::before{background:CanvasText!important}}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--bar) + .875rem)}body{margin:0;background:var(--bg);color:var(--text-2);font:var(--fs)/var(--lh) var(--sans)}a{color:var(--brand-text)}.bar{position:sticky;top:0;z-index:5;height:var(--bar);display:flex;align-items:center;gap:.875rem;padding:0 .875rem;background:var(--bar-bg);backdrop-filter:blur(8px)}.brand{color:var(--ink);font-weight:800;text-decoration:none;white-space:nowrap}.brand span{color:var(--muted);font-weight:500;margin-left:.25rem}.langsw{margin-left:.875rem;font:600 var(--fs-sm)/1 var(--head);color:var(--ink);text-decoration:none;border:1px solid var(--line,transparent);border-radius:var(--r-sm);padding:.4375rem .625rem;white-space:nowrap}.search{margin-left:auto;display:flex;align-items:center;gap:1.75rem;min-width:13.75rem;justify-content:space-between;background:var(--card);border:1px solid var(--line,transparent);border-radius:var(--r);color:var(--muted);font:.875rem var(--sans);padding:.4375rem .875rem;cursor:pointer}kbd{font:.75rem var(--mono);border:1px solid var(--line,transparent);border-radius:var(--r);padding:1px .375rem;color:var(--muted)}.menu{display:none;background:none;border:0;color:var(--ink);font-size:1.25rem;cursor:pointer;padding:.25rem}.layout{display:grid;grid-template-columns:16.25rem minmax(0,1fr) 13.75rem;margin:0 auto}.side,.toc{position:sticky;top:var(--bar);align-self:start;max-height:calc(100dvh - var(--bar));overflow:auto;padding:1.75rem .875rem 2.625rem;scrollbar-width:thin}.side{border-right:1px solid var(--line-soft,transparent)}.sg{margin:.875rem .5rem .375rem;font-size:.75rem;font-weight:700}.side ul,.toc ul{list-style:none;margin:0;padding:0}.side a{display:block;border-radius:var(--r);color:var(--text-2);text-decoration:none}.toc a{display:block;padding:.25rem .5rem;color:var(--muted);text-decoration:none;font-size:.8125rem;border-left:1px solid var(--line-soft,transparent)}.doc{padding:2.625rem 2.625rem 4.375rem;min-width:0;max-width:53.75rem}.doc h1{margin:0;color:var(--ink)}.lead{margin:.875rem 0 1.75rem}.doc h2{margin:2.625rem 0 .875rem;color:var(--ink)}.anchor{text-decoration:none;margin-right:.5rem;font-weight:400}.doc p{margin:.875rem 0}.doc ul,.doc ol{padding-left:1.3em}.doc li{margin:.375rem 0}.note{border:1px solid var(--line,transparent);background:var(--card);border-radius:var(--r);padding:.875rem .875rem;margin:.875rem 0}.table{overflow-x:auto;margin:.875rem 0;border:1px solid var(--line,transparent);border-radius:var(--r)}table{border-collapse:collapse;width:100%;font-size:.875rem}th,td{text-align:left;padding:.5625rem .875rem;border-bottom:1px solid var(--line-soft,transparent);vertical-align:top}th{font-weight:600}tr:last-child td{border-bottom:0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(13.75rem,1fr))}.card{display:flex;flex-direction:column}.sdlg{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg-deeper) 70%,transparent);display:flex;justify-content:center;align-items:flex-start;padding:10vh .875rem}.sdlg[hidden]{display:none}.sbox{width:min(40rem,100%);background:var(--card);border:1px solid var(--line,transparent);border-radius:var(--r);overflow:hidden}.sbox input{width:100%;background:var(--card-2);border:0;border-bottom:1px solid var(--line,transparent);color:var(--ink);font:1.0625rem var(--sans);padding:.875rem .875rem;outline:0}.sbox ul{list-style:none;margin:0;padding:.375rem;max-height:55vh;overflow:auto}.sbox li a{display:block;padding:.5rem .875rem;border-radius:var(--r);text-decoration:none;color:var(--text-2)}.shint{margin:0;padding:.5rem .875rem;border-top:1px solid var(--line-soft,transparent);font-size:.75rem;color:var(--muted)}@media (max-width:1100px){.layout{grid-template-columns:15rem minmax(0,1fr)}.toc{display:none}}@media (max-width:760px){.layout{display:block}.menu{display:block}.doc{padding:1.75rem .875rem 2.625rem}.doc h1{font-size:1.75rem}.side{position:fixed;top:var(--bar);left:0;bottom:0;width:min(18.75rem,85vw);z-index:6;background:var(--bg);transform:translateX(-100%);transition:transform var(--t-fast);max-height:none}.search{min-width:0}.search span{display:none}}@media (prefers-reduced-motion:reduce){.side{transition:none}}.doc,.doc>*{min-width:0;max-width:100%}.doc p,.doc li,.note,.lead,td{overflow-wrap:anywhere}.card{overflow-wrap:anywhere}.table{max-width:100%;min-width:0}.bar{border-bottom:1px solid var(--line,transparent)}.brand{font-family:var(--head);font-size:1rem}.search,.note,.table,kbd,.sbox,.side a{border-radius:2px}.layout{max-width:90rem}.sg{font:700 .6875rem/1.4 var(--mono),var(--cjk);letter-spacing:.14em;color:var(--text-dim);margin-top:1.5rem}.side a{padding:.3125rem .75rem;font-size:.875rem}.side a[aria-current=page]{background:var(--sel);box-shadow:inset 3px 0 0 var(--brand);color:var(--ink);font-weight:700}.doc{padding-top:3rem}.doc h1{font-size:2.75rem;line-height:1.15;font-weight:700;letter-spacing:-.01em}.lead{color:var(--text-dim);font-size:1.125rem}.doc h2{font-size:1.5rem;margin-top:3.5rem;padding-top:1.125rem;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 14px) top/100% 6px no-repeat;border-top:1px solid var(--line,transparent)}.anchor{color:var(--brand-text);opacity:.55}.card{position:relative}.card::before{position:absolute;width:.625rem}.note{border-left:3px solid var(--brand,transparent);border-color:var(--line,transparent);border-left-color:var(--brand,transparent)}th{font:700 .75rem var(--mono),var(--cjk);letter-spacing:.06em;color:var(--text-dim);background:var(--bg-deep)}@media (max-width:760px){.doc h1{font-size:2.125rem}}.menu{min-width:2.75rem;min-height:2.75rem}.bar .brand{flex:0 1 auto;min-width:0;overflow:hidden}.bar .search,.bar .langsw,.bar .menu{flex:none}@media (max-width:760px){.search{gap:0}}.doc th{overflow-wrap:normal;word-break:normal}table.fx{table-layout:fixed;--wa:var(--a);--wb:var(--b);--wc:var(--c);--wd:var(--d);--we:var(--e);--wf:var(--f);--wg:var(--g)}table.fx col:nth-child(1){width:var(--wa)}table.fx col:nth-child(2){width:var(--wb)}table.fx col:nth-child(3){width:var(--wc)}table.fx col:nth-child(4){width:var(--wd)}table.fx col:nth-child(5){width:var(--we)}table.fx col:nth-child(6){width:var(--wf)}table.fx col:nth-child(7){width:var(--wg)}@media (min-width:1200px) and (max-width:1439px){table.fx{--wa:var(--pa,var(--a));--wb:var(--pb,var(--b));--wc:var(--pc,var(--c));--wd:var(--pd,var(--d));--we:var(--pe,var(--e));--wf:var(--pf,var(--f));--wg:var(--pg,var(--g))}}@media (min-width:761px) and (max-width:1199px){table.fx{--wa:var(--qa,var(--a));--wb:var(--qb,var(--b));--wc:var(--qc,var(--c));--wd:var(--qd,var(--d));--we:var(--qe,var(--e));--wf:var(--qf,var(--f));--wg:var(--qg,var(--g))}}@media (min-width:601px) and (max-width:760px){table.fx{--wa:var(--ra,var(--a));--wb:var(--rb,var(--b));--wc:var(--rc,var(--c));--wd:var(--rd,var(--d));--we:var(--re,var(--e));--wf:var(--rf,var(--f));--wg:var(--rg,var(--g))}}@media (min-width:390px) and (max-width:600px){table.fx{--wa:var(--sa,var(--a));--wb:var(--sb,var(--b));--wc:var(--sc,var(--c));--wd:var(--sd,var(--d));--we:var(--se,var(--e));--wf:var(--sf,var(--f));--wg:var(--sg,var(--g))}}@media (min-width:360px) and (max-width:389px){table.fx{--wa:var(--va,var(--a));--wb:var(--vb,var(--b));--wc:var(--vc,var(--c));--wd:var(--vd,var(--d));--we:var(--ve,var(--e));--wf:var(--vf,var(--f));--wg:var(--vg,var(--g))}}@media (max-width:359px){table.fx{--wa:var(--ua,var(--a));--wb:var(--ub,var(--b));--wc:var(--uc,var(--c));--wd:var(--ud,var(--d));--we:var(--ue,var(--e));--wf:var(--uf,var(--f));--wg:var(--ug,var(--g))}}</style>
+<title>Build a small circuit · 21 NAND docs</title>
+<meta name="description" content="Turn a small piece of logic into a NAND circuit and write it on chain, so anyone can run and check it. Five steps and one real cost.">
+<link rel="preload" as="style" href="../../assets/theme.css">
+<link rel="icon" href="../../favicon.ico">
+<link rel="alternate" type="text/markdown" href="index.md">
+<link rel="preload" as="style" href="../../assets/docs.css">
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="logo" href="../">21 NAND</a>
-    <nav class="nav" aria-label="Main">
-      <a href="../#bard">The Bard</a>
-      <a href="https://nand.aihashrate.stream/gate/">Try it</a>
-      <a href="./" aria-current="page">Build</a>
-      <a href="../faq/">FAQ</a>
-      <a href="../progress/">Progress</a>
-      <a href="../verify/">Verify</a>
-      <a class="hi" href="../../build/" lang="zh-CN" hreflang="zh-CN">中文</a>
-    </nav>
-  </div>
+<header class="bar">
+  <button class="menu" type="button" aria-label="Contents" aria-controls="side" aria-expanded="false">☰</button>
+  <a class="brand" href="../../en/index.html">21 NAND <span>Docs</span></a>
+  <button class="search" type="button" aria-label="Search"><span>Search the docs</span><kbd>⌘K</kbd></button>
+  <a class="langsw" href="../../build/index.html" aria-label="这页的中文版">中文</a>
 </header>
-
-<main class="page">
-  <div>
-    <h1>Make a small circuit of your own</h1>
-    <p class="lead">On TapeOut you can turn a small piece of logic into a circuit on chain that anyone can run and check. Here is the overall flow and a real cost, not a step-by-step tutorial.</p>
-  </div>
-
-  <section class="clear" style="margin-top:0" aria-labelledby="before">
-    <h2 id="before">Before you start</h2>
-    <div><strong>A wallet and a little crypto</strong><span>For example OKX Wallet or MetaMask, with a little OKB (X Layer) or BNB (BNB Chain).</span></div>
-    <div><strong>Start very small</strong><span>Tens to thousands of gates is ideal. On BNB Chain one circuit currently holds at most about 25,000 gates.</span></div>
-    <div><strong>It’s a cost, not an investment</strong><span>Buying transistors and taping out pay for making the circuit; they bring no returns or rights.</span></div>
-  </section>
-
-  <section class="grp" aria-labelledby="flow">
-    <h2 id="flow">FIVE STEPS</h2>
-    <div class="step"><span class="n">1</span><strong>Decide what to compute</strong><span>Pick something tiny with a clear answer: adding two 8-bit numbers (about 70 gates), comparing values, looking up a small table.</span></div>
-    <div class="step"><span class="n">2</span><strong>Write it as a NAND-only netlist</strong><span>A netlist is a list of gates and which two wires each one takes. You can write the logic in Verilog, convert it to a NAND-only netlist with the open-source tool Yosys, and test every input on your own computer before going on chain.</span></div>
-    <div class="step"><span class="n">3</span><strong>Choose a processor</strong><span>Processors are the “factories” on TapeOut, each with its own transistor price and supply. You buy one transistor on that processor for every gate in your circuit.</span></div>
-    <div class="step"><span class="n">4</span><strong>Tape out</strong><span>Write the netlist on chain from your wallet. The circuit then gets its own number (like 3.2.245) and a Container account.</span></div>
-    <div class="step"><span class="n">5</span><strong>Run and check</strong><span>Running an on-chain circuit read-only is free; anyone can call it and check the result. See the <code>cast call</code> example on the <a href="../verify/">verify page</a>.</span></div>
-    <p style="margin:4px 0 0">For the actual interface and current rules, follow the <a href="https://tapeout.net/">official TapeOut site</a>.</p>
-  </section>
-
-  <section class="grp" aria-labelledby="cost">
-    <h2 id="cost">A REAL COST</h2>
-    <p style="margin:0">On 2026-10-05 we taped out a 3,829-gate circuit (DOT32_T) on our own X Layer processor #245:</p>
-    <div class="box">
-      <table class="cost">
-        <thead><tr><th>Item</th><th class="n">Amount</th><th>Note</th></tr></thead>
-        <tbody>
-          <tr><td>3,829 transistors</td><td class="n">0.38356 OKB</td><td>Our own processor, so we withdrew this afterwards</td></tr>
-          <tr><td>Tapeout fee</td><td class="n">0.0013 OKB</td><td>Paid to the protocol, not refundable</td></tr>
-          <tr><td><strong>Net cost</strong></td><td class="n"><strong>~0.0023 OKB</strong></td><td>Including transaction fees</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="margin:0;color:var(--muted)">On someone else’s processor, the transistor money goes to that processor’s creator and you can’t get it back; you pay their price. Prices on BNB Chain also move with the market.</p>
-  </section>
-
-  <section class="grp" aria-labelledby="help">
-    <h2 id="help">GOT AN IDEA?</h2>
-    <p style="margin:0">Post the logic you have in mind in the community and we can estimate roughly how many gates and how much it would cost. The model-to-circuit tools we use internally aren’t ready for outside users, and there is no public tutorial for now.</p>
-  </section>
-</main>
-
-<footer class="foot">
-  <div class="wrap">
-    <b>21 NAND · an open experiment on TapeOut</b>
-    <a href="../">Home</a>
-    <a href="../faq/">FAQ</a>
-    <a href="../verify/">Verify</a>
-  </div>
+<script>(function(){var m=document.querySelector(".menu");if(!m)return;m.__inl=1;m.addEventListener("click",function(){var s=document.getElementById("side");if(!s)return;var o=s.classList.toggle("open");m.setAttribute("aria-expanded",o?"true":"false")})})()</script>
+<div class="layout">
+<nav class="side" id="side" aria-label="Docs contents">
+<p class="sg">Start</p><ul><li><a href="../../en/index.html">What it is</a></li><li><a href="../../en/start/quickstart.html">Quickstart</a></li><li><a href="../../en/start/verify.html">Check it yourself</a></li><li><a href="../../en/start/faq.html">FAQ</a></li></ul>
+<p class="sg">The Bard chip</p><ul><li><a href="../../en/bard/index.html">Overview</a></li><li><a href="../../en/bard/fetch.html">Fetch the design files from the chain</a></li><li><a href="../../en/bard/nodes.html">Process ladder</a></li><li><a href="../../en/bard/fpga.html">FPGA port</a></li><li><a href="../../en/bard/storybox.html">Story box</a></li></ul>
+<p class="sg">Model machine</p><ul><li><a href="../../en/machine/index.html">Run it in your browser</a></li><li><a href="../../en/machine/arch.html">Full-machine architecture</a></li><li><a href="../../en/machine/tapeboot.html">Fetch firmware from the chain</a></li><li><a href="../../en/machine/sbc.html">A large model on a small computer</a></li></ul>
+<p class="sg">Gate-level AI</p><ul><li><a href="../../en/gate-ai/index.html">Gate brain</a></li><li><a href="../../en/gate-ai/ncd2net.html">From graph to gates</a></li><li><a href="../../en/gate-ai/tiny-llm.html">A tiny language model</a></li><li><a href="../../en/gate-ai/cost.html">What a large model on chain would cost</a></li></ul>
+<p class="sg">Circuits that drive</p><ul><li><a href="../../en/control/index.html">21 gates that drive</a></li><li><a href="../../en/control/arena.html">Arena rules</a></li><li><a href="../../en/control/duck.html">Microduck</a></li><li><a href="../../en/control/squared.html">NAND plays Squared</a></li><li><a href="../../en/control/fly.html">Fruit fly connectome</a></li></ul>
+<p class="sg">Build a circuit</p><ul><li><a href="../../en/build/index.html" aria-current="page">Build a small circuit</a></li><li><a href="../../en/build/notes.html">Worked examples</a></li><li><a href="../../en/build/proofs.html">Proven lower bounds</a></li><li><a href="../../en/build/agents-api.html">Agents-API circuits #283, #284</a></li></ul>
+<p class="sg">Reference</p><ul><li><a href="../../en/reference/contracts.html">Contract addresses</a></li><li><a href="../../en/reference/tbw1.html">TBW1 weight format</a></li><li><a href="../../en/reference/tapeboot.html">TapeBoot spec</a></li><li><a href="../../en/reference/commands.html">Commands you can check</a></li><li><a href="../../en/reference/netlist.html">Netlist format</a></li></ul>
+<p class="sg">Updates</p><ul><li><a href="../../en/updates/index.html">Progress</a></li></ul>
+</nav>
+<main class="doc">
+<h1>Build a small circuit</h1><p class="lead">Turn a small piece of logic into a NAND circuit and write it on chain, so anyone can run and check it. Five steps and one real cost.</p>
+<div class="note">This is the general flow, not a step-by-step tutorial. For the interface and the latest rules, follow the <a href="https://tapeout.net/" rel="noopener">TapeOut site</a>.</div>
+<h2 id="before-you-start"><a class="anchor" href="#before-you-start" aria-hidden="true">#</a>Before you start</h2>
+<ul><li>A wallet, such as OKX Wallet or MetaMask, with a little OKB (X Layer) or BNB (BNB Chain).</li><li>Start with a very small circuit: tens to a few thousand gates. A circuit has to be written in one transaction: on BNB Chain one transaction can use at most 16,777,216 gas (BEP-652; checked 2026-11-14), and at roughly 2,900 gas per NAND gate that caps a circuit at about 5,700 gates.</li><li>What you pay for transistors and tape-out is a usage fee, not an investment. It brings no returns or rights.</li></ul>
+<h2 id="five-steps"><a class="anchor" href="#five-steps" aria-hidden="true">#</a>Five steps</h2>
+<ol><li><strong>Decide what to compute</strong>: pick something very small with a clear result. For example, adding two 8-bit numbers (about 70 gates), comparing two numbers, or looking up a small table.</li><li><strong>Write a NAND-only netlist</strong>: a netlist is a list of gates that says which two wires each gate connects to. You can write the logic in Verilog first, then use the open-source synthesis tool Yosys to turn it into a NAND-only netlist. Before you put it on chain, try every input on your own computer.</li><li><strong>Pick a processor</strong>: a processor is a factory on TapeOut. Each has its own transistor price and remaining stock. Buy as many transistors on that processor as your circuit has gates.</li><li><strong>Tape out</strong>: use your wallet to write the netlist on chain. When it is done, the circuit has its own number (for example 3.2.245) and a Container account.</li><li><strong>Run and check</strong>: running an on-chain circuit read-only is free. Anyone can call it and check the result. The commands are in section 3 of <a href="../start/verify.html">Check it yourself</a>.</li></ol>
+<h2 id="a-real-cost"><a class="anchor" href="#a-real-cost" aria-hidden="true">#</a>A real cost</h2>
+<p>On 2026-10-05 we taped out a circuit with 3,829 gates (DOT32_T) to our own processor #245 on X Layer.</p>
+<div class="table"><table class="fx" style="--a:25.39%;--b:22.483%;--c:52.127%;--pa:25.419%;--pb:22.577%;--pc:52.004%;--qa:26.476%;--qb:25.862%;--qc:47.662%;--ra:25.676%;--rb:23.369%;--rc:50.955%;--sa:27.179%;--sb:28.043%;--sc:44.778%;--va:27.547%;--vb:29.19%;--vc:43.263%;--ua:28.157%;--ub:31.094%;--uc:40.749%"><colgroup><col><col><col></colgroup><thead><tr><th>Item</th><th>Amount</th><th>Note</th></tr></thead><tbody><tr><td>Buy 3,829 transistors</td><td>0.38356 OKB</td><td>The processor is ours, so we withdrew this later</td></tr><tr><td>Tape-out fee</td><td>0.0013 OKB</td><td>Paid to the protocol, not refundable</td></tr><tr><td>Net cost</td><td>about 0.0023 OKB</td><td>Includes transaction fees</td></tr></tbody></table></div>
+<ul><li>If you use someone else's processor: the money for transistors goes to the processor's creator and you do not get it back. You pay the unit price they set.</li><li>Prices on BNB Chain change with the token price.</li></ul>
+<h2 id="read-next"><a class="anchor" href="#read-next" aria-hidden="true">#</a>Read next</h2>
+<div class="cards"><a class="card" href="notes.html"><strong>Worked examples</strong><span>Gate-level designs for adders, comparators, counters and sequence detectors.</span></a><a class="card" href="proofs.html"><strong>Proven lower bounds</strong><span>A 3-bit carry needs at least 6 levels of NAND.</span></a><a class="card" href="agents-api.html"><strong>Agents-API circuits</strong><span>Agent control rules built as on-chain circuits.</span></a></div>
+<footer class="doc-foot">
+  <a href="index.md">This page as Markdown</a> · <a href="../../en/llms.txt">llms.txt</a> · <a href="../../en/control/fly.html">← Fruit fly connectome</a> · <a href="../../en/build/notes.html">Worked examples →</a>
 </footer>
+</main>
+<aside class="toc" aria-label="On this page">
+<p class="sg">On this page</p><ul><li class="l2"><a href="#before-you-start">Before you start</a></li><li class="l2"><a href="#five-steps">Five steps</a></li><li class="l2"><a href="#a-real-cost">A real cost</a></li><li class="l2"><a href="#read-next">Read next</a></li></ul>
+</aside>
+</div>
+<div class="sdlg" hidden><div class="sbox" role="dialog" aria-label="Search"><input type="search" placeholder="Search the docs…" aria-label="Search the docs"><ul></ul><p class="shint">↑↓ select · Enter open · Esc close</p></div></div>
+<link rel="stylesheet" href="../../assets/docs.css">
+<script src="../../en/search-index.js"></script>
+<script src="../../assets/docs.js"></script>
+<script id="navfb">!function(){var m="data-nav-busy",l,d=document;function c(){for(var x=d.querySelectorAll("["+m+"]"),i=0;i<x.length;i++)x[i].removeAttribute("aria-busy"),x[i].removeAttribute(m);l&&(l.textContent="")}d.addEventListener("pointerdown",c,!0);d.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target&&"_self"!==a.target||a.hasAttribute("download")||a.origin!==location.origin||a.pathname===location.pathname&&a.search===location.search)){var b=a.closest("[data-nav],.card,.lot")||a;b.setAttribute("aria-busy","true");b.setAttribute(m,"");l||(l=d.createElement("span"),l.setAttribute("role","status"),l.className="w-live",d.body.appendChild(l));l.textContent=/^en/i.test(d.documentElement.lang)?"Opening…":"正在打开…"}},!1);addEventListener("pagehide",c);addEventListener("pageshow",function(e){e.persisted&&c()})}();</script>
 </body>
 </html>

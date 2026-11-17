@@ -4,113 +4,189 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Agents API harness control loop burned as TapeOut circuit #283 (152 NAND + 10 LATCH) on BSC: interface, live simulator, how to drive it.">
-<style>img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Circuit 283</title>
-<meta name="theme-color" content="#050506">
-<style>
-/* 深色版式（2026-10-14 由绿色版改为 Kraken Pro 式深色，基准 hashport/site/home.css）。链上页面：只用系统字体、不连链外资源。 */
+<script>/* 先定语言：网页是分段到的，后半段还没到时也只露一种语言（和页面末尾的脚本用同一个记号、同一个规则） */
+(function(){var l;try{l=localStorage.getItem('c283lang')}catch(e){}if(l!=='zh'&&l!=='en')l=/^zh/i.test(navigator.language||'')?'zh':'en';document.documentElement.setAttribute('data-lang',l)})();
+</script>
+<link rel="icon" href="../favicon.ico">
+
+<style id="theme">:root{
+  color-scheme:dark;
+  --brand:#ff9426; --on-accent:#1a0f03; --brand-text:var(--brand);
+  --bg:#17110a; --bg-deep:#100b06; --bg-deeper:#0a0703; --plate:#060402;
+  --panel:#211a11; --sel:#2e2518;
+  --text:#d8cdb9; --ink:#f8f0e0; --text-dim:#b0a48f; --faint:#74695a;
+  --line:#40362a; --field:#8a7c6a;
+  --ok:#8bd98f; --warn:#ecd98a; --bad:#ff7d8a; --aux:#8fb8de;
+  --img-rest:grayscale(1) contrast(1.7) brightness(.62) sepia(1) saturate(3.6) hue-rotate(-11deg);
+  --shot-rest:grayscale(1) sepia(.4) saturate(1.4) hue-rotate(-11deg);   }
+:root[data-theme=light]{
+  color-scheme:light;
+  --brand-text:#ab5600;
+  --accent-hover:color-mix(in srgb,var(--brand-text) 82%,#000);
+  --bg:#f8f2e6; --bg-deep:#f0e8d7; --bg-deeper:#e7dec9; --plate:#15100a;
+  --panel:#fffcf5; --sel:#f0e7d3;
+  --text:#39322a; --ink:#17110a; --text-dim:#61584b; --faint:#928875;
+  --line:#d6ccb6; --field:#8d8370;
+  --ok:#1f7a3a; --warn:#7d6500; --bad:#c0233a; --aux:#2a6a9e;
+}
+:root{
+  --brand-hover:color-mix(in srgb,var(--brand) 86%,#fff); --bar-bg:color-mix(in srgb,var(--bg) 94%,transparent);
+  --accent:var(--brand-text); --accent-hover:color-mix(in srgb,var(--brand-text) 86%,#fff);
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --sans:var(--cjk); --head:var(--cjk);
+  --fs:.9375rem; --lh:1.65; --fs-sm:.8125rem; --fs-xs:.75rem;
+  --s1:.875rem; --s2:1.75rem; --s3:2.625rem;
+  --r:2px; --r-sm:2px;
+  --t-fast:.12s; --t-med:.25s; --ease:cubic-bezier(.2,.7,.2,1);
+  --t-press:.08s; --t-state:.12s; --t-budget:.4s;
+  --glow:0 .5rem 1.75rem color-mix(in srgb,var(--brand) 20%,transparent);
+  --ring:0 0 0 1px color-mix(in srgb,var(--brand) 45%,transparent);
+  --card:var(--panel); --card-2:var(--sel); --text-2:var(--text); --t2:var(--text); --muted:var(--text-dim); --mu:var(--text-dim);
+  --line-soft:var(--line); --soft:var(--line); --bt:var(--brand-text); --bh:var(--brand-hover);
+  --pos:var(--ok); --neg:var(--bad);
+  --thumb-bg:var(--plate); --thumb-glow:transparent; --thumb-glow-2:transparent; --thumb-halo:transparent;
+  --logo:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2.2 -2.2 354.4 70.4' fill='none' stroke-width='4.4' stroke-linecap='round' stroke-linejoin='round' stroke='%23000'%3E%3Cpath d='M5 11L40 11A5 5 0 0 1 45 16L45 28A5 5 0 0 1 40 33L10 33A5 5 0 0 0 5 38L5 50A5 5 0 0 0 10 55L45 55M65 11L80 11A5 5 0 0 1 85 16L85 55M125 55L125 16A5 5 0 0 1 130 11L140 11A5 5 0 0 1 145 16L145 50A5 5 0 0 0 150 55L160 55A5 5 0 0 0 165 50L165 11M185 55L185 16A5 5 0 0 1 190 11L220 11A5 5 0 0 1 225 16L225 55M185 33L225 33M245 55L245 16A5 5 0 0 1 250 11L260 11A5 5 0 0 1 265 16L265 50A5 5 0 0 0 270 55L280 55A5 5 0 0 0 285 50L285 11M305 11L340 11A5 5 0 0 1 345 16L345 50A5 5 0 0 1 340 55L305 55Z'/%3E%3C/svg%3E");
+}
+h1,h2,h3,h4,h5,button,input[type=button],input[type=submit],select,label,summary,time,th,nav{font-family:var(--head)}
+code,pre,kbd,samp{font-family:var(--mono)}
+h1,h2,h3,h4{word-break:keep-all;overflow-wrap:break-word}
+a.brand:not([href="./"]){font-size:0}a.brand:not([href="./"])>span{font-size:1rem;margin-left:.5rem;vertical-align:middle}
+a.brand:not([href="./"])::before{content:"";display:inline-block;width:7.55rem;height:1.5rem;vertical-align:middle;background:linear-gradient(90deg,var(--brand-text) 31.7%,var(--ink) 31.7%);-webkit-mask:var(--logo) center/contain no-repeat;mask:var(--logo) center/contain no-repeat}
+:root{accent-color:var(--brand)}
+.btn:active:not(:disabled),button:active:not(:disabled),[data-press]:active{filter:brightness(.88)}
+a.card:active,.card:has(a:active),.side a:active,.toc a:active,.nav a:active{filter:brightness(.82)}
+[data-nav-busy]:is(.card,.lot,[data-nav]){position:relative;cursor:progress;box-shadow:var(--ring)}
+[data-nav-busy]:is(.card,.lot,[data-nav])::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}
+.w-live{position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}button:disabled,.btn:disabled,input:disabled,select:disabled{opacity:.5;cursor:not-allowed}
+@media (forced-colors:active){a.brand::before{background:CanvasText!important}}:focus-visible{outline:2px solid var(--brand-text);outline-offset:2px}
+[aria-busy=true]:is(button,.btn){position:relative;cursor:progress;filter:saturate(.55) brightness(.85)}
+[aria-busy=true]:is(button,.btn)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) 0 0/40% 100% no-repeat;animation:w-run 1s linear infinite}
+.w-sk{display:block;position:relative;overflow:hidden;min-height:.9em;border-radius:var(--r);background:var(--sel);color:transparent!important;user-select:none}
+.w-sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 9%,transparent),transparent) 0 0/50% 100% no-repeat;animation:w-run 1.2s linear infinite}
+.w-sk.line{height:.9em;margin:.35em 0}.w-sk.w30{width:30%}.w-sk.w50{width:50%}.w-sk.w70{width:70%}.w-sk.w90{width:90%}.w-sk.pic{aspect-ratio:16/10}
+.w-bar{display:block;height:.375rem;overflow:hidden;border-radius:var(--r);background:var(--sel)}
+.w-bar>i{display:block;height:100%;width:calc(var(--p,0)*1%);background:var(--brand);transition:width var(--t-state) linear}
+.w-bar.unknown>i{width:100%;background:repeating-linear-gradient(90deg,var(--brand) 0 .5rem,transparent .5rem 1rem) 0 0/2rem 100%;animation:w-slide 1s linear infinite}
+.w-prog{display:grid;gap:.3rem;font-size:var(--fs-sm)}
+.w-sent{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:var(--fs-sm)}
+.w-sent .cells{display:flex;flex-wrap:wrap;gap:2px}
+.w-sent .cells i{width:.625rem;height:.625rem;border:1px solid var(--field);border-radius:var(--r)}
+.w-sent .cells i[data-s=out]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 35%,transparent)}
+.w-sent .cells i[data-s=ok]{border-color:var(--ok);background:var(--ok)}
+.w-sent .cells i[data-s=bad]{border-color:var(--bad);background:var(--bad)}
+.w-prog .n,.w-sent .n{font-family:var(--mono);color:var(--ink)}
+.w-reveal[aria-busy=true]::after{content:"";display:inline-block;width:.5em;height:1em;margin-left:.1em;vertical-align:-.15em;background:var(--brand);animation:w-blink 1s steps(2) infinite}
+@keyframes w-run{from{background-position:-60% 0}to{background-position:160% 0}}
+@keyframes w-slide{to{background-position:2rem 0}}
+@keyframes w-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}</style>
+<style>img{max-width:100%}[hidden]{display:none!important}
+/* 深色版式（2026-10-14 由绿色版改为 Kraken Pro 式深色）。链上页面：只用系统字体、不连链外资源。 */
 :root{color-scheme:dark;
-  --bg:#050506; --surface:#111114; --surface-2:#17171C; --ink:#FFFFFF; --text-2:#CBCBD3; --muted:#9C9DAE;
-  --rule:rgba(112,113,135,.24); --rule-soft:rgba(112,113,135,.14); --rule2:rgba(112,113,135,.45);
-  --brand:#5741D8; --brand-hover:#6A55E8; --brand-text:#A496FF; --pos:#00DA80; --neg:#F0616D;
-  --copper:#5741D8; --copper-ink:#A496FF; --on-copper:#FFFFFF; --signal:#A496FF; --signal-bg:rgba(87,65,216,.22); --off:#17171C;
-  --code-bg:#17171C; --done:#00DA80;
+   --surface:var(--panel); --surface-2:var(--sel);  --text-2:var(--text); --muted:var(--text-dim);
+  --rule:color-mix(in srgb,var(--field) 24%,transparent); --rule-soft:color-mix(in srgb,var(--field) 14%,transparent); --rule2:color-mix(in srgb,var(--field) 45%,transparent);
+     --pos:var(--ok); --neg:var(--bad);
+  --copper:var(--brand); --copper-ink:var(--brand-text); --on-copper:var(--ink); --signal:var(--brand-text); --signal-bg:color-mix(in srgb,var(--brand) 22%,transparent); --off:var(--sel);
+  --code-bg:var(--sel); --done:var(--ok);
   --sans:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
   --disp:var(--sans);
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(70% 90% at 25% 0%,rgba(87,65,216,.28),rgba(87,65,216,0) 70%) no-repeat,var(--bg);background-size:100% 900px,auto;color:var(--ink);font:16px/1.75 var(--sans);padding-block:0 64px;padding-inline:20px}
-.wrap{max-width:1040px;margin:0 auto}
+body{margin:0;background:radial-gradient(70% 90% at 25% 0%,color-mix(in srgb,var(--brand) 28%,transparent),color-mix(in srgb,var(--brand) 0%,transparent) 70%) no-repeat,var(--bg);background-size:100% 900px,auto;color:var(--ink);font:1rem/1.75 var(--sans);padding-block:0 4rem;padding-inline:1.25rem}
+.wrap{max-width:65rem;margin:0 auto}
 .prose{max-width:72ch}
 h1,h2,h3{font-family:var(--sans);font-weight:800;text-wrap:balance;margin:0;word-break:keep-all;overflow-wrap:anywhere}
-h1{font-size:clamp(38px,6vw,64px);line-height:1.1;letter-spacing:-.01em}
+h1{font-size:clamp(2.375rem,6vw,4rem);line-height:1.1;letter-spacing:-.01em}
 h1 em{font-style:normal;color:var(--brand-text)}
-h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;margin-top:72px;margin-bottom:16px;color:var(--ink)}
-h2+.prose>p:first-child,h2+.ctx{margin-top:4px}
-h3{font-size:21px;font-weight:700;margin-top:28px;margin-bottom:8px}
-p{margin:0 0 14px;color:var(--text-2)}
+h2{font-size:clamp(1.625rem,3.4vw,2.25rem);line-height:1.2;margin-top:4.5rem;margin-bottom:1rem;color:var(--ink)}
+h2+.prose>p:first-child,h2+.ctx{margin-top:.25rem}
+h3{font-size:1.3125rem;font-weight:700;margin-top:1.75rem;margin-bottom:.5rem}
+p{margin:0 0 .875rem;color:var(--text-2)}
 strong,b{color:var(--ink)}
-.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--muted)}
+.eyebrow{font:600 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--muted)}
 /* 页头：近黑底 + 页面顶部一层淡紫光（光晕在 body 上） */
-header{padding-block:22px 44px;border-bottom:1px solid var(--rule-soft);color:var(--ink)}
-header .topbar{padding-bottom:30px;margin-bottom:38px;border-bottom:1px solid var(--rule-soft)}
+header{padding-block:1.375rem 2.75rem;border-bottom:1px solid var(--rule-soft);color:var(--ink)}
+header .topbar{padding-bottom:1.875rem;margin-bottom:2.375rem;border-bottom:1px solid var(--rule-soft)}
 header a{color:var(--brand-text)}
-header .lede{font-size:19px;line-height:1.65;color:var(--text-2);margin-top:22px;max-width:64ch}
+header .lede{font-size:1.1875rem;line-height:1.65;color:var(--text-2);margin-top:1.375rem;max-width:64ch}
 header .lede strong{color:var(--ink)}
 .mark{display:grid;line-height:1.1;color:var(--ink);text-decoration:none}
-.mark b{font:800 20px/1.1 var(--sans);letter-spacing:.02em}
-.mark small{font:400 11px/1 var(--mono);letter-spacing:.04em;color:var(--muted);margin-top:5px}
-.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--rule);background:var(--rule);margin-top:30px;border-radius:12px;overflow:hidden}
-.facts div{padding:14px 16px;background:var(--surface)}
+.mark b{font:800 1.25rem/1.1 var(--sans);letter-spacing:.02em}
+.mark small{font:400 .6875rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);margin-top:.3125rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--rule);background:var(--rule);margin-top:1.875rem;border-radius:var(--r);overflow:hidden}
+.facts div{padding:.875rem 1rem;background:var(--surface)}
 .facts .wide{grid-column:1/-1}
 .facts div:nth-child(2){grid-column:span 2}.facts div:last-child{grid-column:1/-1}
 @media (max-width:640px){.facts{grid-template-columns:1fr 1fr}.facts div:nth-child(2){grid-column:auto}}
-.facts b{display:block;font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--muted);margin-bottom:8px}
-.facts span{font-family:var(--mono);font-size:13px;line-height:1.5;word-break:break-all;font-variant-numeric:tabular-nums}
+.facts b{display:block;font:600 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);margin-bottom:.5rem}
+.facts span{font-family:var(--mono);font-size:.8125rem;line-height:1.5;word-break:break-all;font-variant-numeric:tabular-nums}
 code,pre,.mono{font-family:var(--mono)}
-code{background:var(--code-bg);padding:1px 5px;font-size:.92em;border-radius:4px;color:var(--ink)}
-pre{background:var(--code-bg);padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.5;border:1px solid var(--rule);border-left:3px solid var(--copper);border-radius:8px;margin:12px 0 18px;color:var(--text-2)}
+code{background:var(--code-bg);padding:1px .3125rem;font-size:.92em;border-radius:var(--r);color:var(--ink)}
+pre{background:var(--code-bg);padding:.875rem 1rem;overflow-x:auto;font-size:.8125rem;line-height:1.5;border:1px solid var(--rule);border-left:3px solid var(--copper);border-radius:var(--r);margin:.75rem 0 1.125rem;color:var(--text-2)}
 pre code{background:none;padding:0}
 a{color:var(--copper-ink)}
-a:hover{color:#C2B9FF}
+a:hover{color:var(--brand-text)}
 /* 模拟器 */
-.sim{background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--copper);border-radius:12px;overflow:hidden;margin-top:20px}
-.sim-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--rule-soft)}
+.sim{background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--copper);border-radius:var(--r);overflow:hidden;margin-top:1.25rem}
+.sim-head{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;padding:.875rem 1.125rem;border-bottom:1px solid var(--rule-soft)}
 .sim-head .eyebrow{color:var(--copper-ink)}
-.btns{display:flex;gap:8px;flex-wrap:wrap}
-button{font:600 14px/1 var(--sans);padding:9px 14px;border:1px solid var(--rule2);background:var(--surface-2);color:var(--ink);cursor:pointer;border-radius:8px}
+.btns{display:flex;gap:.5rem;flex-wrap:wrap}
+button{font:600 .875rem/1 var(--sans);padding:.5625rem .875rem;border:1px solid var(--rule2);background:var(--surface-2);color:var(--ink);cursor:pointer;border-radius:var(--r)}
 button.primary{background:var(--copper);border-color:var(--copper);color:var(--on-copper)}
 button:hover{border-color:var(--copper-ink)}
-button.primary:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+button.primary:hover{background:var(--brand-hover);border-color:var(--brand-hover);color:var(--on-accent)}
 button:focus-visible,.bit:focus-visible{outline:2px solid var(--copper-ink);outline-offset:2px}
 .panels{display:grid;grid-template-columns:1.1fr .9fr 1fr;gap:0}
-.panel{padding:16px 18px;border-right:1px solid var(--rule-soft)}
+.panel{padding:1rem 1.125rem;border-right:1px solid var(--rule-soft)}
 .panel:last-child{border-right:0}
-.panel h4{margin:0 0 10px;font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--muted)}
-.group{margin-bottom:12px}
-.group .g{font-size:11px;color:var(--muted);margin-bottom:4px}
-.bits{display:flex;flex-wrap:wrap;gap:6px}
-.bit{font:400 12px/1 var(--mono);padding:7px 9px;border:1px solid var(--rule);background:var(--off);border-radius:6px;cursor:pointer;user-select:none;color:var(--text-2)}
+.panel h4{margin:0 0 .625rem;font:600 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--muted)}
+.group{margin-bottom:.75rem}
+.group .g{font-size:.6875rem;color:var(--muted);margin-bottom:.25rem}
+.bits{display:flex;flex-wrap:wrap;gap:.375rem}
+.bit{font:400 .75rem/1 var(--mono);padding:.4375rem .5625rem;border:1px solid var(--rule);background:var(--off);border-radius:var(--r);cursor:pointer;user-select:none;color:var(--text-2)}
 .bit.on{background:var(--signal-bg);border-color:var(--signal);color:var(--signal);font-weight:600}
 .bit.out{cursor:default}
 .bit.out.on{background:var(--copper);border-color:var(--copper);color:var(--on-copper)}
-.reg{display:grid;gap:8px}
-.reg .r{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--rule-soft);padding-bottom:6px}
-.reg .r b{font-weight:600;font-size:13px}
-.reg .r span{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
-.phase{font-family:var(--sans);font-weight:800;font-size:34px;line-height:1.1;margin:2px 0 10px;color:var(--ink)}
+.reg{display:grid;gap:.5rem}
+.reg .r{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--rule-soft);padding-bottom:.375rem}
+.reg .r b{font-weight:600;font-size:.8125rem}
+.reg .r span{font-family:var(--mono);font-size:.875rem;font-variant-numeric:tabular-nums}
+.phase{font-family:var(--sans);font-weight:800;font-size:2.125rem;line-height:1.1;margin:2px 0 .625rem;color:var(--ink)}
 .phase.DONE{color:var(--done)} .phase.TOOL,.phase.SUB{color:var(--copper-ink)}
-.latch{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
-.log{border-top:1px solid var(--rule-soft);padding:0 18px 12px;overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th{text-align:left;white-space:nowrap;font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--muted);padding:12px 10px 8px;border-bottom:1px solid var(--rule2)}
-td{padding:8px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:top;font-variant-numeric:tabular-nums;line-height:1.55;color:var(--text-2)}
-td.mono{font-size:12px}
-.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:8px}
-.spec table td:first-child{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
-.rules{padding-left:0;list-style:none;margin:8px 0 0;border-top:1px solid var(--rule2)}
-.rules li{padding:10px 0;border-bottom:1px solid var(--rule-soft);display:grid;grid-template-columns:120px 1fr;gap:14px;line-height:1.6;color:var(--text-2)}
-.rules li b{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--copper-ink)}
-.note{border-left:3px solid var(--copper);background:var(--surface);border-radius:0 8px 8px 0;padding:8px 14px;color:var(--text-2);font-size:15px;margin:14px 0}
+.latch{font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.04em}
+.log{border-top:1px solid var(--rule-soft);padding:0 1.125rem .75rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.8125rem}
+th{text-align:left;white-space:nowrap;font:600 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);padding:.75rem .625rem .5rem;border-bottom:1px solid var(--rule2)}
+td{padding:.5rem .625rem;border-bottom:1px solid var(--rule-soft);vertical-align:top;font-variant-numeric:tabular-nums;line-height:1.55;color:var(--text-2)}
+td.mono{font-size:.75rem}
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(18.75rem,1fr));gap:1.25rem;margin-top:.5rem}
+.spec table td:first-child{font-family:var(--mono);font-size:.7812rem;white-space:nowrap}
+.rules{padding-left:0;list-style:none;margin:.5rem 0 0;border-top:1px solid var(--rule2)}
+.rules li{padding:.625rem 0;border-bottom:1px solid var(--rule-soft);display:grid;grid-template-columns:7.5rem 1fr;gap:.875rem;line-height:1.6;color:var(--text-2)}
+.rules li b{font-family:var(--mono);font-weight:600;font-size:.8125rem;color:var(--copper-ink)}
+.note{border-left:3px solid var(--copper);background:var(--surface);border-radius:0 8px 8px 0;padding:.5rem .875rem;color:var(--text-2);font-size:.9375rem;margin:.875rem 0}
 html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{display:none!important}
-.lang{display:flex;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--surface)}
-.lang button{border:0;border-radius:0;background:transparent;padding:6px 12px;font:500 12px/1.4 var(--mono);letter-spacing:.04em;color:var(--text-2)}
-.lang button.on{background:var(--brand);color:#FFFFFF}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.ctx{border:1px solid var(--rule);border-top:3px solid var(--copper);border-radius:12px;overflow:hidden;background:var(--surface);margin:18px 0 26px;max-width:72ch}
-.ctx .hd{padding:10px 16px;border-bottom:1px solid var(--rule-soft);font:600 12px/1 var(--mono);letter-spacing:.04em;color:var(--copper-ink)}
+.lang{display:flex;gap:0;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.lang button{border:0;border-radius:0;background:transparent;padding:.375rem .75rem;font:500 .75rem/1.4 var(--mono);letter-spacing:.04em;color:var(--text-2)}
+.lang button.on{background:var(--brand);color:var(--on-accent)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+.ctx{border:1px solid var(--rule);border-top:3px solid var(--copper);border-radius:var(--r);overflow:hidden;background:var(--surface);margin:1.125rem 0 1.625rem;max-width:72ch}
+.ctx .hd{padding:.625rem 1rem;border-bottom:1px solid var(--rule-soft);font:600 .75rem/1 var(--mono);letter-spacing:.04em;color:var(--copper-ink)}
 .ctx ol{list-style:none;margin:0;padding:0}
-.ctx li{display:grid;grid-template-columns:72px 1fr;gap:14px;padding:11px 16px;border-bottom:1px solid var(--rule-soft);font-size:14.5px;line-height:1.6;color:var(--text-2)}
+.ctx li{display:grid;grid-template-columns:4.5rem 1fr;gap:.875rem;padding:.6875rem 1rem;border-bottom:1px solid var(--rule-soft);font-size:.9062rem;line-height:1.6;color:var(--text-2)}
 .ctx li:last-child{border-bottom:0}
-.ctx time{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
-.ctx a{color:var(--copper-ink);text-decoration-color:rgba(164,150,255,.4)}
+.ctx time{font-family:var(--mono);font-size:.7812rem;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.ctx a{color:var(--copper-ink);text-decoration-color:color-mix(in srgb,var(--brand-text) 40%,transparent)}
 @media (max-width:520px){.ctx li{grid-template-columns:1fr}}
 @media (max-width:760px){.panels{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid var(--rule-soft)}.rules li{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.bit{transition:background .15s,border-color .15s}}
 </style>
-
-<!--tk-shell--><script src="../shell/lang.js"></script><link rel="stylesheet" href="../shell/shell.css"><script src="../shell/shell.js" defer></script><!--/tk-shell-->
+<style id="cv">.wrap>header~:not(.prose),.wrap>.prose>*{content-visibility:auto;contain-intrinsic-size:auto 10.5rem}</style>
+<script>addEventListener("DOMContentLoaded",function(){requestAnimationFrame(function(){requestAnimationFrame(function(){var s=document.getElementById("cv");if(s)s.remove()})})})</script>
 </head>
 <body>
 <div class="wrap">
@@ -158,7 +234,7 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 
 <div class="sim" id="sim283">
   <div class="sim-head">
-    <span class="eyebrow">circuit 283 · live step()</span>
+    <span class="eyebrow">circuit 283 · live step() <span id="tick283" aria-live="polite"></span></span>
     <div class="btns">
       <button id="btnStep283" class="primary">Step</button>
       <button id="btnPlay283">Play sample session</button>
@@ -207,12 +283,12 @@ html[data-lang="en"] .zh{display:none!important} html[data-lang="zh"] .en{displa
 <div class="prose">
 <p class="zh"><strong>证明</strong>：2^39 个状态×输入无法穷举，改用 SAT。spec 经两条独立路径降级（结构哈希 517 门、yosys+ABC 289 门），kissat miter 判 UNSAT；封装后的链上字节再证一次。16 条安全性质逐条证明对全部 2^39 行成立：DONE 吸收、DONE 只经 abort/finish 进入、turns 单调、abort/finish/call 互斥、pay ⇒ finish∧judge、finish 时 pay 位等于 judge 位、四个计数器不越界、等待超时必触发、原因码非零 ⇔ abort。最后由 Grok 4.6 只看文字规格独立手写 Verilog，与参考 miter：前两轮各被抓出一个具体反例（搜索封顶时误发 tool_search；同拍 sub_req+sub_done+sub_fail 时计数错），第三轮 UNSAT。</p>
 <p class="en"><strong>Proofs</strong>: 2^39 state×input rows cannot be enumerated, so SAT. The spec is lowered by two independent paths (structural hashing, 517 gates; yosys+ABC, 289 gates) and kissat proves the miter UNSAT; the wrapped on‑chain bytes are proved again. Sixteen safety properties are proved for every one of the 2^39 rows: DONE absorbs, DONE only via abort/finish, turns monotone, abort/finish/call exclusive, pay ⇒ finish ∧ judge, pay bits equal judge bits on finish, four counters never exceed their caps, the wait timeout always fires, reason code ≠ 0 ⇔ abort. Finally Grok 4.6 wrote an independent Verilog from the prose spec alone and it was mitered against the reference: two concrete counterexamples in the first two rounds (tool_search emitted at the search cap; a counter slip when sub_req, sub_done and sub_fail arrive in one tick), UNSAT on the third.</p>
-<p class="zh"><strong>接入</strong>：链上 <code>step(284, state, inputs)</code>，state 3 字节（23 位）、inputs 2 字节（16 位）、outputs 3 字节（17 位）。Grok 4.6、Composer 2.5、GLM‑5.3 已各跑一局（5、5、7 拍），每拍链上 step() 与本地一致，均以 pay=2（全额）结束。仓库 <code>agent_api_netlist/v5/</code>（内部构建号 v5，公开版本号 v3）。</p>
-<p class="en"><strong>Driving it</strong>: on chain, <code>step(284, state, inputs)</code> with state 3 bytes (23 bits), inputs 2 bytes (16 bits), outputs 3 bytes (17 bits). Grok 4.6, Composer 2.5 and GLM‑5.3 have each run a session (5, 5 and 7 ticks); every tick matched on‑chain step() and all ended with pay=2 (full). Repo dir <code>agent_api_netlist/v5/</code> (internal build v5, public version v3).</p>
+<p class="zh"><strong>接入</strong>：链上 <code>step(284, state, inputs)</code>，state 3 字节（23 位）、inputs 2 字节（16 位）、outputs 3 字节（17 位）。Grok 4.6、Composer 2.5、GLM‑5.3 已各跑一局（5、5、7 拍），每拍链上 step() 与本地一致，均以 pay=2（全额）结束。</p>
+<p class="en"><strong>Driving it</strong>: on chain, <code>step(284, state, inputs)</code> with state 3 bytes (23 bits), inputs 2 bytes (16 bits), outputs 3 bytes (17 bits). Grok 4.6, Composer 2.5 and GLM‑5.3 have each run a session (5, 5 and 7 ticks); every tick matched on‑chain step() and all ended with pay=2 (full).</p>
 </div>
 <div class="sim" id="sim284">
   <div class="sim-head">
-    <span class="eyebrow">circuit 284 · live step()</span>
+    <span class="eyebrow">circuit 284 · live step() <span id="tick284" aria-live="polite"></span></span>
     <div class="btns">
       <button id="btnStep284" class="primary">Step</button>
       <button id="btnPlay284">Play sample session</button>
@@ -304,8 +380,8 @@ step(uint256 circuitId=283, bytes state, bytes inputs) -> (bytes newState, bytes
 # 3. one real on-chain vector from the post-burn check / 一条真实链上向量
 state=0x8903 inputs=0x2ae5  ->  newState=0x5003 outputs=0x0160</code></pre>
 <div class="prose">
-<p class="zh">验证它、复现它或在它之上再建一层，所需文件都在仓库 <code>circuits/_scratch/agent_api_netlist/v2/</code>：<code>spec.py</code> 是独立于 Verilog 的参考语义；<code>top.v</code> 由 Cursor 上的 Grok 4.6 手写；<code>compress.py</code> 做 ABC 压缩、精简封装和 2^26 穷举；<code>burn_agent_v2.py</code> 是钱包桥烧录与链上复核脚本。</p>
-<p class="en">Everything needed to verify it, reproduce it or build on top of it is in the repo under <code>circuits/_scratch/agent_api_netlist/v2/</code>: <code>spec.py</code> is the reference semantics, independent of the Verilog; <code>top.v</code> was hand-written by Grok 4.6 in Cursor; <code>compress.py</code> does the ABC compression, the lean wrap and the exhaustive 2^26 check; <code>burn_agent_v2.py</code> is the wallet-bridge burn and on-chain verification script.</p>
+<p class="zh">验证它、复现它或在它之上再建一层，所需文件在我们的代码仓库里（还没公开）：<code>spec.py</code> 是独立于 Verilog 的参考语义；<code>top.v</code> 由 Cursor 上的 Grok 4.6 手写；<code>compress.py</code> 做 ABC 压缩、精简封装和 2^26 穷举；<code>burn_agent_v2.py</code> 是钱包桥烧录与链上复核脚本。</p>
+<p class="en">Everything needed to verify it, reproduce it or build on top of it is in our code repository (not public yet): <code>spec.py</code> is the reference semantics, independent of the Verilog; <code>top.v</code> was hand-written by Grok 4.6 in Cursor; <code>compress.py</code> does the ABC compression, the lean wrap and the exhaustive 2^26 check; <code>burn_agent_v2.py</code> is the wallet-bridge burn and on-chain verification script.</p>
 </div>
 
 <h2 class="zh" id="field-notes">实测经验：其他 agent 接上来跑</h2><h2 class="en">Field notes: other agents as clerks</h2>
@@ -361,7 +437,7 @@ state=0x8903 inputs=0x2ae5  ->  newState=0x5003 outputs=0x0160</code></pre>
 let lang='zh';
 try{ lang=localStorage.getItem('c283lang') || ((navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'); }catch(e){ lang=(navigator.language||'').toLowerCase().startsWith('zh')?'zh':'en'; }
 const sims=[];
-function setLang(l){ lang=l; document.documentElement.setAttribute('data-lang',l); document.getElementById('langZh').classList.toggle('on',l==='zh'); document.getElementById('langEn').classList.toggle('on',l==='en'); try{localStorage.setItem('c283lang',l);}catch(e){} sims.forEach(s=>s.relabel()); }
+function setLang(l){ lang=l; document.documentElement.setAttribute('data-lang',l); document.getElementById('langZh').classList.toggle('on',l==='zh'); document.getElementById('langEn').classList.toggle('on',l==='en'); document.getElementById('langZh').setAttribute('aria-pressed',String(l==='zh')); document.getElementById('langEn').setAttribute('aria-pressed',String(l==='en')); try{localStorage.setItem('c283lang',l);}catch(e){} sims.forEach(s=>s.relabel()); }
 document.getElementById('langZh').onclick=()=>setLang('zh'); document.getElementById('langEn').onclick=()=>setLang('en');
 const T={
  zh:{reset:'已复位：MODEL 相位，寄存器全 0。', pre:n=>`已预先重放示例会话（${n} 拍）。按 Reset 清空后自己拨位试。`,
@@ -398,8 +474,8 @@ function makeSim(cfg){
   function doStep(note){ const ph=phaseName(state); const [ns,out]=step(state,inputs);
     const hi=cfg.IN.filter((_,i)=>inputs[i]).join(', ')||'—'; const acts=cfg.OUT.filter((_,i)=>out[i]).join(', ')||'—';
     const tr=document.createElement('tr'); tr.innerHTML=`<td>${n}</td><td>${ph}</td><td class="mono">${hi}</td><td class="mono">${acts}</td><td class="mono">${hex(state)} → ${hex(ns)}</td>`; $('logBody').appendChild(tr);
-    state=ns; n++; render(out); const nx=phaseName(state); lastExplain=note||(t=>t.step(n,ph,hi,acts,nx)); renderExplain(); }
-  function reset(){ state=new Array(N_ST).fill(0); n=0; $('logBody').innerHTML=''; setInputs({}); render(null); lastExplain=t=>t.reset; renderExplain(); }
+    state=ns; n++; render(out); const nx=phaseName(state); $('tick').textContent=`· #${n} ${ph} → ${nx}`; lastExplain=note||(t=>t.step(n,ph,hi,acts,nx)); renderExplain(); }
+  function reset(){ state=new Array(N_ST).fill(0); n=0; $('tick').textContent=`· #0 ${phaseName(state)}`; $('logBody').innerHTML=''; setInputs({}); render(null); lastExplain=t=>t.reset; renderExplain(); }
   let playing=false;
   function play(){ if(playing) return; playing=true; reset(); let k=0;
     const tick=()=>{ if(k>=cfg.sample.length){playing=false; return;} const [note,obj]=cfg.sample[k++]; setInputs(obj); const kk=k; doStep(t=>t.sample(kk,note)); setTimeout(tick, matchMedia('(prefers-reduced-motion: reduce)').matches?0:650); };

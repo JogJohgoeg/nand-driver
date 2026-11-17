@@ -4,7 +4,7 @@
 
 ## 最小例子：recall_latch
 
-先在「换大脑」点击「下载最小记忆电路」，再选择下载到的 `recall_latch.json`（也可用仓库 `circuits/_scratch/latch_ssm/recall_latch.json`），不需要分词器。这是 `build.py` 的 `build_recall()` 生成的确定性记忆电路，144 个元件 = **138 NAND + 6 LATCH**，不是聊天模型。
+先在「换大脑」点击「下载最小记忆电路」，再选择下载到的 `recall_latch.json`（也可用仓库里的 `recall_latch.json`），不需要分词器。这是 `build.py` 的 `build_recall()` 生成的确定性记忆电路，144 个元件 = **138 NAND + 6 LATCH**，不是聊天模型。
 
 在「逐拍门级输入」输入 `14 9 3 3 15`，点击「从零状态运行」，输出依次是 `0 0 0 0 9`。14 是 MARK，记住下一拍；15 是 QUERY。状态每拍同时更新。重复点击从零状态开始。这里只做短验收，不在本机跑 build.py 主程序的长扫描；重新综合/大验证要用 `tools/remote/rrun`。
 

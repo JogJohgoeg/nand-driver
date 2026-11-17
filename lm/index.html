@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style id="fp">html{background:var(--bg,#17110a);color:var(--text,#d8cdb9)}html[data-theme=light]{color-scheme:light;background:var(--bg,#f8f2e6);color:var(--text,#39322a)}:root{--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--sans:var(--cjk);--head:var(--cjk);--fs:.9375rem;--r:2px}:root{color-scheme:dark}h1,button,input[type=button],input[type=submit],select,label,summary,th{font-family:var(--head)}pre{font-family:var(--mono)}h1{word-break:keep-all;overflow-wrap:break-word}a[data-nav-busy]:not(.btn,.card,[data-nav]){opacity:.6;cursor:progress}@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}*{box-sizing: border-box}body{margin: 0;background: var(--bg);color: var(--ink);font: var(--fs,1rem)/1.6 var(--sans,system-ui,sans-serif);overflow-wrap: anywhere}main{max-width: 52rem;margin: 0 auto;padding: 1.5rem 1rem 3rem}h1{font-size: 1.5rem;margin: 0 0 .25rem}.dim{color: var(--text-dim);font-size: .875rem}.row{display: flex;flex-wrap: wrap;gap: .5rem;align-items: center;margin: .75rem 0}input[type=text]{flex: 1 1 16rem;min-width: 0;background: var(--field,var(--panel));color: var(--ink);border: 1px solid var(--line,transparent);border-radius: var(--r);padding: .5rem .625rem;font: inherit}select,button{background: var(--panel);color: var(--ink);border: 1px solid var(--line,transparent);border-radius: var(--r);padding: .5rem .75rem;font: inherit;cursor: pointer}button.primary{background: var(--accent);color: var(--on-accent);border-color: var(--accent,transparent)}section{background: var(--panel);border: 1px solid var(--line,transparent);border-radius: var(--r);padding: 1rem;margin-top: 1rem}#out{font-family: var(--mono,ui-monospace,monospace);white-space: pre-wrap;height: 16em;overflow-y: auto;overscroll-behavior: contain}@media (min-width: 900px){#out{height: 22.4em}}table{width: 100%;border-collapse: collapse;font-size: .875rem}td,th{text-align: left;padding: .375rem .5rem;border-bottom: 1px solid var(--line,transparent);vertical-align: top}th{color: var(--text-dim);font-weight: 500}pre{font-family: var(--mono,ui-monospace,monospace);font-size: .75rem}pre{white-space: pre-wrap;word-break: break-all;max-height: 12rem;overflow: auto;background: var(--bg);padding: .5rem;border-radius: var(--r)}a{color: var(--brand-text,var(--accent))}</style>
+<title>续写模型 · 每个字都在链上算</title>
+<link rel="icon" href="../favicon.ico">
+<link rel="preload" as="style" href="../assets/theme.css">
+</head>
+<body>
+<main>
+  <h1 data-t="h1"></h1>
+  <p class="dim" data-t="lead"></p>
+  <div class="row">
+    <label for="chip" data-t="chipLabel"></label>
+    <select id="chip">
+      <option value="286" selected>#286 · 5,120 NAND</option>
+      <option value="285">#285 · 5,069 NAND</option>
+    </select>
+    <a id="lang" href="?lang=en" lang="en">English</a>
+  </div>
+  <div class="row">
+    <input id="prompt" type="text" value="to be, or not to be" aria-label="prompt">
+    <button id="go" class="primary" data-t="go"></button>
+  </div>
+  <p id="status" aria-live="polite" style="display:grid"><span class="dim" style="grid-area:1/1"></span></p>
+  <section>
+    <div id="out"></div>
+  </section>
+  <section>
+    <table>
+      <tr><th data-t="tChars"></th><td id="n">0</td></tr>
+      <tr><th data-t="tCalls"></th><td id="calls">0</td></tr>
+      <tr><th data-t="tSame"></th><td id="same">—</td></tr>
+      <tr><th data-t="tNet"></th><td><span id="net" style="display:grid"><span style="grid-area:1/1">—</span></span></td></tr>
+    </table>
+    <details><summary data-t="last"></summary><pre id="ev"></pre></details>
+  </section>
+  <section class="dim" data-t="how"></section>
+</main>
+<script>
+// 每出一个字：本页按链上读下来的网表逐门算一次，同时向公共节点发一次只读 eth_call，让芯片自己算；
+// 页面显示的是链上的答案，和本页逐字比，不一致就标红。不用钱包，不发交易。
+const CPU = "0x6Fb4089e7Cbaa9660Fd11056274Cbd8117EE5B38";
+const RPCS = ["https://bsc-rpc.publicnode.com", "https://bsc-dataseed.bnbchain.org", "https://bsc-dataseed1.binance.org"];
+const SEL = { netlist: "3fc4be56", step: "e8281a1a" };
+// 网表字节的 sha256，和我们另用脚本核过的值相同（链上读回、烧录交易里、本地存档三处一致）
+const CHIPS = {
+  285: { nIn: 200, nOut: 6, gates: 5069, sha: "6b44ee061a141539cd1cb190155c88b811442deb0e8054a0be2e07d36b10c685" },
+  286: { nIn: 200, nOut: 6, gates: 5120, sha: "b14438d5f52f2c606dd399ed2f0f38437c0b8d93908ccfa91e2067be3cbd6933" },
+};
+const SYM = [" ","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9",".",",",";",":","!","?","'","\"","-","(",")","\n"];
+const LEN = 40;
+const T = {
+  zh: { h1: "续写模型：每个字都在链上算", lead: "链上第 286 号和第 285 号电路是两颗一步语言模型：给它前 32 个字符和 8 个随机位，它算出下一个字符。这一页每出一个字，都让 BNB Chain 上的芯片算一次，再和本页逐门算的结果比。",
+    chipLabel: "用哪颗：", go: "续写 40 个字", tChars: "已写出", tCalls: "链上调用次数", tSame: "链上和本页一致", tNet: "网表", last: "最后一个字的 eth_call（原文）",
+    how: "怎么核：先从链上读这颗芯片的网表（两家节点给的一样、sha256 和登记的一致才用）；每个字用同一组输入，本页逐门算一次，链上用只读 eth_call 调 step() 再算一次，显示链上的字，两边不一样就标红。全部只读，不用钱包，不花钱。这两颗只见过莎士比亚的字符，写出来多是词串，还不成句。",
+    secs: (s) => `${s} 秒`, waited: (s) => `等了 ${s} 秒没有回应：`,
+    loading: "从链上读网表…", netOk: (n, s) => `${n.toLocaleString()} 个门，sha256 ${s.slice(0, 12)}…（两家节点一致，和登记的一样）`, netBad: "读到的网表和登记的不一样，这次不算。", disagree: "两家节点给的网表不一样，这次不算。",
+    net: "连不上区块链节点，这次没法让链上算。检查网络后再点一次。", writing: (i) => `链上在算第 ${i} 个字…`, done: (n, s) => `写完 ${n} 个字：${n} 次链上调用，${s} 个和本页一致。`, cut: (i) => `第 ${i} 个字链上没算成，停在这里。可以再点一次。`,
+    busy: "节点太忙，这次没法让链上算。稍等一会儿再点一次。", cutBusy: (i) => `写到第 ${i} 个字时节点太忙，停在这里。稍等一会儿再点一次。`, slow: (i) => `节点有点忙，放慢一点。链上在算第 ${i} 个字…` },
+  en: { h1: "Text continuation: every character computed on chain", lead: "Circuits #286 and #285 on chain are two one-step language models: given the last 32 characters and 8 random bits, each computes the next character. On this page every character is computed by the chip on BNB Chain and compared with this page’s own gate-by-gate result.",
+    chipLabel: "Chip: ", go: "Continue 40 characters", tChars: "Characters written", tCalls: "Calls to the chain", tSame: "Chain and this page agree", tNet: "Netlist", last: "eth_call for the last character (verbatim)",
+    how: "How it is checked: the page first reads this chip’s netlist from the chain (used only if two nodes return the same bytes and the sha256 matches the record). For each character the same input goes to both: this page evaluates it gate by gate, and a read-only eth_call runs step() on chain. The chain’s character is shown; any difference is marked red. Everything is read-only: no wallet, no cost. These two chips have only seen Shakespeare’s characters, and the output is mostly strings of words, not yet sentences.",
+    secs: (s) => `${s} s`, waited: (s) => `No response after ${s} s: `,
+    loading: "Reading the netlist from the chain…", netOk: (n, s) => `${n.toLocaleString()} gates, sha256 ${s.slice(0, 12)}… (two nodes agree, matches the record)`, netBad: "The netlist read differs from the record; not used.", disagree: "Two nodes returned different netlists; not used.",
+    net: "Can’t reach a blockchain node, so the chain could not compute. Check your connection and try again.", writing: (i) => `The chain is computing character ${i}…`, done: (n, s) => `Wrote ${n} characters: ${n} calls to the chain, ${s} agree with this page.`, cut: (i) => `Character ${i} could not be computed on chain; stopped here. Try again.`,
+    busy: "The nodes are busy, so the chain could not compute. Try again in a moment.", cutBusy: (i) => `The nodes got busy at character ${i}; stopped here. Try again in a moment.`, slow: (i) => `The nodes are a little busy, slowing down. The chain is computing character ${i}…` },
+};
+const LANG = new URLSearchParams(location.search).get("lang") === "en" ? "en" : "zh";
+const S = T[LANG];
+document.documentElement.lang = LANG === "en" ? "en" : "zh";
+document.querySelectorAll("[data-t]").forEach((e) => { e.textContent = S[e.dataset.t]; });
+const lang = document.getElementById("lang");
+if (LANG === "en") { lang.textContent = "中文"; lang.href = "?"; lang.lang = "zh"; }
+document.title = S.h1;
+const $ = (id) => document.getElementById(id);
+
+const u256 = (n) => n.toString(16).padStart(64, "0");
+const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+const sha256 = async (b) => hex(new Uint8Array(await crypto.subtle.digest("SHA-256", b)));
+async function call(rpc, data) {
+  const ac = new AbortController(), tm = setTimeout(() => { late = true; ac.abort(); }, 15000);
+  try {
+    const resp = await fetch(rpc, { method: "POST", signal: ac.signal, headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CPU, data }, "latest"] }) });
+    if (resp.status === 429) throw Object.assign(new Error("busy"), { busy: true });   // 限流：换下一家
+    const r = await resp.json();
+    if (!r.result) throw Object.assign(new Error(r.error ? r.error.message : "no result"), { busy: !!r.error && (r.error.code === -32005 || r.error.code === 429 || /rate|limit|too many|capacity/i.test(r.error.message || "")) });
+    return r.result.slice(2);
+  } finally { clearTimeout(tm); }
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let late = false;      // 这一次点「续写」以来，有没有哪次请求是等到 15 秒超时才算没回的
+/* wait-tick:begin */
+// Elapsed-time ticker for a real wait: start before the request, stop() when it settles.
+function waitTick(node, label, more) {
+  var t0 = performance.now(), span = document.createElement("span"), last = null, id = 0;
+  span.setAttribute("aria-hidden", "true"); span.className = "tick";
+  node.textContent = label; node.appendChild(span);
+  function draw() { var t = " " + more(((performance.now() - t0) / 1000).toFixed(1)); if (t !== last) span.textContent = last = t; }
+  draw(); id = setInterval(draw, 100);
+  return { draw: draw, stop: function () { clearInterval(id); id = 0; } };
+}
+/* wait-tick:end */
+let first = 0, slow = false;       // first：上次答了的那家，下一个字先问它，不再去撞限流的那家；slow：遇到过限流，之后每个字隔 400 毫秒
+async function anyNode(data) {     // 一家连不上或限流（429）就换下一家；都限流就等 1.5 秒再整轮试一次
+  let busy = false;
+  for (let round = 0; round < 2; round++) {
+    for (let k = 0; k < RPCS.length; k++) {
+      const j = (first + k) % RPCS.length;
+      try { const r = await call(RPCS[j], data); first = j; return [r, RPCS[j]]; } catch (e) { if (e.busy) busy = slow = true; }
+    }
+    if (!busy) break;
+    await sleep(1500);
+  }
+  throw new Error(busy ? "busy" : "net");
+}
+const bytesAt = (h, word) => { const off = parseInt(h.slice(word * 64, word * 64 + 64), 16) * 2, len = parseInt(h.slice(off, off + 64), 16); return h.slice(off + 64, off + 64 + len * 2); };
+const fromHex = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
+
+const nets = {};
+async function loadNet(cid) {      // 两家节点都答、一样，而且 sha256 = 登记的值，才用
+  if (nets[cid]) return nets[cid];
+  const data = "0x" + SEL.netlist + u256(cid), got = []; let busy = false;
+  for (const rpc of RPCS) { try { got.push(bytesAt(await call(rpc, data), 0)); } catch (e) { if (e.busy) busy = slow = true; continue; } if (got.length === 2) break; }
+  if (got.length < 2) throw new Error(busy ? "busy" : "net");
+  if (got[0] !== got[1]) throw new Error("disagree");
+  const b = fromHex(got[0]), s = await sha256(b);
+  if (s !== CHIPS[cid].sha || b.length !== CHIPS[cid].gates * 7) throw new Error("bad");
+  const n = b.length / 7, a = new Uint32Array(n), c = new Uint32Array(n);
+  for (let i = 0; i < n; i++) { a[i] = (b[i * 7 + 1] << 16) | (b[i * 7 + 2] << 8) | b[i * 7 + 3]; c[i] = (b[i * 7 + 4] << 16) | (b[i * 7 + 5] << 8) | b[i * 7 + 6]; }
+  return (nets[cid] = { a, c, n, sha: s, ...CHIPS[cid] });
+}
+// 和链上 CPU 同一规则：线 0 = 0，线 1 = 1，2.. = 输入，再往后是每个门；输出 = 最后 nOut 个门，低位在前
+function evalNet(net, bits) {
+  const w = new Uint8Array(2 + net.nIn + net.n); w[1] = 1;
+  for (let i = 0; i < net.nIn; i++) w[2 + i] = bits[i];
+  const base = 2 + net.nIn;
+  for (let i = 0; i < net.n; i++) w[base + i] = 1 - (w[net.a[i]] & w[net.c[i]]);
+  let code = 0; for (let k = 0; k < net.nOut; k++) code |= w[base + net.n - net.nOut + k] << k;
+  return code;
+}
+const symOf = (code) => (code < SYM.length ? SYM[code] : " ");    // 编码 49 以后是保留符号，按空格写（同训练时的约定）
+function inputBits(text, rnd) {   // 前 32 个字符各 6 位（低位在前），不够在前面补空格；再加 8 个随机位
+  let s = text.toLowerCase().slice(-32); s = " ".repeat(32 - s.length) + s;
+  const bits = new Uint8Array(200);
+  for (let i = 0; i < 32; i++) { const k = SYM.indexOf(s[i]); const c = k < 0 ? 0 : k; for (let j = 0; j < 6; j++) bits[i * 6 + j] = (c >> j) & 1; }
+  for (let j = 0; j < 8; j++) bits[192 + j] = (rnd >> j) & 1;
+  return bits;
+}
+function stepData(cid, bits) {
+  const inp = new Uint8Array(25); bits.forEach((x, i) => { if (x) inp[i >> 3] |= 1 << (i & 7); });
+  return "0x" + SEL.step + u256(cid) + u256(96) + u256(128) + u256(0) + u256(inp.length) + hex(inp) + "00".repeat(7);
+}
+function chainCode(h, nOut) {     // step 返回 (bytes 新状态, bytes 输出)：取第 2 段的前 nOut 位，低位在前
+  const out = bytesAt(h, 1); if (!out.length) throw new Error("empty");
+  const b = fromHex(out); let code = 0; for (let k = 0; k < nOut; k++) code |= ((b[k >> 3] >> (k & 7)) & 1) << k;
+  return code;
+}
+
+const stats = { calls: 0, same: 0, n: 0 };
+window.LM = { stats, evalNet, inputBits, stepData, chainCode, nets };    // 自测读
+function show() { $("n").textContent = stats.n; $("calls").textContent = stats.calls; $("same").textContent = stats.n ? `${stats.same} / ${stats.n}` : "—"; $("same").className = stats.n ? (stats.same === stats.n ? "ok" : "bad") : ""; }
+// 那句话那一行、「网表」那一格：可能写的几句话先叠在同一格里占着位置（看不见的也占），点下去、换字都不把下面顶开
+const ST = $("status").firstElementChild, st = (text, cls) => { ST.textContent = text; ST.className = "dim" + (cls ? " " + cls : ""); };
+const hold = (el, texts) => { for (const x of texts) { const s = document.createElement("span"); s.setAttribute("aria-hidden", "true"); s.className = "dim"; s.style.cssText = "grid-area:1/1;visibility:hidden"; s.textContent = x; el.append(s); } };
+hold($("status"), [ S.done(LEN, LEN), S.waited(888) + S.cut(LEN), S.waited(888) + S.net, S.busy, S.cutBusy(LEN), S.netBad, S.disagree]);
+hold($("net"), [S.netOk(8888, "8".repeat(64))]); $("net").lastElementChild.className = "";
+for (const x of [S.loading, S.slow(LEN)]) {      // 走表时那一小段换成等宽字体，字体的行高不一样，宽屏上一行字会因此高 1 像素：占位的这一句也带上同样的一小段，高度就事先算进去了
+  const s = document.createElement("span"), k = document.createElement("span"); s.setAttribute("aria-hidden", "true"); s.className = "dim"; s.style.cssText = "grid-area:1/1;visibility:hidden";
+  s.textContent = x; k.className = "tick"; k.textContent = " " + S.secs("88.8"); s.append(k); $("status").append(s); }
+$("go").onclick = async () => {
+  const cid = Number($("chip").value), prompt = $("prompt").value || " ";
+  $("go").disabled = true; st("", ""); late = false;
+  const t0 = performance.now(), waited = () => (late ? S.waited(Math.round((performance.now() - t0) / 1000)) : "");      // 等到超时才失败的，出错那句话前面带上等了多久
+  let w = waitTick(ST, S.loading, S.secs);      // 读网表（第一次还要先连上节点）：那句话后面走已用时间，读到、没读到都先停表
+  stats.calls = stats.same = stats.n = 0; show();
+  const out = $("out"); out.innerHTML = ""; out.scrollTop = 0; const p = document.createElement("span"); p.className = "p"; p.textContent = prompt; out.appendChild(p);
+  let net;
+  try { try { net = await loadNet(cid); } finally { w.stop(); } } catch (e) {
+    st(e.message === "bad" ? S.netBad : e.message === "disagree" ? S.disagree : e.message === "busy" ? S.busy : waited() + S.net, "bad"); $("go").disabled = false; return;
+  }
+  $("net").firstElementChild.textContent = S.netOk(net.n, net.sha); st("", "");
+  let text = prompt;
+  for (let i = 1; i <= LEN; i++) {
+    w = waitTick(ST, slow ? S.slow(i) : S.writing(i), (s) => (s >= 0.3 ? S.secs(s) : ""));      // 一个字平常 0.1 秒就回，不显示秒数；这一个字等过 0.3 秒才开始显示已用时间
+    if (slow && i > 1) await sleep(400);
+    const rnd = crypto.getRandomValues(new Uint8Array(1))[0], bits = inputBits(text, rnd), data = stepData(cid, bits);
+    const local = evalNet(net, bits);
+    let res, rpc;
+    try { try { [res, rpc] = await anyNode(data); } finally { w.stop(); } stats.calls++; } catch (e) { st(e.message === "busy" ? S.cutBusy(i) : waited() + S.cut(i), "bad"); break; }
+    const code = chainCode(res, net.nOut), ch = symOf(code), ok = code === local;
+    stats.n++; if (ok) stats.same++;
+    const span = document.createElement("span"); span.textContent = ch; if (!ok) { span.className = "bad"; span.title = `本页 ${JSON.stringify(symOf(local))}`; }
+    const follow = out.scrollTop + out.clientHeight >= out.scrollHeight - 4;      // 现在停在底部才自动跟；访客往上滚了就不拽他，滚回底部再接着跟
+    out.appendChild(span); text += ch; show();
+    if (follow) out.scrollTop = out.scrollHeight;
+    $("ev").textContent = `node ${rpc}\nto ${CPU}\ndata ${data}\nresult 0x${res}\n→ ${code} ${JSON.stringify(ch)}`;
+    if (i === LEN) st(S.done(stats.n, stats.same), stats.same === stats.n ? "ok" : "bad");
+  }
+  $("go").disabled = false;
+};
+</script>
+<link rel="stylesheet" href="../assets/theme.css">
+<style id="fpx">
+/* 285 / 286 续写演示。颜色字体只用 theme.css 的 tokens */
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: var(--fs, 1rem)/1.6 var(--sans, system-ui, sans-serif); overflow-wrap: anywhere; }
+main { max-width: 52rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+.dim { color: var(--text-dim); font-size: .875rem; }
+.row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .75rem 0; }
+input[type=text] { flex: 1 1 16rem; min-width: 0; background: var(--field, var(--panel)); color: var(--ink); border: 1px solid var(--line); border-radius: var(--r); padding: .5rem .625rem; font: inherit; }
+select, button { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: var(--r); padding: .5rem .75rem; font: inherit; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 1rem; margin-top: 1rem; }
+#out { font-family: var(--mono, ui-monospace, monospace); white-space: pre-wrap; height: 16em; overflow-y: auto; overscroll-behavior: contain; }
+@media (min-width: 900px) { #out { height: 22.4em; } }      /* 输出框定高（手机约 10 行、宽屏约 14 行），字在框里长、框里滚，写的时候下面的东西不动 */
+#out .p { color: var(--text-dim); }
+#out .bad { color: var(--bad); text-decoration: underline; }
+.ok { color: var(--ok); } .bad { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+td, th { text-align: left; padding: .375rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--text-dim); font-weight: 500; }
+code, pre { font-family: var(--mono, ui-monospace, monospace); font-size: .75rem; }
+pre { white-space: pre-wrap; word-break: break-all; max-height: 12rem; overflow: auto; background: var(--bg); padding: .5rem; border-radius: var(--r); }
+a { color: var(--brand-text, var(--accent)); }
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+</style>
+</body>
+</html>

@@ -2,6 +2,7 @@
 // 借鉴 BOAR（github.com/rferrari/boar-app）的做法：离线标记、实时速度、每条回答的实测数字、出错可自救（清缓存 / 重试）、
 // 本机测速与公开速度榜、验收证据摊开、提问灵感卡片、赞踩复制、「继续」。
 import { createGateBrain, precheck, MEMORY_ESTIMATE } from './gate-brain.mjs';
+import { readLock, SOFT, LOCK_CFG } from './chain_lock.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -20,20 +21,20 @@ const dur = ms => { if (ms == null) return '—'; const s = Math.max(1, Math.rou
 const sup = n => n.toExponential(1).replace(/e\+(\d+)/, (_, x) => ' × 10' + [...x].map(d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]).join(''));
 const D = {
   title: ['门电路大脑', 'Gate brain'], back: ['← 工作台', '← Workbench'],
-  lead: ['这是一个能回答问题的小型 AI（BitCPM4-1B）。特别的地方是：它被拆成了几千亿个最简单的电子开关，就在你电脑的显卡上一个开关一个开关地算出每个字，算出来的回答和原版模型一字不差。准备好一次之后，断网也能用，你的问题不会发到任何服务器。',
-    'A small AI that answers questions (BitCPM4-1B). What makes it unusual: it has been broken down into hundreds of billions of the simplest electronic switches, and your computer’s graphics chip works out every word switch by switch — the answers match the original model word for word. Once it is set up, it works offline too, and your questions never go to any server.'],
+  lead: ['这是一个能回答问题的小型 AI（BitCPM4-1B）。特别的地方是：它被拆成了几千亿个最简单的电子开关，就在你电脑的显卡上一个开关一个开关地算出每个字，算出来的回答和这个模型的整数参考实现一字不差。准备好一次之后，断网也能用，你的问题不会发到任何服务器。',
+    'A small AI that answers questions (BitCPM4-1B). What makes it unusual: it has been broken down into hundreds of billions of the simplest electronic switches, and your computer’s graphics chip works out every word switch by switch — the answers match this model’s integer reference implementation word for word. Once it is set up, it works offline too, and your questions never go to any server.'],
   f1v: ['2,583 亿次', '258 billion'], f1: ['每写一个字要拨动的开关次数', 'switch flips to write one word'],
   f2v: ['1.09 亿个', '109 million'], f2: ['记住上下文用的「记忆开关」', '“memory switches” holding the conversation'],
-  f3: ['一次对话最多多少个词（问题 + 回答）', 'words per conversation at most (question + answer)'],
+  f3: ['问题加回答最多多少个词', 'words at most, question plus answer'],
   f4v: ['580 MB', '580 MB'], f4: ['只在第一次下载，之后断网也能用', 'downloaded once; works offline afterwards'],
   stepLabel: ['第 1 步', 'Step 1'], s_dev: ['准备（只有第一次要等几分钟）', 'Get ready (only the first time takes a few minutes)'], start: ['开始准备', 'Get ready'], pre_sum: ['查看具体检查了哪些项', 'See what was checked'],
-  go: ['提问', 'Ask'], stop: ['停下', 'Stop'], cont: ['继续说', 'Keep going'],
+  go: ['提问', 'Ask'], stop: ['停下', 'Stop'], cont: ['继续说', 'Keep going'], restart: ['重新开始', 'Start over'],
   setLabel: ['设置', 'Settings'], s_set: ['本机数据、测速与记录', 'Local data, speed test and history'],
   st_data: ['存在这台电脑里的东西', 'What is stored on this computer'], clear: ['删除存好的电路…', 'Delete the saved circuit…'],
   st_bench: ['测一测你的电脑', 'Test your computer'], bench_help: ['让它回答一个固定的小问题，量出你的电脑第一个字要等多久、之后每个字多快。结果可以复制，或者提交到下面的速度榜。', 'It answers one fixed short question and measures how long the first word takes and how fast each word comes after. You can copy the result or submit it to the speed board below.'],
   bench_go: ['开始测速（约 1–2 分钟）', 'Run the speed test (about 1–2 min)'],
   st_log: ['执行记录', 'Run history'], log_help: ['每次回答的实测数字（只存在你的浏览器里，不会上传）。', 'Measured numbers for each answer (kept only in your browser, never uploaded).'], tel_clear: ['清空记录', 'Clear history'],
-  st_long: ['长回答模式', 'Long mode'], long_help: ['一次对话能装约 512 个词，但要重新准备一次，需要约 7.6 GB 内存，每个字也更慢。', 'Holds about 512 words per conversation, but it has to get ready again, needs about 7.6 GB of memory, and each word is slower.'],
+  st_long: ['长回答模式', 'Long mode'], long_help: ['问题加回答能装约 512 个词，但要重新准备一次，需要约 7.6 GB 内存，每个字也更慢。', 'Holds about 512 words for question plus answer, but it has to get ready again, needs about 7.6 GB of memory, and each word is slower.'],
   long: ['换成长回答模式', 'Switch to long mode'],
   tools_sum: ['给开发者：让它按格式调用工具（一般用不到）', 'For developers: have it produce a tool call (you can ignore this)'],
   tools_help: ['填入 OpenAI function 格式的 JSON 数组；它会生成一次工具调用，页面只显示，不会真的去执行。', 'Paste a JSON array in OpenAI function format; it produces one tool call, which the page only shows and never runs.'],
@@ -43,13 +44,13 @@ const D = {
   proofLabel: ['证据', 'Evidence'], s_proof: ['怎么知道它算得对？', 'How do we know it computes correctly?'],
   s_how: ['它是怎么做到的？（想了解再看）', 'How does it work? (optional reading)'],
   h1: ['电脑和手机里的芯片，归根结底都是由大量「与非门」组成的——这是最简单的一种电子开关：两个输入都是 1 时输出 0，否则输出 1。我们把整个 AI 模型拆成了这样的开关网络，每写一个字要拨动约 2,583 亿次开关。', 'The chips in computers and phones are ultimately made of huge numbers of “NAND gates” — the simplest electronic switch: if both inputs are 1 the output is 0, otherwise 1. We turned the whole AI model into a network of such switches; writing one word takes about 258 billion switch flips.'],
-  h2: ['你的浏览器先下载模型的参数（约 580 MB），在你电脑上把开关网络搭出来并存下，再交给显卡去算。每一步都按固定的规则计算，所以回答和原版模型一字不差，任何人都可以重复验证。', 'Your browser downloads the model’s numbers (about 580 MB), builds the switch network on your computer and saves it, then hands it to the graphics chip. Every step follows fixed rules, so the answer matches the original model word for word and anyone can check it.'],
+  h2: ['你的浏览器先下载模型的参数（约 580 MB），在你电脑上把开关网络搭出来并存下，再交给显卡去算。每一步都按固定的规则计算，所以回答和这个模型的整数参考实现一字不差，任何人都可以重复验证。', 'Your browser downloads the model’s numbers (about 580 MB), builds the switch network on your computer and saves it, then hands it to the graphics chip. Every step follows fixed rules, so the answer matches this model’s integer reference implementation word for word and anyone can check it.'],
   h3: ['为什么准备好之后断网也能用：搭好的电路存在浏览器的本机存储里，页面本身也会存一份；下次打开（包括开着飞行模式）直接从这台电脑读出来。', 'Why it works offline once set up: the built circuit is saved in the browser’s local storage and the page keeps a copy of itself; next time (even in airplane mode) everything is read from this computer.'],
   h4: ['文字和编号之间的转换是页面自己做的，不算在开关里。', 'Turning text into numbers and back is done by the page itself and is not part of the switches.'],
   l_prov: ['技术出处', 'Technical provenance'], model_card: ['模型说明（OpenBMB BitCPM4-1B）', 'Model card (OpenBMB BitCPM4-1B)'], plain: ['精简版页面', 'Plain page'],
 };
 const T = k => (D[k] ? D[k][EN_() ? 1 : 0] : k);
-const TIP = { newChat: ['新对话', 'New conversation'], settings: ['设置', 'Settings'] };
+const TIP = { newChat: ['重新开始', 'Start over'], settings: ['设置', 'Settings'] };
 const WHAT = { 'WebGPU 适配器': ['浏览器能用显卡来计算', 'Browser can compute on the graphics chip'], '单个存储缓冲绑定上限': ['显卡一次能读的内存', 'Graphics memory readable at once'], '单个缓冲大小上限': ['显卡单块内存的大小', 'Size of one graphics memory block'], '每阶段存储缓冲数': ['显卡同时能用的内存块数', 'Graphics memory blocks usable at once'], '工作组共享内存': ['显卡里的高速小内存', 'Fast on-chip graphics memory'], '内存': ['电脑内存', 'Computer memory'], '本机缓存空间': ['能用来存电路的硬盘空间', 'Disk space to save the circuit'] };
 const DETAIL_EN = [
   [/（需要 ≥ ([^）]+)）/g, ' (need ≥ $1)'], [/ 字节/g, ' bytes'],
@@ -73,8 +74,9 @@ const ERR = {
   no_adapter: ['你的浏览器没法用显卡来计算。请换用最新版的 Chrome 或 Edge 电脑版再试。', 'Your browser cannot use the graphics chip for computing. Please try the latest desktop Chrome or Edge.'],
   weights_fetch: ['模型下载失败了，可能是网络断了。第一次准备需要联网；请检查网络后重试。', 'Downloading the model failed, maybe the connection dropped. The first setup needs internet; check it and retry.'],
   chunk_sha: ['下载到的模型文件和原版对不上（可能损坏或被改过），为了安全已经停下，没有使用它。请重试。', 'A downloaded model file does not match the original (damaged or altered), so it stopped for safety and did not use it. Please retry.'],
+  lock_mismatch: ['下载到的模型清单和链上登记的不一样，为了安全没有运行。可能是网站缓存还没更新，过一会儿再点「重试」。', 'The downloaded model list does not match the on-chain record, so nothing was run. The site cache may be stale; tap Retry in a while.'],
   weights_mismatch: ['网站正在更新，模型文件和页面暂时对不上。请过几分钟再试。', 'The site is being updated and the model files do not match the page yet. Please try again in a few minutes.'],
-  prompt_too_long: ['这句话太长了，装不下。请说短一点，或者点右上角「＋」开一个新对话。', 'This message is too long to fit. Please shorten it, or press “＋” at the top to start a new conversation.'],
+  prompt_too_long: ['这句话太长了，装不下。请说短一点，或者点右上角「＋」重新开始。', 'This message is too long to fit. Please shorten it, or press “＋” at the top to start over.'],
   gpu_lost: ['显卡中途出错了（常见原因是内存不够或显卡驱动重启）。请关掉其他占内存的页面，然后重试。', 'The graphics chip failed partway (usually not enough memory or a driver restart). Close other heavy tabs and retry.'],
   long_mode_unavailable: ['这台电脑的内存不够开长回答模式。请把问题改短一点再问。', 'This computer does not have enough memory for long mode. Please ask a shorter question.'],
 };
@@ -105,6 +107,7 @@ function applyLang() {
   document.documentElement.lang = EN_() ? 'en' : 'zh';
   document.title = L('门电路大脑 · BitCPM4-1B', 'Gate brain · BitCPM4-1B');
   for (const el of document.querySelectorAll('[data-t]')) el.textContent = T(el.dataset.t);
+  if (typeof renderVerify === 'function' && readyInfo) renderVerify();
   for (const el of document.querySelectorAll('[data-tip]')) { const t = TIP[el.dataset.tip]; el.title = t[EN_() ? 1 : 0]; el.setAttribute('aria-label', el.title); }
   $('lang').textContent = EN_() ? '中文' : 'EN';
   $('fC').textContent = String(curC);
@@ -248,12 +251,38 @@ function onReady(e) {
   live.delete('stHint'); $('stHint').textContent = ''; $('barBox').hidden = true; $('preBox').hidden = true;
   $('go').disabled = false; $('bench').disabled = false; $('newChat').hidden = false; $('long').hidden = curC === 512;
   applyLang(); hasSavedCircuit().then(v => { cacheSaved = v || cacheSaved; renderPill(); renderData(); });
+  if (e.verified) try { localStorage.setItem(LOCK_OK_KEY, JSON.stringify({ manifest: e.verified.manifestSha256, at: new Date().toISOString().slice(0, 10) })); } catch { }
+  renderVerify();
   $('msg').focus({ preventScroll: true });
 }
-function boot() {
+// 链上核对（产品原则：核对在后台，界面只显示结果）。读不到登记 → 照样能用，但不显示 ✓；登记读到了却对不上 → 停下。
+let lockRes = null, lockSoft = null;
+const LOCK_OK_KEY = 'gate-lock-ok';
+function renderVerify() {
+  const box = $('vBox'); if (!box) return;
+  const v = readyInfo?.verified; let sum = '', det = '';
+  if (v) {
+    sum = L('✓ 已核对：模型文件和链上登记的一致', '✓ Verified: the model files match the on-chain record');
+    det = L(`${v.chunks} 块权重逐块和 BNB Chain 上 282.732 登记的清单一致（清单 ${(v.lockSha256 || '').slice(0, 12)}…，登记在区块链上，网站改不了）。自己复核：下载 <a href="gate_weights_check.py" download>gate_weights_check.py</a>（只读，只用 Python 标准库，不需要钱包），然后运行：`, `All ${v.chunks} weight chunks match the list recorded for 282.732 on BNB Chain (list ${(v.lockSha256 || '').slice(0, 12)}…, recorded on chain, so the site cannot change it). Check it yourself: download <a href="gate_weights_check.py" download>gate_weights_check.py</a> (read-only, Python standard library only, no wallet needed), then run:`)
+      + `<pre>python3 gate_weights_check.py</pre>`;
+  } else if (lockSoft) {
+    let last = null; try { last = JSON.parse(localStorage.getItem(LOCK_OK_KEY) || 'null'); } catch { }
+    const same = last && readyInfo && last.manifest === readyInfo.manifestSha256;
+    sum = same ? L(`✓ 已核对（上次联网核对：${last.at}）`, `✓ Verified (last checked online: ${last.at})`)
+      : L('这次没核对上链登记', 'Not checked against the chain this time');
+    det = esc(lockSoft.code === 'lock_missing' ? L('链上还没有登记这份模型清单。模型文件照样逐块和网站上的清单比过。', 'The model list is not recorded on chain yet. The files were still checked chunk by chunk against the site\'s list.')
+      : L('暂时连不上区块链节点。模型文件照样逐块和网站上的清单比过；联网后刷新会再核一次。', 'Could not reach the blockchain nodes. The files were still checked chunk by chunk against the site\'s list; reload when online to check again.'));
+  } else return;
+  $('vSum').textContent = sum; $('vDet').innerHTML = det; box.hidden = false;
+}
+async function boot() {
   $('barBox').hidden = false; $('start').hidden = true; live.delete('startNote'); $('startNote').textContent = '';
+  setLive('st', () => esc(L('正在核对链上登记……', 'Checking the on-chain record…')), 'mute');
+  lockRes = null; lockSoft = null;
+  try { lockRes = await readLock(LOCK_CFG); lockRes.lock._sha256 = lockRes.sha256; }
+  catch (e) { if (SOFT.has(e.code)) lockSoft = e; else { showPrepError({ code: 'lock_mismatch', message: e.message + (e.detail ? '：' + e.detail : '') }); return; } }
   setLive('st', () => esc(STAGE.cache()), 'mute');
-  brain = createGateBrain({ weightsBase: q.get('w') || undefined, C, confirmLong: false, onEvent });
+  brain = createGateBrain({ weightsBase: q.get('w') || undefined, C, confirmLong: false, onEvent, lock: lockRes ? lockRes.lock : null });
   brain.ready.catch(() => { });
 }
 (async () => {
@@ -295,7 +324,7 @@ function fitTurns(text) {
   return { turns: t, note: ['为装进长度上限，最早的几轮对话没带', 'to fit the length limit, the earliest turns were left out'] };
 }
 function setRate(ms) { rateMs = ms; const r = $('rate'); r.hidden = ms == null; r.textContent = ms == null ? '' : '● ' + L(`${(ms / 1e3).toFixed(1)} 秒/字`, `${(ms / 1e3).toFixed(1)} s/word`); }
-function cHint() { $('cHint').textContent = ready ? (history.length ? L(`对话里有 ${history.length / 2} 轮；装不下时会自动缩短之前的内容。右上角「＋」开新对话。`, `${history.length / 2} turn(s) so far; earlier parts are shortened automatically when needed. “＋” at the top starts over.`) : L('每个字都由显卡上的开关逐个算出来：第一个字要先读完你的问题，通常等半分钟到一分钟。', 'Every word is computed switch by switch on your graphics chip: the first word comes after it reads your whole question, usually 30–60 s.')) : ''; }
+function cHint() { $('restart').hidden = !(ready && history.length); $('cHint').textContent = ready ? (history.length ? L(`连着追问我们测过：20 组里接对 12 组，它常常记不住前面说过的话。想要准一点，点「重新开始」再问。之前的 ${history.length / 2} 轮会一起带上，装不下时自动缩短。`, `We tested follow-up questions: it got 12 of 20 right, and it often forgets what was said earlier. For a more reliable answer, press “Start over” and ask again. The earlier ${history.length / 2} turn(s) are sent along and shortened automatically when they don’t fit.`) : L('每个字都由显卡上的开关逐个算出来：第一个字要先读完你的问题，通常等半分钟到一分钟。', 'Every word is computed switch by switch on your graphics chip: the first word comes after it reads your whole question, usually 30–60 s.')) : ''; }
 
 async function send(opts = {}) {
   const text = (opts.text ?? $('msg').value).trim(); if (!text || !ready || running) return;
@@ -327,7 +356,7 @@ async function send(opts = {}) {
     const meta = document.createElement('div'); meta.className = 'meta';
     const drawMeta = () => { meta.textContent = [STOPR[r.stop] ? STOPR[r.stop][EN_() ? 1 : 0] : r.stop, L(`第一个字 ${dur(r.firstTokenMs)}`, `first word ${dur(r.firstTokenMs)}`), r.msPerToken ? L(`之后每字 ${(r.msPerToken / 1e3).toFixed(1)} 秒`, `then ${(r.msPerToken / 1e3).toFixed(1)} s/word`) : null,
       L(`${nW} 个字`, `${nW} words`), L(`拨动开关约 ${flips} 次`, `≈ ${flips} switch flips`), readyInfo?.warm ? L('用存好的电路', 'saved circuit') : L('本次现场搭建', 'built this session'), note ? note[EN_() ? 1 : 0] : null,
-      r.stop === 'capacity' ? L('回答写满了一次能装的长度：可以问短一点，点「＋」开新对话，或在设置里换长回答模式', 'the answer filled the length limit: ask more briefly, press “＋” for a new conversation, or switch to long mode in Settings') : null].filter(Boolean).join(' · '); };
+      r.stop === 'capacity' ? L('回答写满了一次能装的长度：可以问短一点，点「＋」重新开始，或在设置里换长回答模式', 'the answer filled the length limit: ask more briefly, press “＋” to start over, or switch to long mode in Settings') : null].filter(Boolean).join(' · '); };
     drawMeta(); redraws.add(drawMeta); b.append(meta);
     if (r.toolCall) { const pre = document.createElement('pre'); pre.textContent = L('它生成的工具调用（只是显示，没有真的执行）：\n', 'Tool call it produced (only shown, not run):\n') + JSON.stringify({ name: r.toolCall.name, arguments: r.toolCall.arguments }, null, 1); b.append(pre); }
     const acts = document.createElement('div'); acts.className = 'acts';
@@ -352,6 +381,7 @@ const autoGrow = () => { const m = $('msg'); m.style.height = 'auto'; m.style.he
 $('msg').addEventListener('input', autoGrow);
 $('stop').onclick = () => { ctrl?.abort(); brain?.stop(); };
 $('cont').onclick = () => send({ text: 'Please continue.', shown: L('继续说', 'Keep going') });
+$('restart').onclick = () => $('newChat').click();
 $('newChat').onclick = () => { if (running) return; history = []; $('log').innerHTML = ''; redraws.clear(); $('cont').hidden = true; setRate(null); renderIdeas(); cHint(); };
 
 // ---------- 测速 ----------
