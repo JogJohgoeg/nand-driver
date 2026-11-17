@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>链上电路 · 公开复测 · 21 NAND</title>
+<style>.gx{display:inline-grid;max-width:100%;vertical-align:top}.gx>*{grid-area:1/1;min-width:0;overflow-wrap:anywhere}.gx>.ghost{visibility:hidden;pointer-events:none;user-select:none}.facts mark,.cost mark{background:color-mix(in srgb,var(--bad) 28%,transparent);color:var(--ink);border-radius:1px}:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:dark;--bg:#17110a;--deep:#100b06;--deeper:#0a0703;--card:#211a11;--sel:#2e2518;--fg:#d8cdb9;--ink:#f8f0e0;--mut:#b0a48f;--faint:#74695a;--line:#40362a;--field:#8a7c6a;--acc:#ff9426;--on-acc:#1a0f03;--ok:#8bd98f;--warn:#ecd98a;--bad:#ff7d8a;--aux:#8fb8de;--hard:var(--aux);--frozen:var(--acc);--soft:var(--warn);--impl:var(--mut);--code:var(--deeper);--cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--fs:.9375rem;--fs-sm:.8125rem;--fs-xs:.75rem;--r:2px}@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;--bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;--fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;--acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}}:root[data-theme="light"]{color-scheme:light;--bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;--fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;--acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:var(--fs)/1.65 var(--cjk)}a{color:var(--acc)}main{max-width:80rem;margin:0 auto;padding:1.75rem 1rem 3.75rem}h1{font-size:1.625rem;line-height:1.3;color:var(--ink);margin:0 0 .375rem}h2{font-size:1.125rem;color:var(--ink);margin:2.25rem 0 .75rem;padding-top:.75rem;border-top:1px solid var(--line)}h3{font-size:.9375rem;color:var(--acc);margin:1.25rem 0 .5rem}b{color:var(--ink);font-weight:600}.sub{color:var(--mut);max-width:48em;margin:0}.note{color:var(--mut);font-size:var(--fs-xs);margin-top:.25rem}footer{margin-top:2.25rem;color:var(--faint);font-size:var(--fs-xs)}.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}table{border-collapse:collapse;width:100%;font-size:var(--fs-sm)}th,td{text-align:left;vertical-align:top;padding:.5rem .625rem;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:var(--sel);color:var(--mut);font-weight:600;font-size:var(--fs-xs);white-space:nowrap}tr:last-child td{border-bottom:none}tbody tr:hover td{background:color-mix(in srgb,var(--sel) 45%,transparent)}.n,.n2,span.num{font-variant-numeric:tabular-nums}.n{white-space:nowrap}code{font-family:var(--mono);background:var(--code);border:1px solid var(--line);padding:0 .25rem;border-radius:var(--r);font-size:var(--fs-xs);word-break:break-all}@media (max-width:760px){.q3{grid-template-columns:1fr}ul.files{columns:1}.tw{overflow-x:visible;border:0;background:none}.tw table,.tw tbody,.tw tr,.tw td{display:block;width:auto;min-width:0}.tw thead{display:none}.tw tr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.375rem .75rem;margin:0 0 .625rem}.tw td{border-bottom:1px dashed var(--line);padding:.375rem 0;width:auto!important;min-width:0!important;white-space:normal!important}.tw tr td:last-child{border-bottom:0}.tw td[data-label]::before{content:attr(data-label);display:block;font-size:var(--fs-xs);color:var(--faint);margin-bottom:.125rem}.tw tr td:first-child{font-size:.9375rem}.tw tbody tr:hover td{background:none}.fml{overflow-x:auto}}.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}.top .wrap{max-width:80rem;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.75rem;height:3.25rem}.top .brand{font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}.top .brand:hover{color:var(--acc)}.top .here{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}footer a{color:var(--mut)}footer a:hover{color:var(--acc)}.chips{display:flex;flex-wrap:wrap;gap:.375rem;margin:.75rem 0}.chip{border:1px solid var(--line);border-radius:999px;padding:.125rem .625rem;font-size:var(--fs-xs);color:var(--mut);background:var(--card)}main{max-width:64rem}.top .wrap{max-width:64rem}.mono,.h{font-family:var(--mono);font-variant-numeric:tabular-nums}.h{overflow-wrap:anywhere;font-size:var(--fs-xs)}.pick{display:grid;grid-template-columns:10rem minmax(0,1fr) 7rem auto;gap:.5rem .75rem;align-items:end;margin:1rem 0 .5rem;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.875rem 1rem}.pick label{display:grid;gap:.25rem;font-size:var(--fs-xs);color:var(--mut);min-width:0}.pick input,.pick select{font:var(--fs-sm)/1.4 var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--field);border-radius:var(--r);padding:.4375rem .5rem;min-width:0;width:100%}.pick select{font-family:var(--cjk)}.pick input:focus-visible,.pick select:focus-visible,.btn:focus-visible{outline:2px solid var(--acc);outline-offset:1px}.btn{font:600 var(--fs-sm)/1 var(--cjk);padding:.5625rem .875rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}.btn.primary{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}.btn:hover:not(:disabled){border-color:var(--field)}.btn.primary:hover:not(:disabled){filter:brightness(1.08)}.btn:disabled{opacity:.5;cursor:default}@media (max-width:599px){.pick{grid-template-columns:minmax(0,1fr) 6.5rem}.pick .cpu{grid-column:1/-1;grid-row:2}.pick .go{grid-column:1/-1}.pick .go .btn{width:100%}}.ex{display:flex;flex-wrap:wrap;gap:.375rem;margin:.5rem 0 0;padding:0;list-style:none}.ex button{font:var(--fs-xs)/1.4 var(--cjk);color:var(--fg);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.25rem .75rem;cursor:pointer;text-align:left}.ex button:hover{border-color:var(--acc)}.ex button b{font-family:var(--mono);font-weight:600;color:var(--acc);margin-right:.375rem}.ex button span{color:var(--mut)}.step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:.875rem 0;padding:.75rem 1rem .875rem;min-width:0}.step>header{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .75rem;margin-bottom:.5rem}.step>header h2{border:0;padding:0;margin:0;font-size:1rem}.step>header h2 i{font-style:normal;color:var(--acc);font-family:var(--mono);margin-right:.375rem}.step>header .how{color:var(--mut);font-size:var(--fs-xs)}.sline{display:grid;font-size:var(--fs-sm);margin:.25rem 0 .5rem}.sline>.ghost,.sline>.out{grid-area:1/1;min-width:0;overflow-wrap:break-word}.sline>.ghost{visibility:hidden;white-space:pre-line;font-weight:700;pointer-events:none;user-select:none}.sline .v{font-weight:700}.out.ok .v{color:var(--ok)}.out.bad .v,.out.err .v{color:var(--bad)}.out.nc .v,.out.cap .v{color:var(--warn)}.out.busy,.out.idle{color:var(--mut)}.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;margin:0}.facts div{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:.4375rem .625rem;min-width:0}.facts dt{font-size:var(--fs-xs);color:var(--mut)}.facts dd{margin:0;color:var(--ink);font:600 1rem/1.4 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.facts .wide{grid-column:1/-1}.facts .wide dd{font-size:var(--fs-xs);font-weight:400}.facts>div:has(>#f-c){grid-column:span 3}@media (max-width:599px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts .wide dd{min-height:2.8em}.facts>div:has(>#f-c){grid-column:1/-1}}.inrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.5rem;align-items:end;margin:.25rem 0 .625rem}.inrow label{display:grid;gap:.25rem;font-size:var(--fs-xs);color:var(--mut);min-width:0}.inrow input{font:var(--fs-sm)/1.4 var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--field);border-radius:var(--r);padding:.4375rem .5rem;min-width:0;width:100%}@media (max-width:599px){.inrow{grid-template-columns:1fr 1fr}.inrow label{grid-column:1/-1}.inrow .btn{width:100%}}table.cmp.fold tbody tr:nth-child(n+5){display:none}table.cmp:not(.fold) tfoot{display:none}table.cmp tfoot td{color:var(--faint);font-size:var(--fs-xs);text-align:center;border-bottom:0}@media (max-width:760px){.tw table.cmp.fold tfoot{display:block}.tw table.cmp tfoot tr{display:block;padding:.375rem .625rem}.tw table.cmp tfoot td::before{content:none}}table.cmp td:first-child{width:3rem;color:var(--mut)}table.cmp td:last-child{width:5.5rem;white-space:nowrap}table.cmp .same{color:var(--ok);font-weight:700}table.cmp .diff{color:var(--bad);font-weight:700}@media (max-width:760px){.tw table.cmp tr{display:grid;grid-template-columns:1.75rem minmax(0,1fr) minmax(0,1fr);column-gap:.5rem;row-gap:.125rem;padding:.3125rem .625rem;margin:0 0 .25rem}.tw table.cmp td{border:0;padding:0;font-size:var(--fs-xs)}.tw table.cmp td:nth-child(1){grid-row:1/3}.tw table.cmp td:nth-child(2){grid-column:2;grid-row:1}.tw table.cmp td:nth-child(5){grid-column:3;grid-row:1;text-align:right}.tw table.cmp td:nth-child(3){grid-column:2;grid-row:2}.tw table.cmp td:nth-child(4){grid-column:3;grid-row:2}.tw table.cmp td::before{content:none}.tw table.cmp td:nth-child(3)::before{content:"算 ";display:inline;color:var(--faint);margin:0}.tw table.cmp td:nth-child(4)::before{content:"链上 ";display:inline;color:var(--faint);margin:0}.tw table.cmp td:last-child{width:auto}}}table.cmp mark{background:color-mix(in srgb,var(--bad) 28%,transparent);color:var(--ink);border-radius:1px}.cost{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}.cost div{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:.4375rem .625rem;min-width:0}.cost dt{font-size:var(--fs-xs);color:var(--mut)}.cost dd{margin:0;font:600 1rem/1.4 var(--mono);color:var(--ink)}@media (max-width:599px){.cost{grid-template-columns:1fr}}.src{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:.25rem .75rem;margin:0;font-size:var(--fs-sm)}.src dt{color:var(--mut)}.src dd{margin:0;min-width:0}@media (max-width:599px){.src{grid-template-columns:1fr}.src dd{margin-bottom:.375rem}.src dd.h{min-height:2.8em}}.src dd.h{line-height:1.4}.step.cant table.cmp td:nth-child(4){color:var(--faint)}.demo{border:1px dashed var(--field);border-radius:var(--r);padding:.5rem .75rem;margin:1rem 0;font-size:var(--fs-xs);color:var(--mut)}.demo button{font:inherit;margin:.125rem .25rem .125rem 0;padding:.25rem .5rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--fg);cursor:pointer}.demo button[aria-pressed="true"]{border-color:var(--acc);color:var(--acc)}.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}main.list{max-width:80rem}body:has(main.list) .top .wrap{max-width:80rem}.chips a{color:inherit}.allbar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem 1rem;align-items:center;margin:.75rem 0}.allbar .sline{margin:0}@media (max-width:599px){.allbar{grid-template-columns:1fr}.allbar .btn{width:100%}}table.lst{min-width:0}table.lst th.num,table.lst td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}table.lst td{vertical-align:middle}table.lst td.cpu{white-space:nowrap;font-size:var(--fs-xs)}table.lst td.what{font-size:var(--fs-xs);color:var(--ink);min-width:9em;max-width:18em}button.sort{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}button.sort .sa{display:inline-block;width:1em;margin-left:.2em;text-align:center;text-decoration:none;color:var(--faint)}th[aria-sort] button.sort .sa{color:var(--acc)}button.sort:focus-visible{outline:2px solid var(--acc);outline-offset:2px}table.lst td.act{white-space:nowrap}table.lst .btn.rt{padding:.375rem .625rem;font-size:var(--fs-xs)}table.lst .btn.rt[aria-expanded=true]{border-color:var(--acc);color:var(--acc)}.res{display:inline-grid;vertical-align:middle;margin-left:.5rem;font-size:var(--fs-xs);text-align:left}.res>.ghost,.res>.out{grid-area:1/1;min-width:0;white-space:nowrap}.res>.ghost{visibility:hidden;font-weight:700;pointer-events:none;user-select:none}.res .v{font-weight:700}.res .out.ok .v{color:var(--ok)}.res .out.bad .v{color:var(--bad)}.res .out.cap .v,.res .out.nc .v{color:var(--warn)}.res .out.busy,.res .out.idle{color:var(--mut)}table.lst tr.det>td{background:var(--deep);padding:.25rem .75rem .75rem}table.lst tbody tr.det:hover td{background:var(--deep)}.detin .step{background:var(--card)}@media (max-width:760px){.tw table.lst thead{display:block}.tw table.lst thead tr{display:flex;gap:1rem;border:0;background:none;padding:0 .125rem .375rem;margin:0}.tw table.lst thead th{display:none;position:static;background:none;padding:0}.tw table.lst thead th:has(.sort){display:block;font-size:var(--fs-xs)}.tw table.lst thead th:has(.sort)::before{content:"按"}.tw table.lst tr[data-i]{display:flex;flex-wrap:wrap;align-items:baseline;gap:.125rem .75rem;padding:.5rem .75rem;margin:0 0 .375rem}.tw table.lst tr[data-i] td{display:inline;border:0;padding:0;text-align:left}.tw table.lst tr[data-i] td[data-label]::before{display:inline;margin:0 .25rem 0 0;font-size:var(--fs-xs)}.tw table.lst td.ch::before,.tw table.lst td.cpu::before,.tw table.lst td:nth-child(3)::before{content:none}.tw table.lst td.ch{font-weight:600;color:var(--ink)}.tw table.lst tr[data-i]>td{order:3}.tw table.lst tr[data-i]>td.ch,.tw table.lst tr[data-i]>td.cpu,.tw table.lst tr[data-i]>td:nth-child(3){order:1}.tw table.lst tr[data-i]::before{content:"";flex-basis:100%;order:2;height:0}.tw table.lst tr[data-i]>td.act{order:4}.tw table.lst tr[data-i]>td.what{order:2;flex-basis:100%;max-width:none;min-width:0}.tw table.lst tr[data-i]>td.what:empty{display:none}.tw table.lst td.num{font-size:var(--fs-xs)}.tw table.lst td.act{flex-basis:100%;display:flex;align-items:center;margin-top:.25rem}.tw table.lst tr.det{display:block;border:0;background:none;padding:0;margin:-.25rem 0 .625rem}.tw table.lst tr.det>td{display:block;padding:.5rem;border:1px solid var(--line);border-top:0;border-radius:0 0 var(--r) var(--r)}}@media (max-width:419px){.detin .facts .wide dd,.detin .src dd.h{min-height:4.2em}}</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="../">21 NAND</a><span class="here">链上电路 · 公开复测</span></div></header>
+<main class="list">
+<h1>这 39 颗链上电路，你可以自己复测</h1>
+<p class="sub">每一颗都是链上公开的电路。点「复测」，你的浏览器直接向公开节点读它的网表，逐门算一遍，再请链上执行同一组输入，逐位比对。只读：不连钱包，不发交易，也不用信我们。</p>
+<div class="chips"><span class="chip">39 颗 · BSC 16 · X Layer 23</span><span class="chip">24 颗处理器</span><span class="chip">清单快照 2026-11-17 05:39</span><span class="chip">都用在 <a href="../physics/">物理常数页</a> 实验 E3</span></div>
+
+<div class="allbar">
+  <button class="btn primary" type="button" id="all">全部 39 颗各复测一组</button>
+  <div class="sline"><div class="ghost" aria-hidden="true" data-k="all.idle">每颗随机一组输入，浏览器算的和链上回的比；结果写在每一行右边</div><div class="ghost" aria-hidden="true" data-k="all.busy">复测中… 已做完 16 / 16 颗 99.9 秒</div><div class="ghost" aria-hidden="true" data-k="all.done">做完 16 颗：一样 16、不一样 16、放不下 999,999,999、比对不了 99、没连上 99 · 用了 999.9 秒</div><div class="ghost" aria-hidden="true" data-k="url.notin">不在这 39 颗里：网址里的链、处理器、编号不在清单里，页面没去读链</div><div class="out idle" id="allo">每颗随机一组输入，浏览器算的和链上回的比；结果写在每一行右边</div></div>
+</div>
+
+<div class="tw"><table class="lst" id="lst">
+  <thead><tr>
+    <th aria-sort="ascending"><button class="sort" type="button" data-k="chain" aria-label="按链排序">链<span class="sa" aria-hidden="true">↑</span></button></th><th>处理器</th><th class="num">编号</th><th>是什么</th>
+    <th class="num"><button class="sort" type="button" data-k="g" aria-label="按门数排序">门<span class="sa" aria-hidden="true">↕</span></button></th><th class="num">锁存</th><th class="num">输入 → 输出</th><th class="num">深度</th><th class="num">分块</th><th>复测</th>
+  </tr></thead>
+  <tbody id="rows">
+<tr data-chain="bsc" data-g="10" data-i="0" data-cpu="0x166df14ac52cfc87cf99132eb288edf228d22644" data-id="10"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x166df14ac52cfc87cf99132eb288edf228d22644">0x166d…2644</span></td><td class="num" data-label="编号">#10</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">10</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">3 → 1</td><td class="num" data-label="深度">10</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="11" data-i="1" data-cpu="0x8456f7ab3a98b2a9e2fbfba165504ca93073d5f9" data-id="116"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x8456f7ab3a98b2a9e2fbfba165504ca93073d5f9">0x8456…d5f9</span></td><td class="num" data-label="编号">#116</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">11</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">3 → 4</td><td class="num" data-label="深度">5</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="16" data-i="2" data-cpu="0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d" data-id="1862"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d">0xd55d…bd8d</span></td><td class="num" data-label="编号">#1862</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">16</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">0 → 16</td><td class="num" data-label="深度">1</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="16" data-i="3" data-cpu="0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d" data-id="2304"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d">0xd55d…bd8d</span></td><td class="num" data-label="编号">#2304</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">16</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">0 → 16</td><td class="num" data-label="深度">1</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="25" data-i="4" data-cpu="0x5bfd6356acf75fee99c0469b8dc0750fea840cce" data-id="1"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x5bfd6356acf75fee99c0469b8dc0750fea840cce">0x5bfd…0cce</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">25</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 5</td><td class="num" data-label="深度">6</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="35" data-i="5" data-cpu="0xb1024b89886b9a34aa4ff5f31c411d708b20a14c" data-id="4019"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xb1024b89886b9a34aa4ff5f31c411d708b20a14c">0xb102…a14c</span></td><td class="num" data-label="编号">#4019</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">35</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 1</td><td class="num" data-label="深度">7</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="43" data-i="6" data-cpu="0x1f5cb4aeae1807bf60c3b9c0d8adbcc14e91f12c" data-id="2269"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x1f5cb4aeae1807bf60c3b9c0d8adbcc14e91f12c">0x1f5c…f12c</span></td><td class="num" data-label="编号">#2269</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">43</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">10 → 3</td><td class="num" data-label="深度">9</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="72" data-i="7" data-cpu="0xa6687ef023962cef623de8f7ff7a0aa2d7ed3ccf" data-id="1"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xa6687ef023962cef623de8f7ff7a0aa2d7ed3ccf">0xa668…3ccf</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">72</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">9 → 5</td><td class="num" data-label="深度">23</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="100" data-i="8" data-cpu="0xcd28c21d3382ec72d0693a7187eec0287f7e5174" data-id="47"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xcd28c21d3382ec72d0693a7187eec0287f7e5174">0xcd28…5174</span></td><td class="num" data-label="编号">#47</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">100</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">1 → 1</td><td class="num" data-label="深度">100</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="100" data-i="9" data-cpu="0xcd28c21d3382ec72d0693a7187eec0287f7e5174" data-id="193"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xcd28c21d3382ec72d0693a7187eec0287f7e5174">0xcd28…5174</span></td><td class="num" data-label="编号">#193</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">100</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">1 → 1</td><td class="num" data-label="深度">100</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="140" data-i="10" data-cpu="0xde9a4cd248460ca31353a3b484866c0526bacf56" data-id="4"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xde9a4cd248460ca31353a3b484866c0526bacf56">0xde9a…cf56</span></td><td class="num" data-label="编号">#4</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">140</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">17 → 9</td><td class="num" data-label="深度">39</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="1204" data-i="11" data-cpu="0x07b43e3bff96917a6b5ad8a1948c5261e1176ceb" data-id="5"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x07b43e3bff96917a6b5ad8a1948c5261e1176ceb">0x07b4…6ceb</span></td><td class="num" data-label="编号">#5</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,204</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 16</td><td class="num" data-label="深度">114</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="1204" data-i="12" data-cpu="0xb1024b89886b9a34aa4ff5f31c411d708b20a14c" data-id="1885"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0xb1024b89886b9a34aa4ff5f31c411d708b20a14c">0xb102…a14c</span></td><td class="num" data-label="编号">#1885</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,204</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 16</td><td class="num" data-label="深度">114</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="1538" data-i="13" data-cpu="0x73428beb62571c0e66a454bdf0042f031d2d566f" data-id="1"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x73428beb62571c0e66a454bdf0042f031d2d566f">0x7342…566f</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,538</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">512 → 1</td><td class="num" data-label="深度">516</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="2209" data-i="14" data-cpu="0x95ff4611cf780098fd726b25a2a081398d308cee" data-id="2"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x95ff4611cf780098fd726b25a2a081398d308cee">0x95ff…8cee</span></td><td class="num" data-label="编号">#2</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">2,209</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">268 → 128</td><td class="num" data-label="深度">272</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="bsc" data-g="2371" data-i="15" data-cpu="0x275c6d63a2dfd49357d05edcc66a13fa6dd5feec" data-id="1"><td class="ch" data-label="链">BSC</td><td class="cpu mono" data-label="处理器"><span title="0x275c6d63a2dfd49357d05edcc66a13fa6dd5feec">0x275c…feec</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">2,371</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">163 → 16</td><td class="num" data-label="深度">320</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="20" data-i="16" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="3968"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#3968</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">20</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">4 → 4</td><td class="num" data-label="深度">5</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="20" data-i="17" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="4746"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#4746</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">20</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">4 → 4</td><td class="num" data-label="深度">5</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="27" data-i="18" data-cpu="0x7f2d3131a76d9aefb49f44657da6e1acac334687" data-id="49"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x7f2d3131a76d9aefb49f44657da6e1acac334687">0x7f2d…4687</span></td><td class="num" data-label="编号">#49</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">27</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">6 → 4</td><td class="num" data-label="深度">17</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="66" data-i="19" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="6082"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#6082</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">66</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">9 → 5</td><td class="num" data-label="深度">17</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="72" data-i="20" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="977"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#977</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">72</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">9 → 5</td><td class="num" data-label="深度">23</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="100" data-i="21" data-cpu="0xf5c2bca1f38c6861f6d1303c0cbe840671ae4298" data-id="66"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0xf5c2bca1f38c6861f6d1303c0cbe840671ae4298">0xf5c2…4298</span></td><td class="num" data-label="编号">#66</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">100</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">88 → 16</td><td class="num" data-label="深度">4</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="147" data-i="22" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="451"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#451</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">147</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">8 → 8</td><td class="num" data-label="深度">11</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="248" data-i="23" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="2109"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#2109</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">248</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">11 → 8</td><td class="num" data-label="深度">35</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="500" data-i="24" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="6464"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#6464</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">500</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">1 → 1</td><td class="num" data-label="深度">499</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="652" data-i="25" data-cpu="0x08f4cb11ae76c1c96437e72190777223b45a2998" data-id="5"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x08f4cb11ae76c1c96437e72190777223b45a2998">0x08f4…2998</span></td><td class="num" data-label="编号">#5</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">652</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 16</td><td class="num" data-label="深度">44</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="652" data-i="26" data-cpu="0xf40eed30b189e11124901f73e1518daea69acb44" data-id="8"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0xf40eed30b189e11124901f73e1518daea69acb44">0xf40e…cb44</span></td><td class="num" data-label="编号">#8</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">652</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 16</td><td class="num" data-label="深度">44</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="709" data-i="27" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="3079"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#3079</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">709</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">1 → 1</td><td class="num" data-label="深度">709</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="1193" data-i="28" data-cpu="0xf9bbdc7f678eb3a49d338ffacdaad9339de50a0f" data-id="1"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0xf9bbdc7f678eb3a49d338ffacdaad9339de50a0f">0xf9bb…0a0f</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,193</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">36 → 14</td><td class="num" data-label="深度">66</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="1204" data-i="29" data-cpu="0x8dff4c46c608aba7e48b77e213288d9f6bc36ef5" data-id="1"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x8dff4c46c608aba7e48b77e213288d9f6bc36ef5">0x8dff…6ef5</span></td><td class="num" data-label="编号">#1</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,204</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">16 → 16</td><td class="num" data-label="深度">114</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="1303" data-i="30" data-cpu="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6" data-id="4859"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6">0x87bf…f9a6</span></td><td class="num" data-label="编号">#4859</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">1,303</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">1 → 1</td><td class="num" data-label="深度">1,303</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="2355" data-i="31" data-cpu="0x832000e803885c572fa4ce0bf488ab9946b880fc" data-id="3"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x832000e803885c572fa4ce0bf488ab9946b880fc">0x8320…80fc</span></td><td class="num" data-label="编号">#3</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">2,355</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">30 → 30</td><td class="num" data-label="深度">140</td><td class="num" data-label="分块">1</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="3829" data-i="32" data-cpu="0xa93e807fab41431827ebba57443fb687a95e2aa3" data-id="3"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0xa93e807fab41431827ebba57443fb687a95e2aa3">0xa93e…2aa3</span></td><td class="num" data-label="编号">#3</td><td class="what" data-label="是什么" title="出处：本站图库「链上芯片」清单 gallery/chips.js 里 3.2.245 那一项（链、处理器、编号都对上）">21nandkit DOT32_T · 三值点积</td><td class="num" data-label="门">3,829</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">320 → 32</td><td class="num" data-label="深度">139</td><td class="num" data-label="分块">2</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="4983" data-i="33" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="731"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#731</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">4,983</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">2 → 1</td><td class="num" data-label="深度">4,983</td><td class="num" data-label="分块">2</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="5996" data-i="34" data-cpu="0xb99c7388b6426367e496e902174a631f640729aa" data-id="9"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0xb99c7388b6426367e496e902174a631f640729aa">0xb99c…29aa</span></td><td class="num" data-label="编号">#9</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">5,996</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">24 → 12</td><td class="num" data-label="深度">437</td><td class="num" data-label="分块">2</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="6821" data-i="35" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="782"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#782</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">6,821</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">2 → 1</td><td class="num" data-label="深度">6,821</td><td class="num" data-label="分块">2</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="10000" data-i="36" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="288"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#288</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">10,000</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">2 → 1</td><td class="num" data-label="深度">1</td><td class="num" data-label="分块">3</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="10000" data-i="37" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="314"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#314</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">10,000</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">2 → 1</td><td class="num" data-label="深度">1</td><td class="num" data-label="分块">3</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+<tr data-chain="xlayer" data-g="10000" data-i="38" data-cpu="0x69f663931209096037474d7c20402232e5c762ca" data-id="1387"><td class="ch" data-label="链">X Layer</td><td class="cpu mono" data-label="处理器"><span title="0x69f663931209096037474d7c20402232e5c762ca">0x69f6…62ca</span></td><td class="num" data-label="编号">#1387</td><td class="what" data-label="是什么"></td><td class="num" data-label="门">10,000</td><td class="num" data-label="锁存">0</td><td class="num" data-label="输入→输出">2 → 1</td><td class="num" data-label="深度">1</td><td class="num" data-label="分块">3</td><td class="act"><button class="btn rt" type="button" aria-expanded="false">复测</button><span class="res"><span class="ghost" aria-hidden="true">复测中…</span><span class="ghost" aria-hidden="true">一样 · 999,999,999 gas</span><span class="ghost" aria-hidden="true">不一样（差 999 位）</span><span class="ghost" aria-hidden="true">放不下：要约 999,999,999 gas</span><span class="ghost" aria-hidden="true">没连上</span><span class="ghost" aria-hidden="true">读不出</span><span class="ghost" aria-hidden="true">比对不了（含子电路）</span><span class="ghost" aria-hidden="true">和快照不一样</span><span class="out idle">—</span></span></td></tr>
+  </tbody>
+</table></div>
+
+<template id="det"><tr class="det"><td colspan="10"><div class="detin">
+  <section class="step">
+    <header><h2><i>1</i>网表</h2><span class="how">直接向链读，在你的浏览器里算 sha256</span></header>
+    <div class="sline"><div class="ghost" aria-hidden="true" data-k="s1.busy">读网表中…（向 bsc-mainnet.public.blastapi.io 读第 999999999 号电路） 99.9 秒</div><div class="ghost" aria-hidden="true" data-k="s1.okl">读完 9,999,999 字节（bsc-mainnet.public.blastapi.io 给的）：sha256 和门、锁存、输入输出位、深度、分块都和清单快照相同，锁存器、元件总数和链上 circuitInfo 对上</div><div class="ghost" aria-hidden="true" data-k="s1.okcalls">读完 9,999,999 字节（bsc-mainnet.public.blastapi.io 给的），有 99 条子电路调用；锁存器和元件总数按本层加 9,999 颗子电路的 circuitInfo 核对，展开后共 999,999,999 个元件，和链上记的对上</div><div class="ghost" aria-hidden="true" data-k="s1.snapdiff">和清单快照不一样：锁存器、元件总数（表里的数是快照那一刻读的，这里是现读的）</div><div class="ghost" aria-hidden="true" data-k="s1.kidnc">没核成：网表读完了，但子电路的 circuitInfo 读不到（都电路出现的那一块里，没有发给这颗处理器、四项都对的交易），锁存器和元件总数核不了</div><div class="ghost" aria-hidden="true" data-k="s1.bad">对不上：网表里数出来的锁存器、元件总数和链上 circuitInfo 记的不一样（标红的那格）</div><div class="ghost" aria-hidden="true" data-k="s1.parse">网表解析不了：汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉</div><div class="ghost" aria-hidden="true" data-k="s1.nocircuit">链上没有这颗：处理器回「no circuit」，这颗处理器上没有第 999999999 号电路</div><div class="ghost" aria-hidden="true" data-k="s1.revert">处理器回绝：汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉汉</div><div class="ghost" aria-hidden="true" data-k="s1.nc">读不到：试了 16 家公开节点，都电路出现的那一块里，没有发给这颗处理器、四项都对的交易。没有网表就做不了下面几步</div><div class="out busy" id="s1o">读网表中…</div></div>
+    <dl class="facts"><div class="wide"><dt>网表 sha256</dt><dd id="f-sha"><span class="gx"><span class="ghost" aria-hidden="true">0000000000000000000000000000000000000000000000000000000000000000</span><span class="val">—</span></span></dd></div></dl>
+  </section>
+  <section class="step">
+    <header><h2><i>2</i>逐位比对</h2><span class="how">浏览器逐门算 ↔ 链上执行同一组输入</span></header>
+    <div class="inrow"><button class="btn" type="button" id="rnd">随机 16 组</button></div>
+    <div class="sline"><div class="ghost" aria-hidden="true" data-k="s2.idle">还没开始：点「随机 16 组」</div><div class="ghost" aria-hidden="true" data-k="s2.caps">比对中… 先量各家节点一次只读调用最多给多少 gas 99.9 秒</div><div class="ghost" aria-hidden="true" data-k="s2.busy">比对中… 第 16 / 16 组 99.9 秒</div><div class="ghost" aria-hidden="true" data-k="s2.cap">链上执行放不下：这颗 9,999,999 门，按定律三、四（用 BSC 的拟合）要约 999,999,999 gas，公开节点一次只读调用最多 999,999,999 gas。网表照样读、浏览器照样算，「链上回的」那一列空着</div><div class="ghost" aria-hidden="true" data-k="s2.calls">这颗比对不了：网表里有子电路调用，浏览器这一版只逐门算与非和锁存、不展开子电路；网表和出处照样能核</div><div class="ghost" aria-hidden="true" data-k="s2.nc">链上那一半没回：试了 16 家，都电路出现的那一块里，没有发给这颗处理器、四项都对的交易。浏览器算的照样在表里</div><div class="ghost" aria-hidden="true" data-k="s2.bad">16 组里 16 组对上、16 组不一样，16 组链上没回（不一样的位标红）</div><div class="ghost" aria-hidden="true" data-k="s2.part">16 组里 16 组对上，16 组链上没回</div><div class="ghost" aria-hidden="true" data-k="s2.okn">16 组全对上（浏览器逐门算的和链上执行回的逐位相同；链上那一半是 bsc-mainnet.public.blastapi.io 跑的）</div><div class="out idle" id="s2o">还没开始：点「随机 16 组」</div></div>
+    <div class="tw"><table class="cmp fold" id="cmpt">
+      <thead><tr><th>组</th><th>输入</th><th>浏览器算的</th><th>链上回的</th><th>一样吗</th></tr></thead>
+      <tbody id="cmpb"><tr><td data-label="组">1</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">2</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">3</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">4</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">5</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">6</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">7</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">8</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">9</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">10</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">11</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">12</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">13</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">14</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">15</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr><tr><td data-label="组">16</td><td data-label="输入" class="h">—</td><td data-label="浏览器算的" class="h">—</td><td data-label="链上回的" class="h">—</td><td data-label="一样吗">—</td></tr></tbody>
+      <tfoot><tr class="more"><td colspan="5">还有 12 行：点「随机 16 组」后展开到 16 行</td></tr></tfoot>
+    </table></div>
+  </section>
+  <section class="step">
+    <header><h2><i>3</i>花了多少 gas</h2><span class="how">这次链上执行实际花的，和定律预测并排</span></header>
+    <div class="sline"><div class="ghost" aria-hidden="true" data-k="s3.idle">比对做完才有</div><div class="ghost" aria-hidden="true" data-k="s3.cap">链上没执行，没有实际 gas；定律预测照写</div><div class="ghost" aria-hidden="true" data-k="s3.calls">含子电路调用：定律二只拿平铺电路拟合过，这里不硬套</div><div class="ghost" aria-hidden="true" data-k="s3.nogas">量不了 gas：这次没有节点回计量结果</div><div class="ghost" aria-hidden="true" data-k="s3.in">在定律三、四（用 BSC 的拟合）的误差范围里（拟合时留一验证最大偏差 25.5%）</div><div class="ghost" aria-hidden="true" data-k="s3.out">超出定律三、四（用 BSC 的拟合）的误差范围（拟合时留一验证最大偏差 25.5%）</div><div class="out idle" id="s3o">比对做完才有</div></div>
+    <dl class="cost"><div><dt>这次实际</dt><dd id="c-a"><span class="gx"><span class="ghost" aria-hidden="true">999,999,999 gas（16 组，999,999,999–999,999,999）</span><span class="val">—</span></span></dd></div><div><dt>定律预测</dt><dd id="c-p"><span class="gx"><span class="ghost" aria-hidden="true">999,999,999 gas（定律三、四（用 BSC 的拟合））</span><span class="val">—</span></span></dd></div><div><dt>差</dt><dd id="c-d"><span class="gx"><span class="ghost" aria-hidden="true">−999,999,999（−999.9%）</span><span class="val">—</span></span></dd></div></dl>
+  </section>
+  <section class="step">
+    <header><h2><i>4</i>出处</h2><span class="how">链上的公开记录，照原样</span></header><div class="sline"><div class="ghost" aria-hidden="true" data-k="s4.idle">网表读完就去读发布交易</div><div class="ghost" aria-hidden="true" data-k="s4.notfound">出处没查到：电路出现的那一块里，没有发给这颗处理器、四项都对的交易；不硬凑</div><div class="ghost" aria-hidden="true" data-k="s4.busy">读发布交易中…（向 bsc-mainnet.public.blastapi.io 按交易号读） 99.9 秒</div><div class="ghost" aria-hidden="true" data-k="s4.nc">读不到：试了 16 次，都电路出现的那一块里，没有发给这颗处理器、四项都对的交易</div><div class="ghost" aria-hidden="true" data-k="s4.notx">链上没有这笔交易</div><div class="ghost" aria-hidden="true" data-k="s4.bad">不是这颗的发布交易：交易不是发给这颗处理器的；回执不是成功；处理器的日志里没有第 999999999 号；交易里带的网表和现读的不一样</div><div class="ghost" aria-hidden="true" data-k="s4.ok">四项全对：交易发给这颗处理器、回执成功、处理器的日志里写着第 999999999 号、交易里带的网表和现读的 sha256 相同</div><div class="out idle" id="s4o">网表读完就去读发布交易</div></div>
+    <dl class="src"><dt>发布交易</dt><dd class="h" id="p-tx"><span class="gx"><span class="ghost" aria-hidden="true">0x0000000000000000000000000000000000000000000000000000000000000000</span><span class="val">—</span></span></dd><dt>区块</dt><dd class="mono" id="p-blk"><span class="gx"><span class="ghost" aria-hidden="true">999,999,999</span><span class="val">—</span></span></dd><dt>发布者</dt><dd class="h" id="p-by"><span class="gx"><span class="ghost" aria-hidden="true">0xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</span><span class="val">—</span></span></dd></dl>
+  </section>
+</div></td></tr></template><script>(function(){var q=new URLSearchParams(location.search),c=q.get("chain"),i=q.get("id"),p=(q.get("cpu")||"").toLowerCase();if(!c||!i)return;var hit=null;document.querySelectorAll("#rows tr[data-i]").forEach(function(tr){if(!hit&&tr.dataset.chain===c&&tr.dataset.id===i&&tr.dataset.cpu.toLowerCase()===p)hit=tr;});if(!hit)return;var d=document.getElementById("det").content.firstElementChild.cloneNode(true);hit.after(d);hit.querySelector(".rt").setAttribute("aria-expanded","true");window.__cxEarly={row:hit,det:d};})();</script>
+
+<p class="note">表里的门、输入输出位、深度、分块是 2026-11-17 05:39 那次快照从链上读的；点「复测」时会当场重读、重算。电路是谁发布的，打开那一颗时从链上那笔发布交易现读。</p>
+<footer>只读页面：所有请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。<a href="../physics/">链上硬件物理常数</a> · <a href="../">回首页</a></footer>
+</main>
+<script type="application/json" id="cx-data">{"endpoints":{"56":[{"url":"https://bsc-dataseed.bnbchain.org"},{"url":"https://bsc-dataseed1.bnbchain.org"},{"url":"https://bsc-dataseed2.bnbchain.org"},{"url":"https://bsc-rpc.publicnode.com"},{"url":"https://bsc.drpc.org"},{"url":"https://56.rpc.thirdweb.com"},{"url":"https://bsc-mainnet.public.blastapi.io"}],"196":[{"url":"https://rpc.xlayer.tech"},{"url":"https://xlayerrpc.okx.com"},{"url":"https://xlayer.drpc.org"},{"url":"https://196.rpc.thirdweb.com"}]},"sel":{"circuitInfo":"084d60f1","netlist":"3fc4be56","step":"e8281a1a"},"wrap":{"addr":"0x000000000000000000000000000000000000a11a","nop":"0x000000000000000000000000000000000000d00d","code":"0x602036038060206000376000355a60006000846000855afa5a9060205290036000523d6040523d600060603e3d6060016000f3"},"testFrom":"0x00000000000000000000000000000000000c0FFE","gasprobe":"0x5a60005260206000f3","law2":{"56":[22241.894298937015,2254.106755238887,2651.767385531349,274.4255557759356,503.6630760793036],"196":[20318.69544848201,2280.81763126969,3179.810024176459,324.70898561519726,-1237.0985026632156]},"law2loo":{"56":0.06881032632088552,"196":0.2548746281070375},"law34":{"sc":[51119.09308087074,2250.7917172743473,0.00042925654721436154],"cc":[42.535602509069044,1.0119629391309095,48488.65392417805],"loo":0.006335934589441639},"rows":[{"chain":56,"cpu":"0x166df14ac52cfc87cf99132eb288edf228d22644","id":10,"tx":"0xf25df4bbd6606b6ec308b0424dd29a943ab8b2dd79282256bad9e3c38a232bcc","block":123748440,"why":null,"sha256":"9b8ca9154d3eed37ba59a791eaf315628c18017cac8a38a1b8166263dcffdce5","nNand":10,"nLatch":0,"nIn":3,"nOut":1,"depth":10,"chunks":1},{"chain":56,"cpu":"0x8456f7ab3a98b2a9e2fbfba165504ca93073d5f9","id":116,"tx":"0xa78b9363c78f28e8911e80a68e01d74060889a7341a7bbc3bf642ec65033a4ef","block":117078309,"why":null,"sha256":"019f884fab5c3471a410f232e53cabf6ae1b35c34eacf1b590a4ffd239ba6c90","nNand":11,"nLatch":0,"nIn":3,"nOut":4,"depth":5,"chunks":1},{"chain":56,"cpu":"0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d","id":1862,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"a1676cd3c28e67d354610d1eb6414e1aeaa6f2cb17ae082168587a572188a654","nNand":16,"nLatch":0,"nIn":0,"nOut":16,"depth":1,"chunks":1},{"chain":56,"cpu":"0xd55d6eaa1692f78b9e81408dd121e49fb617bd8d","id":2304,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"a1676cd3c28e67d354610d1eb6414e1aeaa6f2cb17ae082168587a572188a654","nNand":16,"nLatch":0,"nIn":0,"nOut":16,"depth":1,"chunks":1},{"chain":56,"cpu":"0x5bfd6356acf75fee99c0469b8dc0750fea840cce","id":1,"tx":"0xe2ddabcdf80d95b35c710ed91194ee226c7bf0f62a5b3cf45a040cfe8a17f8c3","block":118147693,"why":null,"sha256":"1ec6c2a14155a314d41b15d852db694ec2db7dd93951d734b7d6bee100e3c2f9","nNand":25,"nLatch":0,"nIn":16,"nOut":5,"depth":6,"chunks":1},{"chain":56,"cpu":"0xb1024b89886b9a34aa4ff5f31c411d708b20a14c","id":4019,"tx":"0xe35825e462effa91ea94c5c5965cd9da9ef018c270598a8ec5870eceba510fd1","block":117625349,"why":null,"sha256":"28619d74d5ed568f0ff43121fd4217ee62fec216a5d5df4cca1d0fa07b0e80bb","nNand":35,"nLatch":0,"nIn":16,"nOut":1,"depth":7,"chunks":1},{"chain":56,"cpu":"0x1f5cb4aeae1807bf60c3b9c0d8adbcc14e91f12c","id":2269,"tx":"0xa934d6243dd638b68f46ab73c93ff7df54bea844d183357b82670e848ba6795c","block":121849984,"why":null,"sha256":"25868e2cc13983aff9ef6d3a0a9b8835dcb58def35adf8e2767d83efd30e040b","nNand":43,"nLatch":0,"nIn":10,"nOut":3,"depth":9,"chunks":1},{"chain":56,"cpu":"0xa6687ef023962cef623de8f7ff7a0aa2d7ed3ccf","id":1,"tx":"0x8b6827a3de537ef2078ac3cf39687ebc54889c7b145613a41e5433ab7453dfe3","block":131056485,"why":null,"sha256":"4c08d48dad3ea60799e27fb019c34ce2d5afd58d1d6669bb05a51c1ff5015ebf","nNand":72,"nLatch":0,"nIn":9,"nOut":5,"depth":23,"chunks":1},{"chain":56,"cpu":"0xcd28c21d3382ec72d0693a7187eec0287f7e5174","id":47,"tx":"0xbb3bc1c301f12ac39b6ce759866b721eeb28ba74130c00306850f65fbf714d9a","block":128911019,"why":null,"sha256":"21553cfb0b306ef396a8d0868a6a22069c6e4ff82207896e1af6df4fb0a5a094","nNand":100,"nLatch":0,"nIn":1,"nOut":1,"depth":100,"chunks":1},{"chain":56,"cpu":"0xcd28c21d3382ec72d0693a7187eec0287f7e5174","id":193,"tx":"0x3f93dba191e1df84150350105cbffaefba66381273aca4af816a6d35a4b9cee9","block":128915948,"why":null,"sha256":"21553cfb0b306ef396a8d0868a6a22069c6e4ff82207896e1af6df4fb0a5a094","nNand":100,"nLatch":0,"nIn":1,"nOut":1,"depth":100,"chunks":1},{"chain":56,"cpu":"0xde9a4cd248460ca31353a3b484866c0526bacf56","id":4,"tx":"0xcc37faa8cbb81b2f92d1a23dfbcabec7bd25ba4a9b64a3aabb4edb029604df10","block":127986436,"why":null,"sha256":"7701ad9454b3e2e141b25ccc8fbf2e938031b6a0bae4f17847ff165af73d22a1","nNand":140,"nLatch":0,"nIn":17,"nOut":9,"depth":39,"chunks":1},{"chain":56,"cpu":"0x07b43e3bff96917a6b5ad8a1948c5261e1176ceb","id":5,"tx":"0x63da35e890faa11d313a18cb1c4bd3f7e5de82b94fee903976de597d82404d46","block":117936346,"why":null,"sha256":"d38bc15da1c3cb65aa5366c84e5441cdf94b26069cf74f626566f312fdab2d9a","nNand":1204,"nLatch":0,"nIn":16,"nOut":16,"depth":114,"chunks":1},{"chain":56,"cpu":"0xb1024b89886b9a34aa4ff5f31c411d708b20a14c","id":1885,"tx":"0xc23150112059e8876648d5bbf6d77ea3ba9c061b0d5c9f586c3f3f780ace17b1","block":117300439,"why":null,"sha256":"d38bc15da1c3cb65aa5366c84e5441cdf94b26069cf74f626566f312fdab2d9a","nNand":1204,"nLatch":0,"nIn":16,"nOut":16,"depth":114,"chunks":1},{"chain":56,"cpu":"0x73428beb62571c0e66a454bdf0042f031d2d566f","id":1,"tx":"0x5e6ec1b30216b45af3e1e83717d32bf004ddc3292af44fd8a4ea99248b7fd36d","block":130055794,"why":null,"sha256":"86223bd68a421b34f65c3ad2a963942192bc0f412868ec46a1468cbbbe01665b","nNand":1538,"nLatch":0,"nIn":512,"nOut":1,"depth":516,"chunks":1},{"chain":56,"cpu":"0x95ff4611cf780098fd726b25a2a081398d308cee","id":2,"tx":"0x21647983e756a3997de0b0be8976130d891b342de8d13372ff0df75ee1e6232b","block":129421802,"why":null,"sha256":"b8de6758219f989ca8feadd40ce82695b788af2b00b56607dd51dca5f6bd3677","nNand":2209,"nLatch":0,"nIn":268,"nOut":128,"depth":272,"chunks":1},{"chain":56,"cpu":"0x275c6d63a2dfd49357d05edcc66a13fa6dd5feec","id":1,"tx":"0xdb9d2d87f4a896f2e5efaacccb7b5236f46bc367ab5565357ff832963dc3273c","block":129516469,"why":null,"sha256":"d29cb1c8f6b7bcc3cbc221e92c29af9a819ba13b3933b68199d67816fd73a5e4","nNand":2371,"nLatch":0,"nIn":163,"nOut":16,"depth":320,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":3968,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"8047829421686f8e28da42549f201747905f25e69b18f6cc81b4e3a327ddbb77","nNand":20,"nLatch":0,"nIn":4,"nOut":4,"depth":5,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":4746,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"8047829421686f8e28da42549f201747905f25e69b18f6cc81b4e3a327ddbb77","nNand":20,"nLatch":0,"nIn":4,"nOut":4,"depth":5,"chunks":1},{"chain":196,"cpu":"0x7f2d3131a76d9aefb49f44657da6e1acac334687","id":49,"tx":"0x419cbf08ec44afbdc8aa2bd355a8078e79100383d0e9675721c0867f85cca763","block":71897724,"why":null,"sha256":"99ac9a07443b29b24966ffcb969852b09440a2bd1be2233e55a92d78297b1269","nNand":27,"nLatch":0,"nIn":6,"nOut":4,"depth":17,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":6082,"tx":"0xd5f66a77cc82ce7e35129bfe52a4be24ba7ec20cdddb021290c89680162dae44","block":73785064,"why":null,"sha256":"3e488719fbbe30be4c10dc7a55ea67dec802ae36358b04cd5ee9263d297e5f79","nNand":66,"nLatch":0,"nIn":9,"nOut":5,"depth":17,"chunks":1},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":977,"tx":"0x796bbe5a50e4f13272ecafdc4eefb36ac9dbfd7d2fb1a31c94569e3b7fde760f","block":73138872,"why":null,"sha256":"4c08d48dad3ea60799e27fb019c34ce2d5afd58d1d6669bb05a51c1ff5015ebf","nNand":72,"nLatch":0,"nIn":9,"nOut":5,"depth":23,"chunks":1},{"chain":196,"cpu":"0xf5c2bca1f38c6861f6d1303c0cbe840671ae4298","id":66,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"926aa3ab1722a80d8422ce7f361b96978b17edac1552ffe0c8026c6cb6310472","nNand":100,"nLatch":0,"nIn":88,"nOut":16,"depth":4,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":451,"tx":"0x46f8705c2575a6c5595db47df53a199a659cec536b653f47f15caad669fc4e18","block":73059031,"why":null,"sha256":"b1820ed955d531948f93f119b4c9d4b1d364a5869fa6c1d6313b2e851251fac3","nNand":147,"nLatch":0,"nIn":8,"nOut":8,"depth":11,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":2109,"tx":"0xdbb57ac7921ea5e311cafd83f3ea2b6174e480497d9fd09849cdb5c39647fc16","block":73133708,"why":null,"sha256":"bd056051401f8d92a2b3e28043a2315c5e2d1aaffe741885dbf327b64ca04ce6","nNand":248,"nLatch":0,"nIn":11,"nOut":8,"depth":35,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":6464,"tx":"0x54be9a3e0b2db161ee7fde39ec1a770af057d36865e645249cf48790f7065a89","block":74054386,"why":null,"sha256":"57ebe3888ea83628d3f700c5c8aebcb1dc0e94bcd0f1d4d44831e0c9675b5b0b","nNand":500,"nLatch":0,"nIn":1,"nOut":1,"depth":499,"chunks":1},{"chain":196,"cpu":"0x08f4cb11ae76c1c96437e72190777223b45a2998","id":5,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"238fdf0f8fec539fa75b14037835297c13952d3a76f16960be90f164d3b04c27","nNand":652,"nLatch":0,"nIn":16,"nOut":16,"depth":44,"chunks":1},{"chain":196,"cpu":"0xf40eed30b189e11124901f73e1518daea69acb44","id":8,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"238fdf0f8fec539fa75b14037835297c13952d3a76f16960be90f164d3b04c27","nNand":652,"nLatch":0,"nIn":16,"nOut":16,"depth":44,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":3079,"tx":"0xf75c125e85d2bee37f07cf628af73580a19d8c986e6ec5d11870ed748c7aece9","block":73206425,"why":null,"sha256":"71ef84639084bb4c786f570e9de8408d7ffb065cb0b076f08df4b0ee1e5353f7","nNand":709,"nLatch":0,"nIn":1,"nOut":1,"depth":709,"chunks":1},{"chain":196,"cpu":"0xf9bbdc7f678eb3a49d338ffacdaad9339de50a0f","id":1,"tx":"0x08e0259072bc7a8cba2c591ff6255124921ac5fc4d2cbba6cbeb92b79dd3e533","block":74684285,"why":null,"sha256":"c742d516ab4ed07a07da0b57e6f39af5b3729f242dc2cb21b223d518c25c671e","nNand":1193,"nLatch":0,"nIn":36,"nOut":14,"depth":66,"chunks":1},{"chain":196,"cpu":"0x8dff4c46c608aba7e48b77e213288d9f6bc36ef5","id":1,"tx":"0x4f32c629fed04a9695b00949978c20d4eb1a1b038757c91a36a1b6a4a6964eaa","block":71241198,"why":null,"sha256":"d38bc15da1c3cb65aa5366c84e5441cdf94b26069cf74f626566f312fdab2d9a","nNand":1204,"nLatch":0,"nIn":16,"nOut":16,"depth":114,"chunks":1},{"chain":196,"cpu":"0x87bfca3494aa228ff589ab9b642143a5e8c8f9a6","id":4859,"tx":"0xcf5a21907d769858769723d6454d4f82846a6da4317e5d3bb0d0823a3be27f8a","block":73386129,"why":null,"sha256":"de23b1cec8f109c11f64612308689e8f66e199611a684027ac6d72b30c8d7ece","nNand":1303,"nLatch":0,"nIn":1,"nOut":1,"depth":1303,"chunks":1},{"chain":196,"cpu":"0x832000e803885c572fa4ce0bf488ab9946b880fc","id":3,"tx":null,"block":null,"why":"电路出现的那一块里，没有发给这颗处理器、四项都对的交易","sha256":"473d4e2f24c0a4cc06b75aeccf68173d4f0a4de6f63cfd29e7eb3bb21304aa49","nNand":2355,"nLatch":0,"nIn":30,"nOut":30,"depth":140,"chunks":1},{"chain":196,"cpu":"0xa93e807fab41431827ebba57443fb687a95e2aa3","id":3,"tx":"0x5c34c7fbaf389a8ef61e3783099734e3a2674a3f3301c0b853901ca61ba0f20d","block":72440574,"why":null,"sha256":"b1507f55d3bd80bbc55f9e06dc656d81e049138827c97ec7fe640d7bfa2ce0b7","nNand":3829,"nLatch":0,"nIn":320,"nOut":32,"depth":139,"chunks":2},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":731,"tx":"0x44cf3ac15621d444ef9f4d9c94189e95cf322dc5f38c9384d8a032c83fbc6870","block":72855743,"why":null,"sha256":"49f0fb37e07913096731620eb6d2174283a871339a0f9f53075265139eb5be88","nNand":4983,"nLatch":0,"nIn":2,"nOut":1,"depth":4983,"chunks":2},{"chain":196,"cpu":"0xb99c7388b6426367e496e902174a631f640729aa","id":9,"tx":"0xae87aaec515ed416f3851021aab08939f77a923cc619ab5e446405ae26a92fa8","block":73890752,"why":null,"sha256":"ccec144d60d138d4940d5c9d1085bc8a1c50af76c2faf5f95abd06624d83531f","nNand":5996,"nLatch":0,"nIn":24,"nOut":12,"depth":437,"chunks":2},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":782,"tx":"0x6b165a659d379f6992b8f55a6ec6a05a9ce8834a58dbf65a135a62b87e1e4547","block":72862513,"why":null,"sha256":"89131c1b49a7865b2f6ce371aba3c86cde3476f3de37ca3fd8349d4173b415d7","nNand":6821,"nLatch":0,"nIn":2,"nOut":1,"depth":6821,"chunks":2},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":288,"tx":"0xf59d7805e8a01bd8ca9064d84952030c0161ef929c2fb43d8769b533dc153a4e","block":72747329,"why":null,"sha256":"70296992121cb984a66788449b5d9caa3d5c35715c7654b5a1fc4966c3f1fdf5","nNand":10000,"nLatch":0,"nIn":2,"nOut":1,"depth":1,"chunks":3},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":314,"tx":"0x38bfef2d94007be33c01686c3c9e3bd8fb854197571abd576637ca0c72cbf622","block":72765093,"why":null,"sha256":"70296992121cb984a66788449b5d9caa3d5c35715c7654b5a1fc4966c3f1fdf5","nNand":10000,"nLatch":0,"nIn":2,"nOut":1,"depth":1,"chunks":3},{"chain":196,"cpu":"0x69f663931209096037474d7c20402232e5c762ca","id":1387,"tx":"0xbfc193b850df1b6928da52eac5ccb1ac57b9d9554ced0087daf5f10d92fa6828","block":75622551,"why":null,"sha256":"70296992121cb984a66788449b5d9caa3d5c35715c7654b5a1fc4966c3f1fdf5","nNand":10000,"nLatch":0,"nIn":2,"nOut":1,"depth":1,"chunks":3}],"snapshot":{"taken_at":"2026-11-17T05:39:23-0500","heads":{"56":134105016,"196":76142927},"source":"portal39_20261117_055101.json"},"texts":{"why":{"nc":"连不上","rate":"限流","err":"出错","revert":"回绝"},"cell_chain":["回的数据解不开","执行回绝","没回"],"cell_verdict":["等链上","不一样","连不上","限流","出错","没跑","一样","回绝"],"fails":["交易不是发给这颗处理器的","回执不是成功","处理器的日志里没有第 {id} 号","交易里带的网表和现读的不一样"],"s1.input":"<span class=\"v\">填得不对<\/span>：处理器是 0x 开头的 40 位十六进制地址，电路号是正整数","s1.busy":"读网表中…（向 {host} 读第 {id} 号电路）","s1.parse":"<span class=\"v\">网表解析不了<\/span>：{msg}","s1.bad":"<span class=\"v\">对不上<\/span>：网表里数出来的{what}和链上 circuitInfo 记的不一样（标红的那格）","s1.ok":"<span class=\"v\">读完<\/span> {bytes} 字节（{host} 给的），输入、输出、锁存器、元件总数和链上 circuitInfo 记的逐项对上","s1.okcalls":"<span class=\"v\">读完<\/span> {bytes} 字节（{host} 给的），有 {calls} 条子电路调用；锁存器和元件总数按本层加 {kids} 颗子电路的 circuitInfo 核对，展开后共 {total} 个元件，和链上记的对上","s1.kidnc":"<span class=\"v\">没核成<\/span>：网表读完了，但子电路的 circuitInfo 读不到（都{why}），锁存器和元件总数核不了","s1.nocircuit":"<span class=\"v\">链上没有这颗<\/span>：处理器回「no circuit」，这颗处理器上没有第 {id} 号电路","s1.revert":"<span class=\"v\">处理器回绝<\/span>：{msg}","s1.nc":"<span class=\"v\">读不到<\/span>：试了 {n} 家公开节点，都{why}。没有网表就做不了下面几步","s2.idle":"还没开始：点「随机 16 组」","s2.caps":"比对中… 先量各家节点一次只读调用最多给多少 gas","s2.busy":"比对中… 第 {i} / {n} 组","s2.cap":"<span class=\"v\">链上执行放不下<\/span>：这颗 {g} 门，按{law}要约 {pred} gas，公开节点一次只读调用最多 {cap} gas。网表照样读、浏览器照样算，「链上回的」那一列空着","s2.nc":"<span class=\"v\">链上那一半没回<\/span>：试了 {n} 家，都{why}。浏览器算的照样在表里","s2.bad":"<span class=\"v\">{n} 组里 {same} 组对上、{diff} 组不一样<\/span>{missTxt}（不一样的位标红）","s2.part":"<span class=\"v\">{n} 组里 {same} 组对上<\/span>，{miss} 组链上没回","s2.ok1":"<span class=\"v\">这一组对上<\/span>（浏览器逐门算的和链上执行回的逐位相同；链上那一半是 {host} 跑的）","s2.okn":"<span class=\"v\">{n} 组全对上<\/span>（浏览器逐门算的和链上执行回的逐位相同；链上那一半是 {host} 跑的）","s2.inerr":"<span class=\"v\">输入填得不对<\/span>：要 0x 开头、正好 {hex} 位十六进制（{bits} 位，按字节低位在前打包）","s2.calls":"<span class=\"v\">这颗比对不了<\/span>：网表里有子电路调用，浏览器这一版只逐门算与非和锁存、不展开子电路；网表和出处照样能核","s3.calls":"含子电路调用：定律二只拿平铺电路拟合过，这里不硬套","s3.idle":"比对做完才有","s3.cap":"链上没执行，没有实际 gas；定律预测照写","s3.nogas":"<span class=\"v\">量不了 gas<\/span>：这次没有节点回计量结果","s3.in":"<span class=\"v\">在{law}的误差范围里<\/span>（拟合时留一验证最大偏差 {loo}%）","s3.out":"<span class=\"v\">超出{law}的误差范围<\/span>（拟合时留一验证最大偏差 {loo}%）","s4.idle":"网表读完就去读发布交易","s4.none":"<span class=\"v\">清单外<\/span>：页面不扫老日志（公开节点的老日志会静默丢，见物理页「回看视界」）；知道发布交易号可以贴在上面来核","s4.busy":"读发布交易中…（向 {host} 按交易号读）","s4.nc":"<span class=\"v\">读不到<\/span>：试了 {n} 次，都{why}","s4.notx":"<span class=\"v\">链上没有这笔交易<\/span>","s4.bad":"<span class=\"v\">不是这颗的发布交易<\/span>：{fails}","s4.ok":"<span class=\"v\">四项全对<\/span>：交易发给这颗处理器、回执成功、处理器的日志里写着第 {id} 号、交易里带的网表和现读的 sha256 相同","s4.txerr":"<span class=\"v\">交易号不对<\/span>：是 0x 开头的 64 位十六进制","s1.okl":"<span class=\"v\">读完<\/span> {bytes} 字节（{host} 给的）：sha256 和门、锁存、输入输出位、深度、分块都和清单快照相同，锁存器、元件总数和链上 circuitInfo 对上","s1.snapdiff":"<span class=\"v\">和清单快照不一样<\/span>：{what}（表里的数是快照那一刻读的，这里是现读的）","s4.notfound":"<span class=\"v\">出处没查到<\/span>：{why}；不硬凑","res.busy":"复测中…","res.same":"<span class=\"v\">一样<\/span> · {gas} gas","res.diff":"<span class=\"v\">不一样<\/span>（差 {k} 位）","res.cap":"<span class=\"v\">放不下<\/span>：要约 {pred} gas","res.nc":"<span class=\"v\">没连上<\/span>","res.err":"<span class=\"v\">读不出<\/span>","res.calls":"<span class=\"v\">比对不了<\/span>（含子电路）","res.snap":"<span class=\"v\">和快照不一样<\/span>","all.idle":"每颗随机一组输入，浏览器算的和链上回的比；结果写在每一行右边","all.busy":"复测中… 已做完 {i} / {n} 颗","all.done":"<span class=\"v\">做完 {n} 颗<\/span>：一样 {same}、不一样 {diff}、放不下 {cap}、比对不了 {calls}、没连上 {nc} · 用了 {secs} 秒","url.notin":"<span class=\"v\">不在这 39 颗里<\/span>：网址里的链、处理器、编号不在清单里，页面没去读链"}}</script>
+<script>
+/* OCH /circuits/ -- the 39 circuits of experiment E3, each re-measurable in the visitor's own browser (D-89 改向 f2775c8c3).
+   Read-only: public nodes only, no wallet, no transaction. The only execution call is the circuit's own step(); tapeout() is
+   never called, not even simulated. Every request is keyed only by chain, block, transaction hash, circuit id or processor
+   address; the publisher address is only read out of the transaction and shown as it is.
+   Criteria: och/CRITERIA_PORTAL.md (sections 1-6). The list itself is static HTML (first screen without script); this script
+   adds the re-measure panel per row, the all-rows run, sorting and the ?chain&cpu&id deep link. */
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("cx-data").textContent);
+  var $ = function (id) { return document.getElementById(id); };
+  var Q = new URLSearchParams(location.search);
+  var NEG = Q.get("neg") || "";                              // self-check hooks: flip | tx  (C3, C6 negative controls)
+  var CAPCLAMP = Q.get("cap") ? Number(Q.get("cap")) : 0;    // C5: pretend every node allows at most this much gas
+  var CHAIN_ID = { bsc: 56, xlayer: 196 };
+  var TIMEOUT = 20000;
+  var SEL = D.sel;
+  var fmt = function (n) { return Math.round(n).toLocaleString("en-US"); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  function T(k, v) {
+    var s = D.texts[k];
+    return s.replace(/\{(\w+)\}/g, function (_, x) { return esc(v && v[x] !== undefined ? v[x] : ""); });
+  }
+  var WHY = D.texts.why;
+
+  /* core.js -- shared by the /circuits/ scripts: bytes and ABI, netlist parse / measure / simulate, nodes and requests (the C7
+     positive list), the GAS probe, the metering wrapper, and the laws. The builder splices this file into the page script. */
+  // ---------- bytes, ABI, bit packing (ports of och/lib/abi.py) ----------
+  function hexToBytes(h) {
+    h = String(h || "").replace(/^0x/i, "");
+    if (h.length % 2) h = "0" + h;
+    var b = new Uint8Array(h.length / 2);
+    for (var i = 0; i < b.length; i++) b[i] = parseInt(h.substr(2 * i, 2), 16);
+    return b;
+  }
+  function bytesToHex(b) {
+    var s = "0x";
+    for (var i = 0; i < b.length; i++) s += (b[i] < 16 ? "0" : "") + b[i].toString(16);
+    return s;
+  }
+  function word(n) { return BigInt(n).toString(16).padStart(64, "0"); }
+  function encBytes(b) {
+    var h = bytesToHex(b).slice(2), pad = (64 - (h.length % 64)) % 64;
+    return word(b.length) + h + "0".repeat(pad);
+  }
+  function callData(sel, args) {
+    var head = [], tail = [], tl = 0, nhead = 32 * args.length;
+    args.forEach(function (x) {
+      if (x instanceof Uint8Array) { head.push(word(nhead + tl)); var e = encBytes(x); tail.push(e); tl += e.length / 2; }
+      else head.push(word(x));
+    });
+    return "0x" + sel + head.join("") + tail.join("");
+  }
+  function words(res) {
+    var h = String(res || "0x").slice(2), out = [];
+    for (var i = 0; i + 64 <= h.length; i += 64) out.push(BigInt("0x" + h.substr(i, 64)));
+    return out;
+  }
+  function u256(raw, o) { var v = 0; for (var i = 0; i < 32; i++) v = v * 256 + (raw[o + i] || 0); return v; }
+  function decBytes(res, idx) {
+    var raw = typeof res === "string" ? hexToBytes(res) : res;
+    var off = u256(raw, 32 * idx), ln = u256(raw, off);
+    if (off + 32 + ln > raw.length) throw new Error("回的数据长度不对");
+    return raw.slice(off + 32, off + 32 + ln);
+  }
+  function pack(bits) {
+    var out = new Uint8Array((bits.length + 7) >> 3);
+    for (var i = 0; i < bits.length; i++) if (bits[i]) out[i >> 3] |= 1 << (i & 7);
+    return out;
+  }
+  function unpack(b, n) {
+    var r = new Uint8Array(n);
+    for (var i = 0; i < n; i++) r[i] = ((b[i >> 3] || 0) >> (i & 7)) & 1;
+    return r;
+  }
+  async function sha256(b) {
+    var d = new Uint8Array(await crypto.subtle.digest("SHA-256", b));
+    return bytesToHex(d).slice(2);
+  }
+
+  // ---------- netlist: parse, measure, simulate (ports of och/lib/netlist.py) ----------
+  var w24 = function (b, i) { return (b[i] << 16) | (b[i + 1] << 8) | b[i + 2]; };
+  // records: 0 NAND (7 bytes), 1 LATCH (4 bytes), 2 sub-circuit call (1 + 20-byte processor + 8-byte id + k + nOut + 3k bytes;
+  // the call appends its nOut output wires). CRITERIA_PORTAL.md C12.
+  function parse(nl, nIn) {
+    var op = [], a = [], b = [], calls = [], i = 0, wires = 2 + nIn;
+    var cut = function () { throw new Error("网表在第 " + i + " 字节处断了"); };
+    while (i < nl.length) {
+      var t = nl[i];
+      if (t === 0) {
+        if (i + 7 > nl.length) cut();
+        var x = w24(nl, i + 1), y = w24(nl, i + 4);
+        if (x >= wires || y >= wires) throw new Error("第 " + (op.length + 1) + " 条记录引用了还没算出来的线");
+        op.push(0); a.push(x); b.push(y); wires++; i += 7;
+      } else if (t === 1) {
+        if (i + 4 > nl.length) cut();
+        op.push(1); a.push(w24(nl, i + 1)); b.push(0); wires++; i += 4;
+      } else if (t === 2) {
+        if (i + 31 > nl.length) cut();
+        var k = nl[i + 29], no = nl[i + 30], ws = [];
+        if (i + 31 + 3 * k > nl.length) cut();
+        for (var j = 0; j < k; j++) {
+          ws.push(w24(nl, i + 31 + 3 * j));
+          if (ws[j] >= wires) throw new Error("第 " + (op.length + 1) + " 条记录引用了还没算出来的线");
+        }
+        var id = 0;
+        for (j = 0; j < 8; j++) id = id * 256 + nl[i + 21 + j];
+        op.push(2); a.push(calls.length); b.push(0);
+        calls.push({ cpu: bytesToHex(nl.slice(i + 1, i + 21)), id: id, k: k, nOut: no, wires: ws });
+        wires += no; i += 31 + 3 * k;
+      } else throw new Error("第 " + i + " 字节的记录类型是 " + t + "，不是 0、1、2（与非、锁存、子电路调用）");
+    }
+    for (var q = 0; q < op.length; q++) if (op[q] === 1 && a[q] >= wires) throw new Error("第 " + (q + 1) + " 个锁存接的线不存在");
+    return { op: Uint8Array.from(op), a: Int32Array.from(a), b: Int32Array.from(b), n: op.length, calls: calls, wires: wires };
+  }
+  function stats(R, nIn) {
+    var nN = 0, nL = 0, mx = 0, i;
+    for (i = 0; i < R.n; i++) { if (R.op[i] === 0) nN++; else if (R.op[i] === 1) nL++; }
+    if (R.calls.length) return { nNand: nN, nLatch: nL, depth: null };      // depth would need the children; not expanded
+    var lvl = new Int32Array(2 + nIn + R.n);
+    for (i = 0; i < R.n; i++) {
+      if (R.op[i] !== 0) continue;
+      var l = 1 + Math.max(lvl[R.a[i]], lvl[R.b[i]]);
+      lvl[2 + nIn + i] = l;
+      if (l > mx) mx = l;
+    }
+    return { nNand: nN, nLatch: nL, depth: mx };
+  }
+  function simulate(R, nIn, nOut, inBits, stBits) {
+    var W = 2 + nIn + R.n, w = new Uint8Array(W), j = 0, k;
+    w[1] = 1;
+    for (k = 0; k < nIn; k++) w[2 + k] = inBits[k] || 0;
+    for (k = 0; k < R.n; k++) {
+      if (R.op[k] === 0) w[2 + nIn + k] = 1 ^ (w[R.a[k]] & w[R.b[k]]);
+      else { w[2 + nIn + k] = j < stBits.length ? stBits[j] : 0; j++; }
+    }
+    var out = w.slice(W - nOut), nxt = [];
+    for (k = 0; k < R.n; k++) if (R.op[k] === 1) nxt.push(w[R.a[k]]);
+    return { out: out, next: Uint8Array.from(nxt) };
+  }
+
+  // ---------- nodes and requests ----------
+  var NODES = {};
+  function nodes(chain) {
+    if (!NODES[chain]) NODES[chain] = D.endpoints[chain].map(function (e) {
+      return { url: e.url, host: e.url.split("//")[1].split("/")[0], skip: 0, cap: null, capKind: "" };
+    });
+    return NODES[chain];
+  }
+  // C7: a positive list. Methods: eth_call, and a transaction and its receipt by hash. eth_call is only ever one of
+  // circuitInfo / netlist / step on the processor, the GAS probe (no recipient), or the metering wrapper around step().
+  function guard(method, params) {
+    if (method === "eth_getTransactionByHash" || method === "eth_getTransactionReceipt") {
+      if (params.length !== 1 || !/^0x[0-9a-f]{64}$/i.test(params[0])) throw new Error("只按交易号查");
+      return;
+    }
+    if (method !== "eth_call") throw new Error("页面不发 " + method);
+    var c = params[0], d = String(c.data || "").toLowerCase();
+    if (!c.to) { if (d !== D.gasprobe) throw new Error("不明的调用"); return; }
+    if (c.to.toLowerCase() === D.wrap.addr) {
+      var inner = d.slice(2 + 64);
+      if (inner && inner.slice(0, 8) !== SEL.step) throw new Error("计量套子里只许套 step");
+      return;
+    }
+    if ([SEL.circuitInfo, SEL.netlist, SEL.step].indexOf(d.slice(2, 10)) < 0) throw new Error("不明的调用");
+  }
+  async function rpc1(node, method, params) {
+    guard(method, params);
+    var ctl = new AbortController(), t = setTimeout(function () { ctl.abort(); }, TIMEOUT);
+    try {
+      var r = await fetch(node.url, { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params }) });
+      var txt = await r.text(), j = null;
+      try { j = JSON.parse(txt); } catch (e) { j = null; }
+      var em = j && j.error ? String(j.error.message || JSON.stringify(j.error)) : "";
+      if (r.status === 429 || /rate.?limit/i.test(em) || (!j && /rate.?limit/i.test(txt))) return { ok: false, kind: "rate", msg: "限流" };
+      if (j && j.error) return { ok: false, kind: /revert/i.test(em) ? "revert" : "err", msg: em };
+      if (j && "result" in j) return { ok: true, result: j.result };
+      return { ok: false, kind: "err", msg: "HTTP " + r.status };
+    } catch (e) {
+      return { ok: false, kind: "nc", msg: e.name === "AbortError" ? "超时" : "连不上" };
+    } finally { clearTimeout(t); }
+  }
+  // try the chain's nodes in order; a revert is the chain's own answer, so it ends the search
+  async function ask(chain, method, params, onTry) {
+    var tried = [], list = nodes(chain);
+    for (var i = 0; i < list.length; i++) {
+      var n = list[i];
+      if (n.skip > Date.now()) continue;
+      if (onTry) onTry(n);
+      var r = await rpc1(n, method, params);
+      if (r.ok) return { ok: true, result: r.result, node: n, tried: tried };
+      tried.push({ host: n.host, kind: r.kind, msg: r.msg });
+      if (r.kind === "rate") n.skip = Date.now() + 60000;
+      if (r.kind === "revert") return { ok: false, revert: true, msg: r.msg, node: n, tried: tried };
+    }
+    return { ok: false, tried: tried };
+  }
+  function why(kinds) {
+    var seen = {};
+    kinds.forEach(function (k) { seen[k] = 1; });
+    return Object.keys(seen).map(function (k) { return WHY[k] || WHY.err; }).join("或");
+  }
+  function capNow(n) { return CAPCLAMP ? Math.min(n.cap, CAPCLAMP) : n.cap; }
+  async function probeCap(n) {
+    if (n.cap === null) {
+      var r = await rpc1(n, "eth_call", [{ from: D.testFrom, data: D.gasprobe, gas: "0x10000000000" }, "latest"]);
+      n.cap = r.ok && r.result && r.result.length > 2 ? parseInt(r.result, 16) : 0;
+      n.capKind = r.ok ? "" : r.kind;
+    }
+  }
+
+  // ---------- laws (same data as /physics/) ----------
+  function predict(chain, st, nIn, nOut) {
+    var N = st.nNand + st.nLatch;
+    if (N <= 20000) {
+      var c = D.law2[chain];
+      return { g: c[0] + c[1] * st.nNand + c[2] * st.nLatch + c[3] * nIn + c[4] * nOut, law: "定律二", loo: D.law2loo[chain] };
+    }
+    var K = Math.ceil(7 * N / 24000), B = 7 * N, Wc = 0, sc = D.law34.sc, cc = D.law34.cc;
+    for (var k = 1; k <= K; k++) Wc += Math.min(k * 24000, B);
+    Wc /= 32;
+    var Wb = 8 * N / 32;
+    var g = sc[0] + sc[1] * N + sc[2] * N * N + (K > 1 ? cc[0] * Wc + cc[1] * ((Wb + Wc) * (Wb + Wc) - Wb * Wb) / 512 + cc[2] * K : 0);
+    return { g: g, law: chain === 196 ? "定律三、四（用 BSC 的拟合）" : "定律三、四", loo: D.law34.loo };
+  }
+
+
+  // ---------- metered step(): GAS delta around a STATICCALL, inside eth_call with a state override ----------
+  async function wrapped(nd, target, innerHex, lim) {
+    var data = "0x" + target.toLowerCase().replace(/^0x/, "").padStart(64, "0") + innerHex.slice(2);
+    var ov = {};
+    ov[D.wrap.addr] = { code: D.wrap.code };
+    ov[D.wrap.nop] = { code: "0x00" };
+    var r = await rpc1(nd, "eth_call", [{ from: D.testFrom, to: D.wrap.addr, data: data, gas: "0x" + Math.max(lim, 1000000).toString(16) }, "latest", ov]);
+    if (!r.ok) return r;
+    var raw = hexToBytes(r.result);
+    if (raw.length < 96) return { ok: false, kind: "err", msg: "计量套子回的太短" };
+    return { ok: true, delta: u256(raw, 0), success: u256(raw, 32) === 1, ret: raw.slice(96, 96 + u256(raw, 64)) };
+  }
+
+  // ---------- page state ----------
+  var tb = $("rows"), det = null, openRow = null, gen = 0, ticks = new Map(), S = null, allRun = false;
+  var ROW = {};
+  D.rows.forEach(function (r) { ROW[r.chain + "#" + r.cpu.toLowerCase() + "#" + r.id] = r; });
+  function rowData(tr) { return ROW[CHAIN_ID[tr.dataset.chain] + "#" + tr.dataset.cpu.toLowerCase() + "#" + tr.dataset.id]; }
+  function q(sel) { return det.querySelector(sel); }
+  function out(el, cls, html, tick) {
+    el.className = "out " + cls;
+    el.innerHTML = html + (tick ? ' <span class="tick">0.0 秒</span>' : "");
+    clearInterval(ticks.get(el));
+    if (tick) {
+      var t0 = performance.now(), sp = el.querySelector(".tick");
+      ticks.set(el, setInterval(function () { sp.textContent = ((performance.now() - t0) / 1000).toFixed(1) + " 秒"; }, 100));
+    }
+  }
+  function val(el, text, mis) {
+    var v = el.querySelector(".val") || el;
+    if (mis) v.innerHTML = "<mark>" + esc(text) + "</mark>"; else v.textContent = text;
+  }
+  function stack(ghosts, visible) {
+    return '<span class="gx">' + ghosts.map(function (g) { return '<span class="ghost" aria-hidden="true">' + esc(g) + "</span>"; }).join("") +
+           '<span class="vis">' + visible + "</span></span>";
+  }
+  function setVis(cell, html) { var v = cell.querySelector(".vis"); if (v) v.innerHTML = html; else cell.innerHTML = html; }
+  function hexOf(bits) { return bits.length ? bytesToHex(pack(bits)) : "0x"; }
+  function randBits(n) {
+    var b = new Uint8Array(n), r = new Uint8Array(n);
+    crypto.getRandomValues(r);
+    for (var i = 0; i < n; i++) b[i] = r[i] & 1;
+    return b;
+  }
+  function mark(a, b) {
+    var s = "";
+    for (var i = 0; i < b.length; i++) s += (i >= 2 && a[i] !== b[i]) ? "<mark>" + esc(b[i]) + "</mark>" : esc(b[i]);
+    return s;
+  }
+  function bitsDiff(a, b) { var n = 0; for (var i = 0; i < Math.max(a.length, b.length); i++) if ((a[i] || 0) !== (b[i] || 0)) n++; return n; }
+
+  // ---------- reading one circuit (step 1; also used by the all-rows run) ----------
+  // returns {ok, C} or {ok: false, cls, html} ready for a status line
+  async function readCircuit(r, onTry, my) {
+    var info = await ask(r.chain, "eth_call", [{ to: r.cpu, data: callData(SEL.circuitInfo, [r.id]) }, "latest"], onTry);
+    if (my !== gen) return null;
+    if (!info.ok) return { ok: false, fail: info };
+    var nlr = await ask(r.chain, "eth_call", [{ to: r.cpu, data: callData(SEL.netlist, [r.id]) }, "latest"], onTry);
+    if (my !== gen) return null;
+    if (!nlr.ok) return { ok: false, fail: nlr };
+    var w = words(info.result).map(Number), nIn = w[0], nOut = w[1], nl, R, st;
+    try { nl = decBytes(nlr.result, 0); R = parse(nl, nIn); st = stats(R, nIn); }
+    catch (e) { return { ok: false, parse: String(e.message).slice(0, 40) }; }
+    var sha = await sha256(nl);
+    var hier = R.calls.length > 0, wantL = st.nLatch, wantT = st.nNand + st.nLatch, kids = {}, kidsFail = null;
+    for (var c = 0; c < R.calls.length; c++) {
+      var cc = R.calls[c], key = cc.cpu + "#" + cc.id;
+      if (!(key in kids)) {
+        var ki = await ask(r.chain, "eth_call", [{ to: cc.cpu, data: callData(SEL.circuitInfo, [cc.id]) }, "latest"], onTry);
+        if (my !== gen) return null;
+        kids[key] = ki.ok ? words(ki.result).map(Number) : null;
+        if (!ki.ok) kidsFail = ki.revert ? "回绝" : why(ki.tried.map(function (t) { return t.kind; }));
+      }
+      if (kids[key]) { wantL += kids[key][2]; wantT += kids[key][3]; }
+    }
+    var mism = [];
+    if (!kidsFail && w[2] !== wantL) mism.push("锁存器");
+    if (!kidsFail && w[3] !== wantT) mism.push("元件总数");
+    var snap = [];                                           // live against the list's static numbers (L1)
+    if (sha !== r.sha256) snap.push("网表 sha256");
+    if (st.nNand !== r.nNand) snap.push("门");
+    if (st.nLatch !== r.nLatch) snap.push("锁存");
+    if (nIn !== r.nIn || nOut !== r.nOut) snap.push("输入输出位");
+    if ((st.depth === null ? null : st.depth) !== r.depth) snap.push("深度");
+    if (Math.ceil(nl.length / 24000) !== r.chunks) snap.push("分块");
+    return { ok: true, C: { r: r, chain: r.chain, cpu: r.cpu, id: r.id, nl: nl, R: R, st: st, nIn: nIn, nOut: nOut, sha: sha, hier: hier,
+             host: nlr.node.host, w: w, mism: mism, kidsFail: kidsFail, kids: Object.keys(kids).length, snap: snap,
+             pred: hier ? null : predict(r.chain, st, nIn, nOut) } };
+  }
+  function failText(res, id) {
+    if (res.parse) return { cls: "bad", html: T("s1.parse", { msg: res.parse }) };
+    var f = res.fail;
+    if (f.revert) return /no circuit/i.test(f.msg) ? { cls: "err", html: T("s1.nocircuit", { id: id }) } : { cls: "err", html: T("s1.revert", { msg: f.msg.slice(0, 40) }) };
+    return { cls: "nc", html: T("s1.nc", { n: f.tried.length, why: why(f.tried.map(function (t) { return t.kind; })) }) };
+  }
+
+  // ---------- the panel under a row ----------
+  function open(tr, early) {
+    if (det && det !== early) { det.remove(); openRow.querySelector(".rt").setAttribute("aria-expanded", "false"); }
+    gen++;
+    S = null;
+    if (openRow === tr && !early) { det = openRow = null; return; }
+    // a deep link's panel was already put in place by the small opener right after the template (so 「读网表中」 shows before
+    // the rest of the page has arrived, L6 + the 400 ms gate); this script adopts it instead of making a second one
+    det = early || $("det").content.firstElementChild.cloneNode(true);
+    if (!early) tr.after(det);
+    openRow = tr;
+    tr.querySelector(".rt").setAttribute("aria-expanded", "true");
+    q("#rnd").disabled = true;
+    q("#rnd").addEventListener("click", function () {
+      if (!S || S.hier) return;
+      q("#cmpt").classList.remove("fold");            // expand in the click's own frame (Mac 74cfd4ad5 ②)
+      var ins = [];
+      for (var i = 0; i < 16; i++) ins.push(randBits(S.nIn));
+      compare(ins);
+    });
+    load(rowData(tr));
+  }
+  async function load(r) {
+    var my = gen, s1 = q("#s1o");
+    var busy = function (n) { out(s1, "busy", T("s1.busy", { host: n.host, id: r.id }), true); };
+    busy(nodes(r.chain)[0]);
+    var res = await readCircuit(r, busy, my);
+    if (!res || my !== gen) return;
+    if (!res.ok) { var f = failText(res, r.id); out(s1, f.cls, f.html); return; }
+    var C = res.C;
+    S = C;
+    val(q("#f-sha"), C.sha, C.snap.indexOf("网表 sha256") >= 0);
+    if (C.snap.length) out(s1, "bad", T("s1.snapdiff", { what: C.snap.join("、") }));
+    else if (C.mism.length) out(s1, "bad", T("s1.bad", { what: C.mism.join("、") }));
+    else if (C.kidsFail) out(s1, "bad", T("s1.kidnc", { why: C.kidsFail }));
+    else if (C.hier) out(s1, "ok", T("s1.okcalls", { bytes: fmt(C.nl.length), host: C.host, calls: fmt(C.R.calls.length), kids: fmt(C.kids), total: fmt(C.w[3]) }));
+    else out(s1, "ok", T("s1.okl", { bytes: fmt(C.nl.length), host: C.host }));
+    if (C.hier) { out(q("#s2o"), "cap", T("s2.calls")); out(q("#s3o"), "idle", T("s3.calls")); }
+    else { val(q("#c-p"), fmt(C.pred.g) + " gas（" + C.pred.law + "）"); q("#rnd").disabled = false; }
+    var other = D.rows.filter(function (x) { return x.tx && x !== r; })[0];   // C6 negative control: another circuit's transaction
+    var tx = NEG === "tx" ? (other && other.tx) : r.tx;
+    if (tx) provenance(tx);
+    else out(q("#s4o"), "idle", T("s4.notfound", { why: r.why || "" }));
+  }
+
+  // ---------- step 2 and 3 ----------
+  var CHAIN_CELL = D.texts.cell_chain, VERDICT = D.texts.cell_verdict;
+  async function execNodes(C) {                     // C5: nodes whose read-only cap fits this circuit
+    var need = C.pred.g * 1.15 + 60000, list = nodes(C.chain);
+    await Promise.all(list.map(probeCap));
+    return { ok: list.filter(function (nd) { return nd.cap > 0 && capNow(nd) >= need; }), answered: list.filter(function (nd) { return nd.cap > 0; }), list: list };
+  }
+  var cal = {};
+  async function run1(C, nodesOk, inp) {             // one metered step() on the first node that answers
+    var inner = callData(SEL.step, [C.id, pack(new Uint8Array(C.st.nLatch)), pack(inp)]), lastKind = "err";
+    for (var k = 0; k < nodesOk.length; k++) {
+      var nd = nodesOk[k];
+      if (nd.skip > Date.now()) continue;
+      var lim = Math.min(capNow(nd) - 1000000, 500000000);
+      // the calibration (the wrapper around an empty contract) is retried, never cached as missing: a node that just answered a
+      // step() can measure it; one transient failure must not leave that node's groups without gas
+      for (var t = 0; t < 2 && typeof cal[nd.host] !== "number"; t++) { var c0 = await wrapped(nd, D.wrap.nop, "0x", lim); if (c0.ok) cal[nd.host] = c0.delta; }
+      var wr = await wrapped(nd, C.cpu, inner, lim);
+      if (wr.ok) return { ok: true, w: wr, node: nd, gas: typeof cal[nd.host] === "number" ? wr.delta - cal[nd.host] : null };
+      lastKind = wr.kind;
+      if (wr.kind === "rate") nd.skip = Date.now() + 60000;
+    }
+    return { ok: false, kind: lastKind };
+  }
+  function local(C, inp) {
+    var loc = simulate(C.R, C.nIn, C.nOut, inp, new Uint8Array(C.st.nLatch));
+    if (NEG === "flip" && loc.out.length) loc.out[0] ^= 1;
+    return loc;
+  }
+  function theirs(C, w) {
+    return { out: unpack(decBytes(w.ret, 1), C.nOut), next: unpack(decBytes(w.ret, 0), C.st.nLatch) };
+  }
+  async function compare(inputs) {
+    var my = ++gen, C = S, n = inputs.length, nLat = C.st.nLatch;
+    var rows = q("#cmpb").querySelectorAll("tr"), groups = [];
+    rows.forEach(function (tr) { delete tr.dataset.gas; for (var i = 1; i < 5; i++) { tr.children[i].textContent = "—"; } });
+    for (var g = 0; g < n; g++) {
+      var loc = local(C, inputs[g]);
+      var mine = hexOf(loc.out) + (nLat ? " · " + hexOf(loc.next) : "");
+      groups.push({ inp: inputs[g], mine: mine });
+      var c = rows[g].children;
+      c[1].textContent = hexOf(inputs[g]);
+      c[2].textContent = mine;
+      c[3].innerHTML = stack([mine].concat(CHAIN_CELL), "");
+      c[4].innerHTML = stack(VERDICT, esc(VERDICT[0]));
+      c[4].className = "";
+    }
+    var s2 = q("#s2o");
+    out(s2, "busy", T("s2.caps"), true);
+    var en = await execNodes(C);
+    if (my !== gen) return;
+    var done = function (verdict) { rows.forEach(function (tr, i) { if (i < n) { setVis(tr.children[3], "—"); setVis(tr.children[4], esc(verdict)); } }); };
+    if (!en.answered.length) {
+      done(WHY[en.list[0].capKind] || WHY.nc);
+      out(s2, "nc", T("s2.nc", { n: en.list.length, why: why(en.list.map(function (nd) { return nd.capKind || "err"; })) }));
+      out(q("#s3o"), "idle", T("s3.cap"));
+      return;
+    }
+    if (!en.ok.length) {
+      done(VERDICT[5]);
+      out(s2, "cap", T("s2.cap", { g: fmt(C.st.nNand + C.st.nLatch), law: C.pred.law, pred: fmt(C.pred.g), cap: fmt(Math.max.apply(null, en.answered.map(capNow))) }));
+      out(q("#s3o"), "idle", T("s3.cap"));
+      return;
+    }
+    var gas = [], same = 0, diff = 0, miss = 0, lastKind = "err", host = "";
+    for (g = 0; g < n; g++) {
+      if (my !== gen) return;
+      out(s2, "busy", T("s2.busy", { i: g + 1, n: n }), true);
+      var res = await run1(C, en.ok, groups[g].inp);
+      if (my !== gen) return;
+      var cell = rows[g].children;
+      if (!res.ok) { miss++; lastKind = res.kind; setVis(cell[3], esc(CHAIN_CELL[2])); setVis(cell[4], esc(WHY[res.kind] || WHY.err)); continue; }
+      host = res.node.host;
+      if (!res.w.success) { diff++; setVis(cell[3], esc(CHAIN_CELL[1])); setVis(cell[4], esc(VERDICT[1])); cell[4].className = "diff"; continue; }
+      var th;
+      try { th = theirs(C, res.w); } catch (e) { diff++; setVis(cell[3], esc(CHAIN_CELL[0])); setVis(cell[4], esc(VERDICT[1])); cell[4].className = "diff"; continue; }
+      var t = hexOf(th.out) + (nLat ? " · " + hexOf(th.next) : ""), eq = t === groups[g].mine;
+      setVis(cell[3], eq ? esc(t) : mark(groups[g].mine, t));
+      setVis(cell[4], esc(eq ? VERDICT[6] : VERDICT[1]));
+      cell[4].className = eq ? "same" : "diff";
+      if (eq) same++; else diff++;
+      if (res.gas !== null) { gas.push(res.gas); rows[g].dataset.gas = String(res.gas); }
+    }
+    if (diff) out(s2, "bad", T("s2.bad", { n: n, same: same, diff: diff, missTxt: miss ? "，" + miss + " 组链上没回" : "" }));
+    else if (miss === n) out(s2, "nc", T("s2.nc", { n: en.ok.length, why: WHY[lastKind] || WHY.err }));
+    else if (miss) out(s2, "bad", T("s2.part", { n: n, same: same, miss: miss }));
+    else out(s2, "ok", T("s2.okn", { n: n, host: host }));
+    costs(C, gas);
+  }
+  function costs(C, gas) {
+    var s3 = q("#s3o");
+    if (!gas.length) { out(s3, "idle", T("s3.nogas")); return; }
+    var lo = Math.min.apply(null, gas), hi = Math.max.apply(null, gas);
+    var mean = gas.reduce(function (a, b) { return a + b; }, 0) / gas.length;
+    val(q("#c-a"), gas.length === 1 ? fmt(gas[0]) + " gas" : fmt(mean) + " gas（" + gas.length + " 组，" + fmt(lo) + "–" + fmt(hi) + "）");
+    var d = (mean - C.pred.g) / C.pred.g, sg = d >= 0 ? "+" : "−";
+    val(q("#c-d"), sg + fmt(Math.abs(mean - C.pred.g)) + "（" + sg + Math.abs(d * 100).toFixed(1) + "%）");
+    var inside = Math.abs(d) <= C.pred.loo;
+    out(s3, inside ? "ok" : "bad", T(inside ? "s3.in" : "s3.out", { law: C.pred.law, loo: (C.pred.loo * 100).toFixed(1) }));
+  }
+
+  // ---------- step 4 ----------
+  async function provenance(tx) {
+    var my = gen, C = S, s4 = q("#s4o");
+    var busy = function (n) { out(s4, "busy", T("s4.busy", { host: n.host }), true); };
+    busy(nodes(C.chain)[0]);
+    var t = await ask(C.chain, "eth_getTransactionByHash", [tx], busy);
+    var rc = t.ok && t.result ? await ask(C.chain, "eth_getTransactionReceipt", [tx], busy) : null;
+    if (my !== gen) return;
+    if (!t.ok || (rc && !rc.ok)) {
+      var tr = (t.tried || []).concat(rc ? rc.tried : []);
+      out(s4, "nc", T("s4.nc", { n: tr.length, why: why(tr.map(function (x) { return x.kind; })) }));
+      return;
+    }
+    if (!t.result) { out(s4, "bad", T("s4.notx")); return; }
+    var X = t.result, Rc = rc.result || {};
+    val(q("#p-tx"), X.hash);
+    val(q("#p-blk"), fmt(parseInt(X.blockNumber, 16)));
+    val(q("#p-by"), X.from);                       // the public record as it is
+    var F = D.texts.fails, fails = [];
+    if (String(X.to || "").toLowerCase() !== C.cpu.toLowerCase()) fails.push(F[0]);
+    if (Rc.status !== "0x1") fails.push(F[1]);
+    var idHit = (Rc.logs || []).some(function (lg) {
+      if (String(lg.address).toLowerCase() !== C.cpu.toLowerCase()) return false;
+      return lg.topics.slice(1).some(function (x) { return BigInt(x) === BigInt(C.id); }) ||
+             words(lg.data).some(function (x) { return x === BigInt(C.id); });
+    });
+    if (!idHit) fails.push(F[2].replace("{id}", C.id));
+    var same = false;
+    try {
+      var inp = hexToBytes(X.input), off = u256(inp, 4), ln = u256(inp, 4 + off);
+      same = (await sha256(inp.slice(4 + off + 32, 4 + off + 32 + ln))) === C.sha;
+    } catch (e) { same = false; }
+    if (my !== gen) return;
+    if (!same) fails.push(F[3]);
+    if (fails.length) out(s4, "bad", T("s4.bad", { fails: fails.join("；") }));
+    else out(s4, "ok", T("s4.ok", { id: C.id }));
+  }
+
+  // ---------- all 39, one group each (L5) ----------
+  function res(tr, cls, html) { out(tr.querySelector(".res .out"), cls, html); }
+  async function quick(tr, cnt) {
+    var r = rowData(tr), my = gen;
+    var rd = await readCircuit(r, null, my);
+    if (!rd) return;
+    if (!rd.ok) { cnt.nc++; res(tr, "nc", T(rd.parse ? "res.err" : (rd.fail.revert ? "res.err" : "res.nc"))); return; }
+    var C = rd.C;
+    if (C.snap.length) { cnt.diff++; res(tr, "bad", T("res.snap")); return; }
+    if (C.hier) { cnt.calls++; res(tr, "cap", T("res.calls")); return; }
+    var en = await execNodes(C);
+    if (!en.answered.length) { cnt.nc++; res(tr, "nc", T("res.nc")); return; }
+    if (!en.ok.length) { cnt.cap++; res(tr, "cap", T("res.cap", { pred: fmt(C.pred.g) })); return; }
+    var inp = randBits(C.nIn), loc = local(C, inp), r1 = await run1(C, en.ok, inp);
+    if (!r1.ok) { cnt.nc++; res(tr, "nc", T("res.nc")); return; }
+    var th = null;
+    try { th = r1.w.success ? theirs(C, r1.w) : null; } catch (e) { th = null; }
+    if (!th) { cnt.diff++; res(tr, "bad", T("res.diff", { k: "?" })); return; }
+    var k = bitsDiff(loc.out, th.out) + bitsDiff(loc.next, th.next);
+    if (k) { cnt.diff++; res(tr, "bad", T("res.diff", { k: k })); }
+    else { cnt.same++; res(tr, "ok", T("res.same", { gas: r1.gas === null ? "—" : fmt(r1.gas) })); }
+  }
+  $("all").addEventListener("click", async function () {
+    if (allRun) return;
+    allRun = true;
+    this.disabled = true;
+    var trs = Array.prototype.slice.call(tb.querySelectorAll("tr[data-i]")), n = trs.length, t0 = performance.now();
+    var cnt = { same: 0, diff: 0, cap: 0, nc: 0, calls: 0 }, allo = $("allo");
+    out(allo, "busy", T("all.busy", { i: 0, n: n }), true);
+    for (var i = 0; i < n; i += 4) {
+      var batch = trs.slice(i, i + 4);
+      batch.forEach(function (tr) { res(tr, "busy", T("res.busy")); });
+      await Promise.all(batch.map(function (tr) { return quick(tr, cnt); }));
+      out(allo, "busy", T("all.busy", { i: Math.min(i + 4, n), n: n }), true);
+    }
+    var secs = ((performance.now() - t0) / 1000).toFixed(1);
+    out(allo, cnt.diff || cnt.nc ? "bad" : "ok", T("all.done", { n: n, same: cnt.same, diff: cnt.diff, cap: cnt.cap, calls: cnt.calls, nc: cnt.nc, secs: secs }));
+    window.__cxAllDone = true;
+  });
+
+  // ---------- sorting (as in VIS's prototype) and opening ----------
+  // L2 (D-89 续 8f6a1cb5c): one sort state for the whole table. The list arrives sorted by chain, so the first click on the
+  // column it is already sorted by reverses it (X Layer first); a column it is not sorted by starts ascending. Every first click
+  // therefore changes the order you see, and the arrow is a real character in the button, not a ::after decoration.
+  var sortK = "chain", sortDir = 1;
+  var ARW = { 1: "↑", "-1": "↓", 0: "↕" };
+  function arrows() {
+    document.querySelectorAll("button.sort").forEach(function (b) {
+      var on = b.dataset.k === sortK;
+      b.querySelector(".sa").textContent = ARW[on ? sortDir : 0];      // VIS's span.sa (6d117f1be); the script only swaps the character
+      if (on) b.parentNode.setAttribute("aria-sort", sortDir > 0 ? "ascending" : "descending"); else b.parentNode.removeAttribute("aria-sort");
+    });
+  }
+  document.querySelectorAll("button.sort").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.dataset.k;
+      if (k === sortK) sortDir = -sortDir; else { sortK = k; sortDir = 1; }
+      var rs = Array.prototype.slice.call(tb.querySelectorAll("tr[data-i]"));
+      rs.sort(function (x, y) {
+        var a = k === "g" ? +x.dataset.g : x.dataset.chain, c = k === "g" ? +y.dataset.g : y.dataset.chain;
+        return (a < c ? -1 : a > c ? 1 : (+x.dataset.i - +y.dataset.i)) * sortDir;
+      });
+      rs.forEach(function (r) { tb.append(r); if (r === openRow && det) tb.append(det); });
+      arrows();
+    });
+  });
+  tb.addEventListener("click", function (e) { var b = e.target.closest(".rt"); if (b) open(b.closest("tr")); });
+  window.__cxReady = true;
+  if (Q.get("chain") || Q.get("id")) {                 // L6: open one row of the list straight from the address
+    // chain + processor + id together: several processors in the list have a circuit #1 (and two on X Layer a #3)
+    var want = (Q.get("cpu") || "").toLowerCase(), hit = null;
+    tb.querySelectorAll("tr[data-i]").forEach(function (tr) {
+      if (!hit && tr.dataset.chain === Q.get("chain") && tr.dataset.id === Q.get("id") && tr.dataset.cpu.toLowerCase() === want) hit = tr;
+    });
+    var E = window.__cxEarly;
+    if (hit) { open(hit, E && E.row === hit ? E.det : null); hit.scrollIntoView({ block: "start" }); }
+    else out($("allo"), "err", T("url.notin"));
+  }
+})();
+</script>
+</body>
+</html>
