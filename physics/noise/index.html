@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 9 章 噪声与测量 · 链上硬件物理</title>
+<style>
+
+
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#17110a;--deep:#100b06;--deeper:#0a0703;--card:#211a11;--sel:#2e2518;
+  --fg:#d8cdb9;--ink:#f8f0e0;--mut:#b0a48f;--faint:#74695a;--line:#40362a;--field:#8a7c6a;
+  --acc:#ff9426;--on-acc:#1a0f03;--ok:#8bd98f;--warn:#ecd98a;--bad:#ff7d8a;--aux:#8fb8de;
+  --hard:var(--aux);--frozen:var(--acc);--soft:var(--warn);--impl:var(--mut);--code:var(--deeper);
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --fs:.9375rem;--fs-sm:.8125rem;--fs-xs:.75rem;--r:2px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}}
+:root[data-theme="light"]{color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}
+
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:var(--fs)/1.65 var(--cjk)}
+a{color:var(--acc)}
+main{max-width:80rem;margin:0 auto;padding:1.75rem 1rem 3.75rem}
+h1{font-size:1.625rem;line-height:1.3;color:var(--ink);margin:0 0 .375rem}
+h2{font-size:1.125rem;color:var(--ink);margin:2.25rem 0 .75rem;padding-top:.75rem;border-top:1px solid var(--line)}
+h3{font-size:.9375rem;color:var(--acc);margin:1.25rem 0 .5rem}
+b{color:var(--ink);font-weight:600}
+.sub{color:var(--mut);max-width:48em;margin:0}   
+.note{color:var(--mut);font-size:var(--fs-xs);margin-top:.25rem}
+footer{margin-top:2.25rem;color:var(--faint);font-size:var(--fs-xs)}
+
+
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-sm)}
+th,td{text-align:left;vertical-align:top;padding:.5rem .625rem;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--sel);color:var(--mut);font-weight:600;font-size:var(--fs-xs);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:color-mix(in srgb,var(--sel) 45%,transparent)}
+
+
+.n,.n2,span.num{font-variant-numeric:tabular-nums}
+.n{white-space:nowrap}
+
+
+code{font-family:var(--mono);background:var(--code);border:1px solid var(--line);padding:0 .25rem;border-radius:var(--r);font-size:var(--fs-xs);word-break:break-all}
+
+
+
+@media (max-width:760px){
+  .q3{grid-template-columns:1fr}
+  ul.files{columns:1}
+  .tw{overflow-x:visible;border:0;background:none}
+  .tw table,.tw tbody,.tw tr,.tw td{display:block;width:auto;min-width:0}
+  .tw thead{display:none}
+  .tw tr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.375rem .75rem;margin:0 0 .625rem}
+  .tw td{border-bottom:1px dashed var(--line);padding:.375rem 0;width:auto!important;min-width:0!important;white-space:normal!important}
+  .tw tr td:last-child{border-bottom:0}
+  .tw td[data-label]::before{content:attr(data-label);display:block;font-size:var(--fs-xs);color:var(--faint);margin-bottom:.125rem}
+  .tw tr td:first-child{font-size:.9375rem}
+  .tw tbody tr:hover td{background:none}
+  .fml{overflow-x:auto}
+}
+
+
+
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{max-width:80rem;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.75rem;height:3.25rem}
+.top .brand{font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}
+.top .brand:hover{color:var(--acc)}
+.top .here{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer a{color:var(--mut)} footer a:hover{color:var(--acc)}
+
+
+
+.chips{display:flex;flex-wrap:wrap;gap:.375rem;margin:.75rem 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:.125rem .625rem;font-size:var(--fs-xs);color:var(--mut);background:var(--card)}
+
+
+
+
+.top .wrap{max-width:78rem}
+main.book{max-width:78rem;display:grid;grid-template-columns:13rem minmax(0,1fr);column-gap:2.5rem;align-items:start}
+.toc-side{grid-column:1;position:sticky;top:4.25rem;max-height:calc(100vh - 5.25rem);overflow:auto;font-size:var(--fs-sm);padding-bottom:1rem}
+article.ch{grid-column:2;min-width:0;max-width:56rem;padding-right:15rem}
+.toc-top{display:none}
+
+
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:flex;gap:.5rem;padding:.25rem .5rem;border-radius:var(--r);color:var(--fg);text-decoration:none;line-height:1.4}
+.toc a:hover{background:var(--sel);color:var(--ink)}
+.toc a .no{flex:0 0 auto;min-width:2.25em;color:var(--faint);font-variant-numeric:tabular-nums}
+.toc a[aria-current="page"]{background:var(--sel);color:var(--ink);font-weight:600}
+.toc a[aria-current="page"] .no{color:var(--acc)}
+.toc ol ol{margin:.125rem 0 .375rem 2.75em;border-left:1px solid var(--line)}
+.toc ol ol a{padding:.125rem .5rem;font-size:var(--fs-xs);color:var(--mut)}
+.toc ol ol a .no{min-width:2em}
+.toc .grp{margin:1rem .5rem .25rem;font-size:var(--fs-xs);color:var(--faint);font-weight:600}
+.toc .soon{color:var(--faint)}
+.toc .soon::after{content:"（待写）";font-size:var(--fs-xs)}
+details.toc-top{margin:0 0 1.25rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+details.toc-top>summary{cursor:pointer;padding:.5rem .75rem;font-size:var(--fs-sm);color:var(--mut);list-style:none;display:flex;gap:.5rem;align-items:baseline}
+details.toc-top>summary::-webkit-details-marker{display:none}
+details.toc-top>summary::before{content:"▸";color:var(--acc)}
+details.toc-top[open]>summary::before{content:"▾"}
+details.toc-top>summary b{color:var(--ink)}
+details.toc-top>nav{padding:0 .375rem .5rem;font-size:var(--fs-sm)}
+details.toc-top>summary:focus-visible,.toc a:focus-visible,.pn a:focus-visible,a.term:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+
+.chhead{margin:0 0 1.5rem}
+.chno{margin:0 0 .25rem;font-size:var(--fs-sm);color:var(--acc);font-weight:600;letter-spacing:.08em}
+.chhead h1{font-size:2rem;margin:0 0 .5rem}
+.lede{margin:0;font-size:1.0625rem;color:var(--ink);line-height:1.7}
+.reader{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--faint)}
+
+
+article.ch h2{display:flex;gap:.625rem;align-items:baseline;font-size:1.1875rem;margin:2.5rem 0 .875rem}
+article.ch h2 .secno{color:var(--acc);font-variant-numeric:tabular-nums;font-size:.9375rem;font-weight:600;min-width:2.25em}
+article.ch h3{color:var(--ink);font-size:1rem;margin:1.5rem 0 .5rem}
+article.ch p{margin:0 0 .875rem}
+article.ch ol:not(.steps),article.ch ul:not(.sum){margin:0 0 .875rem;padding-left:1.5em}
+article.ch li{margin:.125rem 0}
+.mono,.h{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+
+a.term{color:inherit;text-decoration:underline dotted var(--acc);text-underline-offset:3px}
+a.term:hover{color:var(--acc)}
+
+
+.mn{float:right;clear:right;width:13rem;margin:.125rem -15rem .75rem 0;font-size:var(--fs-xs);line-height:1.55;color:var(--mut)}
+.mn b{color:var(--fg)}
+.mn .k{color:var(--acc);font-weight:600;margin-right:.25em}
+sup.mr{font-size:.7em;color:var(--acc);font-weight:600;margin-left:.0625em;line-height:0}
+
+
+.box{margin:1.25rem 0;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--bc,var(--line));border-radius:var(--r);padding:.75rem 1rem .875rem}
+.box>header{display:flex;flex-wrap:wrap;gap:.25rem .625rem;align-items:baseline;margin:0 0 .5rem}
+.box>header .kind{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;color:var(--bc)}
+.box>header .name{font-weight:600;color:var(--ink)}
+.box>header .src{margin-left:auto;font-size:var(--fs-xs);color:var(--faint)}
+.box p:last-child,.box ul:last-child,.box ol:last-child,.box dl:last-child{margin-bottom:0}
+.box.def{--bc:var(--aux)}
+.box.law{--bc:var(--acc)}
+.box.ex{--bc:var(--ok)}
+.box.fails{--bc:var(--warn)}
+.box.fails>header .kind::before{content:"⚠ ";font-weight:400}
+.def dfn{font-style:normal;font-weight:700;color:var(--ink)}
+
+
+math{color:var(--ink)}
+.fml{overflow-x:auto;padding:.375rem 0 .5rem;max-width:100%}
+.fml math{font-size:1.12em}
+dl.sym{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.25rem .75rem;margin:.25rem 0 0;font-size:var(--fs-sm)}
+dl.sym dt{color:var(--ink);text-align:right}
+dl.sym dd{margin:0;color:var(--mut)}
+dl.sym dd .n{color:var(--fg)}
+
+
+figure.fig{margin:1.25rem 0;padding:.875rem 1rem;border:1px solid var(--line);border-radius:var(--r);background:var(--deep)}
+figure.fig figcaption{margin-top:.625rem;font-size:var(--fs-xs);color:var(--mut)}
+figure.fig figcaption b{color:var(--ink)}
+.bars{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .75rem;align-items:center;font-size:var(--fs-sm)}
+.bars .lb{color:var(--mut);white-space:nowrap}
+.bars .tr{height:.875rem;background:var(--sel);border-radius:var(--r);overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--acc)}
+.bars .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.bars .ax{grid-column:2;display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--faint)}
+
+
+.ex .q{color:var(--ink)}
+ol.steps{list-style:none;margin:.5rem 0 .75rem;padding:0;counter-reset:st;font-size:var(--fs-sm)}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:1.75em minmax(0,1fr);gap:.5rem;padding:.25rem 0;border-bottom:1px dashed var(--line)}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(st);color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums}
+ol.steps .n{color:var(--ink)}
+.rm{margin-top:.875rem;padding-top:.75rem;border-top:1px solid var(--line)}
+.rmh{margin:0 0 .5rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.rmrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:.375rem .875rem;align-items:start;margin:.375rem 0}
+.rmrow .btn{justify-self:stretch}
+.pickrow{display:flex;flex-wrap:wrap;gap:.25rem;margin:0 0 .5rem}
+.chipb{font:var(--fs-xs)/1.4 var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.1875rem .625rem;cursor:pointer}
+.chipb:hover{border-color:var(--field)}
+.chipb[aria-pressed="true"]{background:var(--sel);border-color:var(--ok);color:var(--ink);font-weight:600}
+.chipb:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{font:600 var(--fs-sm)/1 var(--cjk);padding:.5625rem .875rem;border-radius:var(--r);border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--field)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.sline{display:grid;font-size:var(--fs-sm);margin:0;padding-top:.3rem}
+.sline>.ghost,.sline>.out{grid-area:1/1;min-width:0;overflow-wrap:break-word}
+.sline>.ghost{visibility:hidden;white-space:pre-line;font-weight:700;pointer-events:none;user-select:none}
+.sline .v{font-weight:700}
+.out.ok .v{color:var(--ok)} .out.bad .v{color:var(--bad)} .out.nc .v{color:var(--warn)} .out.busy,.out.idle{color:var(--mut)}
+
+
+ol.cases{list-style:none;margin:0;padding:0;counter-reset:cs}
+ol.cases>li{counter-increment:cs;position:relative;padding:.625rem 0 .625rem 1.75em;border-bottom:1px dashed var(--line)}
+ol.cases>li::before{content:counter(cs);position:absolute;left:0;top:.625rem;color:var(--warn);font-weight:700;font-variant-numeric:tabular-nums}
+ol.cases>li:first-child{padding-top:0} ol.cases>li:first-child::before{top:0}
+ol.cases>li:last-child{border-bottom:0;padding-bottom:0}
+ol.cases .when{display:block;font-weight:600;color:var(--ink);margin-bottom:.125rem}
+ol.cases ul{margin:.125rem 0 0;padding-left:1.125em;font-size:var(--fs-sm)}
+.tag{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;margin-right:.375rem;vertical-align:.0625em}
+.tag.fix{color:var(--bad)} .tag.tbd{color:var(--warn);border-style:dashed} .tag.new{color:var(--ok)} .tag.open{color:var(--aux)}
+
+
+ul.sum{list-style:none;margin:0 0 1rem;padding:0}
+ul.sum li{position:relative;padding:.375rem 0 .375rem 1.5em;border-bottom:1px solid var(--line)}
+ul.sum li::before{content:"✓";position:absolute;left:0;color:var(--acc);font-weight:700}
+.next{font-size:var(--fs-sm);color:var(--mut)}
+
+
+nav.pn{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:2.5rem 0 0;padding-top:1.25rem;border-top:1px solid var(--line)}
+nav.pn a{display:block;padding:.625rem .875rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card);text-decoration:none;color:var(--ink);min-width:0}
+nav.pn a:hover{border-color:var(--acc)}
+nav.pn a small{display:block;font-size:var(--fs-xs);color:var(--faint)}
+nav.pn a.nx{text-align:right;grid-column:2}
+.demo{margin-top:1.5rem;padding:.5rem .75rem;border:1px dashed var(--warn);border-radius:var(--r);color:var(--warn);font-size:var(--fs-xs)}
+
+
+.cite{display:inline-block;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:var(--r);padding:0 .3125rem;margin:0 .125rem;vertical-align:.0625em;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.box>header .cite{margin-left:auto}
+.box>header .tag{margin:0}
+p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
+p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
+p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
+dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
+dl.terms dd{margin:0}
+ol.how{padding-left:1.5em}
+ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
+.terms-line{font-size:var(--fs-xs);color:var(--mut)}
+details.more{margin:-.25rem 0 .75rem;font-size:var(--fs-sm)}
+details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;width:max-content}
+
+
+.tbl{overflow-x:auto;margin:.5rem 0 .75rem;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.tbl table{font-size:var(--fs-xs);width:100%}
+.tbl th,.tbl td{padding:.3125rem .625rem}
+.tbl th,.tbl .r,.tbl .mono,.tbl td code{white-space:nowrap}
+.tbl td:not(.r):not(.mono){min-width:6.5em}   
+.tbl th{position:static}
+.tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+
+
+.plots{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:.75rem 1.5rem}
+.pl{min-width:0}
+.plh{margin:0 0 .375rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.plot{position:relative;height:13rem;margin:0 .375rem 2.75rem 3.25rem;border-left:1px solid var(--field);border-bottom:1px solid var(--field)}
+.plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.plot .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+.plot .ln{fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.9}
+.plot .pt{stroke-width:7;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .pi{stroke:var(--deep);stroke-width:3.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .c56,.lg .c56{stroke:var(--acc);--k:var(--acc)} .plot .c196,.lg .c196{stroke:var(--aux);--k:var(--aux)}
+.plot .yt,.plot .xt,.plot .xl{position:absolute;font-size:var(--fs-xs);color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1}
+.plot .yt{right:calc(100% + .375rem);transform:translateY(-50%)}
+.plot .xt{top:calc(100% + .375rem);transform:translateX(-50%)}
+.plot .xl{top:calc(100% + 1.625rem);right:0;color:var(--mut)}
+.lg{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin:0!important;font-size:var(--fs-xs);color:var(--mut)}
+.lg span{display:inline-flex;align-items:center;gap:.375rem}
+.lg .k{width:.5rem;height:.5rem;border-radius:50%;background:var(--k)}
+.lg .k.ho{background:none;border:2px solid var(--mut);width:.5rem;height:.5rem}
+.lg .kl{width:1rem;height:0;border-top:2px solid var(--k)}
+
+
+.au{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .4375rem;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.au.pro{color:var(--acc)} .au.con{color:var(--bad)}
+.byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
+.thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
+.thread>.box{margin:.75rem 0 0}
+.box.con{--bc:var(--bad)}
+.box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
+.box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
+.box>header .on{font-size:var(--fs-xs);color:var(--mut)}
+.box>header .on a{color:inherit}
+.box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
+.vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
+.said{margin:0 0 .625rem}
+
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal}
+dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
+dl.ev dt{color:var(--faint)}
+dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
+
+dl.ev .evi{display:contents}
+dl.ev .ev-n{display:block;font-family:var(--cjk);color:var(--mut)}
+dl.ev .ev-n:empty{display:none}
+details.revs{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--mut)}
+details.revs>summary{cursor:pointer;width:max-content;color:var(--mut);text-decoration:underline dotted;text-underline-offset:2px}
+details.revs ol{list-style:none;margin:.25rem 0 0;padding:0}
+details.revs li{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:.5rem;padding:.125rem 0;border-top:1px dashed var(--line)}
+details.revs time{font-family:var(--mono);color:var(--faint)}
+
+.corr{display:block;margin:.375rem 0 0;padding:.375rem .625rem;border:1px dashed var(--bad);border-radius:var(--r);font-size:var(--fs-sm)}
+.corr del{color:var(--faint)} .corr ins{text-decoration:none;color:var(--ink);font-weight:600}
+.corr a{color:var(--mut)}
+
+@media (max-width:1239px){
+  main.book{display:block;max-width:60rem}
+  .toc-side{display:none}
+  .toc-top{display:block}
+  article.ch{max-width:none}
+}
+@media (max-width:999px){
+  main.book{max-width:44rem}
+  article.ch{padding-right:0}
+  .mn{float:none;width:auto;margin:-.375rem 0 .875rem;padding:.125rem 0 .125rem .75rem;border-left:2px solid var(--line)}
+}
+@media (max-width:640px){.plots{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){
+  .thread{margin-left:.25rem;padding-left:.625rem}
+  .box.pro{margin-left:.5rem!important}
+  .box>header time{margin-left:0}
+
+  .chhead h1{font-size:1.75rem}
+  .box{padding:.625rem .75rem .75rem}
+  .box>header .src{margin-left:0;flex-basis:100%}
+  .rmrow{grid-template-columns:minmax(0,1fr)}
+  .rmrow .btn{justify-self:start}
+  .box>header .cite{margin-left:0}
+  nav.pn{grid-template-columns:1fr}
+  nav.pn a.nx{grid-column:1}
+  .bars{grid-template-columns:max-content minmax(0,1fr)}
+  .bars .vl{grid-column:2;text-align:left;margin-top:-.25rem}
+  .bars .ax{grid-column:2}
+}
+
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+
+.plots.one{grid-template-columns:minmax(0,1fr)}
+.plot.tall{height:15rem}
+.plot .cw,.lg .cw{stroke:var(--aux);--k:var(--aux)} .plot .ck,.lg .ck{stroke:var(--acc);--k:var(--acc)} .plot .c288,.lg .c288{stroke:var(--ok);--k:var(--ok)}
+.plot .ln.ext{stroke-dasharray:5 4;opacity:.7}
+.lg .kl.ext{border-top:2px dashed var(--mut)}
+.lg .k.c288.ho{border-color:var(--ok)}
+
+.dotp{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .875rem;align-items:center;font-size:var(--fs-sm)}
+.dotp .grp{grid-column:1/-1;margin-top:.25rem;padding-top:.375rem;border-top:1px solid var(--line);font-size:var(--fs-xs);font-weight:600;color:var(--mut)}
+.dotp .grp:first-child{margin-top:0;padding-top:0;border-top:0}
+.dotp .row{display:contents}
+.dotp .lb{color:var(--fg);white-space:nowrap}
+.dotp .tk{position:relative;height:1.25rem}
+.dotp .tk::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.dotp .tk i.g{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.dotp .tk b.d{position:absolute;top:50%;width:.75rem;height:.75rem;border-radius:50%;transform:translate(-50%,-50%);background:var(--k)}
+.dotp .c56{--k:var(--acc)} .dotp .c196{--k:var(--aux)} .dotp .cred{--k:var(--bad)}
+.dotp .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.dotp .vl small{display:block;font-family:var(--cjk);font-size:var(--fs-xs);color:var(--mut)}
+.dotp .ax{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--faint)}
+.dotp .ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dotp .ax span.e0{transform:none} .dotp .ax span.e1{transform:translateX(-100%)}
+.dotp .ax .alt{display:none}   
+.dotp .axu{grid-column:2;font-size:var(--fs-xs);color:var(--mut);text-align:right}
+.lg .k.c56{--k:var(--acc)} .lg .k.c196{--k:var(--aux)} .lg .k.cred{--k:var(--bad)}   
+@media (max-width:480px){
+  
+  .dotp{display:block}
+  .dotp .row{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lb" "vl" "tk";gap:0;margin:.375rem 0 .625rem}
+  .dotp .lb{grid-area:lb;white-space:normal}
+  .dotp .vl{grid-area:vl;text-align:left;white-space:normal}
+  .dotp .vl small{display:inline;margin-left:.5em;white-space:normal}
+  .dotp .tk{grid-area:tk;margin-top:.125rem}
+  .dotp .grp{display:block;margin-top:.5rem}
+  .dotp .ax{display:block;margin-top:.25rem}
+  .dotp .axu{display:block;margin-top:.25rem}
+}
+
+.stack{position:relative;margin:.25rem 0 .375rem}
+.stack .sb{display:flex;height:1.75rem;border-radius:var(--r);overflow:hidden;background:var(--sel)}
+.stack .sb i{display:block;height:100%;flex:none}
+.stack .sb i+i{box-shadow:inset 1px 0 0 var(--deep)}
+.stack .rc{position:absolute;top:-.3125rem;bottom:-.3125rem;width:0;border-left:2px solid var(--ink)}
+.sax{display:flex;justify-content:space-between;gap:.75rem;font-size:var(--fs-xs);color:var(--mut);margin-bottom:.5rem}
+.sax span:last-child{text-align:right}
+.sw{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;background:var(--k);vertical-align:-.0625rem;margin-right:.5rem}
+.k1{--k:var(--faint);background:var(--k)} .k2{--k:var(--warn);background:var(--k)} .k3{--k:var(--bad);background:var(--k)} .k4{--k:var(--acc);background:var(--k)}
+.k5{--k:var(--ok);background:var(--k)} .k6{--k:var(--aux);background:var(--k)} .k7{--k:var(--ink);background:var(--k)}
+#fig51 .tbl td:first-child{white-space:normal}
+#fig51 .tbl tr.grp th{background:none;color:var(--mut);font-size:var(--fs-xs);font-weight:600;padding-top:.5rem}
+.lg .kl.rc{width:0;height:.875rem;border-top:0;border-left:2px solid var(--ink)}
+
+.plot .ref{stroke:var(--mut);stroke-width:1.25;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.plot .rl{position:absolute;right:.25rem;transform:translateY(-110%);font-size:var(--fs-xs);color:var(--mut);background:color-mix(in srgb,var(--deep) 80%,transparent);padding:0 .25rem;white-space:nowrap}
+.plot .xt.e0{transform:none} .plot .xt.e1{transform:translateX(-100%)}
+.lg .kl.ref{border-top:2px dashed var(--mut)}
+
+.dotp .cboth,.lg .k.cboth{--k:var(--mut)}
+.dotp .tk i.nref{position:absolute;top:-.1875rem;bottom:-.1875rem;border-left:2px dashed var(--ok)}
+.dotp .refl{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--ok)}
+.dotp .refl::before{content:"";position:absolute;left:var(--x);top:0;height:.375rem;border-left:2px dashed var(--ok)}
+.dotp .refl{height:auto;padding-top:.5rem;white-space:normal;line-height:1.4}   
+.lg .kl.nref{border-top:2px dashed var(--ok)}
+
+.dotp.hbars .tk b.hb{position:absolute;left:0;top:50%;height:.625rem;transform:translateY(-50%);background:var(--k);border-radius:0 var(--r) var(--r) 0}
+.dotp.hbars .tk b.hb.full::after{content:"→";position:absolute;right:-.125rem;top:50%;transform:translate(100%,-55%);color:var(--k);font-size:var(--fs-xs)}
+.dotp.hbars .tk.cut b.hb::after{content:"";position:absolute;right:-.25rem;top:-.25rem;bottom:-.25rem;border-left:2px solid var(--bad)}
+.dotp.hbars .tk.none::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dotted var(--faint)}
+.dotp.hbars .grp{color:var(--ink)}
+.lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
+@media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
+
+
+
+.tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
+
+
+.fx math{font-size:1.02em}
+.legend{font-size:var(--fs-xs);color:var(--mut);margin-top:.25rem;line-height:1.7}
+.mathfail{color:var(--bad);font-weight:700}
+
+
+code.f{word-break:normal;white-space:normal}
+
+
+
+.rmpanel{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:.75rem 1rem;margin:.875rem 0}
+.rmpanel>div{margin:.375rem 0}
+.rmbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+button.rm,#rm-all,#rm-stop{font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+#rm-all{background:var(--acc);border-color:var(--acc);color:var(--on-acc);padding:.5rem .75rem}
+#rm-stop{min-width:4.5em}
+button.rm:hover:not(:disabled),#rm-stop:hover:not(:disabled){border-color:var(--field)}
+button:disabled{opacity:.5;cursor:default}
+.rm1{margin:.125rem 0 .5rem}
+.rmlabel,.rmnone{font-size:var(--fs-xs);color:var(--mut)}
+.rmout{font-size:var(--fs-xs);color:var(--mut);margin-top:.125rem;font-variant-numeric:tabular-nums}
+.rmout .rmverdict{font-weight:700}
+.rmout.ok .rmverdict{color:var(--ok)}
+.rmout.bad .rmverdict,.rmout.err .rmverdict{color:var(--bad)}
+.rmout.nc .rmverdict{color:var(--warn)}
+.rmout.changed .rmverdict{color:var(--aux)}
+.rmout.norec .rmverdict,.rmout.stop .rmverdict{color:var(--mut)}
+.rmout.busy{color:var(--mut)}   
+#rm-progress{font-size:var(--fs-sm);color:var(--fg)}
+
+@media (min-width:761px){
+  table.laws td:last-child{min-width:12em}
+  .rmout{min-height:3.3em}
+}
+
+
+#rm-progress{display:block;flex-basis:100%;min-height:3.3em;line-height:1.65}
+#rm-used{display:block;min-height:3.3em}
+@media (max-width:760px){#rm-used{min-height:4.95em}}
+.rmbox{display:grid}
+.rmbox>.rmghost,.rmbox>.rmout{grid-area:1/1;min-width:0}
+.rmghost{visibility:hidden;font-size:var(--fs-xs);margin-top:.125rem;font-variant-numeric:tabular-nums;pointer-events:none;user-select:none}
+.rmghost .rmverdict{font-weight:700}
+
+.rmghost{white-space:pre-line;font-weight:700}
+
+.rmout,.rmghost{overflow-wrap:break-word}
+
+details.rmfull{display:inline}
+details.rmfull>summary{display:inline;list-style:none;cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;font-weight:600;white-space:nowrap}
+details.rmfull>summary::-webkit-details-marker{display:none}
+
+.rmout button.rmfull,.rmghost button.rmfull{font:inherit;font-weight:600;line-height:1;vertical-align:baseline;padding:0;margin:0;border:0;background:none;color:var(--acc);text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+.rmout button.rmfull:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull[open]>summary{color:var(--mut)}
+details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;background:var(--code);color:var(--fg);border:1px solid var(--line);border-radius:var(--r);font-family:var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+
+
+.tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
+@media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
+a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
+a.anc:hover,a.anc:focus-visible{color:var(--acc)}
+a.rmgo{display:inline-block;font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;white-space:nowrap}
+a.rmgo::after{content:" →";color:var(--acc)}
+a.rmgo:hover{border-color:var(--field)}
+a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+.tbl{--tb:var(--bg);background:
+  linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+  linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+  linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+  linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+  var(--tb)}
+@media (min-width:761px){
+  .tw{--tb:var(--card);background:
+    linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+    linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+    linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+    linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+    var(--tb)}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/">21 NAND</a><span class="here">链上硬件物理 · 在线教科书</span></div></header>
+<main class="book">
+
+<nav class="toc toc-side" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/" aria-current="page"><span class="no">9</span>噪声与测量</a>
+    <ol>
+  <li><a href="#s9-1"><span class="no">9.1</span>直觉</a></li>
+  <li><a href="#s9-2"><span class="no">9.2</span>定义</a></li>
+  <li><a href="#s9-3"><span class="no">9.3</span>定律和公式</a></li>
+  <li><a href="#s9-4"><span class="no">9.4</span>怎么量出来的</a></li>
+  <li><a href="#s9-5"><span class="no">9.5</span>例题</a></li>
+  <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
+  <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
+    </ol></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/"><span class="no"></span>术语表</a></li>
+</ol>
+</nav>
+
+<article class="ch">
+<details class="toc-top"><summary><span>目录</span><b>第 9 章 噪声与测量</b><span>共 10 章</span></summary>
+<nav class="toc" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/" aria-current="page"><span class="no">9</span>噪声与测量</a>
+    <ol>
+  <li><a href="#s9-1"><span class="no">9.1</span>直觉</a></li>
+  <li><a href="#s9-2"><span class="no">9.2</span>定义</a></li>
+  <li><a href="#s9-3"><span class="no">9.3</span>定律和公式</a></li>
+  <li><a href="#s9-4"><span class="no">9.4</span>怎么量出来的</a></li>
+  <li><a href="#s9-5"><span class="no">9.5</span>例题</a></li>
+  <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
+  <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
+    </ol></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/"><span class="no"></span>术语表</a></li>
+</ol>
+</nav></details>
+
+<header class="chhead">
+  <p class="chno">第 9 章</p>
+  <h1>噪声与测量：公开节点不总说同一句话</h1>
+  <p class="lede">链本身是确定的：同一段代码、同一个状态，哪家节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
+  <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 8 分钟</p>
+</header>
+
+<h2 id="s9-1"><span class="secno">9.1</span>直觉</h2>  <p class="lede-in">链本身是确定的：同一段代码、同一个状态，哪家节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
+<figure class="fig" id="fig91"><div class="dotp hbars" role="img" aria-label="各家节点还给多久以前的数据：BSC publicnode 状态 约 1.3 小时；BSC publicnode 日志 约 3.7 小时；BSC drpc 状态 没量出；BSC drpc 日志 没量出；BSC 官方 dataseed 状态 约 57 秒；BSC 官方 dataseed 日志 最近的也不给；X Layer 官方 rpc.xlayer.tech 状态 全历史；X Layer 官方 rpc.xlayer.tech 日志 全历史；X Layer 官方 xlayerrpc.okx.com 状态 全历史；X Layer 官方 xlayerrpc.okx.com 日志 全历史"><span class="grp">BSC publicnode</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:37.944%" data-age="4530"></b></span><span class="vl">约 1.3 小时（10,064 块）<small>再往前状态要付费（HTTP 403）（边界不是一刀切）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk cut"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:44.648%" data-age="13346"></b></span><span class="vl">约 3.7 小时（29,655 块）<small>再往前回空，不报错（边界不是一刀切）</small></span></span><span class="grp">BSC drpc</span><span class="row"><span class="lb">状态</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="grp">BSC 官方 dataseed</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:10.798%" data-age="57"></b></span><span class="vl">约 57 秒（125 块）<small>再往前回「missing trie node」</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="recent-not-served"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>最近的也不给（limit exceeded）</small></span></span><span class="grp">X Layer 官方 rpc.xlayer.tech</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,616 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,928 块）</span></span><span class="grp">X Layer 官方 xlayerrpc.okx.com</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,626 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,970 块）</span></span><span class="ax"><span class="e0" style="left:0.000%">10 秒</span><span class="alt" style="left:14.286%">100 秒</span><span style="left:28.571%">17 分</span><span class="alt" style="left:42.857%">2.8 时</span><span style="left:57.143%">1.2 天</span><span class="alt" style="left:71.429%">12 天</span><span style="left:85.714%">116 天</span><span class="alt e1" style="left:100.000%">3.2 年</span></span><span class="axu">往回多少（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="kl cutk"></i>条到这里断开：再往前回空、不报错</span></p><figcaption><b>图 9.1</b>　每家公开节点的状态、日志还给多久以前的，刻度每一格是 10 倍，条从 10 秒画起，长短只表示能回看到哪里。X Layer 两家都给全历史；BSC 官方 dataseed 的状态只留 约 57 秒，publicnode 的日志 约 3.7 小时 以前回空数组、不报错。没量出、最近的也不给的不画条。</figcaption></figure>
+  <div class="tbl"><table>
+    <thead><tr><th>节点</th><th>状态还给多久</th><th>日志还给多久</th><th>再往前会怎样</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">BSC 官方 dataseed</th><td>125 块，约 57 秒</td><td>最近的也不给</td><td>状态回「missing trie node」</td></tr>
+      <tr><th scope="row">BSC publicnode</th><td>10,064 块，约 1.3 小时</td><td>29,655 块，约 3.7 小时</td><td>状态要付费（HTTP 403）；日志<b>回空数组、不报错</b></td></tr>
+      <tr><th scope="row">X Layer 两家 OKX 节点</th><td>全历史</td><td>全历史</td><td class="r">—</td></tr>
+    </tbody></table></div>
+  <p><span class="cite">e6·horizon·56、e6·horizon·196</span></p>
+
+<h2 id="s9-2"><span class="secno">9.2</span>定义</h2><section class="box def" aria-labelledby="d9">
+  <header><span class="kind">定义</span><span class="name" id="d9">本章用到的词</span></header>
+  <dl class="terms">
+    <dt id="t-8bf96d50">公开节点</dt><dd>谁都能连、替你读链和模拟执行的服务器。它不是链本身。</dd>
+    <dt id="t-cbbb0257">历史深度</dt><dd>节点还能给多久以前的状态和日志。</dd>
+    <dt id="t-0bf8898f">logsBloom</dt><dd>块头里的一个过滤器，块里只要有日志，它就不是全 0。</dd>
+    <dt id="t-5c461702">静默丢数</dt><dd>节点该给数据时给了空的，又不报错。</dd>
+    <dt id="t-a7088cc3">换节点</dt><dd>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一家再问，结果旁边写明「换过节点」。</dd>
+    <dt id="t-74898015">信标、实现、owner</dt><dd>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现。造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由它决定。</dd>
+  </dl>
+</section>
+<h2 id="s9-3"><span class="secno">9.3</span>定律和公式</h2>
+<h2 id="h-778024"><span class="secno"></span>噪声这一组</h2>  <div class="tbl"><table>
+    <thead><tr><th>量</th><th>BSC</th><th>X Layer</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">不同节点算同一段代码</th><td>67/67 段逐个相同</td><td>67/67 段逐个相同</td></tr>
+      <tr><th scope="row">官方处理器输出 = 本地模拟</th><td>真电路 45 颗；DOT32_T 4 组；Feistel 16 组（到 10 万门）</td><td>真电路 41 颗；DOT32_T 4 组；Feistel 12 组</td></tr>
+      <tr><th scope="row">处理器实现能不能升级</th><td>已有的不能（信标 owner = 0），实现 12,560 字节</td><td>已有的不能（信标 owner = 0），实现 12,562 字节</td></tr>
+    </tbody></table></div>
+  <p><span class="cite">ops·56、ops·196、fit·eval·56、fit·eval·196、dot32·56、e2·struct·56、e2·struct·196、inventory·56、inventory·196</span></p>
+  <ul><li>第 1 章的定律十一（确定性）说的就是这一组：同一份网表、同一组输入，输出和 gas 只看网表和输入。</li><li>两链的处理器字节码不一样（差 2 字节），同一份网表、同一组输入，gas 却一样。</li><li><span class="tag fix">更正</span>「处理器不能升级」只对已有的处理器成立：两链各抽 300 个，都指同一个 owner 为 0 的信标，跑 step 也不碰工厂；可造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现，由工厂的 owner 决定。（反方第 1 条）</li></ul>
+
+<div class="thread">
+  <section class="box con" id="red-noise-001" aria-labelledby="red-noise-001-h" data-author="RED" data-id="red-noise-001" data-target="噪声这一组" data-verdict="削弱" data-date="2026-11-18" data-sha256="a29b62e1935ad179e1dc348268bf0b7d636d056d730c5b19585d90bd79b08d88">
+    <header><span class="kind" id="red-noise-001-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#h-778024">噪声这一组</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="7f6be501e664867fc4b79e596b5325f1df3fee7fdbe20ba554808c04260be3ab">这一组说链是确定的、处理器的物理不会被人改。我（反方）核了「不会被人改」那一半：已有的处理器确实改不了——两条链各抽 300 个，都指同一个 owner 为 0 的信标，处理器和实现里没有换实现的路，真跑 step 也不碰工厂。但工厂本身是可升级合约、有 owner，以后新造的处理器用哪份实现由工厂的 owner 决定。按我事先写的线判削弱：「物理冻结」只对已有的处理器成立。细节和证据在常数表页「处理器实现能不能被升级」那一框。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="721ae4f80f3937c747c9b7bc58fb69ac7dc7c3d8d45f26aaa7213a2a350fee65">audit_56.json</span><span class="ev-n" data-sha256="00452a2d0ff2f5d2de0193a7ad58b3d96545e8a31f88d9a05d639359e849b1fd">BSC：处理器、信标、实现、工厂的扫描</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="d507ef7bc05dc576adceaa14bccc3226db7de9bfdccad3ef9110214e92efe04b">audit_196.json</span><span class="ev-n" data-sha256="6121151c1d559379657f9471197cd9e5e6277f4214d6169c99123501b22db248">X Layer：同上</span></dd></div></dl>
+  </section>
+  <section class="box pro" id="och-noise-001" aria-labelledby="och-noise-001-h" data-author="OCH" data-to="red-noise-001" data-stance="认" data-date="2026-11-18">
+    <header><span class="kind" id="och-noise-001-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="9a915d3d5ac1f110b8d6ac05f1c85a6e4110b47092fdd0510428c71e365b1a0f">这一条我认，和常数表页「处理器实现能不能被升级」那一框是同一件事。这一节的表、要点和小结里写的「处理器不能升级」只对已有的处理器成立；正文照定下的写法改了，表里那一格写成「已有的不能」，下面加了【更正】：造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由工厂的 owner 决定。</p>
+    <p class="said" data-sha256="1cf7c0c1b461dcc00423b64e3e15ebf47bba18480ec55f6dffbc36cd17cea1f8">「链是确定的」那一半不受影响：已有的处理器跑 step 不碰工厂，同一份网表、同一组输入，输出和 gas 照旧只看网表和输入。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="10df245f0f3921d570fca7e2626772371fc0587bcadff83b62de98ac85b9a20b">inventory_196_20261116_172137.json</span><span class="ev-n" data-sha256="7d34413e8dad68a3d10059865fbc2389b82c75cde08cccae447d85f3318e6811">我原来只读的信标 owner（X Layer）</span></dd></div></dl>
+  </section>
+
+</div>
+<h2 id="s9-4"><span class="secno">9.4</span>怎么量出来的</h2>  <ol><li><b>同一段代码问不同节点</b>：同一批 67 段测试代码，在两链各两家节点上用只读调用跑，读数逐个比。</li><li><b>输出对拍</b>：每次 step、eval 的输出，都和本地照语义规范写的模拟逐位比。</li><li><b>历史深度</b>：先试最近的块和第 1 块。最近的都不给，记「最近的也不给」；第 1 块也给，就是全历史。都不是，就在两者之间二分，找节点还给数据的最深一块，再往里、往外各试几块核对。状态用只读调用读旧块，日志专挑 logsBloom 不是全 0 的块读。  <ul><li>publicnode 的边界不是一刀切：往外再试一两块，有的还给。所以表里的深度是约数。</li></ul>
+</li><li><b>信标 owner</b>：直接读处理器信标合约的 owner。</li></ol>
+
+<h2 id="s9-5"><span class="secno">9.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
+  <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">要读 1 小时以前的 BSC 状态</span></header>
+  <ul><li>官方 dataseed 不给：它只留约 57 秒。</li><li>publicnode 给：它留约 1.3 小时。</li><li>要读一天以前的，两家都不给，得找给全历史的节点；X Layer 两家 OKX 节点都给。</li></ul>
+
+</section><section class="box ex" aria-labelledby="ex-af1052">
+  <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">读旧日志，空的不一定是真没有</span></header>
+  <ul><li>往回 3.7 小时以内，publicnode 给的日志是对的。</li><li>再往前，块头的 logsBloom 明明不是全 0，它却回空数组、不报错。拿空结果当「这里没有事件」，就错了。</li><li>办法：先看块头的 logsBloom；不是全 0 却拿到空日志，就换一家节点再问。</li></ul>
+  <p><b>读者动手</b>：常数表里每个复测框都写着这次问的是哪家节点、换没换过节点。<a class="rmgo" href="../constants/">去常数表复测</a></p>
+
+</section>
+<h2 id="s9-6"><span class="secno">9.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f9">
+  <header><span class="kind">这条会不成立</span><span class="name" id="f9">照实写</span></header>
+  <ol class="cases">
+    <li><span class="when">「确定性」只管链本身。</span><span>只读调用的结果可信不可信，看节点；不信节点，就自己按语义规范逐位重算，网表是公开的。</span></li>
+    <li><span class="when">有几例对拍算不上强证据。</span><span>受控实验里 1 万门以上的随机网表，输出几乎是常数（64 组随机输入里，1 万门的只有 4 种输出，10 万门的只有 1 种，记在 E1b 判据里，是 E1 作废的原因），那几例只证明算出了常数。</span></li>
+    <li><span class="when">节点的策略会变。</span><span>历史深度、限速、要不要付费，都是节点自己定的，书里是 11 月 16 日量的。BSC 的 drpc 那次直接限了速（HTTP 429），没量出深度。</span></li>
+    <li><span class="when">finalized 会倒退。</span><span>X Layer 公开节点给的 finalized，12 小时里倒退 15 次（第 6 章）。</span></li>
+    <li><span class="when">已有的处理器不能升级，gas 还是会变。</span><span>链硬分叉改了指令的价，同一份网表的 gas 也跟着变。</span></li>
+  </ol>
+</section>
+<h2 id="s9-7"><span class="secno">9.7</span>小结</h2><ul class="sum">
+  <li>链是确定的：67 段测试代码两链各家节点逐个相同，官方处理器的输出和本地模拟逐位一致。</li>
+  <li>节点不是链：BSC 官方 dataseed 的状态只留约 57 秒；publicnode 3.7 小时以前的日志回空、不报错；X Layer 两家 OKX 节点全历史。</li>
+  <li>已有的处理器实现不能升级（信标 owner = 0）；以后新造的处理器用哪份实现，由工厂的 owner 决定。</li>
+  <li>这是正文最后一章。书末有常数表、实验索引和术语表。</li>
+</ul>
+
+<nav class="pn" aria-label="上一章和下一章">
+  <a class="pv" href="../precompiles/"><small>← 上一章</small>第 8 章 加速器</a>
+  <a class="nx" href="../constants/"><small>下一章 →</small>常数表</a>
+</nav>
+<footer>只读页面：读链的请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。</footer>
+</article>
+</main>
+
+</body>
+</html>

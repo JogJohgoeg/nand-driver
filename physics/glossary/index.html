@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>术语表 · 链上硬件物理</title>
+<style>
+
+
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#17110a;--deep:#100b06;--deeper:#0a0703;--card:#211a11;--sel:#2e2518;
+  --fg:#d8cdb9;--ink:#f8f0e0;--mut:#b0a48f;--faint:#74695a;--line:#40362a;--field:#8a7c6a;
+  --acc:#ff9426;--on-acc:#1a0f03;--ok:#8bd98f;--warn:#ecd98a;--bad:#ff7d8a;--aux:#8fb8de;
+  --hard:var(--aux);--frozen:var(--acc);--soft:var(--warn);--impl:var(--mut);--code:var(--deeper);
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --fs:.9375rem;--fs-sm:.8125rem;--fs-xs:.75rem;--r:2px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}}
+:root[data-theme="light"]{color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}
+
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:var(--fs)/1.65 var(--cjk)}
+a{color:var(--acc)}
+main{max-width:80rem;margin:0 auto;padding:1.75rem 1rem 3.75rem}
+h1{font-size:1.625rem;line-height:1.3;color:var(--ink);margin:0 0 .375rem}
+h2{font-size:1.125rem;color:var(--ink);margin:2.25rem 0 .75rem;padding-top:.75rem;border-top:1px solid var(--line)}
+h3{font-size:.9375rem;color:var(--acc);margin:1.25rem 0 .5rem}
+b{color:var(--ink);font-weight:600}
+.sub{color:var(--mut);max-width:48em;margin:0}   
+.note{color:var(--mut);font-size:var(--fs-xs);margin-top:.25rem}
+footer{margin-top:2.25rem;color:var(--faint);font-size:var(--fs-xs)}
+
+
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-sm)}
+th,td{text-align:left;vertical-align:top;padding:.5rem .625rem;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--sel);color:var(--mut);font-weight:600;font-size:var(--fs-xs);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:color-mix(in srgb,var(--sel) 45%,transparent)}
+
+
+.n,.n2,span.num{font-variant-numeric:tabular-nums}
+.n{white-space:nowrap}
+
+
+code{font-family:var(--mono);background:var(--code);border:1px solid var(--line);padding:0 .25rem;border-radius:var(--r);font-size:var(--fs-xs);word-break:break-all}
+
+
+
+@media (max-width:760px){
+  .q3{grid-template-columns:1fr}
+  ul.files{columns:1}
+  .tw{overflow-x:visible;border:0;background:none}
+  .tw table,.tw tbody,.tw tr,.tw td{display:block;width:auto;min-width:0}
+  .tw thead{display:none}
+  .tw tr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.375rem .75rem;margin:0 0 .625rem}
+  .tw td{border-bottom:1px dashed var(--line);padding:.375rem 0;width:auto!important;min-width:0!important;white-space:normal!important}
+  .tw tr td:last-child{border-bottom:0}
+  .tw td[data-label]::before{content:attr(data-label);display:block;font-size:var(--fs-xs);color:var(--faint);margin-bottom:.125rem}
+  .tw tr td:first-child{font-size:.9375rem}
+  .tw tbody tr:hover td{background:none}
+  .fml{overflow-x:auto}
+}
+
+
+
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{max-width:80rem;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.75rem;height:3.25rem}
+.top .brand{font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}
+.top .brand:hover{color:var(--acc)}
+.top .here{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer a{color:var(--mut)} footer a:hover{color:var(--acc)}
+
+
+
+.chips{display:flex;flex-wrap:wrap;gap:.375rem;margin:.75rem 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:.125rem .625rem;font-size:var(--fs-xs);color:var(--mut);background:var(--card)}
+
+
+
+
+.top .wrap{max-width:78rem}
+main.book{max-width:78rem;display:grid;grid-template-columns:13rem minmax(0,1fr);column-gap:2.5rem;align-items:start}
+.toc-side{grid-column:1;position:sticky;top:4.25rem;max-height:calc(100vh - 5.25rem);overflow:auto;font-size:var(--fs-sm);padding-bottom:1rem}
+article.ch{grid-column:2;min-width:0;max-width:56rem;padding-right:15rem}
+.toc-top{display:none}
+
+
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:flex;gap:.5rem;padding:.25rem .5rem;border-radius:var(--r);color:var(--fg);text-decoration:none;line-height:1.4}
+.toc a:hover{background:var(--sel);color:var(--ink)}
+.toc a .no{flex:0 0 auto;min-width:2.25em;color:var(--faint);font-variant-numeric:tabular-nums}
+.toc a[aria-current="page"]{background:var(--sel);color:var(--ink);font-weight:600}
+.toc a[aria-current="page"] .no{color:var(--acc)}
+.toc ol ol{margin:.125rem 0 .375rem 2.75em;border-left:1px solid var(--line)}
+.toc ol ol a{padding:.125rem .5rem;font-size:var(--fs-xs);color:var(--mut)}
+.toc ol ol a .no{min-width:2em}
+.toc .grp{margin:1rem .5rem .25rem;font-size:var(--fs-xs);color:var(--faint);font-weight:600}
+.toc .soon{color:var(--faint)}
+.toc .soon::after{content:"（待写）";font-size:var(--fs-xs)}
+details.toc-top{margin:0 0 1.25rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+details.toc-top>summary{cursor:pointer;padding:.5rem .75rem;font-size:var(--fs-sm);color:var(--mut);list-style:none;display:flex;gap:.5rem;align-items:baseline}
+details.toc-top>summary::-webkit-details-marker{display:none}
+details.toc-top>summary::before{content:"▸";color:var(--acc)}
+details.toc-top[open]>summary::before{content:"▾"}
+details.toc-top>summary b{color:var(--ink)}
+details.toc-top>nav{padding:0 .375rem .5rem;font-size:var(--fs-sm)}
+details.toc-top>summary:focus-visible,.toc a:focus-visible,.pn a:focus-visible,a.term:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+
+.chhead{margin:0 0 1.5rem}
+.chno{margin:0 0 .25rem;font-size:var(--fs-sm);color:var(--acc);font-weight:600;letter-spacing:.08em}
+.chhead h1{font-size:2rem;margin:0 0 .5rem}
+.lede{margin:0;font-size:1.0625rem;color:var(--ink);line-height:1.7}
+.reader{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--faint)}
+
+
+article.ch h2{display:flex;gap:.625rem;align-items:baseline;font-size:1.1875rem;margin:2.5rem 0 .875rem}
+article.ch h2 .secno{color:var(--acc);font-variant-numeric:tabular-nums;font-size:.9375rem;font-weight:600;min-width:2.25em}
+article.ch h3{color:var(--ink);font-size:1rem;margin:1.5rem 0 .5rem}
+article.ch p{margin:0 0 .875rem}
+article.ch ol:not(.steps),article.ch ul:not(.sum){margin:0 0 .875rem;padding-left:1.5em}
+article.ch li{margin:.125rem 0}
+.mono,.h{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+
+a.term{color:inherit;text-decoration:underline dotted var(--acc);text-underline-offset:3px}
+a.term:hover{color:var(--acc)}
+
+
+.mn{float:right;clear:right;width:13rem;margin:.125rem -15rem .75rem 0;font-size:var(--fs-xs);line-height:1.55;color:var(--mut)}
+.mn b{color:var(--fg)}
+.mn .k{color:var(--acc);font-weight:600;margin-right:.25em}
+sup.mr{font-size:.7em;color:var(--acc);font-weight:600;margin-left:.0625em;line-height:0}
+
+
+.box{margin:1.25rem 0;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--bc,var(--line));border-radius:var(--r);padding:.75rem 1rem .875rem}
+.box>header{display:flex;flex-wrap:wrap;gap:.25rem .625rem;align-items:baseline;margin:0 0 .5rem}
+.box>header .kind{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;color:var(--bc)}
+.box>header .name{font-weight:600;color:var(--ink)}
+.box>header .src{margin-left:auto;font-size:var(--fs-xs);color:var(--faint)}
+.box p:last-child,.box ul:last-child,.box ol:last-child,.box dl:last-child{margin-bottom:0}
+.box.def{--bc:var(--aux)}
+.box.law{--bc:var(--acc)}
+.box.ex{--bc:var(--ok)}
+.box.fails{--bc:var(--warn)}
+.box.fails>header .kind::before{content:"⚠ ";font-weight:400}
+.def dfn{font-style:normal;font-weight:700;color:var(--ink)}
+
+
+math{color:var(--ink)}
+.fml{overflow-x:auto;padding:.375rem 0 .5rem;max-width:100%}
+.fml math{font-size:1.12em}
+dl.sym{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.25rem .75rem;margin:.25rem 0 0;font-size:var(--fs-sm)}
+dl.sym dt{color:var(--ink);text-align:right}
+dl.sym dd{margin:0;color:var(--mut)}
+dl.sym dd .n{color:var(--fg)}
+
+
+figure.fig{margin:1.25rem 0;padding:.875rem 1rem;border:1px solid var(--line);border-radius:var(--r);background:var(--deep)}
+figure.fig figcaption{margin-top:.625rem;font-size:var(--fs-xs);color:var(--mut)}
+figure.fig figcaption b{color:var(--ink)}
+.bars{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .75rem;align-items:center;font-size:var(--fs-sm)}
+.bars .lb{color:var(--mut);white-space:nowrap}
+.bars .tr{height:.875rem;background:var(--sel);border-radius:var(--r);overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--acc)}
+.bars .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.bars .ax{grid-column:2;display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--faint)}
+
+
+.ex .q{color:var(--ink)}
+ol.steps{list-style:none;margin:.5rem 0 .75rem;padding:0;counter-reset:st;font-size:var(--fs-sm)}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:1.75em minmax(0,1fr);gap:.5rem;padding:.25rem 0;border-bottom:1px dashed var(--line)}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(st);color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums}
+ol.steps .n{color:var(--ink)}
+.rm{margin-top:.875rem;padding-top:.75rem;border-top:1px solid var(--line)}
+.rmh{margin:0 0 .5rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.rmrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:.375rem .875rem;align-items:start;margin:.375rem 0}
+.rmrow .btn{justify-self:stretch}
+.pickrow{display:flex;flex-wrap:wrap;gap:.25rem;margin:0 0 .5rem}
+.chipb{font:var(--fs-xs)/1.4 var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.1875rem .625rem;cursor:pointer}
+.chipb:hover{border-color:var(--field)}
+.chipb[aria-pressed="true"]{background:var(--sel);border-color:var(--ok);color:var(--ink);font-weight:600}
+.chipb:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{font:600 var(--fs-sm)/1 var(--cjk);padding:.5625rem .875rem;border-radius:var(--r);border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--field)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.sline{display:grid;font-size:var(--fs-sm);margin:0;padding-top:.3rem}
+.sline>.ghost,.sline>.out{grid-area:1/1;min-width:0;overflow-wrap:break-word}
+.sline>.ghost{visibility:hidden;white-space:pre-line;font-weight:700;pointer-events:none;user-select:none}
+.sline .v{font-weight:700}
+.out.ok .v{color:var(--ok)} .out.bad .v{color:var(--bad)} .out.nc .v{color:var(--warn)} .out.busy,.out.idle{color:var(--mut)}
+
+
+ol.cases{list-style:none;margin:0;padding:0;counter-reset:cs}
+ol.cases>li{counter-increment:cs;position:relative;padding:.625rem 0 .625rem 1.75em;border-bottom:1px dashed var(--line)}
+ol.cases>li::before{content:counter(cs);position:absolute;left:0;top:.625rem;color:var(--warn);font-weight:700;font-variant-numeric:tabular-nums}
+ol.cases>li:first-child{padding-top:0} ol.cases>li:first-child::before{top:0}
+ol.cases>li:last-child{border-bottom:0;padding-bottom:0}
+ol.cases .when{display:block;font-weight:600;color:var(--ink);margin-bottom:.125rem}
+ol.cases ul{margin:.125rem 0 0;padding-left:1.125em;font-size:var(--fs-sm)}
+.tag{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;margin-right:.375rem;vertical-align:.0625em}
+.tag.fix{color:var(--bad)} .tag.tbd{color:var(--warn);border-style:dashed} .tag.new{color:var(--ok)} .tag.open{color:var(--aux)}
+
+
+ul.sum{list-style:none;margin:0 0 1rem;padding:0}
+ul.sum li{position:relative;padding:.375rem 0 .375rem 1.5em;border-bottom:1px solid var(--line)}
+ul.sum li::before{content:"✓";position:absolute;left:0;color:var(--acc);font-weight:700}
+.next{font-size:var(--fs-sm);color:var(--mut)}
+
+
+nav.pn{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:2.5rem 0 0;padding-top:1.25rem;border-top:1px solid var(--line)}
+nav.pn a{display:block;padding:.625rem .875rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card);text-decoration:none;color:var(--ink);min-width:0}
+nav.pn a:hover{border-color:var(--acc)}
+nav.pn a small{display:block;font-size:var(--fs-xs);color:var(--faint)}
+nav.pn a.nx{text-align:right;grid-column:2}
+.demo{margin-top:1.5rem;padding:.5rem .75rem;border:1px dashed var(--warn);border-radius:var(--r);color:var(--warn);font-size:var(--fs-xs)}
+
+
+.cite{display:inline-block;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:var(--r);padding:0 .3125rem;margin:0 .125rem;vertical-align:.0625em;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.box>header .cite{margin-left:auto}
+.box>header .tag{margin:0}
+p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
+p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
+p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
+dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
+dl.terms dd{margin:0}
+ol.how{padding-left:1.5em}
+ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
+.terms-line{font-size:var(--fs-xs);color:var(--mut)}
+details.more{margin:-.25rem 0 .75rem;font-size:var(--fs-sm)}
+details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;width:max-content}
+
+
+.tbl{overflow-x:auto;margin:.5rem 0 .75rem;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.tbl table{font-size:var(--fs-xs);width:100%}
+.tbl th,.tbl td{padding:.3125rem .625rem}
+.tbl th,.tbl .r,.tbl .mono,.tbl td code{white-space:nowrap}
+.tbl td:not(.r):not(.mono){min-width:6.5em}   
+.tbl th{position:static}
+.tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+
+
+.plots{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:.75rem 1.5rem}
+.pl{min-width:0}
+.plh{margin:0 0 .375rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.plot{position:relative;height:13rem;margin:0 .375rem 2.75rem 3.25rem;border-left:1px solid var(--field);border-bottom:1px solid var(--field)}
+.plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.plot .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+.plot .ln{fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.9}
+.plot .pt{stroke-width:7;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .pi{stroke:var(--deep);stroke-width:3.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .c56,.lg .c56{stroke:var(--acc);--k:var(--acc)} .plot .c196,.lg .c196{stroke:var(--aux);--k:var(--aux)}
+.plot .yt,.plot .xt,.plot .xl{position:absolute;font-size:var(--fs-xs);color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1}
+.plot .yt{right:calc(100% + .375rem);transform:translateY(-50%)}
+.plot .xt{top:calc(100% + .375rem);transform:translateX(-50%)}
+.plot .xl{top:calc(100% + 1.625rem);right:0;color:var(--mut)}
+.lg{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin:0!important;font-size:var(--fs-xs);color:var(--mut)}
+.lg span{display:inline-flex;align-items:center;gap:.375rem}
+.lg .k{width:.5rem;height:.5rem;border-radius:50%;background:var(--k)}
+.lg .k.ho{background:none;border:2px solid var(--mut);width:.5rem;height:.5rem}
+.lg .kl{width:1rem;height:0;border-top:2px solid var(--k)}
+
+
+.au{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .4375rem;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.au.pro{color:var(--acc)} .au.con{color:var(--bad)}
+.byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
+.thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
+.thread>.box{margin:.75rem 0 0}
+.box.con{--bc:var(--bad)}
+.box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
+.box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
+.box>header .on{font-size:var(--fs-xs);color:var(--mut)}
+.box>header .on a{color:inherit}
+.box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
+.vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
+.said{margin:0 0 .625rem}
+
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal}
+dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
+dl.ev dt{color:var(--faint)}
+dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
+
+dl.ev .evi{display:contents}
+dl.ev .ev-n{display:block;font-family:var(--cjk);color:var(--mut)}
+dl.ev .ev-n:empty{display:none}
+details.revs{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--mut)}
+details.revs>summary{cursor:pointer;width:max-content;color:var(--mut);text-decoration:underline dotted;text-underline-offset:2px}
+details.revs ol{list-style:none;margin:.25rem 0 0;padding:0}
+details.revs li{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:.5rem;padding:.125rem 0;border-top:1px dashed var(--line)}
+details.revs time{font-family:var(--mono);color:var(--faint)}
+
+.corr{display:block;margin:.375rem 0 0;padding:.375rem .625rem;border:1px dashed var(--bad);border-radius:var(--r);font-size:var(--fs-sm)}
+.corr del{color:var(--faint)} .corr ins{text-decoration:none;color:var(--ink);font-weight:600}
+.corr a{color:var(--mut)}
+
+@media (max-width:1239px){
+  main.book{display:block;max-width:60rem}
+  .toc-side{display:none}
+  .toc-top{display:block}
+  article.ch{max-width:none}
+}
+@media (max-width:999px){
+  main.book{max-width:44rem}
+  article.ch{padding-right:0}
+  .mn{float:none;width:auto;margin:-.375rem 0 .875rem;padding:.125rem 0 .125rem .75rem;border-left:2px solid var(--line)}
+}
+@media (max-width:640px){.plots{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){
+  .thread{margin-left:.25rem;padding-left:.625rem}
+  .box.pro{margin-left:.5rem!important}
+  .box>header time{margin-left:0}
+
+  .chhead h1{font-size:1.75rem}
+  .box{padding:.625rem .75rem .75rem}
+  .box>header .src{margin-left:0;flex-basis:100%}
+  .rmrow{grid-template-columns:minmax(0,1fr)}
+  .rmrow .btn{justify-self:start}
+  .box>header .cite{margin-left:0}
+  nav.pn{grid-template-columns:1fr}
+  nav.pn a.nx{grid-column:1}
+  .bars{grid-template-columns:max-content minmax(0,1fr)}
+  .bars .vl{grid-column:2;text-align:left;margin-top:-.25rem}
+  .bars .ax{grid-column:2}
+}
+
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+
+.plots.one{grid-template-columns:minmax(0,1fr)}
+.plot.tall{height:15rem}
+.plot .cw,.lg .cw{stroke:var(--aux);--k:var(--aux)} .plot .ck,.lg .ck{stroke:var(--acc);--k:var(--acc)} .plot .c288,.lg .c288{stroke:var(--ok);--k:var(--ok)}
+.plot .ln.ext{stroke-dasharray:5 4;opacity:.7}
+.lg .kl.ext{border-top:2px dashed var(--mut)}
+.lg .k.c288.ho{border-color:var(--ok)}
+
+.dotp{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .875rem;align-items:center;font-size:var(--fs-sm)}
+.dotp .grp{grid-column:1/-1;margin-top:.25rem;padding-top:.375rem;border-top:1px solid var(--line);font-size:var(--fs-xs);font-weight:600;color:var(--mut)}
+.dotp .grp:first-child{margin-top:0;padding-top:0;border-top:0}
+.dotp .row{display:contents}
+.dotp .lb{color:var(--fg);white-space:nowrap}
+.dotp .tk{position:relative;height:1.25rem}
+.dotp .tk::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.dotp .tk i.g{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.dotp .tk b.d{position:absolute;top:50%;width:.75rem;height:.75rem;border-radius:50%;transform:translate(-50%,-50%);background:var(--k)}
+.dotp .c56{--k:var(--acc)} .dotp .c196{--k:var(--aux)} .dotp .cred{--k:var(--bad)}
+.dotp .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.dotp .vl small{display:block;font-family:var(--cjk);font-size:var(--fs-xs);color:var(--mut)}
+.dotp .ax{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--faint)}
+.dotp .ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dotp .ax span.e0{transform:none} .dotp .ax span.e1{transform:translateX(-100%)}
+.dotp .ax .alt{display:none}   
+.dotp .axu{grid-column:2;font-size:var(--fs-xs);color:var(--mut);text-align:right}
+.lg .k.c56{--k:var(--acc)} .lg .k.c196{--k:var(--aux)} .lg .k.cred{--k:var(--bad)}   
+@media (max-width:480px){
+  
+  .dotp{display:block}
+  .dotp .row{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lb" "vl" "tk";gap:0;margin:.375rem 0 .625rem}
+  .dotp .lb{grid-area:lb;white-space:normal}
+  .dotp .vl{grid-area:vl;text-align:left;white-space:normal}
+  .dotp .vl small{display:inline;margin-left:.5em;white-space:normal}
+  .dotp .tk{grid-area:tk;margin-top:.125rem}
+  .dotp .grp{display:block;margin-top:.5rem}
+  .dotp .ax{display:block;margin-top:.25rem}
+  .dotp .axu{display:block;margin-top:.25rem}
+}
+
+.stack{position:relative;margin:.25rem 0 .375rem}
+.stack .sb{display:flex;height:1.75rem;border-radius:var(--r);overflow:hidden;background:var(--sel)}
+.stack .sb i{display:block;height:100%;flex:none}
+.stack .sb i+i{box-shadow:inset 1px 0 0 var(--deep)}
+.stack .rc{position:absolute;top:-.3125rem;bottom:-.3125rem;width:0;border-left:2px solid var(--ink)}
+.sax{display:flex;justify-content:space-between;gap:.75rem;font-size:var(--fs-xs);color:var(--mut);margin-bottom:.5rem}
+.sax span:last-child{text-align:right}
+.sw{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;background:var(--k);vertical-align:-.0625rem;margin-right:.5rem}
+.k1{--k:var(--faint);background:var(--k)} .k2{--k:var(--warn);background:var(--k)} .k3{--k:var(--bad);background:var(--k)} .k4{--k:var(--acc);background:var(--k)}
+.k5{--k:var(--ok);background:var(--k)} .k6{--k:var(--aux);background:var(--k)} .k7{--k:var(--ink);background:var(--k)}
+#fig51 .tbl td:first-child{white-space:normal}
+#fig51 .tbl tr.grp th{background:none;color:var(--mut);font-size:var(--fs-xs);font-weight:600;padding-top:.5rem}
+.lg .kl.rc{width:0;height:.875rem;border-top:0;border-left:2px solid var(--ink)}
+
+.plot .ref{stroke:var(--mut);stroke-width:1.25;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.plot .rl{position:absolute;right:.25rem;transform:translateY(-110%);font-size:var(--fs-xs);color:var(--mut);background:color-mix(in srgb,var(--deep) 80%,transparent);padding:0 .25rem;white-space:nowrap}
+.plot .xt.e0{transform:none} .plot .xt.e1{transform:translateX(-100%)}
+.lg .kl.ref{border-top:2px dashed var(--mut)}
+
+.dotp .cboth,.lg .k.cboth{--k:var(--mut)}
+.dotp .tk i.nref{position:absolute;top:-.1875rem;bottom:-.1875rem;border-left:2px dashed var(--ok)}
+.dotp .refl{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--ok)}
+.dotp .refl::before{content:"";position:absolute;left:var(--x);top:0;height:.375rem;border-left:2px dashed var(--ok)}
+.dotp .refl{height:auto;padding-top:.5rem;white-space:normal;line-height:1.4}   
+.lg .kl.nref{border-top:2px dashed var(--ok)}
+
+.dotp.hbars .tk b.hb{position:absolute;left:0;top:50%;height:.625rem;transform:translateY(-50%);background:var(--k);border-radius:0 var(--r) var(--r) 0}
+.dotp.hbars .tk b.hb.full::after{content:"→";position:absolute;right:-.125rem;top:50%;transform:translate(100%,-55%);color:var(--k);font-size:var(--fs-xs)}
+.dotp.hbars .tk.cut b.hb::after{content:"";position:absolute;right:-.25rem;top:-.25rem;bottom:-.25rem;border-left:2px solid var(--bad)}
+.dotp.hbars .tk.none::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dotted var(--faint)}
+.dotp.hbars .grp{color:var(--ink)}
+.lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
+@media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
+
+
+
+.tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
+
+
+.fx math{font-size:1.02em}
+.legend{font-size:var(--fs-xs);color:var(--mut);margin-top:.25rem;line-height:1.7}
+.mathfail{color:var(--bad);font-weight:700}
+
+
+code.f{word-break:normal;white-space:normal}
+
+
+
+.rmpanel{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:.75rem 1rem;margin:.875rem 0}
+.rmpanel>div{margin:.375rem 0}
+.rmbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+button.rm,#rm-all,#rm-stop{font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+#rm-all{background:var(--acc);border-color:var(--acc);color:var(--on-acc);padding:.5rem .75rem}
+#rm-stop{min-width:4.5em}
+button.rm:hover:not(:disabled),#rm-stop:hover:not(:disabled){border-color:var(--field)}
+button:disabled{opacity:.5;cursor:default}
+.rm1{margin:.125rem 0 .5rem}
+.rmlabel,.rmnone{font-size:var(--fs-xs);color:var(--mut)}
+.rmout{font-size:var(--fs-xs);color:var(--mut);margin-top:.125rem;font-variant-numeric:tabular-nums}
+.rmout .rmverdict{font-weight:700}
+.rmout.ok .rmverdict{color:var(--ok)}
+.rmout.bad .rmverdict,.rmout.err .rmverdict{color:var(--bad)}
+.rmout.nc .rmverdict{color:var(--warn)}
+.rmout.changed .rmverdict{color:var(--aux)}
+.rmout.norec .rmverdict,.rmout.stop .rmverdict{color:var(--mut)}
+.rmout.busy{color:var(--mut)}   
+#rm-progress{font-size:var(--fs-sm);color:var(--fg)}
+
+@media (min-width:761px){
+  table.laws td:last-child{min-width:12em}
+  .rmout{min-height:3.3em}
+}
+
+
+#rm-progress{display:block;flex-basis:100%;min-height:3.3em;line-height:1.65}
+#rm-used{display:block;min-height:3.3em}
+@media (max-width:760px){#rm-used{min-height:4.95em}}
+.rmbox{display:grid}
+.rmbox>.rmghost,.rmbox>.rmout{grid-area:1/1;min-width:0}
+.rmghost{visibility:hidden;font-size:var(--fs-xs);margin-top:.125rem;font-variant-numeric:tabular-nums;pointer-events:none;user-select:none}
+.rmghost .rmverdict{font-weight:700}
+
+.rmghost{white-space:pre-line;font-weight:700}
+
+.rmout,.rmghost{overflow-wrap:break-word}
+
+details.rmfull{display:inline}
+details.rmfull>summary{display:inline;list-style:none;cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;font-weight:600;white-space:nowrap}
+details.rmfull>summary::-webkit-details-marker{display:none}
+
+.rmout button.rmfull,.rmghost button.rmfull{font:inherit;font-weight:600;line-height:1;vertical-align:baseline;padding:0;margin:0;border:0;background:none;color:var(--acc);text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+.rmout button.rmfull:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull[open]>summary{color:var(--mut)}
+details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;background:var(--code);color:var(--fg);border:1px solid var(--line);border-radius:var(--r);font-family:var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+
+
+.tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
+@media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
+a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
+a.anc:hover,a.anc:focus-visible{color:var(--acc)}
+a.rmgo{display:inline-block;font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;white-space:nowrap}
+a.rmgo::after{content:" →";color:var(--acc)}
+a.rmgo:hover{border-color:var(--field)}
+a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+.tbl{--tb:var(--bg);background:
+  linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+  linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+  linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+  linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+  var(--tb)}
+@media (min-width:761px){
+  .tw{--tb:var(--card);background:
+    linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+    linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+    linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+    linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+    var(--tb)}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/">21 NAND</a><span class="here">链上硬件物理 · 在线教科书</span></div></header>
+<main class="book">
+
+<nav class="toc toc-side" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/" aria-current="page"><span class="no"></span>术语表</a></li>
+</ol>
+</nav>
+
+<article class="ch">
+<details class="toc-top"><summary><span>目录</span><b>术语表</b><span>共 10 章</span></summary>
+<nav class="toc" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/" aria-current="page"><span class="no"></span>术语表</a></li>
+</ol>
+</nav></details>
+
+<header class="chhead">
+  <p class="chno"></p>
+  <h1>术语表</h1>
+  <p class="lede"></p>
+  <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 10 分钟</p>
+</header>
+
+<h2 id="s-1"><span class="secno"></span>第 0 章 为什么链也有物理</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">链</th><td>本书量两条。</td></tr>
+      <tr><th scope="row">节点</th><td>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；节点上限那一行例外，在第 4 章写明。</td></tr>
+      <tr><th scope="row">链号</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">二层链</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">只读调用</th><td>让节点「假装执行」一段调用，把结果和花了多少 gas 告诉你。不上链、不花钱、不用钱包。</td></tr>
+      <tr><th scope="row">eth_call</th><td>让节点「假装执行」一段调用，把结果和花了多少 gas 告诉你。不上链、不花钱、不用钱包。</td></tr>
+      <tr><th scope="row">状态覆盖</th><td>只读调用时，临时把某个地址的代码或存储换成你给的。本书靠它把「量 gas 的小工具」放进去。</td></tr>
+      <tr><th scope="row">计量套子</th><td>我们量 gas 的工具。（第 1 章的定义）</td></tr>
+      <tr><th scope="row">校准</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">定律（本书的意思）</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">判据先提交</th><td>每个实验动手前，先把「怎么判对错」写下来、存进代码仓库，量完不改。判不过的照样留着，见第 1 章「什么时候不成立」。</td></tr>
+      <tr><th scope="row">复测</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">四种标记（硬 / 冻结 / 实现 / 会变）</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">正方</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">反方</th><td>见第 0 章正文</td></tr>
+      <tr><th scope="row">更正</th><td>见第 0 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-2"><span class="secno"></span>第 1 章 能量</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">gas</th><td>以太坊系的链给每一条指令定的价，本书把它当作「能量」。</td></tr>
+      <tr><th scope="row">执行 gas</th><td>这次调用本身花的 gas。不含交易的起步价 21,000，也不含交易数据的费用。本书说的「算一次的 gas」都是执行 gas。</td></tr>
+      <tr><th scope="row">电路</th><td>电路由门连成。与非门是两进一出：两个输入都是 1 时输出 0，否则输出 1。用与非门能拼出任何逻辑。</td></tr>
+      <tr><th scope="row">门</th><td>电路由门连成。与非门是两进一出：两个输入都是 1 时输出 0，否则输出 1。用与非门能拼出任何逻辑。</td></tr>
+      <tr><th scope="row">与非门</th><td>电路由门连成。与非门是两进一出：两个输入都是 1 时输出 0，否则输出 1。用与非门能拼出任何逻辑。</td></tr>
+      <tr><th scope="row">锁存</th><td>存一位状态的元件，这一拍写进去，下一拍读出来。</td></tr>
+      <tr><th scope="row">输入位</th><td>电路每算一次，吃进几位、吐出几位。</td></tr>
+      <tr><th scope="row">输出位</th><td>电路每算一次，吃进几位、吐出几位。</td></tr>
+      <tr><th scope="row">深度</th><td>从输入到输出最长要经过几个门。</td></tr>
+      <tr><th scope="row">网表</th><td>把电路写成字节的那一份清单，每个门 7 个字节。</td></tr>
+      <tr><th scope="row">处理器</th><td>TapeOut 上存电路、负责算电路的合约。step() 是让电路算一拍。</td></tr>
+      <tr><th scope="row">step()</th><td>见第 1 章正文</td></tr>
+      <tr><th scope="row">全 0 输入</th><td>见第 1 章正文</td></tr>
+      <tr><th scope="row">留一</th><td>见第 1 章正文</td></tr>
+      <tr><th scope="row">按网表留一</th><td>见第 1 章正文</td></tr>
+      <tr><th scope="row">样本外</th><td>见第 1 章正文</td></tr>
+      <tr><th scope="row">盲测</th><td>见第 1 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-3"><span class="secno"></span>第 2 章 表示与编译</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">官方处理器解释</th><td>处理器合约里的 step / eval，把网表一条记录一条记录地读出来、算出来。第 1 章量的都是这种。</td></tr>
+      <tr><th scope="row">原生合约</th><td>同一个函数直接用合约语言（Yul）写。</td></tr>
+      <tr><th scope="row">Yul</th><td>见第 2 章正文</td></tr>
+      <tr><th scope="row">编译</th><td>把网表翻成一串直线的虚拟机指令，每个门变成几条按位运算，没有循环、不读网表。</td></tr>
+      <tr><th scope="row">直线字节码</th><td>见第 2 章正文</td></tr>
+      <tr><th scope="row">按位并行</th><td>虚拟机的一个字有 256 位，一条按位运算一次处理 256 位，所以一次能并排算 256 组互不相干的输入，价钱和算一组一样。</td></tr>
+      <tr><th scope="row">256 路</th><td>虚拟机的一个字有 256 位，一条按位运算一次处理 256 位，所以一次能并排算 256 组互不相干的输入，价钱和算一组一样。</td></tr>
+      <tr><th scope="row">指令的价</th><td>每条虚拟机指令有固定的 gas。本章用到的按位运算、PUSH、MLOAD、MSTORE 都是 3。</td></tr>
+      <tr><th scope="row">热价 / 冷价</th><td>见第 2 章正文</td></tr>
+      <tr><th scope="row">分层</th><td>父电路里不放全部门，只放「调用某颗子电路」的记录。</td></tr>
+      <tr><th scope="row">子电路调用</th><td>父电路里不放全部门，只放「调用某颗子电路」的记录。</td></tr>
+      <tr><th scope="row">平铺</th><td>见第 2 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-4"><span class="secno"></span>第 3 章 内存与大电路</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">内存</th><td>虚拟机算的时候用的临时内存，按 32 字节一个「字」算钱。用到 w 个字，总价是 3w + ⌊w²/512⌋ gas，前一项是线性的，后一项按字数的平方涨。扩到 131,072 个字（4 MB）实测 33,947,648，和这个式子一个不差。<span class="cite">ops·56</span></td></tr>
+      <tr><th scope="row">字</th><td>虚拟机算的时候用的临时内存，按 32 字节一个「字」算钱。用到 w 个字，总价是 3w + ⌊w²/512⌋ gas，前一项是线性的，后一项按字数的平方涨。扩到 131,072 个字（4 MB）实测 33,947,648，和这个式子一个不差。<span class="cite">ops·56</span></td></tr>
+      <tr><th scope="row">内存扩展费</th><td>见第 3 章正文</td></tr>
+      <tr><th scope="row">数据合约</th><td>一个合约最多放 24,576 字节代码，所以官方发布时把网表按 24,000 字节切成一块一块，每块存成一个数据合约。块数记作 K。</td></tr>
+      <tr><th scope="row">分块</th><td>一个合约最多放 24,576 字节代码，所以官方发布时把网表按 24,000 字节切成一块一块，每块存成一个数据合约。块数记作 K。</td></tr>
+      <tr><th scope="row">块数</th><td>见第 3 章正文</td></tr>
+      <tr><th scope="row">拼接</th><td>官方处理器每次 step 都把各块读进内存、拼成一整段网表。它每拼一块就新开一段缓冲，把已经拼好的整段复制过去，旧的那段不回收。</td></tr>
+      <tr><th scope="row">整块放</th><td>整份网表放在一个数据合约里。超过 24,000 字节时，真发布不会这样放，只能在实验里用状态覆盖放。</td></tr>
+      <tr><th scope="row">合成网表</th><td>我们自己生成的随机网表，用状态覆盖临时放进官方处理器的存储里，不发布、不花钱。</td></tr>
+      <tr><th scope="row">注入</th><td>我们自己生成的随机网表，用状态覆盖临时放进官方处理器的存储里，不发布、不花钱。</td></tr>
+      <tr><th scope="row">上限</th><td>一笔交易、一个块、一次只读调用最多能用多少 gas。第 4 章细讲。</td></tr>
+      <tr><th scope="row">只读调用上限</th><td>见第 3 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-5"><span class="secno"></span>第 4 章 上限</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">单笔交易上限</th><td>一笔交易自己最多能要多少 gas。BSC 上是协议规则定的 2²⁴；X Layer 按块上限算：估算到约 1 亿都放行，再大的没试。</td></tr>
+      <tr><th scope="row">块上限</th><td>一个块里所有交易加起来最多用多少 gas。BSC 由验证人投票定，X Layer 由排序器设。</td></tr>
+      <tr><th scope="row">eth_estimateGas</th><td>见第 4 章正文</td></tr>
+      <tr><th scope="row">63/64 规则</th><td>合约调另一个合约时，最多只能把剩下的 gas 带走 63/64，自己留 1/64。</td></tr>
+      <tr><th scope="row">调用深度</th><td>合约调合约，一层套一层，最多能套几层。</td></tr>
+      <tr><th scope="row">执行速度</th><td>见第 4 章正文</td></tr>
+      <tr><th scope="row">全链功率</th><td>见第 4 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-6"><span class="secno"></span>第 5 章 面积与存储</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">面积</th><td>电路在链上占的地方。网表存成数据合约的代码，按字节付钱，永久留着。</td></tr>
+      <tr><th scope="row">代码</th><td>见第 5 章正文</td></tr>
+      <tr><th scope="row">交易数据</th><td>发交易时带上的字节。只进链的历史，合约之后读不到。</td></tr>
+      <tr><th scope="row">零字节</th><td>见第 5 章正文</td></tr>
+      <tr><th scope="row">存储字</th><td>合约自己的「寄存器」，每个 32 字节。读、写、清都要钱。</td></tr>
+      <tr><th scope="row">返还</th><td>把存储字清成 0，会退一点 gas，在交易结束时才结算。</td></tr>
+      <tr><th scope="row">发布</th><td>把网表发上链、登记成一颗电路的那笔交易。本书只读已有的发布回执，不模拟、也不调用发布用的那个函数。</td></tr>
+      <tr><th scope="row">回执</th><td>交易上链后节点给的记录，里面有这笔实际用了多少 gas。</td></tr>
+      <tr><th scope="row">地板价</th><td>见第 5 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-7"><span class="secno"></span>第 6 章 时钟与不可逆</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">拍</th><td>链每出一个块算一拍。</td></tr>
+      <tr><th scope="row">出块间隔</th><td>链每出一个块算一拍。</td></tr>
+      <tr><th scope="row">时序电路</th><td>带锁存的电路，每拍读上一拍的状态、算出下一拍的状态（第 1 章的锁存）。放到链上时，状态存在一个合约的存储字里。</td></tr>
+      <tr><th scope="row">状态</th><td>带锁存的电路，每拍读上一拍的状态、算出下一拍的状态（第 1 章的锁存）。放到链上时，状态存在一个合约的存储字里。</td></tr>
+      <tr><th scope="row">回看</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希。</td></tr>
+      <tr><th scope="row">BLOCKHASH</th><td>见第 6 章正文</td></tr>
+      <tr><th scope="row">EIP-2935</th><td>见第 6 章正文</td></tr>
+      <tr><th scope="row">finalized</th><td>节点说「这个块以后不会再变」的那个块号。最新块比它新多少，就要等多久才不可逆。</td></tr>
+      <tr><th scope="row">epoch</th><td>见第 6 章正文</td></tr>
+      <tr><th scope="row">blob</th><td>交易可以另带的大块数据，每个 131,072 字节，单独计价，只保存一段时间。</td></tr>
+      <tr><th scope="row">超额（excessBlobGas）</th><td>见第 6 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-8"><span class="secno"></span>第 7 章 价格</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">gas 价</th><td>每 gas 付多少原生币，单位 wei（10⁻¹⁸ 个币）。BSC 用 BNB 付，X Layer 用 OKB 付。</td></tr>
+      <tr><th scope="row">wei</th><td>见第 7 章正文</td></tr>
+      <tr><th scope="row">gwei</th><td>见第 7 章正文</td></tr>
+      <tr><th scope="row">币价</th><td>原生币换成美元（或 USDT）的价，来自交易所的公开行情，不在链上。</td></tr>
+      <tr><th scope="row">数据占用</th><td>X Layer（OP Stack 的 Jovian 升级以后）每块另记一个量，块头里叫 blobGasUsed。它按每笔交易原始字节的压缩长度估出一个字节数，再乘一个标量。不另收费，但和 gas 一样要装得进块里。</td></tr>
+      <tr><th scope="row">blobGasUsed</th><td>见第 7 章正文</td></tr>
+      <tr><th scope="row">FastLZ</th><td>数据占用用的那种快速压缩算法。</td></tr>
+      <tr><th scope="row">标量</th><td>见第 7 章正文</td></tr>
+      <tr><th scope="row">存款交易</th><td>从以太坊主网过来的交易。块头的数据占用不算它；它自己的回执里也写了一个数，多数是 42,800。</td></tr>
+      <tr><th scope="row">Jovian</th><td>见第 7 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-9"><span class="secno"></span>第 8 章 加速器</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">预编译合约</th><td>链的客户端里用原生代码实现、放在固定地址的合约。调它和调普通合约一样，按固定的式子收 gas，比用虚拟机指令自己算便宜得多。</td></tr>
+      <tr><th scope="row">加速器</th><td>链的客户端里用原生代码实现、放在固定地址的合约。调它和调普通合约一样，按固定的式子收 gas，比用虚拟机指令自己算便宜得多。</td></tr>
+      <tr><th scope="row">identity</th><td>地址 0x04 的那颗，原样复制输入，用来校准量法：复制 32 字节应该正好 18 gas。</td></tr>
+      <tr><th scope="row">ecrecover</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">sha256</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">ripemd160</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">MODEXP</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">bn254</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">配对</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">blake2f</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">BLS12-381</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">MSM</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">KZG 点求值</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">P256VERIFY</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">硬分叉级别（Prague</th><td>见第 8 章正文</td></tr>
+      <tr><th scope="row">Osaka）</th><td>见第 8 章正文</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-10"><span class="secno"></span>第 9 章 噪声与测量</h2>  <div class="tbl"><table>
+    <thead><tr><th>术语</th><th>意思</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">公开节点</th><td>谁都能连、替你读链和模拟执行的服务器。它不是链本身。</td></tr>
+      <tr><th scope="row">历史深度</th><td>节点还能给多久以前的状态和日志。</td></tr>
+      <tr><th scope="row">logsBloom</th><td>块头里的一个过滤器，块里只要有日志，它就不是全 0。</td></tr>
+      <tr><th scope="row">静默丢数</th><td>节点该给数据时给了空的，又不报错。</td></tr>
+      <tr><th scope="row">换节点</th><td>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一家再问，结果旁边写明「换过节点」。</td></tr>
+      <tr><th scope="row">信标</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现（以后新造的处理器用哪份实现，由工厂的 owner 决定）。</td></tr>
+      <tr><th scope="row">实现</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现（以后新造的处理器用哪份实现，由工厂的 owner 决定）。</td></tr>
+      <tr><th scope="row">owner</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现（以后新造的处理器用哪份实现，由工厂的 owner 决定）。</td></tr>
+      <tr><th scope="row">限速</th><td>见第 9 章正文</td></tr>
+    </tbody></table></div>
+
+
+<nav class="pn" aria-label="上一章和下一章">
+  <a class="pv" href="../experiments/"><small>← 上一章</small>实验索引</a>
+</nav>
+<footer>只读页面：读链的请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。</footer>
+</article>
+</main>
+
+</body>
+</html>
