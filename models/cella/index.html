@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>格 A 整数版权重文件 · 现场核对并运行</title>
+<style>
+/* Colours and fonts follow the 21 NAND site (its theme tokens, copied here so the page opens on its own; no outside files).
+   Only the look changes here; every size, height and width rule below is unchanged. */
+:root{color-scheme:dark;--bg:#17110a;--fg:#d8cdb9;--ink:#f8f0e0;--mut:#b0a48f;--line:#40362a;--card:#211a11;--field:#8a7c6a;--ok:#8bd98f;--bad:#ff7d8a;--run:#ecd98a;--acc:#ff9426;--on-acc:#1a0f03;--deep:#0a0703;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme:light){:root{color-scheme:light;--bg:#f8f2e6;--fg:#39322a;--ink:#17110a;--mut:#61584b;--line:#d6ccb6;--card:#fffcf5;--field:#8d8370;--ok:#1f7a3a;--bad:#c0233a;--run:#7d6500;--acc:#ab5600;--on-acc:#fff;--deep:#e7dec9}}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--cjk)}
+h1,h2,th,button,label,b{font-family:var(--cjk)}h1,h2{color:var(--ink)}a{color:var(--acc)}
+main{max-width:1040px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:16px;margin:26px 0 8px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.tile,.card{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:10px 12px}
+.tile b{display:block;font-size:12px;color:var(--mut);font-weight:600;margin-bottom:2px}
+.big{font-size:17px;font-weight:650}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.run{color:var(--run)}.mut{color:var(--mut)}
+/* separate borders: with collapsed borders a header cell changes height by a pixel when the first row arrives */
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13.5px}td,th{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}th{color:var(--mut);font-weight:600}
+td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+code,.mono{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;word-break:break-all}
+button{font:inherit;font-weight:600;padding:6px 12px;border:1px solid var(--line);border-radius:2px;background:var(--card);color:var(--ink);cursor:pointer}
+button:hover:not(:disabled){border-color:var(--field)}button:disabled{opacity:.5;cursor:default}
+button.pri{background:var(--acc);color:var(--on-acc);border-color:var(--acc)}
+input[type=text]:focus,select:focus,input[type=number]:focus{outline:2px solid var(--acc);outline-offset:1px}
+input[type=text]{font:inherit;padding:6px 8px;border:1px solid var(--field);border-radius:2px;background:var(--deep);color:var(--ink);width:100%}
+select,input[type=number]{font:inherit;padding:5px;border:1px solid var(--field);border-radius:2px;background:var(--deep);color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+#out{white-space:pre-wrap;min-height:3.2em;font-size:16px}
+.scroll{overflow-x:auto}.small{font-size:13px}
+.void{text-decoration:line-through;color:var(--bad)}
+.neg{margin-top:8px;border-left:3px solid var(--line);padding-left:10px}
+ul{margin:6px 0;padding-left:20px}
+/* Nothing on this page may move after the first frame: every block that gets its content later has its final
+   size from the start (fixed height, scrolling inside itself), every number its final width. */
+html{overflow-y:scroll;scrollbar-gutter:stable}
+#t-bytes,#t-chunks{display:inline-block;text-align:right;font-variant-numeric:tabular-nums}
+#t-bytes{width:5.2em}#t-chunks{width:2em}
+.fixnum{display:inline-block;text-align:right;font-variant-numeric:tabular-nums;width:2.4em}
+#what{height:9.3em;overflow-y:auto}#fixnote{visibility:hidden;height:1.55em;overflow:hidden;margin:0 0 6px}#fixnote.on{visibility:visible}
+#steps td.n{font-variant-numeric:tabular-nums}
+.tile p{margin:0}
+.tile .big{height:3.1em;overflow-y:auto}
+.tile .small{height:4.65em;overflow-y:auto}
+#go{width:10.5em}#stop{width:6em}#leafsel{width:9em}
+#out{height:7.8em;overflow-y:auto}
+#voidnote{height:4.65em;overflow-y:auto}#voidnote[hidden]{display:block;visibility:hidden}
+#genstat{height:4.65em;overflow-y:auto}#genprog{height:4.65em;overflow-y:auto;font-variant-numeric:tabular-nums}
+/* A table that grows inside a fixed box: the box scrolls inside (.fixin); the table's width is taken from the
+   OUTER box (container units), minus a constant 20px, so it does not depend on whether a scrollbar is showing. */
+.fixbox{height:11em;container-type:inline-size;overflow:hidden}.fixbox.tall{height:20em}
+.fixin{height:100%;overflow-y:scroll;overflow-x:auto}
+#toks,#leaves{table-layout:fixed}#toks{width:max(40em,calc(100cqw - 20px))}#leaves{width:max(52em,calc(100cqw - 20px))}
+#toks col.a{width:3em}#toks col.b{width:5em}#toks col.d{width:6em}#toks col.e{width:5.5em}#toks col.f{width:7.5em}#toks col.g{width:6.5em}
+#leaves col.a{width:7.5em}#leaves col.b{width:5em}#leaves col.c{width:5em}#leaves col.d{width:3.5em}#leaves col.f{width:5em}#leaves col.g{width:10em}
+#negout{height:11em;overflow-y:auto}#demoout{height:8em;overflow-y:auto}
+#reload[hidden]{display:inline-block;visibility:hidden}
+#stepsnote{visibility:hidden;height:3.1em;overflow-y:auto;margin:6px 0}#stepsnote.on{visibility:visible}
+#self,#chain{display:block;overflow-y:auto}#self{height:4.65em}#chain{height:9.3em}
+#leafres{flex-basis:100%;height:3.1em;overflow-y:auto}
+#steps{table-layout:fixed}
+#steps col.c1{width:9.5em}#steps col.c2{width:4em}#steps col.c4{width:5.5em}
+#steps td:nth-child(2),#steps td:nth-child(4){white-space:nowrap;overflow:hidden}
+#steps .res{height:3.1em;overflow-y:auto;word-break:break-all}
+/* Site top bar, same rule as the model card; outside <main>, so the layout check does not track it. */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{max-width:1040px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:.75rem;height:3.25rem}
+.top .brand{font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}
+.top .brand:hover{color:var(--acc)}
+.top .here{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top .card-link{white-space:nowrap}
+@media (max-width:600px){
+  h1{font-size:18px}h2{margin-top:14px}
+  .tile{font-size:13.5px}
+  #steps col.c1{width:5.6em}#steps col.c2{width:3.2em}#steps col.c4{width:5em}
+  #steps .res{height:6.2em}
+  #fixnote{height:3.1em}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="../../">21 NAND</a><span class="here">格 A</span><a class="card-link" href="card.html">模型卡</a></div></header>
+<main>
+<h1>格 A 整数版权重文件：在你的浏览器里现场核对并运行</h1>
+<p id="fixnote" class="small bad">现在载入的是测试用的小形状（随机权重，不是格 A），只用来检查页面流程。</p>
+<div class="tiles">
+  <div class="tile"><b>这是什么</b><p id="what">格 A 整数版的模型文件（六段，共 <span id="t-bytes">…</span> 字节、<span id="t-chunks">…</span> 块）：5 层、宽 224、词表 1,024 个词片、窗口 300 个词片，权重是 8 位整数。网络结构写成门电路网表的引用。本页只照文件算，脚本里没有这个模型的层数、宽度、形状。</p></div>
+  <div class="tile"><b>现在核到哪一步</b><p class="big" id="t-step">正在启动…</p><p class="small mut" id="t-sub"></p></div>
+  <div class="tile"><b>过没过</b><p class="big run" id="t-pass">正在核文件</p><p class="small mut" id="t-time"></p></div>
+</div>
+
+<h2>续写</h2>
+<div class="card">
+  <div class="row"><input type="text" id="prompt" value="Once upon a time" aria-label="开头"></div>
+  <div class="row">
+    <button class="pri" id="go" disabled>文件核完才能续写</button>
+    <button id="stop" disabled>停</button>
+  </div>
+  <div class="small run" id="genprog"></div>
+  <div id="out" class="mut">（等核对）</div>
+  <div id="voidnote" class="bad" hidden></div>
+  <div class="small mut" id="genstat"></div>
+  <div class="row">
+    <label>最多 <input type="number" id="max" value="40" min="1" max="1000" style="width:5.5em"> 个词片</label>
+    <label><input type="checkbox" id="verify"> 核对模式（把留用的结果重算一遍比对，慢）</label>
+  </div>
+  <div class="fixbox"><div class="fixin"><table id="toks" class="small"><colgroup><col class="a"><col class="b"><col><col class="d"><col class="e"><col class="f"><col class="g"></colgroup><thead><tr><th class="n">#</th><th>词片号</th><th>词片</th><th class="n">用时</th><th class="n">上下文</th><th class="n">求值次数</th><th class="n">第几个候选</th></tr></thead><tbody></tbody></table></div></div>
+  <p class="small mut">分词、窗口、长度上限、选词是文件说明段里写的宿主规则，由本页脚本照做，<b>不是门电路</b>；说明段自己写明这些规则在出文件时没有执行、没有对拍。窗口规则：上下文到 <span class="fixnum" id="w-size">…</span> 个词片就丢掉最早的 <span class="fixnum" id="w-drop">…</span> 个，剩下的从位置 0 重算，那一下比平常久，按钮下面那一行会写明。平常每个词片只算新增的位置，前面位置算过的结果留用；这是执行器的做法，不改文件的含义。选词：分数最高的词片，除非它让最后 <span class="fixnum" id="w-words">…</span> 个词和前文某处重复（那时取下一个）。开头越长，第一个词片等得越久：做这一页的那台笔记本上、无头 Chromium 里量到，296 个词片的开头从头算约 70 秒，窗口满那一下约 23 秒；这两段都有进度、能停；别的机器不同。模型写出什么就显示什么，本页不评价。页面上显示的用时都是你这台机器这一次现场量的。</p>
+</div>
+
+<h2>核对步骤（都是本页现场做的）</h2>
+<p id="stepsnote" class="small bad">下表是原文件那次核对的结果，不是现在这份改过的文件的。改过的文件核到哪一步，看第一屏。</p>
+<div class="card scroll"><table id="steps"><colgroup><col class="c1"><col class="c2"><col><col class="c4"></colgroup><thead><tr><th>步骤</th><th>状态</th><th>读到的数</th><th class="n">用时</th></tr></thead><tbody>
+<tr data-step="manifest"><td>清单</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="root"><td>模型根</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="segS"><td>结构段 S</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="segT"><td>常数表段 T</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="segW"><td>权重段 W</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="segD"><td>说明段 D</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="segN"><td>叶子副本段 N</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="struct"><td>结构和范围</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="leaf"><td>叶子自检</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="fast"><td>点积模块自检</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="tshort"><td>短测试向量</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+<tr data-step="tfull"><td>整窗口测试向量</td><td class="mut">等待</td><td class="mut"><div class="res"></div></td><td class="n"></td></tr>
+</tbody></table></div>
+<p class="small mut">钉住的模型根：<code id="pin">0d05d1198cb0b65bbda00465e32e124d9bf512e92631383799f856dac3fd30cf</code>。文件从本页所在目录取；本页不连链，不向别处发任何请求。核对和运行都在后台线程里做：续写一个线程，测试向量一个线程，测试向量没跑完时点续写，两个线程同时在算。续写在「点积模块自检」过了之后就放开；两行测试向量在后台接着跑，短的先跑。有一个不过，续写立刻停，已经写出的字标成不作数。</p>
+
+<h2>负控：在内存里改一下，看哪道检查拦下它（不改文件）</h2>
+<div class="card">
+  <div class="row">
+    <button data-neg="weight" disabled>改权重一个字节</button>
+    <button data-neg="weight2" disabled>改权重一个字节（哈希重算自洽）</button>
+    <button data-neg="leaf" disabled>改叶子网表副本一个字节</button>
+  </div>
+  <div id="negout" class="small mut">（等核对）</div>
+  <div class="row"><button id="demo" disabled>演示：强行载入改过一个权重的文件并续写，看测试向量不过时续写被停</button><button id="reload" hidden>回到原文件（重新核一遍）</button></div>
+  <div id="demoout" class="small mut">这个按钮在内存里造一份「哈希自洽、但一个归一化权重被改过」的文件，不对钉住的模型根、强行载入并开始续写，等写出 3 个词片再核它的测试向量，用来演示「测试向量不过，续写被停、字作废」这条路（等原文件的短测试向量跑完才能点）。</div>
+</div>
+
+<h2>叶子：每一步运算指向的门电路</h2>
+<div class="card">
+  <ul class="small">
+    <li><b>文件自洽</b>：<span id="self">…</span></li>
+    <li><b>在链上</b>：<span id="chain">…</span></li>
+  </ul>
+  <div class="row small"><label>逐门核 <select id="leafsel"></select></label><label><input type="number" id="leafn" value="2000" min="32" max="50000" style="width:6em"> 组</label><button id="leafgo" disabled>逐门核这颗叶子</button><span id="leafres" class="mut"></span></div>
+  <div class="fixbox tall"><div class="fixin"><table id="leaves"><colgroup><col class="a"><col class="b"><col class="c"><col class="d"><col><col class="f"><col class="g"></colgroup><thead><tr><th>叶子</th><th class="n">NAND</th><th class="n">LATCH</th><th class="n">拍</th><th>网表 sha256</th><th>流片</th><th>快路对逐门（组 / 差）</th></tr></thead><tbody></tbody></table></div></div>
+</div>
+
+<h2>已经核过的和没核的</h2>
+<div class="card small">
+  <ul>
+    <li>这份文件带 4 个测试向量（2 个短的、2 个整窗口的），共 635,904 个输出分数。另一台机器上，执行器照文件算出的这些分数和整数参考实现逐个相同。本页现场重跑的就是这 4 个。</li>
+    <li>本页续写用的三样做法（只算要的那一行、留用没变的结果、认出的点积模块用本机整数点积）：另一台机器上用同一份脚本，对「整份照文件算」逐分数比过 620 行（2 条序列各 299 行，窗口满丢 150 个之后那一下，再接 10 个），全部相同。</li>
+    <li>核对模式：另一台机器上用 node 开着本机整数点积在这份文件上跑过一条序列 299 行，留用的结果重算比对，0 个不一致（不是在浏览器里跑的）。</li>
+    <li>没核的：窗口满之后本页分小段重算（为了显示进度、能停），这种走法在这份文件上没有对拍过；本页脚本照说明段做的分词、窗口、长度上限、选词，没有拿别的实现在这份文件上对拍过续写结果。</li>
+    <li>14 颗叶子里已流片 1 颗，13 颗没流片。</li>
+    <li>分词、窗口、长度上限、选词是宿主规则，不是门电路；没有电路裁判它们。</li>
+    <li>本页没有现场连链。已流片那颗是另外读回核的，日期见上。</li>
+    <li>这页只证明「文件没被改、照文件算出的数对得上」，不评价模型写出的文字。</li>
+  </ul>
+</div>
+</main>
+<script>
+// Layout check: the boxes of every element as the page is first laid out, before any script fills anything in.
+// window.__layout.moved() lists the elements whose position (left, top) differs now; the smoke scripts call it.
+(function () {
+  var els = Array.prototype.slice.call(document.querySelectorAll('main, main *'));
+  var box = function (e) { var r = e.getBoundingClientRect(); return [Math.round(r.left + scrollX), Math.round(r.top + scrollY), Math.round(r.width), Math.round(r.height)]; };
+  var name = function (e) { return e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.getAttribute('data-neg') ? '[data-neg=' + e.getAttribute('data-neg') + ']' : '') + (e.getAttribute('data-step') ? '[data-step=' + e.getAttribute('data-step') + ']' : ''); };
+  var first = els.map(box);
+  window.__layout = {
+    count: els.length, viewport: [innerWidth, innerHeight], first: function (sel) { var i = els.indexOf(document.querySelector(sel)); return i < 0 ? null : first[i]; },
+    moved: function (sel, withSize) {
+      var out = [];
+      els.forEach(function (e, i) {
+        if (!e.isConnected || (sel && !e.matches(sel))) return;
+        var a = first[i], b = box(e);
+        if (a[0] !== b[0] || a[1] !== b[1] || (withSize && (a[2] !== b[2] || a[3] !== b[3]))) out.push({ el: name(e), was: a, now: b });
+      });
+      return out;
+    }
+  };
+})();
+</script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
