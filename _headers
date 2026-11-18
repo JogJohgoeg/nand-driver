@@ -22,3 +22,14 @@
 # Cloudflare 不给 .md 带字符集，浏览器会按 GBK 猜成乱码
 /*.md
   Content-Type: text/markdown; charset=utf-8
+
+# 这三处页面写着「不向别处发任何请求」「自己不带脚本」：带 no-transform，Cloudflare 就不在边缘往页面里插访问统计脚本，取回的字节等于原文件。
+# max-age=0, must-revalidate 是线上原来的值，只多 no-transform，缓存行为不变。别的页面照旧。
+/models/cella/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/physics/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
+
+/circuits/*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
