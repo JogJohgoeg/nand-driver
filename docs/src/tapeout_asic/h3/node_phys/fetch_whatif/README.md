@@ -1,4 +1,4 @@
-# 取指环 B 档 what-if（D-40，11-01，本机，不占 build-host）
+# 取指环 B 档 what-if（11-01，本机，不占 build-host）
 
 输入：top_e3 的综合网表 `work/results/ics55/top_e3/base/1_2_yosys.v`（body = `/h2/mrom9/body.v`，v8g）。脚本都跑 `python3 X.py 1_2_yosys.v`，依次复用 cone.py 的解析。
 

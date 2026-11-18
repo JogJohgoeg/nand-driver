@@ -907,7 +907,7 @@ async function loadDriveLog(){
     rows.sort((x,y)=>y.block-x.block).slice(0,50).forEach(r=>addLogRow(r,false));
   }catch(e){}
 }
-/* ensureAllowance:start —— 用户 11-05 定（D-53）：每次只批准这一步的准确金额；额度已经够就不再批准。arena_allowance.test.mjs 原样摘出这段测 */
+/* ensureAllowance:start —— 用户 11-05 定：每次只批准这一步的准确金额；额度已经够就不再批准。 */
 async function ensureAllowance(eth, me, fee, onApprove){
   const allow=BigInt(await eth.request({method:'eth_call',params:[{to:BEM,data:SEL.allowance+w32(me)+w32(ARENA)},'latest']}));
   if(allow>=BigInt(fee)) return true;                       // 够了：不发 approve
