@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -549,6 +567,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     </ol></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -559,7 +578,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 7 章 价格</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 7 章 价格</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -581,6 +600,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     </ol></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -597,7 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 12 分钟</p>
 </header>
-<p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+<p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s7-1"><span class="secno">7.1</span>直觉</h2>  <p class="lede-in">gas 是用量，乘上 gas 价、再乘币价，才是钱。11 月 16 日那会儿，BSC 上 1 gas 约 3.0×10⁻⁸ 美元，X Layer 约 1.7×10⁻⁹，便宜 17 倍；官方处理器算一个门，BSC 约 6.8×10⁻⁵ 美元，X Layer 约 3.9×10⁻⁶。X Layer 另外还数一样东西：交易的原始字节压缩以后有多长。它不另收钱，但占块的容量。</p>
 <figure class="fig" id="fig71"><div class="dotp" role="img" aria-label="算一个门要多少美元：官方处理器算 1 个门 BSC 6.78×10⁻⁵；编译版 1 门 1 路 BSC 2.73×10⁻⁹；官方处理器算 1 个门 X Layer 3.93×10⁻⁶；编译版 1 门 1 路 X Layer 1.58×10⁻¹⁰"><span class="grp">官方处理器算 1 个门</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:16.667%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:83.333%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:97.183%" data-gas="6.776503172242425e-05"></b></span><span class="vl">6.78×10⁻⁵ 美元<small>2,276.78 gas</small></span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:16.667%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:83.333%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:76.572%" data-gas="3.9292723501605785e-06"></b></span><span class="vl">3.93×10⁻⁶ 美元<small>2,276.78 gas</small></span></span><span class="grp">编译版 1 门 1 路</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:16.667%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:83.333%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:23.926%" data-gas="2.7260475835115236e-09"></b></span><span class="vl">2.73×10⁻⁹ 美元<small>0.09159 gas</small></span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:16.667%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:83.333%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:3.314%" data-gas="1.5806652963713389e-10"></b></span><span class="vl">1.58×10⁻¹⁰ 美元<small>0.09159 gas</small></span></span><span class="ax"><span class="e0" style="left:0.000%">10⁻¹⁰</span><span class="alt" style="left:16.667%">10⁻⁹</span><span style="left:33.333%">10⁻⁸</span><span class="alt" style="left:50.000%">10⁻⁷</span><span style="left:66.667%">10⁻⁶</span><span class="alt" style="left:83.333%">10⁻⁵</span><span class="e1" style="left:100.000%">10⁻⁴</span></span><span class="axu">算一个门要多少美元（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span></p><figcaption><b>图 7.1</b>　算一个门要多少美元 = gas × gas 价 × 币价，刻度每一格是 10 倍。最贵的（BSC，官方处理器算 1 个门）和最便宜的（X Layer，编译版 1 门 1 路）差约 428,712 倍。币价是交易所行情，gas 价和币价都会变。</figcaption></figure>
@@ -695,7 +715,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 // 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
 // ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
 //    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
-// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
 // 不读写任何存储、不发请求。
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.dbt'));
@@ -722,7 +743,6 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   });
   ds.forEach(function (d) { d.addEventListener('toggle', sync); });
   sync();
-  b.hidden = false;
 })();
 </script>
 </body>

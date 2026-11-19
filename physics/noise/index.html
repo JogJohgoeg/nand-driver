@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -549,6 +567,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
   <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
     </ol></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -559,7 +578,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 9 章 噪声与测量</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 9 章 噪声与测量</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -581,6 +600,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
   <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
     </ol></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -597,7 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 8 分钟</p>
 </header>
-<p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+<p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s9-1"><span class="secno">9.1</span>直觉</h2>  <p class="lede-in">链本身是确定的：同一段代码、同一个状态，哪家节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
 <figure class="fig" id="fig91"><div class="dotp hbars" role="img" aria-label="各家节点还给多久以前的数据：BSC publicnode 状态 约 1.3 小时；BSC publicnode 日志 约 3.7 小时；BSC drpc 状态 没量出；BSC drpc 日志 没量出；BSC 官方 dataseed 状态 约 57 秒；BSC 官方 dataseed 日志 最近的也不给；X Layer 官方 rpc.xlayer.tech 状态 全历史；X Layer 官方 rpc.xlayer.tech 日志 全历史；X Layer 官方 xlayerrpc.okx.com 状态 全历史；X Layer 官方 xlayerrpc.okx.com 日志 全历史"><span class="grp">BSC publicnode</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:37.944%" data-age="4530"></b></span><span class="vl">约 1.3 小时（10,064 块）<small>再往前状态要付费（HTTP 403）（边界不是一刀切）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk cut"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:44.648%" data-age="13346"></b></span><span class="vl">约 3.7 小时（29,655 块）<small>再往前回空，不报错（边界不是一刀切）</small></span></span><span class="grp">BSC drpc</span><span class="row"><span class="lb">状态</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="grp">BSC 官方 dataseed</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:10.798%" data-age="57"></b></span><span class="vl">约 57 秒（125 块）<small>再往前回「missing trie node」</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="recent-not-served"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>最近的也不给（limit exceeded）</small></span></span><span class="grp">X Layer 官方 rpc.xlayer.tech</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,616 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,928 块）</span></span><span class="grp">X Layer 官方 xlayerrpc.okx.com</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,626 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,970 块）</span></span><span class="ax"><span class="e0" style="left:0.000%">10 秒</span><span class="alt" style="left:14.286%">100 秒</span><span style="left:28.571%">17 分</span><span class="alt" style="left:42.857%">2.8 时</span><span style="left:57.143%">1.2 天</span><span class="alt" style="left:71.429%">12 天</span><span style="left:85.714%">116 天</span><span class="alt e1" style="left:100.000%">3.2 年</span></span><span class="axu">往回多少（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="kl cutk"></i>条到这里断开：再往前回空、不报错</span></p><figcaption><b>图 9.1</b>　每家公开节点的状态、日志还给多久以前的，刻度每一格是 10 倍，条从 10 秒画起，长短只表示能回看到哪里。X Layer 两家都给全历史；BSC 官方 dataseed 的状态只留 约 57 秒，publicnode 的日志 约 3.7 小时 以前回空数组、不报错。没量出、最近的也不给的不画条。</figcaption></figure>
@@ -678,12 +698,12 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li>链是确定的：67 段测试代码两链各家节点逐个相同，官方处理器的输出和本地模拟逐位一致。</li>
   <li>节点不是链：BSC 官方 dataseed 的状态只留约 57 秒；publicnode 3.7 小时以前的日志回空、不报错；X Layer 两家 OKX 节点全历史。</li>
   <li>已有的处理器实现不能升级（信标 owner = 0）；以后新造的处理器用哪份实现，由工厂的 owner 决定。</li>
-  <li>这是正文最后一章。书末有常数表、实验索引和术语表。</li>
+  <li>下一章：算力的天花板。</li>
 </ul>
 
 <nav class="pn" aria-label="上一章和下一章">
   <a class="pv" href="../precompiles/"><small>← 上一章</small>第 8 章 加速器</a>
-  <a class="nx" href="../constants/"><small>下一章 →</small>常数表</a>
+  <a class="nx" href="../ceiling/"><small>下一章 →</small>第 10 章 算力的天花板</a>
 </nav>
 <footer>只读页面：读链的请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。</footer>
 </article>
@@ -693,7 +713,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 // 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
 // ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
 //    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
-// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
 // 不读写任何存储、不发请求。
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.dbt'));
@@ -720,7 +741,6 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   });
   ds.forEach(function (d) { d.addEventListener('toggle', sync); });
   sync();
-  b.hidden = false;
 })();
 </script>
 </body>

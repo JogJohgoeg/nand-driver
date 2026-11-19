@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -549,6 +567,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s8-7"><span class="no">8.7</span>小结</a></li>
     </ol></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -559,7 +578,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 8 章 加速器</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 8 章 加速器</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -581,6 +600,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s8-7"><span class="no">8.7</span>小结</a></li>
     </ol></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>

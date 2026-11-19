@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -549,6 +567,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -559,7 +578,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 5 章 面积与存储</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 5 章 面积与存储</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -581,6 +600,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -597,7 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 14 分钟</p>
 </header>
-<p class="dbt-intro"><span>本章有 2 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+<p class="dbt-intro"><span>本章有 2 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s5-1"><span class="secno">5.1</span>直觉</h2>  <p class="lede-in">把电路放上链，就像在芯片上占一块面积，按字节付钱：每存一个字节的代码 200 gas，再加上交易数据和官方处理器自己的记账。DOT32_T 有 3,829 个门、26,803 字节，在 X Layer 上发布用了 11,202,698 gas，其中存代码那一项占 48%。</p>
 <figure class="fig" id="fig51"><div class="stack" role="img" aria-label="DOT32_T 发布 gas 按来源切开：交易费 21,000；交易数据 282,104；建合约 64,000；存代码 5,361,000；记账·固定 45,875；记账·每个与非门 5,247,018；记账·每块 215,013；回执 11,202,698"><div class="sb"><i class="k1" style="width:0.1869%" data-gas="21000" title="交易费 21,000"></i><i class="k2" style="width:2.5107%" data-gas="282104" title="交易数据 282,104"></i><i class="k3" style="width:0.5696%" data-gas="64000" title="建合约 64,000"></i><i class="k4" style="width:47.7127%" data-gas="5361000" title="存代码 5,361,000"></i><i class="k5" style="width:0.4083%" data-gas="45874.7" title="记账·固定 45,875"></i><i class="k6" style="width:46.6982%" data-gas="5247018.1" title="记账·每个与非门 5,247,018"></i><i class="k7" style="width:1.9136%" data-gas="215013.0" title="记账·每块 215,013"></i></div><b class="rc" style="left:99.7035%" data-gas="11202698"></b></div><div class="sax"><span>0</span><span>回执 11,202,698 gas ｜ 各段加起来 11,236,010，估高 0.30%</span></div><div class="tbl"><table><thead><tr><th>从哪来</th><th class="r">gas</th><th class="r">占回执</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="rowgroup">链协议收的</th></tr><tr><td><i class="sw k1"></i>交易费</td><td class="r" data-gas="21000">21,000</td><td class="r">0.19%</td></tr><tr><td><i class="sw k2"></i>交易数据</td><td class="r" data-gas="282104">282,104</td><td class="r">2.52%</td></tr><tr><td><i class="sw k3"></i>建合约</td><td class="r" data-gas="64000">64,000</td><td class="r">0.57%</td></tr><tr><td><i class="sw k4"></i>存代码</td><td class="r" data-gas="5361000">5,361,000</td><td class="r">47.85%</td></tr><tr class="grp"><th colspan="3" scope="rowgroup">官方处理器自己的记账</th></tr><tr><td><i class="sw k5"></i>记账·固定</td><td class="r" data-gas="45874.7">45,875</td><td class="r">0.41%</td></tr><tr><td><i class="sw k6"></i>记账·每个与非门</td><td class="r" data-gas="5247018.1">5,247,018</td><td class="r">46.84%</td></tr><tr><td><i class="sw k7"></i>记账·每块</td><td class="r" data-gas="215013.0">215,013</td><td class="r">1.92%</td></tr></tbody></table></div><p class="lg"><span><i class="kl rc"></i>竖线：回执的实际 gas</span></p><figcaption><b>图 5.1</b>　X Layer 上 DOT32_T（#3，3,829 个门、26,803 字节、2 块）那笔发布，按定律八把 gas 切开。条从 0 起画，长短照各段 gas；有五段太窄，在条上看不清，数都在表里。记账那三段的系数是 BSC 上 51 笔回执拟合的。</figcaption></figure>
@@ -735,7 +755,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 // 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
 // ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
 //    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
-// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
 // 不读写任何存储、不发请求。
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.dbt'));
@@ -762,7 +783,6 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   });
   ds.forEach(function (d) { d.addEventListener('toggle', sync); });
   sync();
-  b.hidden = false;
 })();
 </script>
 </body>

@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 10 章 算力的天花板 · 链上硬件物理</title>
+<style>
+
+
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#17110a;--deep:#100b06;--deeper:#0a0703;--card:#211a11;--sel:#2e2518;
+  --fg:#d8cdb9;--ink:#f8f0e0;--mut:#b0a48f;--faint:#74695a;--line:#40362a;--field:#8a7c6a;
+  --acc:#ff9426;--on-acc:#1a0f03;--ok:#8bd98f;--warn:#ecd98a;--bad:#ff7d8a;--aux:#8fb8de;
+  --hard:var(--aux);--frozen:var(--acc);--soft:var(--warn);--impl:var(--mut);--code:var(--deeper);
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Noto Sans SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --fs:.9375rem;--fs-sm:.8125rem;--fs-xs:.75rem;--r:2px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}}
+:root[data-theme="light"]{color-scheme:light;
+  --bg:#f8f2e6;--deep:#f0e8d7;--deeper:#e7dec9;--card:#fffcf5;--sel:#f0e7d3;
+  --fg:#39322a;--ink:#17110a;--mut:#61584b;--faint:#928875;--line:#d6ccb6;--field:#8d8370;
+  --acc:#ab5600;--on-acc:#fff;--ok:#1f7a3a;--warn:#7d6500;--bad:#c0233a;--aux:#2a6a9e}
+
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:var(--fs)/1.65 var(--cjk)}
+a{color:var(--acc)}
+main{max-width:80rem;margin:0 auto;padding:1.75rem 1rem 3.75rem}
+h1{font-size:1.625rem;line-height:1.3;color:var(--ink);margin:0 0 .375rem}
+h2{font-size:1.125rem;color:var(--ink);margin:2.25rem 0 .75rem;padding-top:.75rem;border-top:1px solid var(--line)}
+h3{font-size:.9375rem;color:var(--acc);margin:1.25rem 0 .5rem}
+b{color:var(--ink);font-weight:600}
+.sub{color:var(--mut);max-width:48em;margin:0}   
+.note{color:var(--mut);font-size:var(--fs-xs);margin-top:.25rem}
+footer{margin-top:2.25rem;color:var(--faint);font-size:var(--fs-xs)}
+
+
+
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:var(--fs-sm)}
+th,td{text-align:left;vertical-align:top;padding:.5rem .625rem;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--sel);color:var(--mut);font-weight:600;font-size:var(--fs-xs);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:color-mix(in srgb,var(--sel) 45%,transparent)}
+
+
+.n,.n2,span.num{font-variant-numeric:tabular-nums}
+.n{white-space:nowrap}
+
+
+code{font-family:var(--mono);background:var(--code);border:1px solid var(--line);padding:0 .25rem;border-radius:var(--r);font-size:var(--fs-xs);word-break:break-all}
+
+
+
+@media (max-width:760px){
+  .q3{grid-template-columns:1fr}
+  ul.files{columns:1}
+  .tw{overflow-x:visible;border:0;background:none}
+  .tw table,.tw tbody,.tw tr,.tw td{display:block;width:auto;min-width:0}
+  .tw thead{display:none}
+  .tw tr{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:.375rem .75rem;margin:0 0 .625rem}
+  .tw td{border-bottom:1px dashed var(--line);padding:.375rem 0;width:auto!important;min-width:0!important;white-space:normal!important}
+  .tw tr td:last-child{border-bottom:0}
+  .tw td[data-label]::before{content:attr(data-label);display:block;font-size:var(--fs-xs);color:var(--faint);margin-bottom:.125rem}
+  .tw tr td:first-child{font-size:.9375rem}
+  .tw tbody tr:hover td{background:none}
+  .fml{overflow-x:auto}
+}
+
+
+
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{max-width:80rem;margin:0 auto;padding:0 1rem;display:flex;align-items:center;gap:.75rem;height:3.25rem}
+.top .brand{font-weight:700;color:var(--ink);text-decoration:none;white-space:nowrap}
+.top .brand:hover{color:var(--acc)}
+.top .here{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer a{color:var(--mut)} footer a:hover{color:var(--acc)}
+
+
+
+.chips{display:flex;flex-wrap:wrap;gap:.375rem;margin:.75rem 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:.125rem .625rem;font-size:var(--fs-xs);color:var(--mut);background:var(--card)}
+
+
+
+
+.top .wrap{max-width:78rem}
+main.book{max-width:78rem;display:grid;grid-template-columns:13rem minmax(0,1fr);column-gap:2.5rem;align-items:start}
+.toc-side{grid-column:1;position:sticky;top:4.25rem;max-height:calc(100vh - 5.25rem);overflow:auto;font-size:var(--fs-sm);padding-bottom:1rem}
+article.ch{grid-column:2;min-width:0;max-width:56rem;padding-right:15rem}
+.toc-top{display:none}
+
+
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:flex;gap:.5rem;padding:.25rem .5rem;border-radius:var(--r);color:var(--fg);text-decoration:none;line-height:1.4}
+.toc a:hover{background:var(--sel);color:var(--ink)}
+.toc a .no{flex:0 0 auto;min-width:2.25em;color:var(--faint);font-variant-numeric:tabular-nums}
+.toc a[aria-current="page"]{background:var(--sel);color:var(--ink);font-weight:600}
+.toc a[aria-current="page"] .no{color:var(--acc)}
+.toc ol ol{margin:.125rem 0 .375rem 2.75em;border-left:1px solid var(--line)}
+.toc ol ol a{padding:.125rem .5rem;font-size:var(--fs-xs);color:var(--mut)}
+.toc ol ol a .no{min-width:2em}
+.toc .grp{margin:1rem .5rem .25rem;font-size:var(--fs-xs);color:var(--faint);font-weight:600}
+.toc .soon{color:var(--faint)}
+.toc .soon::after{content:"（待写）";font-size:var(--fs-xs)}
+details.toc-top{margin:0 0 1.25rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+details.toc-top>summary{cursor:pointer;padding:.5rem .75rem;font-size:var(--fs-sm);color:var(--mut);list-style:none;display:flex;gap:.5rem;align-items:baseline}
+details.toc-top>summary::-webkit-details-marker{display:none}
+details.toc-top>summary::before{content:"▸";color:var(--acc)}
+details.toc-top[open]>summary::before{content:"▾"}
+details.toc-top>summary b{color:var(--ink)}
+details.toc-top>nav{padding:0 .375rem .5rem;font-size:var(--fs-sm)}
+details.toc-top>summary:focus-visible,.toc a:focus-visible,.pn a:focus-visible,a.term:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+
+.chhead{margin:0 0 1.5rem}
+.chno{margin:0 0 .25rem;font-size:var(--fs-sm);color:var(--acc);font-weight:600;letter-spacing:.08em}
+.chhead h1{font-size:2rem;margin:0 0 .5rem}
+.lede{margin:0;font-size:1.0625rem;color:var(--ink);line-height:1.7}
+.reader{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--faint)}
+
+
+article.ch h2{display:flex;gap:.625rem;align-items:baseline;font-size:1.1875rem;margin:2.5rem 0 .875rem}
+article.ch h2 .secno{color:var(--acc);font-variant-numeric:tabular-nums;font-size:.9375rem;font-weight:600;min-width:2.25em}
+article.ch h3{color:var(--ink);font-size:1rem;margin:1.5rem 0 .5rem}
+article.ch p{margin:0 0 .875rem}
+article.ch ol:not(.steps),article.ch ul:not(.sum){margin:0 0 .875rem;padding-left:1.5em}
+article.ch li{margin:.125rem 0}
+.mono,.h{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+
+a.term{color:inherit;text-decoration:underline dotted var(--acc);text-underline-offset:3px}
+a.term:hover{color:var(--acc)}
+
+
+.mn{float:right;clear:right;width:13rem;margin:.125rem -15rem .75rem 0;font-size:var(--fs-xs);line-height:1.55;color:var(--mut)}
+.mn b{color:var(--fg)}
+.mn .k{color:var(--acc);font-weight:600;margin-right:.25em}
+sup.mr{font-size:.7em;color:var(--acc);font-weight:600;margin-left:.0625em;line-height:0}
+
+
+.box{margin:1.25rem 0;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--bc,var(--line));border-radius:var(--r);padding:.75rem 1rem .875rem}
+.box>header{display:flex;flex-wrap:wrap;gap:.25rem .625rem;align-items:baseline;margin:0 0 .5rem}
+.box>header .kind{font-size:var(--fs-xs);font-weight:700;letter-spacing:.06em;color:var(--bc)}
+.box>header .name{font-weight:600;color:var(--ink)}
+.box>header .src{margin-left:auto;font-size:var(--fs-xs);color:var(--faint)}
+.box p:last-child,.box ul:last-child,.box ol:last-child,.box dl:last-child{margin-bottom:0}
+.box.def{--bc:var(--aux)}
+.box.law{--bc:var(--acc)}
+.box.ex{--bc:var(--ok)}
+.box.fails{--bc:var(--warn)}
+.box.fails>header .kind::before{content:"⚠ ";font-weight:400}
+.def dfn{font-style:normal;font-weight:700;color:var(--ink)}
+
+
+math{color:var(--ink)}
+.fml{overflow-x:auto;padding:.375rem 0 .5rem;max-width:100%}
+.fml math{font-size:1.12em}
+dl.sym{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.25rem .75rem;margin:.25rem 0 0;font-size:var(--fs-sm)}
+dl.sym dt{color:var(--ink);text-align:right}
+dl.sym dd{margin:0;color:var(--mut)}
+dl.sym dd .n{color:var(--fg)}
+
+
+figure.fig{margin:1.25rem 0;padding:.875rem 1rem;border:1px solid var(--line);border-radius:var(--r);background:var(--deep)}
+figure.fig figcaption{margin-top:.625rem;font-size:var(--fs-xs);color:var(--mut)}
+figure.fig figcaption b{color:var(--ink)}
+.bars{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .75rem;align-items:center;font-size:var(--fs-sm)}
+.bars .lb{color:var(--mut);white-space:nowrap}
+.bars .tr{height:.875rem;background:var(--sel);border-radius:var(--r);overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--acc)}
+.bars .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.bars .ax{grid-column:2;display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--faint)}
+
+
+.ex .q{color:var(--ink)}
+ol.steps{list-style:none;margin:.5rem 0 .75rem;padding:0;counter-reset:st;font-size:var(--fs-sm)}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:1.75em minmax(0,1fr);gap:.5rem;padding:.25rem 0;border-bottom:1px dashed var(--line)}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(st);color:var(--ok);font-weight:700;font-variant-numeric:tabular-nums}
+ol.steps .n{color:var(--ink)}
+.rm{margin-top:.875rem;padding-top:.75rem;border-top:1px solid var(--line)}
+.rmh{margin:0 0 .5rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.rmrow{display:grid;grid-template-columns:10.5rem minmax(0,1fr);gap:.375rem .875rem;align-items:start;margin:.375rem 0}
+.rmrow .btn{justify-self:stretch}
+.pickrow{display:flex;flex-wrap:wrap;gap:.25rem;margin:0 0 .5rem}
+.chipb{font:var(--fs-xs)/1.4 var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.1875rem .625rem;cursor:pointer}
+.chipb:hover{border-color:var(--field)}
+.chipb[aria-pressed="true"]{background:var(--sel);border-color:var(--ok);color:var(--ink);font-weight:600}
+.chipb:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{font:600 var(--fs-sm)/1 var(--cjk);padding:.5625rem .875rem;border-radius:var(--r);border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--field)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.sline{display:grid;font-size:var(--fs-sm);margin:0;padding-top:.3rem}
+.sline>.ghost,.sline>.out{grid-area:1/1;min-width:0;overflow-wrap:break-word}
+.sline>.ghost{visibility:hidden;white-space:pre-line;font-weight:700;pointer-events:none;user-select:none}
+.sline .v{font-weight:700}
+.out.ok .v{color:var(--ok)} .out.bad .v{color:var(--bad)} .out.nc .v{color:var(--warn)} .out.busy,.out.idle{color:var(--mut)}
+
+
+ol.cases{list-style:none;margin:0;padding:0;counter-reset:cs}
+ol.cases>li{counter-increment:cs;position:relative;padding:.625rem 0 .625rem 1.75em;border-bottom:1px dashed var(--line)}
+ol.cases>li::before{content:counter(cs);position:absolute;left:0;top:.625rem;color:var(--warn);font-weight:700;font-variant-numeric:tabular-nums}
+ol.cases>li:first-child{padding-top:0} ol.cases>li:first-child::before{top:0}
+ol.cases>li:last-child{border-bottom:0;padding-bottom:0}
+ol.cases .when{display:block;font-weight:600;color:var(--ink);margin-bottom:.125rem}
+ol.cases ul{margin:.125rem 0 0;padding-left:1.125em;font-size:var(--fs-sm)}
+.tag{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;margin-right:.375rem;vertical-align:.0625em}
+.tag.fix{color:var(--bad)} .tag.tbd{color:var(--warn);border-style:dashed} .tag.new{color:var(--ok)} .tag.open{color:var(--aux)}
+
+
+ul.sum{list-style:none;margin:0 0 1rem;padding:0}
+ul.sum li{position:relative;padding:.375rem 0 .375rem 1.5em;border-bottom:1px solid var(--line)}
+ul.sum li::before{content:"✓";position:absolute;left:0;color:var(--acc);font-weight:700}
+.next{font-size:var(--fs-sm);color:var(--mut)}
+
+
+nav.pn{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:2.5rem 0 0;padding-top:1.25rem;border-top:1px solid var(--line)}
+nav.pn a{display:block;padding:.625rem .875rem;border:1px solid var(--line);border-radius:var(--r);background:var(--card);text-decoration:none;color:var(--ink);min-width:0}
+nav.pn a:hover{border-color:var(--acc)}
+nav.pn a small{display:block;font-size:var(--fs-xs);color:var(--faint)}
+nav.pn a.nx{text-align:right;grid-column:2}
+.demo{margin-top:1.5rem;padding:.5rem .75rem;border:1px dashed var(--warn);border-radius:var(--r);color:var(--warn);font-size:var(--fs-xs)}
+
+
+.cite{display:inline-block;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:var(--r);padding:0 .3125rem;margin:0 .125rem;vertical-align:.0625em;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.box>header .cite{margin-left:auto}
+.box>header .tag{margin:0}
+p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
+p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
+p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
+dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
+dl.terms dd{margin:0}
+ol.how{padding-left:1.5em}
+ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
+.terms-line{font-size:var(--fs-xs);color:var(--mut)}
+details.more{margin:-.25rem 0 .75rem;font-size:var(--fs-sm)}
+details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;width:max-content}
+
+
+.tbl{overflow-x:auto;margin:.5rem 0 .75rem;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+.tbl table{font-size:var(--fs-xs);width:100%}
+.tbl th,.tbl td{padding:.3125rem .625rem}
+.tbl th,.tbl .r,.tbl .mono,.tbl td code{white-space:nowrap}
+.tbl td:not(.r):not(.mono){min-width:6.5em}   
+.tbl th{position:static}
+.tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+
+
+.plots{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:.75rem 1.5rem}
+.pl{min-width:0}
+.plh{margin:0 0 .375rem!important;font-size:var(--fs-xs);color:var(--mut);font-weight:600}
+.plot{position:relative;height:13rem;margin:0 .375rem 2.75rem 3.25rem;border-left:1px solid var(--field);border-bottom:1px solid var(--field)}
+.plot svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.plot .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+.plot .ln{fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;opacity:.9}
+.plot .pt{stroke-width:7;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .pi{stroke:var(--deep);stroke-width:3.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.plot .c56,.lg .c56{stroke:var(--acc);--k:var(--acc)} .plot .c196,.lg .c196{stroke:var(--aux);--k:var(--aux)}
+.plot .yt,.plot .xt,.plot .xl{position:absolute;font-size:var(--fs-xs);color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums;line-height:1}
+.plot .yt{right:calc(100% + .375rem);transform:translateY(-50%)}
+.plot .xt{top:calc(100% + .375rem);transform:translateX(-50%)}
+.plot .xl{top:calc(100% + 1.625rem);right:0;color:var(--mut)}
+.lg{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin:0!important;font-size:var(--fs-xs);color:var(--mut)}
+.lg span{display:inline-flex;align-items:center;gap:.375rem}
+.lg .k{width:.5rem;height:.5rem;border-radius:50%;background:var(--k)}
+.lg .k.ho{background:none;border:2px solid var(--mut);width:.5rem;height:.5rem}
+.lg .kl{width:1rem;height:0;border-top:2px solid var(--k)}
+
+
+.au{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .4375rem;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.au.pro{color:var(--acc)} .au.con{color:var(--bad)}
+.byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
+.thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
+.thread>.box{margin:.75rem 0 0}
+
+.dbt{margin:.75rem 0 0}
+.dbt>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;padding:.5rem .75rem .5rem 1.75rem;position:relative;
+  border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:var(--r);background:var(--card);font-size:var(--fs-sm);line-height:1.5}
+.dbt>summary::-webkit-details-marker{display:none}
+.dbt>summary::before{content:"▸";position:absolute;left:.625rem;top:.5rem;color:var(--mut);transition:transform .12s}
+.dbt[open]>summary::before{transform:rotate(90deg)}
+.dbt>summary:hover{border-color:var(--field);border-left-color:var(--bad)}
+.dbt>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.dbt .dsl{display:inline-flex;align-items:center;gap:.375rem;white-space:nowrap}
+.dbt .dk{color:var(--ink);font-weight:600}
+.dbt .dsl{gap:.125rem}
+.dbt .dsep{color:var(--faint);margin:0 -.375rem}
+.dbt .don{color:var(--mut);font-size:var(--fs-xs)}
+.dbt>.box{margin:.75rem 0 0}
+.dbt-intro{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;margin:.75rem 0 0;font-size:var(--fs-sm);color:var(--mut)}
+.dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
+.dbt-all>.lbl{grid-area:1/1}
+.dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
+@media print{.dbt>summary::before{content:none}}
+.box.con{--bc:var(--bad)}
+.box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
+.box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
+.box>header .on{font-size:var(--fs-xs);color:var(--mut)}
+.box>header .on a{color:inherit}
+.box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
+.vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
+.said{margin:0 0 .625rem}
+
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal;overflow-wrap:anywhere}
+dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
+dl.ev dt{color:var(--faint)}
+dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
+
+dl.ev .evi{display:contents}
+dl.ev .ev-n{display:block;font-family:var(--cjk);color:var(--mut)}
+dl.ev .ev-n:empty{display:none}
+details.revs{margin:.5rem 0 0;font-size:var(--fs-xs);color:var(--mut)}
+details.revs>summary{cursor:pointer;width:max-content;color:var(--mut);text-decoration:underline dotted;text-underline-offset:2px}
+details.revs ol{list-style:none;margin:.25rem 0 0;padding:0}
+details.revs li{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:.5rem;padding:.125rem 0;border-top:1px dashed var(--line)}
+details.revs time{font-family:var(--mono);color:var(--faint)}
+
+.corr{display:block;margin:.375rem 0 0;padding:.375rem .625rem;border:1px dashed var(--bad);border-radius:var(--r);font-size:var(--fs-sm)}
+.corr del{color:var(--faint)} .corr ins{text-decoration:none;color:var(--ink);font-weight:600}
+.corr a{color:var(--mut)}
+
+@media (max-width:1239px){
+  main.book{display:block;max-width:60rem}
+  .toc-side{display:none}
+  .toc-top{display:block}
+  article.ch{max-width:none}
+}
+@media (max-width:999px){
+  main.book{max-width:44rem}
+  article.ch{padding-right:0}
+  .mn{float:none;width:auto;margin:-.375rem 0 .875rem;padding:.125rem 0 .125rem .75rem;border-left:2px solid var(--line)}
+}
+@media (max-width:640px){.plots{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){
+  .thread{margin-left:.25rem;padding-left:.625rem}
+  .box.pro{margin-left:.5rem!important}
+  .box>header time{margin-left:0}
+
+  .chhead h1{font-size:1.75rem}
+  .box{padding:.625rem .75rem .75rem}
+  .box>header .src{margin-left:0;flex-basis:100%}
+  .rmrow{grid-template-columns:minmax(0,1fr)}
+  .rmrow .btn{justify-self:start}
+  .box>header .cite{margin-left:0}
+  nav.pn{grid-template-columns:1fr}
+  nav.pn a.nx{grid-column:1}
+  .bars{grid-template-columns:max-content minmax(0,1fr)}
+  .bars .vl{grid-column:2;text-align:left;margin-top:-.25rem}
+  .bars .ax{grid-column:2}
+}
+
+.tick{font-family:var(--mono,ui-monospace,"SF Mono",Menlo,Consolas,monospace);font-variant-numeric:tabular-nums;line-height:0}
+
+.plots.one{grid-template-columns:minmax(0,1fr)}
+.plot.tall{height:15rem}
+.plot .cw,.lg .cw{stroke:var(--aux);--k:var(--aux)} .plot .ck,.lg .ck{stroke:var(--acc);--k:var(--acc)} .plot .c288,.lg .c288{stroke:var(--ok);--k:var(--ok)}
+.plot .ln.ext{stroke-dasharray:5 4;opacity:.7}
+.lg .kl.ext{border-top:2px dashed var(--mut)}
+.lg .k.c288.ho{border-color:var(--ok)}
+
+.dotp{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:.375rem .875rem;align-items:center;font-size:var(--fs-sm)}
+.dotp .grp{grid-column:1/-1;margin-top:.25rem;padding-top:.375rem;border-top:1px solid var(--line);font-size:var(--fs-xs);font-weight:600;color:var(--mut)}
+.dotp .grp:first-child{margin-top:0;padding-top:0;border-top:0}
+.dotp .row{display:contents}
+.dotp .lb{color:var(--fg);white-space:nowrap}
+.dotp .tk{position:relative;height:1.25rem}
+.dotp .tk::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid var(--line)}
+.dotp .tk i.g{position:absolute;top:0;bottom:0;border-left:1px dashed var(--line)}
+.dotp .tk b.d{position:absolute;top:50%;width:.75rem;height:.75rem;border-radius:50%;transform:translate(-50%,-50%);background:var(--k)}
+.dotp .c56{--k:var(--acc)} .dotp .c196{--k:var(--aux)} .dotp .cred{--k:var(--bad)}
+.dotp .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;white-space:nowrap}
+.dotp .vl small{display:block;font-family:var(--cjk);font-size:var(--fs-xs);color:var(--mut)}
+.dotp .ax{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--faint)}
+.dotp .ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.dotp .ax span.e0{transform:none} .dotp .ax span.e1{transform:translateX(-100%)}
+.dotp .ax .alt{display:none}   
+.dotp .axu{grid-column:2;font-size:var(--fs-xs);color:var(--mut);text-align:right}
+.lg .k.c56{--k:var(--acc)} .lg .k.c196{--k:var(--aux)} .lg .k.cred{--k:var(--bad)}   
+@media (max-width:480px){
+  
+  .dotp{display:block}
+  .dotp .row{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lb" "vl" "tk";gap:0;margin:.375rem 0 .625rem}
+  .dotp .lb{grid-area:lb;white-space:normal}
+  .dotp .vl{grid-area:vl;text-align:left;white-space:normal}
+  .dotp .vl small{display:inline;margin-left:.5em;white-space:normal}
+  .dotp .tk{grid-area:tk;margin-top:.125rem}
+  .dotp .grp{display:block;margin-top:.5rem}
+  .dotp .ax{display:block;margin-top:.25rem}
+  .dotp .axu{display:block;margin-top:.25rem}
+}
+
+.stack{position:relative;margin:.25rem 0 .375rem}
+.stack .sb{display:flex;height:1.75rem;border-radius:var(--r);overflow:hidden;background:var(--sel)}
+.stack .sb i{display:block;height:100%;flex:none}
+.stack .sb i+i{box-shadow:inset 1px 0 0 var(--deep)}
+.stack .rc{position:absolute;top:-.3125rem;bottom:-.3125rem;width:0;border-left:2px solid var(--ink)}
+.sax{display:flex;justify-content:space-between;gap:.75rem;font-size:var(--fs-xs);color:var(--mut);margin-bottom:.5rem}
+.sax span:last-child{text-align:right}
+.sw{display:inline-block;width:.75rem;height:.75rem;border-radius:2px;background:var(--k);vertical-align:-.0625rem;margin-right:.5rem}
+.k1{--k:var(--faint);background:var(--k)} .k2{--k:var(--warn);background:var(--k)} .k3{--k:var(--bad);background:var(--k)} .k4{--k:var(--acc);background:var(--k)}
+.k5{--k:var(--ok);background:var(--k)} .k6{--k:var(--aux);background:var(--k)} .k7{--k:var(--ink);background:var(--k)}
+#fig51 .tbl td:first-child{white-space:normal}
+#fig51 .tbl tr.grp th{background:none;color:var(--mut);font-size:var(--fs-xs);font-weight:600;padding-top:.5rem}
+.lg .kl.rc{width:0;height:.875rem;border-top:0;border-left:2px solid var(--ink)}
+
+.plot .ref{stroke:var(--mut);stroke-width:1.25;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.plot .rl{position:absolute;right:.25rem;transform:translateY(-110%);font-size:var(--fs-xs);color:var(--mut);background:color-mix(in srgb,var(--deep) 80%,transparent);padding:0 .25rem;white-space:nowrap}
+.plot .xt.e0{transform:none} .plot .xt.e1{transform:translateX(-100%)}
+.lg .kl.ref{border-top:2px dashed var(--mut)}
+
+.dotp .cboth,.lg .k.cboth{--k:var(--mut)}
+.dotp .tk i.nref{position:absolute;top:-.1875rem;bottom:-.1875rem;border-left:2px dashed var(--ok)}
+.dotp .refl{grid-column:2;position:relative;height:1rem;font-size:var(--fs-xs);color:var(--ok)}
+.dotp .refl::before{content:"";position:absolute;left:var(--x);top:0;height:.375rem;border-left:2px dashed var(--ok)}
+.dotp .refl{height:auto;padding-top:.5rem;white-space:normal;line-height:1.4}   
+.lg .kl.nref{border-top:2px dashed var(--ok)}
+
+.dotp.hbars .tk b.hb{position:absolute;left:0;top:50%;height:.625rem;transform:translateY(-50%);background:var(--k);border-radius:0 var(--r) var(--r) 0}
+.dotp.hbars .tk b.hb.full::after{content:"→";position:absolute;right:-.125rem;top:50%;transform:translate(100%,-55%);color:var(--k);font-size:var(--fs-xs)}
+.dotp.hbars .tk.cut b.hb::after{content:"";position:absolute;right:-.25rem;top:-.25rem;bottom:-.25rem;border-left:2px solid var(--bad)}
+.dotp.hbars .tk.none::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dotted var(--faint)}
+.dotp.hbars .grp{color:var(--ink)}
+.lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
+@media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
+
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
+
+
+.tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
+
+
+.fx math{font-size:1.02em}
+.legend{font-size:var(--fs-xs);color:var(--mut);margin-top:.25rem;line-height:1.7}
+.mathfail{color:var(--bad);font-weight:700}
+
+
+code.f{word-break:normal;white-space:normal}
+
+
+
+.rmpanel{border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:.75rem 1rem;margin:.875rem 0}
+.rmpanel>div{margin:.375rem 0}
+.rmbar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}
+button.rm,#rm-all,#rm-stop{font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+#rm-all{background:var(--acc);border-color:var(--acc);color:var(--on-acc);padding:.5rem .75rem}
+#rm-stop{min-width:4.5em}
+button.rm:hover:not(:disabled),#rm-stop:hover:not(:disabled){border-color:var(--field)}
+button:disabled{opacity:.5;cursor:default}
+.rm1{margin:.125rem 0 .5rem}
+.rmlabel,.rmnone{font-size:var(--fs-xs);color:var(--mut)}
+.rmout{font-size:var(--fs-xs);color:var(--mut);margin-top:.125rem;font-variant-numeric:tabular-nums}
+.rmout .rmverdict{font-weight:700}
+.rmout.ok .rmverdict{color:var(--ok)}
+.rmout.bad .rmverdict,.rmout.err .rmverdict{color:var(--bad)}
+.rmout.nc .rmverdict{color:var(--warn)}
+.rmout.changed .rmverdict{color:var(--aux)}
+.rmout.norec .rmverdict,.rmout.stop .rmverdict{color:var(--mut)}
+.rmout.busy{color:var(--mut)}   
+#rm-progress{font-size:var(--fs-sm);color:var(--fg)}
+
+@media (min-width:761px){
+  table.laws td:last-child{min-width:12em}
+  .rmout{min-height:3.3em}
+}
+
+
+#rm-progress{display:block;flex-basis:100%;min-height:3.3em;line-height:1.65}
+#rm-used{display:block;min-height:3.3em}
+@media (max-width:760px){#rm-used{min-height:4.95em}}
+.rmbox{display:grid}
+.rmbox>.rmghost,.rmbox>.rmout{grid-area:1/1;min-width:0}
+.rmghost{visibility:hidden;font-size:var(--fs-xs);margin-top:.125rem;font-variant-numeric:tabular-nums;pointer-events:none;user-select:none}
+.rmghost .rmverdict{font-weight:700}
+
+.rmghost{white-space:pre-line;font-weight:700}
+
+.rmout,.rmghost{overflow-wrap:break-word}
+
+details.rmfull{display:inline}
+details.rmfull>summary{display:inline;list-style:none;cursor:pointer;color:var(--acc);text-decoration:underline;text-underline-offset:2px;font-weight:600;white-space:nowrap}
+details.rmfull>summary::-webkit-details-marker{display:none}
+
+.rmout button.rmfull,.rmghost button.rmfull{font:inherit;font-weight:600;line-height:1;vertical-align:baseline;padding:0;margin:0;border:0;background:none;color:var(--acc);text-decoration:underline;text-underline-offset:2px;cursor:pointer;white-space:nowrap}
+.rmout button.rmfull:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:var(--r)}
+details.rmfull[open]>summary{color:var(--mut)}
+details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;background:var(--code);color:var(--fg);border:1px solid var(--line);border-radius:var(--r);font-family:var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+
+
+.tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
+@media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
+a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
+a.anc:hover,a.anc:focus-visible{color:var(--acc)}
+a.rmgo{display:inline-block;font:600 var(--fs-xs)/1 var(--cjk);padding:.375rem .625rem;border-radius:var(--r);border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;white-space:nowrap}
+a.rmgo::after{content:" →";color:var(--acc)}
+a.rmgo:hover{border-color:var(--field)}
+a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+
+.tbl{--tb:var(--bg);background:
+  linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+  linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+  linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+  linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+  var(--tb)}
+@media (min-width:761px){
+  .tw{--tb:var(--card);background:
+    linear-gradient(to right,var(--tb) 45%,transparent) left center/2.5rem 100% no-repeat local,
+    linear-gradient(to left,var(--tb) 45%,transparent) right center/2.5rem 100% no-repeat local,
+    linear-gradient(to right,color-mix(in srgb,var(--ink) 28%,transparent),transparent) left center/1rem 100% no-repeat scroll,
+    linear-gradient(to left,color-mix(in srgb,var(--ink) 28%,transparent),transparent) right center/1rem 100% no-repeat scroll,
+    var(--tb)}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="/">21 NAND</a><span class="here">链上硬件物理</span></div></header>
+<main class="book">
+
+<nav class="toc toc-side" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/" aria-current="page"><span class="no">10</span>算力的天花板</a>
+    <ol>
+  <li><a href="#s10-1"><span class="no">10.1</span>直觉</a></li>
+  <li><a href="#s10-2"><span class="no">10.2</span>定义</a></li>
+  <li><a href="#s10-3"><span class="no">10.3</span>定律和公式</a></li>
+  <li><a href="#s10-4"><span class="no">10.4</span>怎么量出来的</a></li>
+  <li><a href="#s10-5"><span class="no">10.5</span>例题</a></li>
+  <li><a href="#s10-6"><span class="no">10.6</span>什么时候不成立</a></li>
+  <li><a href="#s10-7"><span class="no">10.7</span>小结</a></li>
+    </ol></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/"><span class="no"></span>术语表</a></li>
+</ol>
+</nav>
+
+<article class="ch">
+<details class="toc-top"><summary><span>目录</span><b>第 10 章 算力的天花板</b><span>共 11 章</span></summary>
+<nav class="toc" aria-label="全书目录">
+<ol>
+  <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
+  <li><a href="../energy/"><span class="no">1</span>能量</a></li>
+  <li><a href="../representation/"><span class="no">2</span>表示与编译</a></li>
+  <li><a href="../memory/"><span class="no">3</span>内存与大电路</a></li>
+  <li><a href="../power/"><span class="no">4</span>上限</a></li>
+  <li><a href="../area/"><span class="no">5</span>面积与存储</a></li>
+  <li><a href="../clock/"><span class="no">6</span>时钟与不可逆</a></li>
+  <li><a href="../price/"><span class="no">7</span>价格</a></li>
+  <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
+  <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/" aria-current="page"><span class="no">10</span>算力的天花板</a>
+    <ol>
+  <li><a href="#s10-1"><span class="no">10.1</span>直觉</a></li>
+  <li><a href="#s10-2"><span class="no">10.2</span>定义</a></li>
+  <li><a href="#s10-3"><span class="no">10.3</span>定律和公式</a></li>
+  <li><a href="#s10-4"><span class="no">10.4</span>怎么量出来的</a></li>
+  <li><a href="#s10-5"><span class="no">10.5</span>例题</a></li>
+  <li><a href="#s10-6"><span class="no">10.6</span>什么时候不成立</a></li>
+  <li><a href="#s10-7"><span class="no">10.7</span>小结</a></li>
+    </ol></li>
+</ol>
+<p class="grp">书末</p>
+<ol>
+  <li><a href="../constants/"><span class="no"></span>常数表</a></li>
+  <li><a href="../experiments/"><span class="no"></span>实验索引</a></li>
+  <li><a href="../glossary/"><span class="no"></span>术语表</a></li>
+</ol>
+</nav></details>
+
+<header class="chhead">
+  <p class="chno">第 10 章</p>
+  <h1>算力的天花板</h1>
+  <p class="lede">链上能不能有显卡那么大的算力？在链上直接算，做不到。每个节点都要把每一块自己重算一遍，全链只有一台机器的量级；每 gas 能算的门又有底，就算全换成最划算的指令，也还差五个多数量级。能到显卡级的只有「链下算、链上验」，链只当裁判。</p>
+  <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 27 分钟</p>
+</header>
+<p class="dbt-intro"><span>本章有 4 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+
+<h2 id="s10-1"><span class="secno">10.1</span>直觉</h2>  <p class="lede-in">链上能不能有显卡那么大的算力？在链上直接算，做不到。每个节点都要把每一块自己重算一遍，全链只有一台机器的量级；每 gas 能算的门又有底，就算全换成最划算的指令，也还差五个多数量级。能到显卡级的只有「链下算、链上验」，链只当裁判。</p>
+<figure class="fig" id="fig101"><div class="dotp gap" role="img" aria-label="离显卡级（约 200 亿门、每秒十几亿拍）差几个 10 倍：全链每秒求值几个门次（官方，BSC） 14.6；全链每秒求值几个门次（编译 256 路，BSC） 10.3；全链每秒求值几个门次（编译 256 路，X Layer） 10.1；一笔交易能求值的不同门数（编译，BSC 单笔上限） 4.5（推的，没量）；一块能求值的不同门数（编译，BSC） 3.8（推的，没量）；一块能求值的不同门数（编译，X Layer） 3.4（推的，没量）；一次免费只读调用能求值的不同门数（编译，带钥匙节点，不进共识） 2.9（推的，没量）；一笔交易能求值的不同门数（官方，BSC，平铺网表、不算拼接） 6.4；全链每秒几拍（时钟律那颗：413 门 + 88 锁存，官方处理器解释，BSC） 7.1；一拍 2×10¹⁰ 门时全链每秒几拍（编译，BSC） 12.7（推的，没量）"><span class="grp">全链每秒求值几个门次</span><span class="row" id="gap-rate_official_bsc"><span class="lb">全链每秒求值几个门次（官方，BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:92.435%" data-key="rate_official_bsc" data-now="69009.84400761887" data-goal="3e+19" data-gap="14.638210209007722"></b><b class="d cred" style="left:92.433%" data-key="red:rate_official_bsc" data-red-of="rate_official_bsc" data-now="69053.85272260022" data-goal="3e+19" data-gap="14.63793334053075"></b></span><span class="vl">差 14.6 · 反方 差 14.6<small>69,010 → 3.00×10¹⁹ 门次 / 秒 · 定律二、七；反方 69,054</small></span></span><span class="row" id="gap-rate_compiled_bsc"><span class="lb">全链每秒求值几个门次（编译 256 路，BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:68.123%" data-key="rate_compiled_bsc" data-now="1640673504.7136745" data-goal="3e+19" data-gap="10.26209909000353"></b><i class="seg" style="left:64.751%;width:3.372%"></i><b class="d sq c56 inf" style="left:64.751%" data-key="rate_floor_bsc" data-pair-of="rate_compiled_bsc" data-now="6637037037.037037" data-goal="3e+19" data-gap="9.655147013552543"></b><b class="d cred" style="left:68.681%" data-key="red:rate_compiled_bsc" data-red-of="rate_compiled_bsc" data-now="1301907664.118968" data-goal="3e+19" data-gap="10.362541071090893"></b></span><span class="vl">差 10.3 · 天花板 差 9.7（推的） · 反方 差 10.4<small>1.64×10⁹ → 3.00×10¹⁹ 门次 / 秒 · 定律五、六、七；天花板 6.64×10⁹ · 定律（候选）：按位门的能量下限；反方 1.30×10⁹</small></span></span><span class="row" id="gap-rate_compiled_xlayer"><span class="lb">全链每秒求值几个门次（编译 256 路，X Layer）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:67.399%" data-key="rate_compiled_xlayer" data-now="2214909231.3634605" data-goal="3e+19" data-gap="10.131765321508523"></b><i class="seg" style="left:64.027%;width:3.372%"></i><b class="d sq c196 inf" style="left:64.027%" data-key="rate_floor_xlayer" data-pair-of="rate_compiled_xlayer" data-now="8960000000.0" data-goal="3e+19" data-gap="9.524813245057537"></b><b class="d cred" style="left:67.956%" data-key="red:rate_compiled_xlayer" data-red-of="rate_compiled_xlayer" data-now="1758088427.6619866" data-goal="3e+19" data-gap="10.232080539454136"></b></span><span class="vl">差 10.1 · 天花板 差 9.5（推的） · 反方 差 10.2<small>2.21×10⁹ → 3.00×10¹⁹ 门次 / 秒 · 定律五、六、七；天花板 8.96×10⁹ · 定律（候选）：按位门的能量下限；反方 1.76×10⁹</small></span></span><span class="grp">一次能装下多少不同的门</span><span class="row" id="gap-gates_tx_compiled_bsc"><span class="lb">一笔交易能求值的不同门数（编译，BSC 单笔上限）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 inf" style="left:35.897%" data-key="gates_tx_compiled_bsc" data-now="691220.435174456" data-goal="20000000000.0" data-gap="4.461413426563061"></b><i class="seg" style="left:19.146%;width:16.751%"></i><b class="d sq c56 inf" style="left:19.146%" data-key="gates_tx_floor_bsc" data-pair-of="gates_tx_compiled_bsc" data-now="715827882.6666666" data-goal="20000000000.0" data-gap="1.4462213848002266"></b><b class="d cred" style="left:39.450%" data-key="red:gates_tx_scale_bsc" data-red-of="gates_tx_compiled_bsc" data-now="158513" data-goal="20000000000.0" data-gap="5.100965110203302"></b></span><span class="vl">差 4.5（推的） · 天花板 差 1.4（推的） · 反方 差 5.1<small>6.91×10⁵ → 2.00×10¹⁰ 门 · 定律五、七；天花板 7.16×10⁸ · 定律（候选）：按位门的能量下限；反方 1.59×10⁵</small></span></span><span class="row" id="gap-gates_block_compiled_bsc"><span class="lb">一块能求值的不同门数（编译，BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 inf" style="left:32.450%" data-key="gates_block_compiled_bsc" data-now="2883996.395004506" data-goal="20000000000.0" data-gap="3.841035282484353"></b><i class="seg" style="left:15.699%;width:16.751%"></i><b class="d sq c56 inf" style="left:15.699%" data-key="gates_block_floor_bsc" data-pair-of="gates_block_compiled_bsc" data-now="2986666666.6666665" data-goal="20000000000.0" data-gap="0.8258432407215185"></b><b class="d cred" style="left:36.022%" data-key="red:gates_block_scale_bsc" data-red-of="gates_block_compiled_bsc" data-now="656304" data-goal="20000000000.0" data-gap="4.483924944488524"></b></span><span class="vl">差 3.8（推的） · 天花板 差 0.8（推的） · 反方 差 4.5<small>2.88×10⁶ → 2.00×10¹⁰ 门 · 定律五、七；天花板 2.99×10⁹ · 定律（候选）：按位门的能量下限；反方 6.56×10⁵</small></span></span><span class="row" id="gap-gates_block_compiled_xlayer"><span class="lb">一块能求值的不同门数（编译，X Layer）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c196 inf" style="left:29.800%" data-key="gates_block_compiled_xlayer" data-now="8651989.185013518" data-goal="20000000000.0" data-gap="3.3639140277646904"></b><i class="seg" style="left:13.048%;width:16.751%"></i><b class="d sq c196 inf" style="left:13.048%" data-key="gates_block_floor_xlayer" data-pair-of="gates_block_compiled_xlayer" data-now="8960000000.0" data-goal="20000000000.0" data-gap="0.348721986001856"></b><b class="d cred" style="left:33.425%" data-key="red:gates_block_scale_xlayer" data-red-of="gates_block_compiled_xlayer" data-now="1925702" data-goal="20000000000.0" data-gap="4.016440914209247"></b></span><span class="vl">差 3.4（推的） · 天花板 差 0.3（推的） · 反方 差 4.0<small>8.65×10⁶ → 2.00×10¹⁰ 门 · 定律五、七；天花板 8.96×10⁹ · 定律（候选）：按位门的能量下限；反方 1.93×10⁶</small></span></span><span class="row" id="gap-gates_freeread_compiled"><span class="lb">一次免费只读调用能求值的不同门数（编译，带钥匙节点，不进共识）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth inf" style="left:27.477%" data-key="gates_freeread_compiled" data-now="22659106.393717006" data-goal="20000000000.0" data-gap="2.9457872170532005"></b><i class="seg" style="left:10.726%;width:16.751%"></i><b class="d sq cboth inf" style="left:10.726%" data-key="gates_freeread_floor" data-pair-of="gates_freeread_compiled" data-now="23465770581.333332" data-goal="20000000000.0" data-gap="-0.06940482470963377"></b><b class="d cred" style="left:31.220%" data-key="red:gates_freeread_scale_bsc" data-red-of="gates_freeread_compiled" data-now="4802272" data-goal="20000000000.0" data-gap="3.619583240868913"></b></span><span class="vl">差 2.9（推的） · 天花板 好 0.1（推的） · 反方 差 3.6<small>2.27×10⁷ → 2.00×10¹⁰ 门 · 定律七；天花板 2.35×10¹⁰ · 定律（候选）：按位门的能量下限；反方 4.80×10⁶</small></span></span><span class="row" id="gap-gates_tx_official_bsc"><span class="lb">一笔交易能求值的不同门数（官方，BSC，平铺网表、不算拼接）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:46.829%" data-key="gates_tx_official_bsc" data-now="7442.955379556534" data-goal="20000000000.0" data-gap="6.429284580255405"></b><b class="d cred" style="left:46.827%" data-key="red:gates_tx_official_bsc" data-red-of="gates_tx_official_bsc" data-now="7449.876049142163" data-goal="20000000000.0" data-gap="6.4288809486366825"></b></span><span class="vl">差 6.4 · 反方 差 6.4<small>7,443 → 2.00×10¹⁰ 门 · 定律二、七；反方 7,450</small></span></span><span class="grp">每秒几拍</span><span class="row" id="gap-ticks_e4_bsc"><span class="lb">全链每秒几拍（时钟律那颗：413 门 + 88 锁存，官方处理器解释，BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:50.321%" data-key="ticks_e4_bsc" data-now="131.30825340799765" data-goal="1500000000.0" data-gap="7.057799234436891"></b><b class="d cred" style="left:39.252%" data-key="red:ticks_6026_compiled_bsc" data-red-of="ticks_e4_bsc" data-now="12905.407317126736" data-goal="1500000000.0" data-gap="5.065319542869406"></b></span><span class="vl">差 7.1 · 反方 差 5.1<small>131 → 1.50×10⁹ 拍 / 秒 · 定律十四；反方 12,905</small></span></span><span class="row" id="gap-ticks_gputick_bsc"><span class="lb">一拍 2×10¹⁰ 门时全链每秒几拍（编译，BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 inf" style="left:81.502%" data-key="ticks_gputick_bsc" data-now="0.0003204440438893896" data-goal="1500000000.0" data-gap="12.670339055315377"></b><i class="seg" style="left:64.751%;width:16.751%"></i><b class="d sq c56 inf" style="left:64.751%" data-key="ticks_gputick_floor_bsc" data-pair-of="ticks_gputick_bsc" data-now="0.33185185185185184" data-goal="1500000000.0" data-gap="9.655147013552543"></b><b class="d cred inf" style="left:82.060%" data-key="red:ticks_gstar_compiled_bsc" data-red-of="ticks_gputick_bsc" data-now="0.00025427884064823595" data-goal="1500000000.0" data-gap="12.770781036402742"></b></span><span class="vl">差 12.7（推的） · 天花板 差 9.7（推的） · 反方 差 12.8（推的）<small>3.20×10⁻⁴ → 1.50×10⁹ 拍 / 秒 · 定律五、七、十四；天花板 0.332 · 定律（候选）：按位门的能量下限；反方 2.54×10⁻⁴</small></span></span><span class="ax"><span class="alt e0" style="left:0.000%">-2</span><span style="left:11.111%">0</span><span class="alt" style="left:22.222%">2</span><span style="left:33.333%">4</span><span class="alt" style="left:44.444%">6</span><span style="left:55.556%">8</span><span class="alt" style="left:66.667%">10</span><span style="left:77.778%">12</span><span class="alt" style="left:88.889%">14</span><span class="e1" style="left:100.000%">16</span></span><span class="axu">差几个 10 倍（log₁₀ 目标 ÷ 现在；越往右差得越多）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="k cboth"></i>两链一样 / 不分链</span><span><i class="k ho"></i>推的，没量</span><span><i class="k sq ho"></i>按位运算的天花板</span><span><i class="k cred"></i>反方独立复算</span></p><figcaption><b>图 10.1</b>　离显卡级（约 200 亿门、每秒十几亿拍）还差几个 10 倍，一项一行（10 项，其中 5 项是推的，没量）。每行的单位不同，比的是同一行里「现在」和「目标」之比，所以横轴只写差几个 10 倍；每行右边写着现在多少、目标多少和卡在哪条定律。差得最多的是「全链每秒求值几个门次（官方，BSC）」，14.6 个；最少的是「一次免费只读调用能求值的不同门数（编译，带钥匙节点，不进共识）」，2.9 个。方块是同一行「只用按位运算、编得最好」时的天花板（7 项，其中 7 项是推的，没量），圆点到方块那道细线，就是靠把电路编得更好最多能挪开多少。「一次免费只读调用最多能求值的不同门数（带钥匙节点，不进共识）」的方块落在 0 左边：同一层的门排满 256 路、搬线不要钱、不管代码装不装得下：做不到的天花板。红点是反方独立复算的同一项（10 项）；圆点和红点隔得远的，就是两边量得不一样的地方。</figcaption></figure>
+
+<h2 id="s10-2"><span class="secno">10.2</span>定义</h2><section class="box def" aria-labelledby="d10">
+  <header><span class="kind">定义</span><span class="name" id="d10">本章用到的词</span></header>
+  <dl class="terms">
+    <dt id="t-b6ca0842">显卡级</dt><dd>本章拿来比的目标，一拍约 200 亿个门、每秒十几亿拍，合每秒 3×10¹⁹ 门次。</dd>
+    <dt id="t-7b91b941">门次</dt><dd>一个门求值一次。</dd>
+    <dt id="t-5c9d7dc0">全链功率</dt><dd>全链每秒能执行的 gas，块上限除以出块间隔（第 4 章）。</dd>
+    <dt id="t-8b498527">每 gas 顶几个门</dt><dd>花一个 gas 能求值几个门次。按位运算算的是真门；乘法、哈希、椭圆曲线这些指令，照教科书上的电路换算成「顶多少个门」，是推的。</dd>
+    <dt id="t-92661ea5">换计算</dt><dd>不一个门一个门地算，换成别的东西：按字的算术、预编译、链下算链上验。</dd>
+    <dt id="t-ec4ee777">欺诈证明</dt><dd>链下照常算；谁觉得结果不对就来挑战，双方二分找到第一处分歧，链上只裁一个门。</dd>
+    <dt id="t-274d398a">零知识证明</dt><dd>链下算的人附上一份证明，链上验证明就行，不用重算。</dd>
+    <dt id="t-8af2bc36">公开输入</dt><dd>零知识证明里，链上要知道的那几个数。</dd>
+  </dl>
+</section>
+<h2 id="s10-3"><span class="secno">10.3</span>定律和公式</h2><section class="box law" aria-labelledby="law-ee966c">
+  <header><span class="kind">定律二十一</span><span class="name" id="law-ee966c">按位门的能量下限（实验 HC2，判据先提交）</span><span class="cite">hc2·floor、hc2·ops、判据·HC2</span></header>
+  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>e</mi><mtext>门</mtext></msub><mtext> </mtext><mo>≥</mo><mtext> </mtext><msub><mi>g</mi><mtext>两输入</mtext></msub><mo>+</mo><msub><mi>g</mi><mtext>放数</mtext></msub><mo>=</mo><mn>3</mn><mo>+</mo><mn>3</mn><mo>=</mo><mn>6</mn><mtext> gas（每 256 路）</mtext></mrow><annotation encoding="application/x-tex">e_{\text{门}}\ \ge\ g_{\text{两输入}}+g_{\text{放数}}=3+3=6\ \text{gas（每 256 路）}</annotation></semantics></math></span></math></div>
+  <ul><li>两输入的按位指令（与、或、异或）每条 3 gas，从栈上吃两份数、放回一份。所以每个门另外至少要往栈上放一份数，最便宜的复制指令也是 3 gas。</li><li>两链各量了十三种指令组合的价，和以太坊的价表逐个相同：复制 + 与 / 或 / 异或都是 6，从栈里第 16 个复制 + 与也是 6，从内存读 + 与是 8，用调用环境里的值供数 + 与是 5。</li><li>下限是紧的：反方造出了每门正好 6.0 gas 的电路（1,024 门的链），全靠调用环境供数的正好 5.0。</li><li><b>只对同时活着不超过 16 根线的电路够得着</b>：复制指令只够得着栈顶 16 个。线一多就得放内存，每门 12–24 gas，还要加内存费（定律五）。</li><li>编译器还剩的余地：第 2 章那颗随机 1,600 门每门 24.27，是下限的 4.0 倍，0.61 个数量级；链状的 12.06，2.0 倍。</li><li>照这个下限，全链每秒最多 6.6×10⁹（BSC）、9.0×10⁹（X Layer）门次，离显卡级差 9.66 / 9.52 个数量级。</li></ul>
+  <p></p>
+<figure class="fig" id="fig102"><p class="plh">门次率的差距，换成每门能量或全链功率各要涨多少（两种看法，不能相加）</p><div class="dotp gap" role="img" aria-label="门次率的差距换成每门能量或全链功率各要涨多少：每 gas 能求值几个门次（官方处理器解释） 14.6；每 gas 能求值几个门次（编译直线，256 路用满） 10.3；每 gas 能求值几个门次（TapeGPU，256 路用满） 10.7；全链功率（BSC） 10.3；全链功率（X Layer） 10.1"><span class="grp">每 gas 能求值几个门次（全链功率不变时）</span><span class="row" id="gap-energy_official"><span class="lb">每 gas 能求值几个门次（官方处理器解释）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth" style="left:92.435%" data-key="energy_official" data-now="0.00044363471147754993" data-goal="192857142857.14285" data-gap="14.63821020900772"></b><b class="d cred" style="left:92.433%" data-key="red:energy_official" data-red-of="energy_official" data-now="0.00044404721552980915" data-goal="192913442779.3395" data-gap="14.63793334053075"></b></span><span class="vl">差 14.6 · 反方 差 14.6<small>4.44×10⁻⁴ → 1.93×10¹¹ 门次 / gas · 定律二；反方 4.44×10⁻⁴ → 1.93×10¹¹</small></span></span><span class="row" id="gap-energy_compiled"><span class="lb">每 gas 能求值几个门次（编译直线，256 路用满）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth" style="left:68.123%" data-key="energy_compiled" data-now="10.54718681601648" data-goal="192857142857.14285" data-gap="10.26209909000353"></b><i class="seg" style="left:64.751%;width:3.372%"></i><b class="d sq cboth inf" style="left:64.751%" data-key="energy_floor" data-pair-of="energy_compiled" data-now="42.666666666666664" data-goal="192857142857.14285" data-gap="9.655147013552543"></b><b class="d cred" style="left:68.681%" data-key="red:energy_compiled_bsc" data-red-of="energy_compiled" data-now="8.37184965553327" data-goal="192913442779.3395" data-gap="10.362541071090893"></b></span><span class="vl">差 10.3 · 天花板 差 9.7（推的） · 反方 差 10.4<small>10.5 → 1.93×10¹¹ 门次 / gas · 定律五、六；天花板 42.7 · 定律（候选）：按位门的能量下限；反方 8.37 → 1.93×10¹¹</small></span></span><span class="row" id="gap-energy_tapegpu"><span class="lb">每 gas 能求值几个门次（TapeGPU，256 路用满）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth" style="left:70.502%" data-key="energy_tapegpu" data-now="3.935056201364204" data-goal="192857142857.14285" data-gap="10.690284789049185"></b><b class="d cred" style="left:70.793%" data-key="red:energy_tapegpu_bsc" data-red-of="energy_tapegpu" data-now="3.488881178723958" data-goal="192913442779.3395" data-gap="10.742676312745681"></b></span><span class="vl">差 10.7 · 反方 差 10.7<small>3.94 → 1.93×10¹¹ 门次 / gas · 定律五、六；反方 3.49 → 1.93×10¹¹</small></span></span><span class="grp">全链功率（每门能量不变时）</span><span class="row" id="gap-power_bsc"><span class="lb">全链功率（BSC）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:68.123%" data-key="power_bsc" data-now="155555555.55555555" data-goal="2.8443603515625e+18" data-gap="10.26209909000353"></b><b class="d cred" style="left:68.681%" data-key="red:power_compiled_bsc" data-red-of="power_bsc" data-now="155510158.17137715" data-goal="3.5834375e+18" data-gap="10.362541071090893"></b></span><span class="vl">差 10.3 · 反方 差 10.4<small>1.56×10⁸ → 2.84×10¹⁸ gas / 秒 · 定律七；反方 1.56×10⁸ → 3.58×10¹⁸</small></span></span><span class="row" id="gap-power_xlayer"><span class="lb">全链功率（X Layer）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:67.399%" data-key="power_xlayer" data-now="210000000.0" data-goal="2.8443603515625e+18" data-gap="10.131765321508523"></b><b class="d cred" style="left:67.956%" data-key="red:power_compiled_xlayer" data-red-of="power_xlayer" data-now="210000000.0" data-goal="3.5834375e+18" data-gap="10.232080539454136"></b></span><span class="vl">差 10.1 · 反方 差 10.2<small>2.10×10⁸ → 2.84×10¹⁸ gas / 秒 · 定律七；反方 2.10×10⁸ → 3.58×10¹⁸</small></span></span><span class="ax"><span class="alt e0" style="left:0.000%">-2</span><span style="left:11.111%">0</span><span class="alt" style="left:22.222%">2</span><span style="left:33.333%">4</span><span class="alt" style="left:44.444%">6</span><span style="left:55.556%">8</span><span class="alt" style="left:66.667%">10</span><span style="left:77.778%">12</span><span class="alt" style="left:88.889%">14</span><span class="e1" style="left:100.000%">16</span></span><span class="axu">差几个 10 倍（log₁₀ 目标 ÷ 现在；越往右差得越多）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="k cboth"></i>两链一样 / 不分链</span><span><i class="k ho"></i>推的，没量</span><span><i class="k sq ho"></i>按位运算的天花板</span><span><i class="k cred"></i>反方独立复算</span></p><figcaption><b>图 10.2</b>　图 10.1「全链每秒求值几个门次」那组的差距，换两种看法：全链功率不变，每 gas 能求值的门次要涨多少；或者每门能量不变，全链功率要涨多少。说的是同一份差距，所以各自都和门次率那组差不多大，<b>不能相加</b>（5 项）。横轴和图 10.1 是同一根。方块是同一行「只用按位运算、编得最好」时的天花板（1 项，其中 1 项是推的，没量），圆点到方块那道细线，就是靠把电路编得更好最多能挪开多少。红点是反方独立复算的同一项（5 项），其中 5 项反方用的目标和正方不同，右边小字写了反方的目标；圆点和红点隔得远的，就是两边量得不一样的地方。</figcaption></figure>
+
+</section>
+<div class="thread">
+<details class="dbt" data-for="red-ceiling-001">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd open">还没回应</span></span><span class="don">第 1 条 · 针对 定律二十一</span></summary>
+  <section class="box con" id="red-ceiling-001" aria-labelledby="red-ceiling-001-h" data-author="RED" data-id="red-ceiling-001" data-target="定律二十一" data-verdict="没推翻" data-date="2026-11-18" data-sha256="9fd7bdf4fb6f809617dc4090a3c1887dc4a2e50a92989fa843328c4ba7f4cc64">
+    <header><span class="kind" id="red-ceiling-001-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-ee966c">定律二十一</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="907b0eb5fc529908133f2f9a528741e4648bbda01f814c60b2fc3920a7edd9a5">定律二十一说，按位门每 256 路至少 6 gas：一条两输入的按位指令 3 gas，再加往栈上放一份数最少 3 gas；全靠调用环境里的值供数时是 5；下限是紧的，可只对同时活着不超过 16 根线的电路够得着。我（反方）先写好判据，在两条链各一家节点上独立量过（只读调用，代码用状态覆盖放进去）：十二种指令各连排 1,000 次和 0 次相比；再造一条 1,024 门的链，16 个 256 路的随机输入放在栈上，每个门用一次复制再接与、或、异或；另一种是每个门的第二个输入全用 2 gas 的调用环境指令（十种轮换，值照钉住那一块的块头、我的地址和调用数据现算）。</p>
+    <p class="said" data-sha256="35bf0ec10de79ed1542afa8ec650739eabafe54a7e60a1b4763f3fc8ae3df6d1">结果和这条定律逐个对上：十二种指令两链都等于价表（与、或、异或、取反、复制栈顶、复制第 16 个、交换、压一个字节、从内存读都是 3，压零、读调用者、弹出都是 2）。复制供数的那条链两链都是每门正好 6.0 gas（6,255 − 111 = 6,144 = 6 × 1,024），全用环境值供数的正好 5.0（5,141 − 21 = 5,120），输出和本地算的逐位相同，十个环境值回读也和现算的一样。我没找到比这更便宜的供数办法：每个两输入运算吃两份、吐一份，最便宜的供数就是只能当输入的 2 gas 环境值和 3 gas 的复制。按我先写的判据判没推翻，下限是紧的。</p>
+    <p class="said" data-sha256="b58da799b22128523fe1213970b6511f6fcbe167c3297b8fcc4fa19bd28fbb13">要提醒的是范围：6 gas 只有链状这类电路做得到；随机电路每门 24–31 gas（本章那颗 24.27，我自己的编法 30.58），所以「全链每秒最多 6.6×10⁹ / 9.0×10⁹ 门次」是一般电路到不了的上界，实际要低 4 到 5 倍。本章第一笔差距账（图 10.1）我也拿自己的数独立复算过：量的 13 项和本章差不到 0.10 个数量级；「每秒几拍」那项判推翻（官方处理器 131 拍/秒差 7.1，编成直线是 1.29×10⁴ 拍/秒、差 5.07），「一拍能装多少门」四项判削弱（照每门 24 gas 整算，没算一份合约最多 24,576 字节和跟着涨的内存费，多算了约 0.64–0.67 个数量级）。这几处正文已经照改，写在「什么时候不成立」第 1 条。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="e866a2299b347091e2187b54013af60563c6b0d6cb434c266478206ca1b6ebe4">hc2/bsc-keyed.json</span><span class="ev-n" data-sha256="93a51ec6698477e6e95dec9d46993441e6358c2dffc41f42afb4282627b4f426">BSC：十二种指令的价，1,024 门链两种供数的 gas 和输出</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a8507098c1836328ded6eb7b2ea9c3496404aa7f63f319e66a2a8bc23c94bec8">hc2/xlayerrpc.okx.com.json</span><span class="ev-n" data-sha256="8569b672b9e1ce0d609607ec007fbd50cb609cb8a7ec8963b8c885ba87fd5ef3">X Layer：同上（块 76,255,674）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="2c3dce38bfea06d81cddd66a41d5a8f8484086f04ec6e1cb6d4d55bc4a986752">hc1_red.json</span><span class="ev-n" data-sha256="c723d89ff4be06e373cc2c59c5af5ce27b7726d1a16c00226bd5d4d6633581c7">第一笔差距账的独立复算</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 1 章已有一条定律二十（取值律），本章四条定律各后移一号，这一条原来叫定律二十；框里的数和结论都没变</span></li></ol></details>
+  </section>
+
+</details>
+
+
+</div><section class="box law" aria-labelledby="law-394f5a">
+  <header><span class="kind">定律二十二</span><span class="name" id="law-394f5a">天花板律（实验 HC3，判据先提交）</span><span class="cite">hc3·speed、判据·HC3</span></header>
+  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>R</mi><mi>max</mi><mo>⁡</mo></msub><mo>=</mo><mi>min</mi><mo>⁡</mo><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><mi>P</mi><mo separator="true">,</mo><mtext> </mtext><msub><mi>v</mi><mtext>节点</mtext></msub><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo><mo>×</mo><msub><mi>n</mi><mtext>门/gas</mtext></msub></mrow><annotation encoding="application/x-tex">R_{\max}=\min\bigl(P,\ v_{\text{节点}}\bigr)\times n_{\text{门/gas}}</annotation></semantics></math></span></math></div>
+  <ul><li>P 是全链功率，v 是一台节点跑这种指令每秒烧的 gas，n 是这种指令每 gas 顶的门。</li><li><b>gas 不按时间定价</b>（反方量的）：一台节点上，计算指令之间每秒烧的 gas 差 4.4–8.7 倍；热读存储比最慢的验签快约 9 倍；大块内存搬运比最慢的验签快 40–100 倍。「每 gas 跑得最快」的是内存搬运，可它只搬数、不顶门。</li><li><b>两个因子不能直接乘</b>：一块全是慢指令时，一台节点跑不完。椭圆曲线这几种，节点每秒只烧 0.34–1.09×10⁸ gas（反方量的），比全链功率还低，所以要取两者小的那个。</li><li>照这个式子，每 gas 顶门最多的那几种（椭圆曲线运算）把全链顶到每秒约 10¹⁴ 门次：验签 ecrecover 在 BSC 是 1.2×10¹⁴、X Layer 1.7×10¹⁴，离显卡级差 5.4 / 5.3 个数量级（节点速度是量的，门数是推的）。</li><li>这个约 10¹⁴，来自一台节点的 CPU 做大数和椭圆曲线运算时每秒能顶的门，和哪颗预编译定价最便宜无关。而且只对那几种固定的函数成立；一般的门电路还是定律二十一那一档。</li></ul>
+  <p></p>
+<figure class="fig" id="fig103"><p class="plh">全换成同一种指令时，每秒最多顶几个门：离显卡级（约 200 亿门、每秒十几亿拍）还差几个 10 倍</p><div class="dotp gap gap3" role="img" aria-label="全换成同一种指令时离目标差几个 10 倍（推的，没量）：BN254 ecMul BSC 全链 5.5、X Layer 全链 5.4、一台节点 5.7；BN254 pairing k=2 BSC 全链 6.1、X Layer 全链 6.0、一台节点 6.0；modexp 256-bit BSC 全链 6.2、X Layer 全链 5.7、一台节点 6.3；MULMOD BSC 全链 6.6、X Layer 全链 6.4、一台节点 6.7；MUL BSC 全链 6.9、X Layer 全链 6.8、一台节点 6.6；KECCAK256 32B BSC 全链 7.8、X Layer 全链 7.6、一台节点 8.1；sha256 32B BSC 全链 8.5、X Layer 全链 8.4、一台节点 8.2；gate DUP1 AND BSC 全链 9.7、X Layer 全链 9.5、一台节点 9.4"><span class="row" id="gap3-ecmul"><span class="lb">BN254 ecMul</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:41.660%" data-key="rate_hc3_ecmul_bsc" data-now="95118751550767.22" data-goal="3e+19" data-gap="5.498855113258006"></b><b class="d c196 y1 inf" style="left:40.936%" data-key="rate_hc3_ecmul_xlayer" data-now="128410314593535.75" data-goal="3e+19" data-gap="5.368521344763001"></b><b class="d cboth y2 inf" style="left:42.659%" data-key="node_gates_ecmul" data-now="62890232524568.336" data-goal="3e+19" data-gap="5.678538054267626"></b></span><span class="vl">差 5.5 · 5.4 · 5.7<small>BSC 全链 9.51×10¹³、X Layer 全链 1.28×10¹⁴、一台节点 6.29×10¹³ 门次 / 秒</small></span></span><span class="row" id="gap3-pairing"><span class="lb">BN254 pairing k=2</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:45.025%" data-key="rate_hc3_pairing_bsc" data-now="23579889500808.855" data-goal="3e+19" data-gap="6.104579489130288"></b><b class="d c196 y1 inf" style="left:44.301%" data-key="rate_hc3_pairing_xlayer" data-now="31832850826091.953" data-goal="3e+19" data-gap="5.974245720635281"></b><b class="d cboth y2 inf" style="left:44.344%" data-key="node_gates_pairing" data-now="31279322546074.234" data-goal="3e+19" data-gap="5.9818639162681615"></b></span><span class="vl">差 6.1 · 6.0 · 6.0<small>BSC 全链 2.36×10¹³、X Layer 全链 3.18×10¹³、一台节点 3.13×10¹³ 门次 / 秒</small></span></span><span class="row" id="gap3-modexp"><span class="lb">modexp 256-bit</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:45.771%" data-key="rate_hc3_modexp_bsc" data-now="17308596716630.979" data-goal="3e+19" data-gap="6.238859395563388"></b><b class="d c196 y1 inf" style="left:42.534%" data-key="rate_hc3_modexp_xlayer" data-now="66223764801078.89" data-goal="3e+19" data-gap="5.656107388091327"></b><b class="d cboth y2 inf" style="left:45.940%" data-key="node_gates_modexp" data-now="16139682151591.416" data-goal="3e+19" data-gap="6.2692262770702385"></b></span><span class="vl">差 6.2 · 5.7 · 6.3<small>BSC 全链 1.73×10¹³、X Layer 全链 6.62×10¹³、一台节点 1.61×10¹³ 门次 / 秒</small></span></span><span class="row" id="gap3-mulmod"><span class="lb">MULMOD</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:47.518%" data-key="rate_hc3_mulmod_bsc" data-now="8390776470588.235" data-goal="3e+19" data-gap="6.553319103034161"></b><b class="d c196 y1 inf" style="left:46.794%" data-key="rate_hc3_mulmod_xlayer" data-now="11327548235294.117" data-goal="3e+19" data-gap="6.422985334539155"></b><b class="d cboth y2 inf" style="left:48.550%" data-key="node_gates_mulmod" data-now="5471502630280.458" data-goal="3e+19" data-gap="6.73901464238589"></b></span><span class="vl">差 6.6 · 6.4 · 6.7<small>BSC 全链 8.39×10¹²、X Layer 全链 1.13×10¹³、一台节点 5.47×10¹² 门次 / 秒</small></span></span><span class="row" id="gap3-mul"><span class="lb">MUL</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:49.421%" data-key="rate_hc3_mul_bsc" data-now="3812977777777.778" data-goal="3e+19" data-gap="6.895856980528239"></b><b class="d c196 y1 inf" style="left:48.697%" data-key="rate_hc3_mul_xlayer" data-now="5147520000000.0" data-goal="3e+19" data-gap="6.765523212033234"></b><b class="d cboth y2 inf" style="left:47.927%" data-key="node_gates_mul" data-now="7082471790016.009" data-goal="3e+19" data-gap="6.626936401349253"></b></span><span class="vl">差 6.9 · 6.8 · 6.6<small>BSC 全链 3.81×10¹²、X Layer 全链 5.15×10¹²、一台节点 7.08×10¹² 门次 / 秒</small></span></span><span class="row" id="gap3-keccak"><span class="lb">KECCAK256 32B</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:54.207%" data-key="rate_hc3_keccak_bsc" data-now="524614492753.6232" data-goal="3e+19" data-gap="7.757280970684188"></b><b class="d c196 y1 inf" style="left:53.483%" data-key="rate_hc3_keccak_xlayer" data-now="708229565217.3914" data-goal="3e+19" data-gap="7.626947202189181"></b><b class="d cboth y2 inf" style="left:55.970%" data-key="node_gates_keccak" data-now="252661353327.04242" data-goal="3e+19" data-gap="8.074582436703086"></b></span><span class="vl">差 7.8 · 7.6 · 8.1<small>BSC 全链 5.25×10¹¹、X Layer 全链 7.08×10¹¹、一台节点 2.53×10¹¹ 门次 / 秒</small></span></span><span class="row" id="gap3-sha256"><span class="lb">sha256 32B</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:58.229%" data-key="rate_hc3_sha256_bsc" data-now="99043518518.51851" data-goal="3e+19" data-gap="8.48129519446896"></b><b class="d c196 y1 inf" style="left:57.505%" data-key="rate_hc3_sha256_xlayer" data-now="133708750000.0" data-goal="3e+19" data-gap="8.350961425973953"></b><b class="d cboth y2 inf" style="left:56.435%" data-key="node_gates_sha256" data-now="208326486150.6279" data-goal="3e+19" data-gap="8.158376766059414"></b></span><span class="vl">差 8.5 · 8.4 · 8.2<small>BSC 全链 9.90×10¹⁰、X Layer 全链 1.34×10¹¹、一台节点 2.08×10¹¹ 门次 / 秒</small></span></span><span class="row" id="gap3-and"><span class="lb">gate DUP1 AND</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d c56 y0 inf" style="left:64.751%" data-key="rate_hc3_and_bsc" data-now="6637037037.037037" data-goal="3e+19" data-gap="9.655147013552543"></b><b class="d cred y0" style="left:64.752%" data-key="red:rate_hc3_and_bsc_red" data-red-of="rate_hc3_and_bsc" data-now="6635120224.527729" data-goal="3e+19" data-gap="9.65527245828395"></b><b class="d c196 y1 inf" style="left:64.027%" data-key="rate_hc3_and_xlayer" data-now="8960000000.0" data-goal="3e+19" data-gap="9.524813245057537"></b><b class="d cred y1" style="left:64.027%" data-key="red:rate_hc3_and_xlayer_red" data-red-of="rate_hc3_and_xlayer" data-now="8960000000" data-goal="3e+19" data-gap="9.524813245057537"></b><b class="d cboth y2 inf" style="left:63.230%" data-key="node_gates_and" data-now="12467809359.34962" data-goal="3e+19" data-gap="9.381331101699995"></b><b class="d cred y2" style="left:63.212%" data-key="red:node_gates_and_red" data-red-of="node_gates_and" data-now="12558419659.626368" data-goal="3e+19" data-gap="9.378186263111937"></b></span><span class="vl">差 9.7 · 9.5 · 9.4；BSC 反方 9.7、X Layer 反方 9.5、一台节点 反方 9.4<small>BSC 全链 6.64×10⁹、X Layer 全链 8.96×10⁹、一台节点 1.25×10¹⁰ 门次 / 秒</small></span></span><span class="ax"><span class="alt e0" style="left:0.000%">-2</span><span style="left:11.111%">0</span><span class="alt" style="left:22.222%">2</span><span style="left:33.333%">4</span><span class="alt" style="left:44.444%">6</span><span style="left:55.556%">8</span><span class="alt" style="left:66.667%">10</span><span style="left:77.778%">12</span><span class="alt" style="left:88.889%">14</span><span class="e1" style="left:100.000%">16</span></span><span class="axu">差几个 10 倍（log₁₀ 目标 ÷ 现在；越往右差得越多）</span></div><p class="lg"><span><i class="k c56"></i>BSC 全链</span><span><i class="k c196"></i>X Layer 全链</span><span><i class="k cboth"></i>一台节点</span><span><i class="k ho"></i>推的，没量</span><span><i class="k cred"></i>反方独立复算</span></p><p class="lg"><span>每行三层，从上到下：BSC 全链、X Layer 全链、一台节点</span></p><figcaption><b>图 10.3</b>　假如块里全是同一种指令，按节点实际执行这种指令的速度，全链（和一台节点）每秒最多能顶多少个门。一种指令一行（8 种），按差距从小到大排。门数是把指令折算成门推出来的，所以点都是空心。最划算的是「BN254 ecMul」，BSC 全链还差 5.5 个 10 倍，而且只对这一种函数成立。横轴和图 10.1 是同一根。</figcaption></figure>
+
+</section>
+<div class="thread">
+<details class="dbt" data-for="red-ceiling-002">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd open">还没回应</span></span><span class="don">第 2 条 · 针对 定律二十二</span></summary>
+  <section class="box con" id="red-ceiling-002" aria-labelledby="red-ceiling-002-h" data-author="RED" data-id="red-ceiling-002" data-target="定律二十二" data-verdict="没推翻" data-date="2026-11-18" data-sha256="5c142dd3936741e636fe77cffbc6b56ff9501ac96371e18d008d050ed9d88904">
+    <header><span class="kind" id="red-ceiling-002-h">反方 · RED · 第 2 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-394f5a">定律二十二</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="75643548ced5e561187874fcb4a4326d14341f90156ce570e33a2a74bd1b8c5f">定律二十二说，天花板 = min(全链功率, 一台节点跑这种指令每秒烧的 gas) × 这种指令每 gas 顶的门；gas 不按时间定价；椭圆曲线这几种节点每秒只烧 0.6–1.0×10⁸ gas，比全链功率还低；照这个式子全链约每秒 10¹⁴ 门次，ecrecover 在 BSC 是 1.2×10¹⁴、X Layer 1.7×10¹⁴。这里有三次是我（反方）先写判据再量的：一次九种指令的循环（三家节点）；一次只在 BSC 一家节点上把最快、最慢那几种拉长重量；一次量椭圆曲线这六种（ecrecover、BN254 点乘、P256 验签、BLS G1 / G2 多标量乘、BLS 配对）。都是只读调用，每种先核结果对不对。后两次计时用大小两档、每档 15 遍交替，时间差不到 0.1 秒或两档重叠就不下结论；第一次只看了 5 遍抖不抖，漏了这条线，结果只当参考。</p>
+    <p class="said" data-sha256="f7f2db8d03b3cfe94d6eacb3e4314f760f4904bcfeced9d22459b6673fc954e2">「gas 不按时间定价」是我量出来的，站得住：BSC 那家节点上，大块内存搬运每秒 4.29×10⁹ gas，ecrecover 6.60×10⁷，差 65 倍（四分位交叉算最少 40 倍）；热读存储 5.81×10⁸，比 ecrecover 快 8.8 倍；按位门 2.96×10⁸。天花板那半也对上：椭圆曲线六种两链 12 个数全下了结论、结果全核过；最大的都是 ecrecover，BSC 1.16×10¹⁴（离显卡级差 5.41 个数量级）、X Layer 1.66×10¹⁴（差 5.26）；全链功率 ÷ 节点速度 BSC 1.54–4.58、X Layer 1.93–3.31，都比 1 大，所以确实要取小的那个。按我先写的判据，「约 10¹⁴」判没推翻。</p>
+    <p class="said" data-sha256="27f050b0aa0085f78db4d2b2616c54968dc3a56da9fe9b345e3087961502b455">两处数要改宽：（1）「椭圆曲线这几种节点每秒只烧 0.6–1.0×10⁸ gas」——我量的 BSC 上 BLS G1 / G2 只有 3.9×10⁷ / 3.4×10⁷，X Layer 上 BLS G2、配对是 1.03×10⁸ / 1.09×10⁸，合起来是 0.34–1.09×10⁸；结论「比全链功率还低」不变。（2）「计算指令之间每秒烧的 gas 差 4.4–7.9 倍」——同一家 BSC 节点上，按位门 2.96×10⁸ 对 BLS G2 3.39×10⁷ 是 8.7 倍（两次分开量的）。另外这个约 10¹⁴ 里，节点速度是量的，每 gas 顶几个门是照教科书电路推的，建议照现在这样一直标着。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1b75fbdb6ad704a7dc122b81fadb8bee592f5664e763acdd12c8a966ed3b201f">hc3/fine_bsc-keyed.json</span><span class="ev-n" data-sha256="0d639d84f175eaa95a5252b16a56cc4ba8158647e3e019649ba6c86e3a46deea">BSC 一家节点拉长重量：内存搬运、热读、按位门、ecrecover 的每秒 gas 和四分位</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="31ce09ca559ecc21e5383a3c8faaaa285b2fb01272435e974d72d84c70850d76">ecnode_red.json</span><span class="ev-n" data-sha256="5c0da370cebb336ed16095cdb6bac0af47baa6fc11229250468254a2f1db892c">椭圆曲线六种两链的节点速度、天花板、全链功率 ÷ 节点速度</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="b5a07463bd943a9c6d8d6808db27c8ca7d2a9614223aafa7d7e5abae1648259a">hc3_red.json</span><span class="ev-n" data-sha256="33c0c99ed6a6d7b9ab387ffb507c04b50e9e9d5a19098acfe93b5a9cac1a8fe8">九种指令三家节点的第一次（只当参考）</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 1 章已有一条定律二十（取值律），本章四条定律各后移一号，这一条原来叫定律二十一；框里的数和结论都没变</span></li></ol></details>
+  </section>
+
+</details>
+
+
+</div><section class="box law" aria-labelledby="law-0be923">
+  <header><span class="kind">定律二十三</span><span class="name" id="law-0be923">链上验证律（实验 HC4，判据先提交）</span><span class="cite">hc4·verify、hc4·fraud2、判据·HC4</span></header>
+  <ul><li>链下算、链上验时，链上的价对门数只按对数涨，对进出的字节按线性涨。</li><li><b>欺诈证明</b>：链上裁一个门，要核四条默克尔路径（门在网表里、三根线的值），再核与非。2²⁰ 根线 7,778 gas，2³⁵ 根线 13,298 gas，只贵 1.71 倍。整笔约 21 万 gas，大头是调用数据的地板价。二分到 3×10¹⁹ 门次要 65 轮，一次挑战约 3.2×10⁶ gas，约一个 BSC 块的 4.6%（每轮的价是推的）。</li><li><b>零知识证明</b>（Groth16）：链上验一次 232,868 gas，电路从 2¹⁰ 门到 2²⁰ 门一点不变；每多一个公开输入加 6,508 gas（反方量的）。</li><li><b>第三个瓶颈是每秒能运上链的字节</b>：BSC 约 4.2 MB，X Layer 约 0.63 MB（反方用量过的常数算的）。算得多、进出数据少的活不卡在这里，进出数据多的活卡在这里。</li><li><b>零知识这条路，链上验得起，链下证不起</b>：测量机（16 核 32 线程的 CPU，用了其中 28 个线程）每秒证明约 1.1×10⁶ 门，要证明到显卡级约 4–8×10¹⁴ 个这样的线程（推的）。</li><li><b>所以真要显卡级，现实的路是欺诈证明</b>：链下照原速算，链只当裁判。代价是至少要有一个人用同样快的机器重算一遍、肯来挑战，外加挑战期的等待。</li></ul>
+  <p></p>
+<figure class="fig" id="fig104"><p class="plh">链下证明要多少台机器：一台机器的证明速度离显卡级（约 200 亿门、每秒十几亿拍）还差几个 10 倍</p><div class="dotp gap" role="img" aria-label="链下证明一台机器离目标差几个 10 倍：28 个线程一起跑时每个线程每秒能证明几个门（Groth16，gnark，2²⁰ 门） 14.9；测量机用 28 个线程每秒能证明几个门（Groth16，gnark，2²⁰ 门） 13.4"><span class="grp">链下证明要多少台机器</span><span class="row" id="gap-path_zk_prove_core"><span class="lb">28 个线程一起跑时每个线程每秒能证明几个门（Groth16，gnark，2²⁰ 门）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth" style="left:93.791%" data-key="path_zk_prove_core" data-now="39337.810623969286" data-goal="3e+19" data-gap="14.882311069456328"></b></span><span class="vl">差 14.9<small>39,338 → 3.00×10¹⁹ 门次 / 秒 · 定律（候选）：链上验证律</small></span></span><span class="row" id="gap-path_zk_prove_server"><span class="lb">测量机用 28 个线程每秒能证明几个门（Groth16，gnark，2²⁰ 门）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g z" style="left:11.111%"></i><i class="g" style="left:22.222%"></i><i class="g" style="left:33.333%"></i><i class="g" style="left:44.444%"></i><i class="g" style="left:55.556%"></i><i class="g" style="left:66.667%"></i><i class="g" style="left:77.778%"></i><i class="g" style="left:88.889%"></i><i class="g" style="left:100.000%"></i><b class="d cboth" style="left:85.751%" data-key="path_zk_prove_server" data-now="1101458.69747114" data-goal="3e+19" data-gap="13.435153038114109"></b></span><span class="vl">差 13.4<small>1.10×10⁶ → 3.00×10¹⁹ 门次 / 秒 · 定律（候选）：链上验证律</small></span></span><span class="ax"><span class="alt e0" style="left:0.000%">-2</span><span style="left:11.111%">0</span><span class="alt" style="left:22.222%">2</span><span style="left:33.333%">4</span><span class="alt" style="left:44.444%">6</span><span style="left:55.556%">8</span><span class="alt" style="left:66.667%">10</span><span style="left:77.778%">12</span><span class="alt" style="left:88.889%">14</span><span class="e1" style="left:100.000%">16</span></span><span class="axu">差几个 10 倍（log₁₀ 目标 ÷ 现在；越往右差得越多）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="k cboth"></i>两链一样 / 不分链</span><span><i class="k ho"></i>推的，没量</span><span><i class="k sq ho"></i>按位运算的天花板</span><span><i class="k cred"></i>反方独立复算</span></p><figcaption><b>图 10.4</b>　零知识这条路，链上验一次的价和电路大小无关，难在链下把证明做出来。这里比的是<b>一个线程、整台测量机（用了 28 个线程）</b>每秒能证明几个门，和图 10.1 里比全链的行不是一类，不跟它们比谁差得多（2 项）。差 N 个 10 倍，就是要约 10 的 N 次方台这样的机器一起证明（照速度线性外推，推的）。横轴和图 10.1 是同一根。</figcaption></figure>
+
+</section>
+<div class="thread">
+<details class="dbt" data-for="red-ceiling-003">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd open">还没回应</span></span><span class="don">第 3 条 · 针对 定律二十三</span></summary>
+  <section class="box con" id="red-ceiling-003" aria-labelledby="red-ceiling-003-h" data-author="RED" data-id="red-ceiling-003" data-target="定律二十三" data-verdict="没推翻" data-date="2026-11-18" data-sha256="4a902536b4747e15bee0ab4e4c9e7b6382a068910bbf46b9f6845a1acf3193e9">
+    <header><span class="kind" id="red-ceiling-003-h">反方 · RED · 第 3 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-0be923">定律二十三</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="b0444050fc290dde90773f90a3f625ab381c5a688d2803c091d2950a63d7372e">定律二十三说，链下算、链上验时，链上的价对门数只按对数涨、对进出的字节按线性涨；零知识证明链上验一次 232,868 gas、不随电路变，每多一个公开输入加 6,508 gas；第三个瓶颈是每秒能运上链的字节，BSC 约 4.2 MB、X Layer 约 0.63 MB；测量机（16 核 32 线程的 CPU，用了其中 28 个线程）每秒证明约 1.1×10⁶ 门，要证明到显卡级约 4–8×10¹⁴ 个这样的线程。这几句里有两件是我（反方）先写判据量的。</p>
+    <p class="said" data-sha256="ce3e221f9022d8d40c57a898b24eed1bb5c53cc0c56ffe710663d41d1b8c46ee">公开输入：我在两条链上搭了一个和 Groth16 验证同样子的骨架（每个公开输入一次 BN254 点乘加一次点加，最后一次 4 对配对），公开输入 0、1、10、100、1,000 个各量一次，两链逐个相同：0 个是 181,667 gas，每多一个加 6,508（点乘 6,000、点加 150，加两次调用），1,000 个是 0 个的 36.8 倍；每次配对都成立，累加点和本地算的一样。所以原来写的「链上每次付的价只按电路大小的对数涨」我判过削弱：对门数可以是对数，对公开输入是线性的；这一版已经照改。每秒能上链的字节是我用量过的常数算的：BSC 调用数据 3.89 MB/秒加 blob 0.35 MB/秒；X Layer 卡在数据占用，压不下去的数据约 0.63 MB/秒。</p>
+    <p class="said" data-sha256="9f8efbb6d1912e09849b74555a92ddf68c723040e65655daaf0a703b67e41caa">证明速度：我用自己写的程序（同一个证明库 gnark、换了种子的随机与非门电路，2¹⁰ 到 2²⁰ 门）在同一台测量机上用同样的 28 个线程独立重量：2²⁰ 门证明 0.963 秒、准备 16.7 秒、峰值约 2.2 GB，整台每秒 1.09×10⁶ 门，和正方的数差不到 2%。我判了两处削弱：每个线程的速度随电路变大一直涨（28 个线程时 2¹⁰ 是 8,874、2²⁰ 是 38,889 门/秒，差 4.4 倍），外推要写明用的是哪一档；28 个线程一起跑时每个线程只有单线程跑的 0.21–0.37，「每个线程」要写明用了几个。这一版的「约 4–8×10¹⁴ 个这样的线程（推的）」和「什么时候不成立」第 5 条已经照改，照现在的写法我量过的几句都对得上，判没推翻。欺诈证明那几个数我没有独立重量，这一框不管它们。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="6c1a4b6962d85496963e64879b91fa59eebd58733232251c8d807a016388ffa7">hc4io/bsc-keyed.json</span><span class="ev-n" data-sha256="459819dde4256d770378ceb46c745862bba17041682d289b5fb10e5604310414">BSC：公开输入 0 到 1,000 个的验证骨架 gas</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="9f0741d21c89624e1ed854b1153d4847a793bf644b3014236a234dcb6ac6fb1a">hc4io/xlayerrpc.okx.com.json</span><span class="ev-n" data-sha256="6121151c1d559379657f9471197cd9e5e6277f4214d6169c99123501b22db248">X Layer：同上</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="4a1e0ca1af9f62ad0196c9e34b936f8e53819c81346bef14e2deeaf8e457cdbb">hc4io/da_bandwidth.json</span><span class="ev-n" data-sha256="7fa577946398b77cbc484ef85c712e17ec88cc278da2253396517f7b4633391e">每秒能上链的字节（用量过的常数算的）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1accfff1c6c1667a4ef8e9d3cc2a2a59fb07d8321acfaf5320536be31e322eab">hc4red_red.json</span><span class="ev-n" data-sha256="b61eb85ef31ad27699f9b3e691f1899341f7dc9277230ff91a1a09b9a2899b95">证明速度：六档、28 个线程和单线程、峰值内存、本地验证和改一位</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 1 章已有一条定律二十（取值律），本章四条定律各后移一号，这一条原来叫定律二十二；框里的数和结论都没变</span></li></ol></details>
+  </section>
+
+</details>
+
+
+</div><section class="box law" aria-labelledby="law-a3c355">
+  <header><span class="kind">定律二十四</span><span class="name" id="law-a3c355">全链只有一台机器（实验 HC3b，判据先提交，盲测）</span><span class="cite">hc3b·speed、判据·HC3b</span></header>
+  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mn>0.1</mn><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mi>P</mi><msub><mi>v</mi><mtext>节点</mtext></msub></mfrac><mtext> </mtext><mo>≤</mo><mtext> </mtext><mn>10</mn><mspace width="2em"/><mtext>（每台全节点，每种计算指令）</mtext></mrow><annotation encoding="application/x-tex">0.1\ \le\ \frac{P}{v_{\text{节点}}}\ \le\ 10\qquad\text{（每台全节点，每种计算指令）}</annotation></semantics></math></span></math></div>
+  <ul><li>P 是全链功率，v 是一台全节点跑某种计算指令每秒烧的 gas。</li><li>意思是：一整条链每秒能执行的计算，和它的一台节点每秒能执行的，差不出一个数量级。  <ul><li>每台全节点照旧要把每块执行一遍，所以链再大，算力也只有一台机器的量级。</li><li>BSC 的 BEP-675（草案，客户端层，不用硬分叉，Pasteur 以后可以用 RPC 打开；主网上开没开没查到）把验证者那一次执行挪到了封块之后：封块前只核块头、不先模拟，封完照样把全部交易重算一遍。省下的是封块前那一次模拟，BEP 自估块上限能高约一半（未核）。定律不变。</li></ul>
+</li><li><b>盲测</b>：先看了第一组数，才改写成这个样子。改写后标<span class="tag tbd">待验证</span>，另起判据，隔 6 小时以上换节点量：  <ul><li>BSC 两家节点，下了结论的计算指令分别有 7 种和 8 种，比值 0.48–2.15，没推翻，也不在削弱区。</li></ul>
+</li><li><b>只管计算指令</b>：大块内存搬运比最慢的验签快 40–100 倍，热读存储比它快约 9 倍，这两类不在这条里。缩到计算指令，是看了反方的数以后才定的。</li><li><b>X Layer 不在成立范围里</b>：那家节点只有 4 种下了结论，照判据作废。  <ul><li>快的几种，两档时间只差几毫秒到几十毫秒，被约 0.3 秒的网络往返盖住，一遍都不算。原因是 X Layer 那头只读调用的大档只能到 4,500 万 gas（节点的上限），大档不够大。</li><li>粗看它比 BSC 节点快约 10 倍；要是真的，那几种的比值会低到 0.1 以下，就是推翻。这一口没测成。</li></ul>
+</li></ul>
+  <p></p>
+
+</section>
+<div class="thread">
+<details class="dbt" data-for="red-ceiling-004">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd open">还没回应</span></span><span class="don">第 4 条 · 针对 定律二十四</span></summary>
+  <section class="box con" id="red-ceiling-004" aria-labelledby="red-ceiling-004-h" data-author="RED" data-id="red-ceiling-004" data-target="定律二十四" data-verdict="没推翻" data-date="2026-11-18" data-sha256="d6a8f50eccc22b16710a889bfe57a0da98aa5e191299097fe02aca7915a153aa">
+    <header><span class="kind" id="red-ceiling-004-h">反方 · RED · 第 4 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-a3c355">定律二十四</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="345d038d13c47445e180f07df4f4a73af5e912709d7a59816773c1e7fd70021f">定律二十四说，每台全节点跑每种计算指令时，全链功率 ÷ 节点每秒烧的 gas 都在 0.1 到 10 之间：一整条链每秒能执行的计算，和它的一台节点差不出一个数量级。这条是正方看了第一组数以后改写的，再换两家 BSC 节点、隔 6 小时以上盲测，比值 0.48–2.15；X Layer 那家只下了 4 种结论，作废。我（反方）没有为这条另量。下面用的是我在正方盲测之前、照自己先写的判据量过的数，节点也是盲测没用过的那几家。</p>
+    <p class="said" data-sha256="c6c834abac501496c71a5bd0b0b0e1985694ef956d2a663095bfb482c4324e0d">BSC 第三家节点上，我量过的计算指令全在这条线里：按位门每秒 2.96×10⁸ gas，比值 0.53；ecrecover 6.60×10⁷，比值 2.36；BN254 点乘、P256 验签、BLS 三种，比值 1.54–4.58。最大的是 BLS G2 的 4.58，离 5 那条削弱线最近，但没过。那几次计时都用大小两档、每档 15 遍交替，时间差不到 0.1 秒或两档重叠就不下结论。所以在 BSC 上，这条和我的独立数对得上，判没推翻。</p>
+    <p class="said" data-sha256="e834c98460c6e60e7be794489db14a1fee8081572e24cc6f1480fe41e60bc537">X Layer 我也补不上：我在 xlayerrpc.okx.com 上量得准的只有慢的几种，椭圆曲线六种的比值 1.93–3.31；快的几种（按位门、乘法这类）两档的时间差同样太小，我那次也没量准。要把那一口测成，就得找只读调用上限更高的节点，或者连着发很多笔大调用，都会给公开节点加负担，我没有做。建议照现在这样，把 X Layer 写在成立范围外面、标没测成。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1b75fbdb6ad704a7dc122b81fadb8bee592f5664e763acdd12c8a966ed3b201f">hc3/fine_bsc-keyed.json</span><span class="ev-n" data-sha256="a48cdefa5b835fef6d9364d15ae4d8086fbb907b06300d9c6d2c738273e9059c">BSC 第三家节点：按位门、ecrecover 等的每秒 gas（拉长重量，每档 15 遍）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="31ce09ca559ecc21e5383a3c8faaaa285b2fb01272435e974d72d84c70850d76">ecnode_red.json</span><span class="ev-n" data-sha256="443c81778eb04c57c7167338331679823ae71e53c835a69d428a370a3f6b82e9">椭圆曲线六种两链的节点速度、全链功率 ÷ 节点速度</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 1 章已有一条定律二十（取值律），本章四条定律各后移一号，这一条原来叫定律二十三；框里的数和结论都没变</span></li></ol></details>
+  </section>
+
+</details>
+
+
+</div>
+<h2 id="s10-4"><span class="secno">10.4</span>怎么量出来的</h2>  <ol><li>每一项都先写判据、先提交，再在测量机上量；量的全是只读调用（代码用状态覆盖放进去），不发交易。</li><li>指令的价：一小段虚拟机代码重复 2 次和 1,000 次，两链各一家节点，取差。</li><li>节点跑多快：同一种指令的循环烧两档大小，取墙钟时间之差除以 gas 之差，扣掉网络往返；每次请求带一段随机数据，不让节点拿缓存回；每种 5 遍取中位数。</li><li>证明多快：随机与非门电路 2¹⁰ 到 2²⁰ 门，用 Groth16（gnark）在测量机上用 28 个线程证明，各 3 遍取中位数；证明拿到两链上用只读调用验，改一位必须不通过。</li><li>欺诈证明一步：照默克尔树的深度现写一段虚拟机代码，两链只读调用量；三种负控（改路径一位、改门、换一根门没写的线）都必须不通过。</li></ol>
+
+<h2 id="s10-5"><span class="secno">10.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
+  <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">显卡级要几台证明机</span></header>
+  <ul><li>测量机用 28 个线程每秒证明约 1.1×10⁶ 门。显卡级是每秒 3×10¹⁹ 门次。</li><li>3×10¹⁹ ÷ 1.1×10⁶ ≈ 2.7×10¹³ 台这样的机器。照单个线程的速度算，约 4×10¹⁴ 个线程。</li><li>链上那头只要每次验 232,868 gas，BSC 全链每秒能验几百次；卡死的是链下。</li></ul>
+
+</section>
+<h2 id="s10-6"><span class="secno">10.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f10">
+  <header><span class="kind">这条会不成立</span><span class="name" id="f10">照实写</span></header>
+  <ol class="cases">
+    <li><span class="when">第一笔差距账有一处推翻、几处削弱。</span><span>每秒几拍那一项，原来只算了官方处理器；编译成直线，小电路每秒 1.29×10⁴ 拍，差 5.07 个数量级，不是 7.1（反方量的）。一拍能装多少门那几项，原来照每门 24 gas 外推，没算一份合约最多 24,576 字节、内存费跟着涨，差距少算了 0.64–0.68 个数量级（反方量的）。</span></li>
+    <li><span class="when">「一颗大电路只有一份输入时，256 路帮不上忙」没根据。</span><span>同一层的门可以排进不同的路；可那样要在路和路之间搬线，一般电路每门至少约 0.8 gas（反方推的），能量照样排除一拍 2×10¹⁰ 门。</span></li>
+    <li><span class="when">「全链功率不超过节点最快那种指令的 2 倍」写错了。</span><span>照「每家节点各自最快那种」读，有一家节点（下了结论的只有一种慢指令）判推翻；照「那条链最快那种」读，没推翻。看了数以后改写成只管计算指令、比值在 0.1 到 10 之间，另做盲测：BSC 两家没推翻，X Layer 那家作废（见定律二十四）。</span></li>
+    <li><span class="when">「gas 按时间定价」推翻了</span><span>：大块内存搬运比最慢的验签快 65 倍（反方量的）。</span></li>
+    <li><span class="when">证明速度还在涨。</span><span>28 个线程一起跑时，每个线程的速度随电路变大一直涨，2¹⁸ 到 2²⁰ 还涨 23%（反方独立重量是 19%）；上面的外推用的是 2²⁰ 那一档。显卡上的证明库没量；拆成很多份再递归合并的价也没量。</span></li>
+  </ol>
+</section>
+<h2 id="s10-7"><span class="secno">10.7</span>小结</h2><ul class="sum">
+  <li>在链上直接算，离显卡级最少差五个多数量级：一般的门电路差 9.5 个以上，全换成最划算的椭圆曲线指令（ecrecover）也差约 5.3–5.4 个。</li>
+  <li>天花板是一台节点的 CPU：全链功率只有一台机器的量级，gas 也不按时间定价，取 min(全链功率, 节点速度) 再乘每 gas 顶的门。</li>
+  <li>链下算、链上验，链上的价对门数只按对数涨，对字节按线性涨；零知识链上验得起、链下证不起，现实的路是欺诈证明，链只当裁判。</li>
+  <li>这是正文最后一章。书末有常数表、实验索引和术语表。</li>
+</ul>
+
+<nav class="pn" aria-label="上一章和下一章">
+  <a class="pv" href="../noise/"><small>← 上一章</small>第 9 章 噪声与测量</a>
+  <a class="nx" href="../constants/"><small>下一章 →</small>常数表</a>
+</nav>
+<footer>只读页面：读链的请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。</footer>
+</article>
+</main>
+
+<script>// 教科书各章的辩论折叠。生成器把这个文件原样内联进有辩论的章页，放在 </body> 前。
+// 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
+// ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
+//    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
+// 不读写任何存储、不发请求。
+(function () {
+  var ds = [].slice.call(document.querySelectorAll('details.dbt'));
+  if (!ds.length) return;
+  function openFor() {
+    var h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    try { h = decodeURIComponent(h); } catch (e) { return; }
+    var el = document.getElementById(h);
+    if (!el) return;
+    var opened = false;                              // 目标外面每一层 <details>（这一组、框里的修订记录……）都打开
+    for (var p = el.parentElement; p; p = p.parentElement) if (p.tagName === 'DETAILS' && !p.open) { p.open = true; opened = true; }
+    if (opened) el.scrollIntoView();
+  }
+  openFor();
+  window.addEventListener('hashchange', openFor);
+  var b = document.querySelector('.dbt-all');
+  if (!b) return;
+  function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }
+  b.addEventListener('click', function () {
+    var to = b.getAttribute('data-state') !== 'open';
+    ds.forEach(function (d) { d.open = to; });
+    sync();
+  });
+  ds.forEach(function (d) { d.addEventListener('toggle', sync); });
+  sync();
+})();
+</script>
+</body>
+</html>

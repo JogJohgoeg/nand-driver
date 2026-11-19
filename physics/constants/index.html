@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -540,6 +558,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -550,7 +569,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>常数表</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>常数表</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -563,6 +582,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -579,7 +599,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 69 分钟</p>
 </header>
-<p class="dbt-intro"><span>本章有 13 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+<p class="dbt-intro"><span>本章有 13 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s-1"><span class="secno"></span>怎么读这张表</h2>  <ul><li>书里用到的常数都在这里：每个量带两条链的实测、单位、标记和出处。这些数是怎么来的、什么时候不成立，在各章讲。</li><li>一组一张表，一行一个量。BSC、X Layer 两栏是记录；表上面那段「记录」写着是哪天、从哪一块起量的。</li><li>标记一栏：<b>硬</b> 是协议定的，硬分叉才改；<b>冻结</b> 是已有的官方处理器的实现，信标已放弃所有权，改不了（以后新造的处理器用哪份实现，由工厂的 owner 决定）；<b>实现</b> 是我们写的执行方式；<b>会变</b> 是价格、节点策略、链配置。</li><li>出处一栏是结果文件的标签，比如 ops·56 就是 BSC 上那份操作码测量。量之前先写好、先提交的判据，见书末实验索引。</li><li>每行量名后面的「#」是这一行的链接。各章的「读者动手」就链到这里。</li></ul>
 
@@ -652,7 +672,7 @@ bsc-mainnet.public.blastapi.io（换过节点） · 块 #999,999,999</div><div c
 bsc-mainnet.public.blastapi.io（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="nc">没连上 没连上：试了 7 家公开节点，都批量读原始交易被拒。不显示旧数 <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="err">出错 节点回错误：错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错… <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="stop">已停 这一项被停下了</div><div class="rmout" id="rm-interval.56">记录：0 秒</div></div></div><div class="rm1"><button class="rm" type="button" data-spec="interval.196" disabled>复测</button> <span class="rmlabel">X Layer：最近 100 块的平均出块间隔</span><div class="rmbox"><div class="rmghost" aria-hidden="true" data-k="bad">对不上 这次 19 ｜ 记录 19 ｜ 差 -19 秒（容差 ±2%）
 196.rpc.thirdweb.com（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="tick">复测中… 999.9 秒</div><div class="rmghost" aria-hidden="true" data-k="changed">变了 记录 19（11-16 17:02 测）｜ 这次 19 ｜ 差 -19 秒
 这是会变的量（容差 ±2%），链上的情况和记录时不同了
-196.rpc.thirdweb.com（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="nc">没连上 没连上：试了 4 家公开节点，都批量读原始交易被拒。不显示旧数 <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="err">出错 节点回错误：错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错… <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="stop">已停 这一项被停下了</div><div class="rmout" id="rm-interval.196">记录：1 秒</div></div></div></td></tr><tr id="c-10-2"><td data-label="量"><b>全链容量 / 实际用量</b> <a class="anc" href="#c-10-2" aria-label="这一行的链接">#</a></td><td data-label="链上对应">全链功率</td><td data-label="BSC"><span class="nt">155.6M / 35.1M（24 小时平均 22.6%，每小时 13.4–31.5%）</span></td><td data-label="X Layer"><span class="nt">210.0M / 2.9M（24 小时平均 1.4%，每小时 0.9–2.8%）</span></td><td data-label="单位">gas / 秒</td><td><span class="tag soft">会变</span></td><td data-label="出处 / 说明"><code>params·56</code> <code>params·196</code> <code>反方·usage·red</code><div class="note">实际用量是过去 24 小时两链各抽 2,000 块的平均和每小时范围（反方实测）；我原来那一段量的是 17% / 1%，在这个范围里，但偏低</div></td><td data-label="现场复测"><span class="rmnone">只能看记录：这一版还没接现场复测</span></td></tr><tr id="c-clock-final"><td data-label="量"><b>状态变成不可逆要等（finalized 落后）</b> <a class="anc" href="#c-clock-final" aria-label="这一行的链接">#</a></td><td data-label="链上对应">写入后多久不能改</td><td data-label="BSC"><span class="nt">几乎总是 2 块（我们 480 次全是；反方 8,610 次里 23 次 3 块）≈ 0.9 秒</span></td><td data-label="X Layer"><span class="nt">15.6–28.5 分钟的锯齿（反方 24 小时、两家取最新）：以太坊每确认一次，约 4–5 分钟后整段前进一次（看过数据后发现，没有事先写好的判据；事先写好的判据判的是推翻，原因是数法把节点倒退后回来也算成了一跳），间隔约一个 epoch（我们 2 小时 19 跳、中位 360 秒：一家节点、15 秒一采、新高多 10 块以上算一跳；反方 24 小时只数新高 225 跳、间隔中位 380 秒（10 秒一采、两家取最新）），前进约 386 块</span></td><td data-label="单位"></td><td><span class="tag soft">会变</span></td><td data-label="出处 / 说明"><code>e9·finality</code> <code>判据·E9</code> <code>misc·56</code> <code>misc·196</code> <code>反方·finality_new_24h.txt</code> <code>反方·finality_recover_24h.txt</code><div class="note">公开节点给的 finalized 常倒退一个 epoch、几十秒后回来（反方 24 小时一家 160–184 次），读要多读几次、取最大的；一次现场复测里见过落后约 48 分钟（记在判据的起因里，那次没存档）</div></td><td data-label="现场复测"><div class="rm1"><button class="rm" type="button" data-spec="final.56" disabled>复测</button> <span class="rmlabel">BSC：finalized 落后最新块几块</span><div class="rmbox"><div class="rmghost" aria-hidden="true" data-k="bad">对不上 这次 19 ｜ 记录 19 ｜ 差 -19 块（容差 ±2）
+196.rpc.thirdweb.com（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="nc">没连上 没连上：试了 4 家公开节点，都批量读原始交易被拒。不显示旧数 <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="err">出错 节点回错误：错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错… <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="stop">已停 这一项被停下了</div><div class="rmout" id="rm-interval.196">记录：1 秒</div></div></div></td></tr><tr id="c-10-2"><td data-label="量"><b>全链容量 / 实际用量</b> <a class="anc" href="#c-10-2" aria-label="这一行的链接">#</a></td><td data-label="链上对应">全链功率</td><td data-label="BSC"><span class="nt">155.6M / 35.1M（24 小时平均 22.6%，每小时 13.4–31.5%）</span></td><td data-label="X Layer"><span class="nt">210.0M / 2.9M（24 小时平均 1.4%，每小时 0.9–2.8%）</span></td><td data-label="单位">gas / 秒</td><td><span class="tag soft">会变</span></td><td data-label="出处 / 说明"><code>params·56</code> <code>params·196</code> <code>反方·usage·red</code><div class="note">实际用量是过去 24 小时两链各抽 2,000 块的平均和每小时范围（反方实测）；我原来那一段量的是 17% / 1%，在这个范围里，但偏低</div></td><td data-label="现场复测"><span class="rmnone">只能看记录：这一版还没接现场复测</span></td></tr><tr id="c-clock-final"><td data-label="量"><b>状态变成不可逆要等（finalized 落后）</b> <a class="anc" href="#c-clock-final" aria-label="这一行的链接">#</a></td><td data-label="链上对应">写入后多久不能改</td><td data-label="BSC"><span class="nt">几乎总是 2 块（我们 480 次全是；反方 8,610 次里 23 次 3 块）≈ 0.9 秒</span></td><td data-label="X Layer"><span class="nt">15.6–28.5 分钟的锯齿（反方 24 小时、两家取最新）：以太坊每确认一次，约 4–5 分钟后整段前进一次（看过数据后才发现：事先写好的判据判的是推翻，原因是数法把节点倒退后回来也算成了一跳；反方另用 8 小时没用过的数据盲测，75 次确认对 75 跳、每段正好一次，没推翻），间隔约一个 epoch（我们 2 小时 19 跳、中位 360 秒：一家节点、15 秒一采、新高多 10 块以上算一跳；反方 24 小时只数新高 225 跳、间隔中位 380 秒（10 秒一采、两家取最新）），前进约 386 块</span></td><td data-label="单位"></td><td><span class="tag soft">会变</span></td><td data-label="出处 / 说明"><code>e9·finality</code> <code>判据·E9</code> <code>misc·56</code> <code>misc·196</code> <code>反方·finality_new_24h.txt</code> <code>反方·finality_recover_24h.txt</code> <code>反方·blind_red.txt</code><div class="note">公开节点给的 finalized 常倒退一个 epoch、几十秒后回来（反方 24 小时一家 160–184 次），读要多读几次、取最大的；一次现场复测里见过落后约 48 分钟（记在判据的起因里，那次没存档）</div></td><td data-label="现场复测"><div class="rm1"><button class="rm" type="button" data-spec="final.56" disabled>复测</button> <span class="rmlabel">BSC：finalized 落后最新块几块</span><div class="rmbox"><div class="rmghost" aria-hidden="true" data-k="bad">对不上 这次 19 ｜ 记录 19 ｜ 差 -19 块（容差 ±2）
 bsc-mainnet.public.blastapi.io（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="tick">复测中… 999.9 秒</div><div class="rmghost" aria-hidden="true" data-k="changed">变了 记录 19（11-16 17:43 测）｜ 这次 19 ｜ 差 -19 块
 这是会变的量（容差 ±2），链上的情况和记录时不同了
 bsc-mainnet.public.blastapi.io（换过节点） · 块 #999,999,999</div><div class="rmghost" aria-hidden="true" data-k="nc">没连上 没连上：试了 7 家公开节点，都批量读原始交易被拒。不显示旧数 <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="err">出错 节点回错误：错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错错… <button type="button" class="rmfull" tabindex="-1">看全文</button></div><div class="rmghost" aria-hidden="true" data-k="stop">已停 这一项被停下了</div><div class="rmout" id="rm-final.56">记录：1 块</div></div></div><div class="rm1"><button class="rm" type="button" data-spec="final.196" disabled>复测</button> <span class="rmlabel">X Layer：finalized 落后最新块几块</span><div class="rmbox"><div class="rmghost" aria-hidden="true" data-k="bad">对不上 这次 16,119 ｜ 记录 16,119 ｜ 差 -16,119 块（容差 ±50%）
@@ -951,7 +971,7 @@ bsc-mainnet.public.blastapi.io（换过节点） · 块 #999,999,999</div><div c
 </div>
 
 <nav class="pn" aria-label="上一章和下一章">
-  <a class="pv" href="../noise/"><small>← 上一章</small>第 9 章 噪声与测量</a>
+  <a class="pv" href="../ceiling/"><small>← 上一章</small>第 10 章 算力的天花板</a>
   <a class="nx" href="../experiments/"><small>下一章 →</small>实验索引</a>
 </nav>
 <footer>只读页面：读链的请求都是你的浏览器直接向公开节点发的只读调用，不经过我们的服务器。</footer>
@@ -1278,7 +1298,8 @@ function waitTick(node, label, more) {
 // 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
 // ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
 //    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
-// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
 // 不读写任何存储、不发请求。
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.dbt'));
@@ -1305,7 +1326,6 @@ function waitTick(node, label, more) {
   });
   ds.forEach(function (d) { d.addEventListener('toggle', sync); });
   sync();
-  b.hidden = false;
 })();
 </script>
 </body>

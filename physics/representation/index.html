@@ -300,7 +300,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
 .dbt-all>.lbl{grid-area:1/1}
 .dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
-.dbt-all[hidden]{visibility:hidden}   
+.dbt-nojs{display:none}
+@media (scripting:none){.dbt-all,.dbt-find{display:none}.dbt-nojs{display:inline}}   
 @media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
@@ -435,6 +436,23 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .lg .kl.cutk{width:0;height:.875rem;border-top:0;border-left:2px solid var(--bad)}
 @media (max-width:480px){ .dotp .refl{display:block;margin-top:.25rem} }
 
+.dotp .tk b.d.inf{background:var(--bg);border:2px solid var(--k);box-sizing:border-box}   
+.dotp.gap .tk i.g.z{border-left:1px solid var(--mut)}                                       
+
+.dotp.gap{grid-template-columns:minmax(7rem,13rem) minmax(12rem,1fr) minmax(6rem,11rem)}
+.dotp.gap .lb{white-space:normal}
+.dotp.gap .vl{white-space:normal}
+.dotp.gap .vl small{white-space:normal}
+.dotp .tk b.d.sq{border-radius:2px;width:.6875rem;height:.6875rem}                        
+.dotp .tk i.seg{position:absolute;top:50%;height:0;border-top:2px solid var(--mut);opacity:.6}  
+.lg .k.sq{border-radius:2px}
+.dotp.gap .tk b.d.cred{top:calc(50% + .4375rem);width:.5rem;height:.5rem}                   
+.dotp.gap .tk b.d.cred.inf{border-width:1.5px}
+.dotp.gap3 .tk{height:1.875rem}                                                             
+.dotp.gap3 .tk b.d.y0{top:20%} .dotp.gap3 .tk b.d.y1{top:50%} .dotp.gap3 .tk b.d.y2{top:80%}
+.dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
+.dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -549,6 +567,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -559,7 +578,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 2 章 表示与编译</b><span>共 10 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 2 章 表示与编译</b><span>共 11 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -581,6 +600,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../price/"><span class="no">7</span>价格</a></li>
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
+  <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -597,7 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 21 分钟</p>
 </header>
-<p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
+<p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s2-1"><span class="secno">2.1</span>直觉</h2>  <p class="lede-in">同一个函数，交给官方处理器一个门一个门地解释，算一次要 880 多万 gas；编译成直线字节码、一次并排算 256 组，每组只要约 350 gas。写法决定能量，差的不是几成，是几万倍。</p>
 <figure class="fig" id="fig21"><div class="dotp" role="img" aria-label="DOT32_T 算一组的 gas：官方处理器解释 8,836,765；手写原生 · 21nandkit 逐路循环 4,443.6；手写原生 · 按字运算（反方自写） 479.3；编译成门、256 组并排 350.7"><span class="row"><span class="lb">官方处理器解释</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:93.308%" data-gas="8836765.0"></b></span><span class="vl">8,836,765<small>4 组不同输入的平均</small></span></span><span class="row"><span class="lb">手写原生 · 21nandkit 逐路循环</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:31.083%" data-gas="4443.5859375"></b></span><span class="vl">4,443.6<small>256 组连着调；单独调一次 7,092</small></span></span><span class="row"><span class="lb">手写原生 · 按字运算（反方自写）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d cred" style="left:12.839%" data-gas="479.3046875"></b></span><span class="vl">479.3<small>256 组连着调；单独调一次 2,977</small></span></span><span class="row"><span class="lb">编译成门、256 组并排</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:10.280%" data-gas="350.69921875"></b></span><span class="vl">350.7<small>256 组一共 89,779</small></span></span><span class="ax"><span class="e0" style="left:0.000%">100</span><span class="alt" style="left:18.864%">1,000</span><span style="left:37.729%">1 万</span><span class="alt" style="left:56.593%">10 万</span><span style="left:75.457%">100 万</span><span class="alt" style="left:94.321%">1,000 万</span></span><span class="axu">算一组的 gas（10 倍刻度）</span></div><p class="lg"><span><i class="k c196"></i>OCH 量的写法</span><span><i class="k cred"></i>更好的原生实现由反方给出（同一量法重量）</span></p><figcaption><b>图 2.1</b>　同一个函数（DOT32_T，3,829 个与非门，X Layer）几种写法算一组的 gas，都是同一个驱动连着调、含驱动每组的开销。刻度每一格是 10 倍：官方处理器一个门一个门地解释，是编译后 256 组并排的约 25,198 倍；同是手写原生，按字运算比 21nandkit 那份逐路循环省 9.3 倍。反方用自己的量法（扣掉空调用的开销）量按字运算是每组 317，量法不同，不并排画。</figcaption></figure>
@@ -775,7 +795,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 // 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
 // ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
 //    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
-// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// ② 章首的「全部展开 / 全部收起」：按钮一画出来就在，这里只接上点击；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+//    浏览器关了脚本时，样式表按 (scripting: none) 把按钮藏掉，换成一句「得先一组组点开」。
 // 不读写任何存储、不发请求。
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.dbt'));
@@ -802,7 +823,6 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   });
   ds.forEach(function (d) { d.addEventListener('toggle', sync); });
   sync();
-  b.hidden = false;
 })();
 </script>
 </body>
