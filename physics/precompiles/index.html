@@ -281,6 +281,27 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
 .thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
 .thread>.box{margin:.75rem 0 0}
+
+.dbt{margin:.75rem 0 0}
+.dbt>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;padding:.5rem .75rem .5rem 1.75rem;position:relative;
+  border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:var(--r);background:var(--card);font-size:var(--fs-sm);line-height:1.5}
+.dbt>summary::-webkit-details-marker{display:none}
+.dbt>summary::before{content:"▸";position:absolute;left:.625rem;top:.5rem;color:var(--mut);transition:transform .12s}
+.dbt[open]>summary::before{transform:rotate(90deg)}
+.dbt>summary:hover{border-color:var(--field);border-left-color:var(--bad)}
+.dbt>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.dbt .dsl{display:inline-flex;align-items:center;gap:.375rem;white-space:nowrap}
+.dbt .dk{color:var(--ink);font-weight:600}
+.dbt .dsl{gap:.125rem}
+.dbt .dsep{color:var(--faint);margin:0 -.375rem}
+.dbt .don{color:var(--mut);font-size:var(--fs-xs)}
+.dbt>.box{margin:.75rem 0 0}
+.dbt-intro{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;margin:.75rem 0 0;font-size:var(--fs-sm);color:var(--mut)}
+.dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
+.dbt-all>.lbl{grid-area:1/1}
+.dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
+.dbt-all[hidden]{visibility:hidden}   
+@media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
 .box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
@@ -292,7 +313,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
-.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal}
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal;overflow-wrap:anywhere}
 dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
 dl.ev dt{color:var(--faint)}
 dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
@@ -607,13 +628,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">P256VERIFY</th><td>验签（手机、通行密钥常用的曲线）</td><td class="r">6,900</td><td class="r">3,450</td></tr>
     </tbody></table></div>
   <p><span class="cite">e8·precompiles、判据·E8</span></p>
-  <ul><li>两链各两家节点，每家测 19 项（identity 测了两次，实际是 18 种预编译），18 项和规范写的价一个不差，另一项是 KZG 点求值，只判了在不在；同一条链两家节点读数逐个相同。</li><li>两链不同的两处都来自升级级别：大数模幂最低价 BSC 照 EIP-7883 是 500、X Layer 照 EIP-2565 是 200；P256VERIFY BSC 照 EIP-7951 是 6,900、X Layer 照 RIP-7212 是 3,450。</li><li>大数模幂不只最低价不同：反方量了另外三组更大的输入，BSC 是 X Layer 的 4.5 到 6 倍。照 EIP-7883 原文，Osaka 去掉了式子里的除以 3，底或模超过 32 字节时复杂度再翻倍，指数超过 32 字节那段的倍数从 8 变 16；反方照原文算了 BSC 四组，全对上。（常数表页反方第 9 条）</li><li>bn254 配对只量了 0 对（45,000）；每多一对加 34,000 是照 EIP-1108 写的，没量。</li><li>KZG 点求值（EIP-4844）只判了在不在：给它无效输入，它拒了；价没量。</li></ul>
+  <ul><li>两链各两家节点，每家测 19 项（identity 测了两次，实际是 18 种预编译），18 项和规范写的价一个不差，另一项是 KZG 点求值，只判了在不在；同一条链两家节点读数逐个相同。</li><li>两链不同的两处都来自升级级别：大数模幂最低价 BSC 照 EIP-7883 是 500、X Layer 照 EIP-2565 是 200；P256VERIFY BSC 照 EIP-7951 是 6,900、X Layer 照 RIP-7212 是 3,450。</li><li>大数模幂不只最低价不同：反方量了另外三组更大的输入，BSC 是 X Layer 的 4.5 到 6 倍。照 EIP-7883 原文，Osaka 去掉了式子里的除以 3，底或模超过 32 字节时复杂度再翻倍，指数超过 32 字节那段的倍数从 8 变 16；反方照原文算了 BSC 四组，全对上。（常数表页反方第 9 条）</li><li>bn254 配对我只量了 0 对（45,000）；反方用合法的点量了 k = 1 到 4，两链都是 79,000 / 113,000 / 147,000 / 181,000，正好每多一对加 34,000。</li><li>KZG 点求值（EIP-4844）我只判了在不在：给它无效输入，它拒了。反方用零多项式造了一份一定能过的输入，两链的价都是 50,000。</li></ul>
 
 <h2 id="s8-4"><span class="secno">8.4</span>怎么量出来的</h2>  <ol><li>一次只读调用里，用一小段虚拟机代码挨个调这些加速器，量调用前后剩的 gas 差多少，再减掉调用本身的开销（119 gas）。</li><li>先拿 identity 校准：复制 32 字节量出来要正好是 18，复制 0 字节要正好是 15，对上了才往下量。</li><li>两链各两家节点各量一遍，和规范写的价逐个比。</li><li>全是只读，不发交易。</li></ol>
 
 <h2 id="s8-5"><span class="secno">8.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">链下算、链上只验证明</span></header>
-  <ul><li>第 3 章说 BSC 一笔交易只够算约 7,249 个门。电路再大，可以在链下算，链上只验一份零知识证明。</li><li>验一份 bn254 上的证明，配对要 45,000 + 34,000·k gas（k 是配对的对数，34,000 那一项照 EIP-1108）。k = 4 时约 18.1 万 gas，和电路有多大无关。</li><li>这条路要信的是证明系统，不是谁替你算。</li></ul>
+  <ul><li>第 3 章说 BSC 一笔交易只够算约 7,249 个门。电路再大，可以在链下算，链上只验一份零知识证明。</li><li>验一份 bn254 上的证明，配对要 45,000 + 34,000·k gas（k 是配对的对数；k = 1 到 4 反方两链都量过）。k = 4 时约 18.1 万 gas，和电路有多大无关。</li><li>这条路要信的是证明系统，不是谁替你算。</li></ul>
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">要哈希，就别用门拼</span></header>
@@ -626,7 +647,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <ol class="cases">
     <li><span class="when">两链升级级别不同，价就不同。</span><span>大数模幂（最低价和一般价）、P256VERIFY 两链不一样；链再升级，价还会变。</span></li>
     <li><span class="when">只量了表里那种输入。</span><span>加速器的价多半随输入长度变（哈希按字数、大数模幂按位数、配对按对数），书里只量了表里写的输入。</span></li>
-    <li><span class="when">有几个只判了在不在。</span><span>KZG 点求值的价没量；bn254 配对每多一对的价照规范写、没量。</span></li>
+    <li><span class="when">我量的有几个只判了在不在。</span><span>KZG 点求值的价、bn254 配对每多一对的价，我都没量，是反方后来补量的，两链都和规范一样。</span></li>
     <li><span class="when">加速器只做固定的几件事。</span><span>你的电路要是别的函数，用不上它们。</span></li>
   </ol>
 </section>

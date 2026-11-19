@@ -281,6 +281,27 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
 .thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
 .thread>.box{margin:.75rem 0 0}
+
+.dbt{margin:.75rem 0 0}
+.dbt>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;padding:.5rem .75rem .5rem 1.75rem;position:relative;
+  border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:var(--r);background:var(--card);font-size:var(--fs-sm);line-height:1.5}
+.dbt>summary::-webkit-details-marker{display:none}
+.dbt>summary::before{content:"▸";position:absolute;left:.625rem;top:.5rem;color:var(--mut);transition:transform .12s}
+.dbt[open]>summary::before{transform:rotate(90deg)}
+.dbt>summary:hover{border-color:var(--field);border-left-color:var(--bad)}
+.dbt>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.dbt .dsl{display:inline-flex;align-items:center;gap:.375rem;white-space:nowrap}
+.dbt .dk{color:var(--ink);font-weight:600}
+.dbt .dsl{gap:.125rem}
+.dbt .dsep{color:var(--faint);margin:0 -.375rem}
+.dbt .don{color:var(--mut);font-size:var(--fs-xs)}
+.dbt>.box{margin:.75rem 0 0}
+.dbt-intro{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;margin:.75rem 0 0;font-size:var(--fs-sm);color:var(--mut)}
+.dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
+.dbt-all>.lbl{grid-area:1/1}
+.dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
+.dbt-all[hidden]{visibility:hidden}   
+@media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
 .box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
@@ -292,7 +313,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
-.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal}
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal;overflow-wrap:anywhere}
 dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
 dl.ev dt{color:var(--faint)}
 dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
@@ -576,6 +597,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 14 分钟</p>
 </header>
+<p class="dbt-intro"><span>本章有 2 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s5-1"><span class="secno">5.1</span>直觉</h2>  <p class="lede-in">把电路放上链，就像在芯片上占一块面积，按字节付钱：每存一个字节的代码 200 gas，再加上交易数据和官方处理器自己的记账。DOT32_T 有 3,829 个门、26,803 字节，在 X Layer 上发布用了 11,202,698 gas，其中存代码那一项占 48%。</p>
 <figure class="fig" id="fig51"><div class="stack" role="img" aria-label="DOT32_T 发布 gas 按来源切开：交易费 21,000；交易数据 282,104；建合约 64,000；存代码 5,361,000；记账·固定 45,875；记账·每个与非门 5,247,018；记账·每块 215,013；回执 11,202,698"><div class="sb"><i class="k1" style="width:0.1869%" data-gas="21000" title="交易费 21,000"></i><i class="k2" style="width:2.5107%" data-gas="282104" title="交易数据 282,104"></i><i class="k3" style="width:0.5696%" data-gas="64000" title="建合约 64,000"></i><i class="k4" style="width:47.7127%" data-gas="5361000" title="存代码 5,361,000"></i><i class="k5" style="width:0.4083%" data-gas="45874.7" title="记账·固定 45,875"></i><i class="k6" style="width:46.6982%" data-gas="5247018.1" title="记账·每个与非门 5,247,018"></i><i class="k7" style="width:1.9136%" data-gas="215013.0" title="记账·每块 215,013"></i></div><b class="rc" style="left:99.7035%" data-gas="11202698"></b></div><div class="sax"><span>0</span><span>回执 11,202,698 gas ｜ 各段加起来 11,236,010，估高 0.30%</span></div><div class="tbl"><table><thead><tr><th>从哪来</th><th class="r">gas</th><th class="r">占回执</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="rowgroup">链协议收的</th></tr><tr><td><i class="sw k1"></i>交易费</td><td class="r" data-gas="21000">21,000</td><td class="r">0.19%</td></tr><tr><td><i class="sw k2"></i>交易数据</td><td class="r" data-gas="282104">282,104</td><td class="r">2.52%</td></tr><tr><td><i class="sw k3"></i>建合约</td><td class="r" data-gas="64000">64,000</td><td class="r">0.57%</td></tr><tr><td><i class="sw k4"></i>存代码</td><td class="r" data-gas="5361000">5,361,000</td><td class="r">47.85%</td></tr><tr class="grp"><th colspan="3" scope="rowgroup">官方处理器自己的记账</th></tr><tr><td><i class="sw k5"></i>记账·固定</td><td class="r" data-gas="45874.7">45,875</td><td class="r">0.41%</td></tr><tr><td><i class="sw k6"></i>记账·每个与非门</td><td class="r" data-gas="5247018.1">5,247,018</td><td class="r">46.84%</td></tr><tr><td><i class="sw k7"></i>记账·每块</td><td class="r" data-gas="215013.0">215,013</td><td class="r">1.92%</td></tr></tbody></table></div><p class="lg"><span><i class="kl rc"></i>竖线：回执的实际 gas</span></p><figcaption><b>图 5.1</b>　X Layer 上 DOT32_T（#3，3,829 个门、26,803 字节、2 块）那笔发布，按定律八把 gas 切开。条从 0 起画，长短照各段 gas；有五段太窄，在条上看不清，数都在表里。记账那三段的系数是 BSC 上 51 笔回执拟合的。</figcaption></figure>
@@ -613,6 +635,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section>
 <div class="thread">
+<details class="dbt" data-for="red-area-001">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律八</span></summary>
   <section class="box con" id="red-area-001" aria-labelledby="red-area-001-h" data-author="RED" data-id="red-area-001" data-target="定律八" data-verdict="削弱" data-date="2026-11-17" data-sha256="805106e2e503108f8513efa22c01e6257de676c4ff4d78e4cf909bd7129ce3e2">
     <header><span class="kind" id="red-area-001-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-d9be9f">定律八</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="b557af1f70287005d10279b29f15319fecae9838676610ad86a78c7e0792074c">定律八（发布一颗电路的 gas）是在 51 笔回执上拟的，中位误差 0.24%、留一最大 7.5%，书里写着「不含子电路调用的发布」。我（反方）在 BSC 单笔上限生效以后的发布里，找到 3 笔一笔就把整份平网表发上去、记录数超过 6,063 的回执：都在 0x872d63c0… 上，#15、#17、#19，以锁存为主（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存）。按定律八的式子和书里的系数算预测，和回执比。</p>
@@ -626,6 +650,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <p class="said" data-sha256="4ca19ce068d6736be9bc06497252ec08fc6e52fe4a531c4f8581b0ef6cf645c5">原因我查到的和你猜的一样：拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个，一共 133 个；拿这样定出来的每个锁存 1,138.7 去外推 7,999 个锁存，偏大说得通。正文照改了：定律八下面留了【更正】，写明锁存为主的发布会估高约 12%，适用范围也加了这一句。要重拟锁存那一项，得有锁存多的回执，现在只有你找到的这 3 笔，我先不重拟，照实写。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="3679bd62395cbf8c533ee73569feb74a97cf1d784a40b051f1261feb3e5ecbd1">fit_publish.json</span><span class="ev-n" data-sha256="81be99ddda402846a77bffb52af2b63c0cbf0c31eb954b4a7a555bfb218729dc">定律八的系数（每个锁存 1,138.7）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1573a056fb85f7cf671cf2adba34c41320ac2e3d14953bac253683b20db91d10">publish_56_20261116_174405.json</span><span class="ev-n" data-sha256="930275eb9e9f4588fb87af87700bee2624f48b51fc54225fafa59425d52e0368">拟合用的 BSC 回执（含锁存的那 8 笔；另一部分在 publish_known_20261116_174723.json）</span></dd></div></dl>
   </section>
+
+</details>
+
 
 </div><section class="box law" aria-labelledby="law-f6ec23">
   <header><span class="kind">定律十</span><span class="name" id="law-f6ec23">擦除只退两成</span><span class="cite">misc·56、refund·196</span></header>
@@ -645,6 +672,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section>
 <div class="thread">
+<details class="dbt" data-for="red-area-002">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律十</span></summary>
   <section class="box con" id="red-area-002" aria-labelledby="red-area-002-h" data-author="RED" data-id="red-area-002" data-target="定律十" data-verdict="削弱" data-date="2026-11-17" data-sha256="57290565f2a973db050f644a63f4735f426eb83b0ff2ec396d694f9e8cd899b9">
     <header><span class="kind" id="red-area-002-h">反方 · RED · 第 2 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-f6ec23">定律十</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="2d2c02e75fe5bdf2496ba4a571c86e6c9bad3823f322e7f34d2759508ab7ac10">定律十说清掉 k 个存储字，实扣 = 返还前用量 − min(4,800 × k, 返还前用量的五分之一)，页面在 k = 1、4、20、100 上逐个相等。我（反方）在 BSC 上用 eth_simulateV1 模拟自己写的直线代码（每个字一条「PUSH1 值、PUSH1 槽号、SSTORE」），先照页面那一种复现：k 个字开始时是 1，清成 0，四个 k 的实扣是 21,206、32,820、96,896、417,280，和页面一个不差；所有情形里退的 gas 都没超过返还前用量的五分之一。</p>
@@ -658,6 +687,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <p class="said" data-sha256="79aea7e84e50fe510a8efb39f07bf825641ec2f62bdebde53588d8b7edf2025e">你另量的两种都照 EIP-3529 走：开始时为 0、同一笔里先写后清的字每个退 19,900，四档用它算都对上（1 个字时式子多算 3,842）；改了又改回原值的字每个退 2,800，1 个字时直接量得到。五分之一的上限处处成立，所以「只退两成」站得住。正文第 5 章定律十下面加了【更正】，写明 k 是哪一种字，另两种也列上。X Layer 那边你的节点不给模拟；书里 X Layer 那四档是 drpc 节点量的，也只有开始时非零的那一种。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a0124036af3f85489f94d2665e5a901528b658a45d782dc74111b97339f6f38a">misc_56_20261116_174342.json</span><span class="ev-n" data-sha256="d93f487a78586fa866fe16039a4737cc432004bf79319da062585f0e85c0a5de">BSC 四档（开始时非零、清成 0）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="709006d3391263a97bddb51ff6a991f240fb3626c125ef2d5b28bb2df54767e3">refund_196_20261116_214718.json</span><span class="ev-n" data-sha256="8a2b4a9666505920dd7358b5cfb53b7779eb9531fec78b13ffd36234db7ac2ab">X Layer 四档（drpc 节点，同一种字）</span></dd></div></dl>
   </section>
+
+</details>
+
 
 </div>
 <h2 id="s5-4"><span class="secno">5.4</span>怎么量出来的</h2>  <ol><li><b>定律八</b>：只读已有的发布回执，不发交易，不模拟发布函数。  <ul><li>回执里有实际用的 gas；网表从链上读回来，数出与非门、锁存、字节数、块数和零字节。</li><li>先按协议的价算出协议那部分，剩下的对（固定、每个与非门、每个锁存、每块）做最小二乘。</li><li>含子电路调用的发布不进拟合。X Layer 只有 DOT32_T 那 1 笔，留作样本外。</li></ul>
@@ -699,5 +731,39 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </article>
 </main>
 
+<script>// 教科书各章的辩论折叠。生成器把这个文件原样内联进有辩论的章页，放在 </body> 前。
+// 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
+// ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
+//    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
+// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// 不读写任何存储、不发请求。
+(function () {
+  var ds = [].slice.call(document.querySelectorAll('details.dbt'));
+  if (!ds.length) return;
+  function openFor() {
+    var h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    try { h = decodeURIComponent(h); } catch (e) { return; }
+    var el = document.getElementById(h);
+    if (!el) return;
+    var opened = false;                              // 目标外面每一层 <details>（这一组、框里的修订记录……）都打开
+    for (var p = el.parentElement; p; p = p.parentElement) if (p.tagName === 'DETAILS' && !p.open) { p.open = true; opened = true; }
+    if (opened) el.scrollIntoView();
+  }
+  openFor();
+  window.addEventListener('hashchange', openFor);
+  var b = document.querySelector('.dbt-all');
+  if (!b) return;
+  function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }
+  b.addEventListener('click', function () {
+    var to = b.getAttribute('data-state') !== 'open';
+    ds.forEach(function (d) { d.open = to; });
+    sync();
+  });
+  ds.forEach(function (d) { d.addEventListener('toggle', sync); });
+  sync();
+  b.hidden = false;
+})();
+</script>
 </body>
 </html>

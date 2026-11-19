@@ -281,6 +281,27 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .byline{margin:.625rem 0 0;font-size:var(--fs-xs);color:var(--mut);display:flex;flex-wrap:wrap;gap:.25rem .5rem;align-items:center}
 .thread{margin:-.5rem 0 1.5rem 1.25rem;padding:0 0 0 1rem;border-left:2px dotted var(--bad)}
 .thread>.box{margin:.75rem 0 0}
+
+.dbt{margin:.75rem 0 0}
+.dbt>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;padding:.5rem .75rem .5rem 1.75rem;position:relative;
+  border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:var(--r);background:var(--card);font-size:var(--fs-sm);line-height:1.5}
+.dbt>summary::-webkit-details-marker{display:none}
+.dbt>summary::before{content:"▸";position:absolute;left:.625rem;top:.5rem;color:var(--mut);transition:transform .12s}
+.dbt[open]>summary::before{transform:rotate(90deg)}
+.dbt>summary:hover{border-color:var(--field);border-left-color:var(--bad)}
+.dbt>summary:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.dbt .dsl{display:inline-flex;align-items:center;gap:.375rem;white-space:nowrap}
+.dbt .dk{color:var(--ink);font-weight:600}
+.dbt .dsl{gap:.125rem}
+.dbt .dsep{color:var(--faint);margin:0 -.375rem}
+.dbt .don{color:var(--mut);font-size:var(--fs-xs)}
+.dbt>.box{margin:.75rem 0 0}
+.dbt-intro{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;margin:.75rem 0 0;font-size:var(--fs-sm);color:var(--mut)}
+.dbt-all{display:inline-grid;justify-items:center;padding:.375rem .75rem;font-size:var(--fs-xs)}
+.dbt-all>.lbl{grid-area:1/1}
+.dbt-all[data-state="closed"]>.l2,.dbt-all[data-state="open"]>.l1{visibility:hidden}   
+.dbt-all[hidden]{visibility:hidden}   
+@media print{.dbt>summary::before{content:none}}
 .box.con{--bc:var(--bad)}
 .box.pro{--bc:var(--acc);margin-left:1.5rem!important;background:var(--bg)}
 .box.con>header .kind,.box.pro>header .kind{letter-spacing:.02em}
@@ -292,7 +313,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
-.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal}
+.box.con .said,.box.con .ev-v,.box.con .ev-n,.box.pro .said,.box.pro .ev-v,.box.pro .ev-n,details.revs li>span{white-space:pre-wrap;hyphens:manual;-webkit-hyphens:manual;text-transform:none;font-variant:normal;font-feature-settings:normal;letter-spacing:normal;word-spacing:normal;overflow-wrap:anywhere}
 dl.ev{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.1875rem .75rem;margin:0 0 .5rem;font-size:var(--fs-xs)}
 dl.ev dt{color:var(--faint)}
 dl.ev dd{margin:0;font-family:var(--mono);overflow-wrap:anywhere;color:var(--fg)}
@@ -574,8 +595,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>表示与编译：同一个函数，换种写法差多少</h1>
   <p class="lede">同一个函数，交给官方处理器一个门一个门地解释，算一次要 880 多万 gas；编译成直线字节码、一次并排算 256 组，每组只要约 350 gas。写法决定能量，差的不是几成，是几万倍。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 16 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 21 分钟</p>
 </header>
+<p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程。</span><button type="button" class="btn dbt-all" data-state="closed" hidden><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s2-1"><span class="secno">2.1</span>直觉</h2>  <p class="lede-in">同一个函数，交给官方处理器一个门一个门地解释，算一次要 880 多万 gas；编译成直线字节码、一次并排算 256 组，每组只要约 350 gas。写法决定能量，差的不是几成，是几万倍。</p>
 <figure class="fig" id="fig21"><div class="dotp" role="img" aria-label="DOT32_T 算一组的 gas：官方处理器解释 8,836,765；手写原生 · 21nandkit 逐路循环 4,443.6；手写原生 · 按字运算（反方自写） 479.3；编译成门、256 组并排 350.7"><span class="row"><span class="lb">官方处理器解释</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:93.308%" data-gas="8836765.0"></b></span><span class="vl">8,836,765<small>4 组不同输入的平均</small></span></span><span class="row"><span class="lb">手写原生 · 21nandkit 逐路循环</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:31.083%" data-gas="4443.5859375"></b></span><span class="vl">4,443.6<small>256 组连着调；单独调一次 7,092</small></span></span><span class="row"><span class="lb">手写原生 · 按字运算（反方自写）</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d cred" style="left:12.839%" data-gas="479.3046875"></b></span><span class="vl">479.3<small>256 组连着调；单独调一次 2,977</small></span></span><span class="row"><span class="lb">编译成门、256 组并排</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:18.864%"></i><i class="g" style="left:37.729%"></i><i class="g" style="left:56.593%"></i><i class="g" style="left:75.457%"></i><i class="g" style="left:94.321%"></i><b class="d c196" style="left:10.280%" data-gas="350.69921875"></b></span><span class="vl">350.7<small>256 组一共 89,779</small></span></span><span class="ax"><span class="e0" style="left:0.000%">100</span><span class="alt" style="left:18.864%">1,000</span><span style="left:37.729%">1 万</span><span class="alt" style="left:56.593%">10 万</span><span style="left:75.457%">100 万</span><span class="alt" style="left:94.321%">1,000 万</span></span><span class="axu">算一组的 gas（10 倍刻度）</span></div><p class="lg"><span><i class="k c196"></i>OCH 量的写法</span><span><i class="k cred"></i>更好的原生实现由反方给出（同一量法重量）</span></p><figcaption><b>图 2.1</b>　同一个函数（DOT32_T，3,829 个与非门，X Layer）几种写法算一组的 gas，都是同一个驱动连着调、含驱动每组的开销。刻度每一格是 10 倍：官方处理器一个门一个门地解释，是编译后 256 组并排的约 25,198 倍；同是手写原生，按字运算比 21nandkit 那份逐路循环省 9.3 倍。反方用自己的量法（扣掉空调用的开销）量按字运算是每组 317，量法不同，不并排画。</figcaption></figure>
@@ -601,9 +623,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </section>
 <h2 id="s2-3"><span class="secno">2.3</span>定律和公式</h2><section class="box law" aria-labelledby="law-6a25db">
   <header><span class="kind">定律五</span><span class="name" id="law-6a25db">表示决定能量</span><span class="cite">compiled·196</span></header>
-  <p>编译版每个门花的 gas = 这个门编出来的那几条指令的价之和：</p>
-  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>e</mi><mtext>门</mtext></msub><mo>=</mo><mo>∑</mo><msub><mi>g</mi><mtext>指令</mtext></msub><mo separator="true">,</mo><mspace width="2em"/><msub><mi>g</mi><mtext>指令</mtext></msub><mo>=</mo><mn>3</mn><mtext> </mtext><mo>⇒</mo><mtext> </mtext><mi>e</mi><mo>∈</mo><mo stretchy="false">{</mo><mn>24</mn><mo separator="true">,</mo><mn>20</mn><mo separator="true">,</mo><mn>12</mn><mo separator="true">,</mo><mn>3</mn><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">e_{\text{门}}=\sum g_{\text{指令}},\qquad g_{\text{指令}}=3\ \Rightarrow\ e\in\{24,20,12,3\}</annotation></semantics></math></span></math></div>
-  <p>e 是每个门、每 256 路的 gas。</p>
+  <p>编译版每个门花的 gas = 这个门编出来的那几条指令的价之和，再加上摊到每个门的内存费：</p>
+  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>e</mi><mtext>门</mtext></msub><mo>=</mo><mo>∑</mo><msub><mi>g</mi><mtext>指令</mtext></msub><mo>+</mo><mfrac><mrow><mi mathvariant="normal">Δ</mi><msub><mi>C</mi><mtext>内存</mtext></msub></mrow><mi>N</mi></mfrac><mo separator="true">,</mo><mspace width="2em"/><msub><mi>C</mi><mtext>内存</mtext></msub><mo stretchy="false">(</mo><mi>W</mi><mo stretchy="false">)</mo><mo>=</mo><mn>3</mn><mi>W</mi><mo>+</mo><mrow><mo fence="true">⌊</mo><mfrac><msup><mi>W</mi><mn>2</mn></msup><mn>512</mn></mfrac><mo fence="true">⌋</mo></mrow></mrow><annotation encoding="application/x-tex">e_{\text{门}}=\sum g_{\text{指令}}+\frac{\Delta C_{\text{内存}}}{N},\qquad C_{\text{内存}}(W)=3W+\left\lfloor\frac{W^2}{512}\right\rfloor</annotation></semantics></math></span></math></div>
+  <ul><li>e 是每个门、每 256 路的 gas，N 是门数，W 是一次调用用到的内存字数（同时活着的线，加上输入输出）。</li><li>同时活着的线只有几十根时，第二项小到可以不算，e 就是指令价之和，每条 3 gas 时 e 是 24、20、12、3 这几档，见下表。线一多，第二项就显出来，见「什么时候不成立」第 2 条。</li></ul>
   <div class="tbl"><table>
     <thead><tr><th>编出来的样子</th><th>指令条数</th><th>预测</th><th>实测</th></tr></thead>
     <tbody>
@@ -612,9 +634,31 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">结果留在栈上</th><td class="r">4</td><td class="r">12</td><td class="r">12.06</td></tr>
       <tr><th scope="row">反相器链（只剩一条 NOT）</th><td class="r">1</td><td class="r">3</td><td class="r">—</td></tr>
     </tbody></table></div>
-  <p>偏差不超过 1.2%。</p>
+  <ul><li>偏差不超过 1.2%。</li><li>但第一行的 24.27 是两样抵出来的：1,600 个门里 523 个的结果没人用，编成 20 gas；内存从 32 个字扩到 626 个字，多付 2,545 gas，摊到每门 1.59。照编译规则逐门数价、加上这笔内存费，门那一段正好 38,835 gas，和实测一个 gas 不差。这是反方提出内存项之后我回头核的。<span class="cite">compiled·196、law5·mix</span></li></ul>
 
-</section><section class="box law" aria-labelledby="law-4ca41a">
+</section>
+<div class="thread">
+<details class="dbt" data-for="red-representation-003">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 定律五</span></summary>
+  <section class="box con" id="red-representation-003" aria-labelledby="red-representation-003-h" data-author="RED" data-id="red-representation-003" data-target="定律五" data-verdict="削弱" data-date="2026-11-18" data-sha256="08c189083a2bf5dd37554ba2fd860794427e27c0654a6860c55d259726060b02">
+    <header><span class="kind" id="red-representation-003-h">反方 · RED · 第 3 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-6a25db">定律五</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="60fae3ec466ac5901b2780d1d34d35697497de8fab65f482b946ff4b5dce0091">定律五说编译版每个门花的 gas 就是它编出来的那几条指令的价之和，每根线放一个内存字时是 8 条指令、24 gas，偏差不超过 1.2%；「什么时候不成立」那一节说，同时活着的线超过约 1.2 万根后，内存的平方项才会显出来（推算，没量）。可一次调用的内存费是 3W + ⌊W²/512⌋（W 是用到的内存字数），它摊在每个门上，又不是哪条指令的价。我（反方）自己写了编译器去量。电路有三族，都是 64 个输入、两输入与非门：随机电路，每个门从前面所有的线里随机抽两根输入；先宽后树，先算一大层，再两两合并到一根；近邻电路，只从最近 64 根线里抽，当对照。编法是一根线最后一次被用掉后，它的字就让给新线，所以用到的内存字数约等于同时活着的线。门数 250 到 12,000，两链各一家节点；每份 256 路的结果都和本地模拟逐位对过。</p>
+    <p class="said" data-sha256="8f821a04682d83648ec258f0ba808aeceed0a71e8bd4b2a3d72d8f68d9aedb8a">对照组同时活着的线只有 64 根，每门正好 24.000 gas，定律五的机理一个 gas 不差。另两族就不是了。随机电路：同时活着的线 131 根时每门 24.97（多 4.1%），1,189 根时 26.14（多 8.9%），2,368 根时 27.07（多 12.8%），4,639 根时 28.74（多 19.8%）。先宽后树：509 根时多 8.1%，3,010 根时多 18.9%，6,009 根时每门 31.49（多 31%）。全部 44 次测量（22 份程序、两条链）都和「指令价加 3W + ⌊W²/512⌋」算出来的逐个相等，两链也一样。偏差过 10% 在同时活着的线约 900 到 1,500 根，平方项单独到 10% 约在 2,300 到 3,000 根（这两个是相邻两点插出来的），都在书里说不用另算的 1.2 万根以内。按事先写的判法，判削弱。照字面「每根线一个字、从不复用」的编法，每门最少也是 27（多 12.5%），1.2 万门时是 50.7。</p>
+    <p class="said" data-sha256="ae68f0ea817df67a619957ef962443d2e319d142f07180396e2734e8a961d133">建议定律五把内存这一项写进式子：e = Σg + (3W + ⌊W²/512⌋ 的增量) ÷ 门数，W 是用到的内存字数，等于同时活着的线加上输入输出；我量的 44 次逐个和它相等。「什么时候不成立」那句建议改成：同时活着的线约 130 根时每门已多约 4%，约 900 到 1,500 根时多约 10%，6,000 根时多两到三成。书里的 1.2 万是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点。24 只在同时活着的线很少（几十根）时成立，比如近邻那种电路。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="db9686ccb2947d0bd9d1362b733df1e1a175725de30e3d3adeaa2b027e6b5a7f">law5_red.json</span><span class="ev-n" data-sha256="0be6e715bfd84232508cc8e32f7aa4244d2062469b2e522752342054c5807a8b">三族电路、两种编法、22 份程序在两链上的实测 gas 和预测、同时活着的线、用到的内存字数、每门的价和偏差</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="5b3101f768a1782d426e71991a899ce694fa6b4bc730c7bad1dc436185e51114">134372451</span><span class="ev-n" data-sha256="bed6de6e90adababc89dc75b71a2ff24d1851b26e8eb971c261ef6904d53e3eb">BSC 量的时候的块</span></dd></div><div class="evi"><dt>块号（X Layer）</dt><dd><span class="ev-v" data-sha256="c4ed787865f40ea9ae36bb1e405f7befeb7a03c86bacb1c1929a24071d1d6996">76263374</span><span class="ev-n" data-sha256="909045665ee99cbf99d43d0d0aaa8ac5a20fc50c74e68ebd4b8862ef01d7af9e">X Layer 量的时候的块</span></dd></div></dl>
+  </section>
+  <section class="box pro" id="och-representation-003" aria-labelledby="och-representation-003-h" data-author="OCH" data-to="red-representation-003" data-stance="认" data-date="2026-11-18">
+    <header><span class="kind" id="och-representation-003-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="98ccc325b7a4b763e4d9d1712850100f88accf4daeac8790c3c7211abdcfb39e">这一条我认，照你的建议改。定律五的式子加上内存那一项：每门的价是指令价之和，再加摊到每个门的内存费 3W + ⌊W²/512⌋ 的增量。「什么时候不成立」那句照你量的点改写，数从你的结果文件现算。我原来写的 1.2 万根，是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点，你说得对。</p>
+    <p class="said" data-sha256="4261293d39831da6a3348d75757918392523d3effb9ce5c2db589e61ff4c82d3">你的结果让我回头核了表里第一行：随机 1,600 门实测 24.27，只比 24 高 1.1%，是两样抵出来的。那颗电路有 523 个门的结果没人用，编成 20 gas；内存从 32 个字扩到 626 个字，多付 2,545 gas。照编译规则逐门数价、再加这笔内存费，门那一段正好 38,835 gas，和实测一个 gas 不差。所以表里的「不超过 1.2%」不是内存费可以不算，是死门省下的正好盖住了它。正文表下面写明了这一点。</p>
+    <p class="said" data-sha256="4645ecdd0280a8bf79bc0525ed1da26bf7dd54263ebb89d4fa1f0ce5d512d0a4">你说的「每根线一个字、从不复用」那种编法每门最少 27，我没写进正文：书里的编译器是线用完就把字让出来的那种，表里也是它的数。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="3aab752bdf8d9daf9f1c0ac7f7028480b7d652dfb98e73ed24648fb4291f9eda">law5_mix_1600.json</span><span class="ev-n" data-sha256="1499ebfebd7fc81d635f5744fb60b76fd3401280fc565966a7f32cbd9ca66c7b">照编译规则逐门数价：死门 523 个、内存 32 → 626 个字，门那一段 38,835 gas，等于实测</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="8cb211a025ea27c075f5e5611618910ff76732709431bef7e7a9fce737f8b53e">compiled_196_20261116_172311.json</span><span class="ev-n" data-sha256="f0d7f6dd80244431e4fc32ed1f364c3bd0172e5d91ae56ce225c6022528ed9ca">表里那几行的实测</span></dd></div></dl>
+  </section>
+
+</details>
+
+
+</div><section class="box law" aria-labelledby="law-4ca41a">
   <header><span class="kind">定律六</span><span class="name" id="law-4ca41a">按位并行的分界</span><span class="cite">dot32·56、dot32·196；四方逐位一致</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><msub><mi>E</mi><mtext>编译</mtext></msub><mi>k</mi></mfrac><mo>&lt;</mo><msub><mi>E</mi><mtext>原生</mtext></msub><mtext>  </mtext><mo>⟺</mo><mtext>  </mtext><mi>k</mi><mo>&gt;</mo><msup><mi>k</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo>=</mo><mfrac><msub><mi>E</mi><mtext>编译</mtext></msub><msub><mi>E</mi><mtext>原生</mtext></msub></mfrac><mo>≈</mo><mn>20.2</mn></mrow><annotation encoding="application/x-tex">\frac{E_{\text{编译}}}{k}&lt;E_{\text{原生}}\iff k&gt;k^{*}=\frac{E_{\text{编译}}}{E_{\text{原生}}}\approx 20.2</annotation></semantics></math></span></math></div>
   <ul><li>k：同一个电路、互不相干的输入有几组，最多 256 组同价。</li><li>E编译：编译版跑一遍 256 路的总 gas。DOT32_T 是 89,779。</li><li>E原生：原生合约算一组的 gas。DOT32_T 是 4,443.6。</li><li>k = 256 时，编译版每组 350.7，原生合约每组 4,443.6，编译版便宜 12.7 倍；少于约 20 组时原生合约更便宜。</li></ul>
@@ -622,6 +666,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section>
 <div class="thread">
+<details class="dbt" data-for="red-representation-001">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律六</span></summary>
   <section class="box con" id="red-representation-001" aria-labelledby="red-representation-001-h" data-author="RED" data-id="red-representation-001" data-target="定律六" data-verdict="推翻" data-date="2026-11-17" data-sha256="ac191a6d0831551c516170818e52513bfee33d49422ddf33d1b89231510618e0">
     <header><span class="kind" id="red-representation-001-h">反方 · RED · 第 1 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-4ca41a">定律六</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="e505f1b9433158f4c0cc9f21db22e528a9dec9a0fede6479b564d441cb3d9ef6">书里说同一个 DOT32_T，编译成 256 路按位并行一组 350.7 gas，原生合约一组 4,443.6，编译比原生便宜 12.7 倍，独立输入少于约 20 组时原生才更便宜。这个 4,443.6 是 21nandkit 的原生写法：对 32 路逐路循环，每路移位、比较、条件加减。我（反方）用同样的调用约定另写了一个原生：不逐路循环，把 32 路放进一个 256 位的字里按字算——五步移位把 32 个 2 位权重码摊到 32 个字节，掩码选出 +1 和 −1 两组，再各用一次乘法做水平求和，一共 643 字节。先对拍，全过才量 gas：25,016 组输入（随机、21nandkit 用的特殊值、只取 ±1 的码）和照规格写的参考、和 21nandkit 原生逐位相同；X Layer 链上那颗 DOT32_T 网表（#3，sha256 b1507f55…）抽 64 组 eval，也全相同。</p>
@@ -636,6 +682,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <p class="said" data-sha256="99d24933e6314b1c06274e96659b625624b3b6fbf3d75b8ac8d885b60bc21036">反方量出 317、翻转点约 283，和我的 479.3、187 差在量法：我的数里含驱动每组的搬输入、调用、存结果，反方扣掉了空调用的开销。两种都照写。书里定律六原处留了【更正】：原生基准换成更好的实现后，翻转点约 176–283 组（我这套量法是 187），k* 取决于两边各自写得多好；原来那组数照留，写明是对 21nandkit 那份原生。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="4c9b1108271dc68ca18cf38fbfa3469ffdadeabf494e9f08fdad8deaf08ffba7">red_native_dot32_56_20261117_184234.json</span><span class="ev-n" data-sha256="cb661b3103515f0f8d8e15813dff65148507b1943a915fcc7e85b8678da503c5">BSC：反方原生和 21nandkit 原生用书里的量法并排量，同一组 256 个输入，另加 2,048 组对拍</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="01b4999779e428b17b126e83c247e575ab9433b83f46c91502aaa566faa66000">red_native_dot32_196_20261117_184243.json</span><span class="ev-n" data-sha256="6121151c1d559379657f9471197cd9e5e6277f4214d6169c99123501b22db248">X Layer：同上</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="79cdcbd48116688b85315735dfc7803c557ec9d3279320052ade4d7aec760841">dot32_56_20261116_174039.json</span><span class="ev-n" data-sha256="521c7f4df067301bf9df99f7908169a2d55e86237464613e44c0e60956ce87ac">书里编译版 89,779 和 21nandkit 原生 4,443.6 的原始测量</span></dd></div></dl>
   </section>
+
+</details>
+
 
 </div><section class="box law" aria-labelledby="law-ef81cc">
   <header><span class="kind">定律十五</span><span class="name" id="law-ef81cc">真电路编译（实验 E3，判据先提交）</span><span class="cite">e3·compile</span></header>
@@ -652,6 +701,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section>
 <div class="thread">
+<details class="dbt" data-for="red-representation-002">
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律十二</span></summary>
   <section class="box con" id="red-representation-002" aria-labelledby="red-representation-002-h" data-author="RED" data-id="red-representation-002" data-target="定律十二" data-verdict="削弱" data-date="2026-11-17" data-sha256="1569cea1d2edc58aec6e03cd483054c3b00a4bd9d53d085bb6a5d39fbf2d8a46">
     <header><span class="kind" id="red-representation-002-h">反方 · RED · 第 2 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-90f883">定律十二</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="6e85e6f600e381ce3243f56b814457ca24771d6380e5217b00eff5722eebd9a4">定律十二说分层省能：≥ 4 万门时比平铺省一半以上（实测 100,064 门、30 颗子电路，比值 0.4517）。我（反方）拿链上的真分层电路去对：BSC 上展开 ≥ 4 万门、网表含调用记录、一次只读跑得完的 19 颗，实测 step 的 gas 除以定律四对同门数平铺网表的预测（书里的系数，只取定律四拟合过的块数以内）。</p>
@@ -667,6 +718,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="0544caee7cff650916294e3258c75d44b07ad2be31879b360868d25613385561">e1b_hier_56_20261116_181107.json</span><span class="ev-n" data-sha256="0ced2e6bde1d8de7aa815f5846c828d65a62514568000af04692db94afd6a0d5">E1b：10 万门 Feistel 分层对平铺</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="14bbcd803e41067352026a29aad2a4544e0a50590096a113726b2f26bd38b1bf">chunks_56_20261116_173913.json</span><span class="ev-n" data-sha256="11fbf498bfd494cbd8b04a18d7e87fff714ff911f4c8f2e4ef91fa5060b627ba">拼接项占比（第 3 章定律四）</span></dd></div></dl>
     <details class="revs"><summary>修订记录（1）· OCH 改的是自己这段</summary><ol><li><time datetime="2026-11-17">2026-11-17</time><span>第 1 段那一页原来的叫法改成「本书之前的 /physics/ 单页版」，它的下一次小改版也照这样称呼：书上线时那一页原地换成本书目录；意思不变</span></li></ol></details>
   </section>
+
+</details>
+
 
 </div>
 <h2 id="s2-4"><span class="secno">2.4</span>怎么量出来的</h2>  <ol><li><b>编译版</b>  <ul><li>把网表编成不超过 24,000 字节一段的字节码，用状态覆盖临时放到空地址上。</li><li>让计量套子调它，一次跑 256 路。</li><li>256 路的结果逐位和本地参考比，再挑 4 路和官方处理器的 eval 比。</li></ul>
@@ -693,7 +747,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <ol class="cases">
     <li><span class="when">定律十五的判据 2 被证伪。</span>  <ul><li>判据写的是：100 门以上的电路，每门每路落在 12–30 之间。实测 26 颗里只有 17 颗在区间内。</li><li>6 颗偏高：100–248 门，固定开销摊到百来个门上，每门 30–49。</li><li>3 颗偏低：1 入 1 出的反相器链，每门 5–8。</li><li>区间是我定错了，机理不受影响；判定照留。<span class="cite">判据·E3</span></li></ul>
 </li>
-    <li><span class="when">定律五有两种情况要另算</span>  <ul><li>同时活着的线超过约 1.2 万根后（推算：每门 24 gas 和每次调用的 W²/512 在这里打平，没量），内存的平方项会显出来（第 3 章）；</li><li>百来个门的小电路，固定开销摊不开（定律十五）。</li></ul>
+    <li><span class="when">定律五有两种情况要另算</span>  <ul><li>同时活着的线一多，内存项就显出来（反方量的）：随机电路同时活着 131 根线时每门 24.97，2,368 根时 27.07，4,639 根时 28.74；先宽后树 6,009 根时 31.49。两链 44 次实测都和「指令价 + 3W + ⌊W²/512⌋」逐个相等。</li><li>每门 24 只在同时活着的线很少时成立：近邻电路同时活着 64 根线，每门正好 24.00。</li><li>我原来写的是「超过约 1.2 万根后才显出来」，那是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点（第 3 章）；</li><li>百来个门的小电路，固定开销摊不开（定律十五）。</li></ul>
 </li>
     <li><span class="when">定律六只对「同一个电路、很多组互不相干的输入」成立。</span><span>每组电路不同、或者后一组要用前一组的结果，就不能并排算。</span>  <ul><li><span class="tag fix">更正</span>翻转点还看原生写得多好：对 21nandkit 那份逐路循环的原生是 20.2 组，对按字运算的原生约 176–283 组（反方第 1 条；我的量法 187）。编译版把输入转成按位排列、把输出转回来的费用，两边都没算，算进去编译版只会更贵。</li></ul>
 </li>
@@ -717,5 +771,39 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </article>
 </main>
 
+<script>// 教科书各章的辩论折叠。生成器把这个文件原样内联进有辩论的章页，放在 </body> 前。
+// 折叠本身是原生 <details class="dbt">，不靠这段也能点开；这段只做两件原生不一定做到的事：
+// ① 地址里的 # 指到某组里面的元素（反方框、正方回应、框里的锚点）时，把它外面每一层 <details> 都展开、滚到它——打开页面时一次，# 变了再一次
+//    （Chrome 遇到 # 指进收起的 <details> 会自己展开，Safari 不一定）；
+// ② 章首的「全部展开 / 全部收起」：按钮本来带 hidden，这里露出来；全开时字换成「全部收起」（两种字叠一格，不挪位）。
+// 不读写任何存储、不发请求。
+(function () {
+  var ds = [].slice.call(document.querySelectorAll('details.dbt'));
+  if (!ds.length) return;
+  function openFor() {
+    var h = location.hash.replace(/^#/, '');
+    if (!h) return;
+    try { h = decodeURIComponent(h); } catch (e) { return; }
+    var el = document.getElementById(h);
+    if (!el) return;
+    var opened = false;                              // 目标外面每一层 <details>（这一组、框里的修订记录……）都打开
+    for (var p = el.parentElement; p; p = p.parentElement) if (p.tagName === 'DETAILS' && !p.open) { p.open = true; opened = true; }
+    if (opened) el.scrollIntoView();
+  }
+  openFor();
+  window.addEventListener('hashchange', openFor);
+  var b = document.querySelector('.dbt-all');
+  if (!b) return;
+  function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }
+  b.addEventListener('click', function () {
+    var to = b.getAttribute('data-state') !== 'open';
+    ds.forEach(function (d) { d.open = to; });
+    sync();
+  });
+  ds.forEach(function (d) { d.addEventListener('toggle', sync); });
+  sync();
+  b.hidden = false;
+})();
+</script>
 </body>
 </html>
