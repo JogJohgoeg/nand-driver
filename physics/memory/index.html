@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -568,6 +583,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -578,7 +594,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 3 章 内存与大电路</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 3 章 内存与大电路</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -601,6 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -615,7 +632,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>内存与大电路：电路越大，每个门越贵</h1>
   <p class="lede">小电路每个门约 2,250 gas。电路一大，官方处理器要把网表一块一块拼进内存，每拼一块就把拼好的整段再复制一遍，内存又按字数的平方收钱，所以越拼越贵。网表整块放的时候，门数翻倍，gas 也差不多只翻倍；按真实发布的 24,000 字节一块，5 万门翻到 10 万门，gas 涨 3.75 倍。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 20 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 21 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
@@ -632,8 +649,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s3-2"><span class="secno">3.2</span>定义</h2><section class="box def" aria-labelledby="d3">
   <header><span class="kind">定义</span><span class="name" id="d3">本章用到的词</span></header>
   <dl class="terms">
-    <dt id="t-e53ecc31">内存、字</dt><dd>虚拟机算的时候用的临时内存，按 32 字节一个「字」算钱。用到 w 个字，总价是 3w + ⌊w²/512⌋ gas，前一项是线性的，后一项按字数的平方涨。扩到 131,072 个字（4 MB）实测 33,947,648，和这个式子一个不差。<span class="cite">ops·56</span></dd>
-    <dt id="t-446ac9db">数据合约、分块</dt><dd>一个合约最多放 24,576 字节代码，所以官方发布时把网表按 24,000 字节切成一块一块，每块存成一个数据合约。块数记作 K。</dd>
+    <dt id="t-e53ecc31">内存、字</dt><dd>虚拟机算的时候用的临时内存，按 32 字节一个「字」算钱。用到 w 个字，总价是 3w + ⌊w²/512⌋ gas，前一项是线性的，后一项按字数的平方涨。扩到 131,072 个字（4 MB），实测片段扣掉 PUSH、MLOAD、POP 本身的 8 gas 是 33,947,648，和这个式子一个不差。<span class="cite">ops·56</span></dd>
+    <dt id="t-9ee5e854">数据合约、分块、块数</dt><dd>一个合约最多放 24,576 字节代码，所以官方发布时把网表按 24,000 字节切成一块一块，每块存成一个数据合约。块数记作 K。</dd>
     <dt id="t-630ca11b">拼接</dt><dd>官方处理器每次 step 都把各块读进内存、拼成一整段网表。它每拼一块就新开一段缓冲，把已经拼好的整段复制过去，旧的那段不回收。</dd>
     <dt id="t-94813fbe">整块放</dt><dd>整份网表放在一个数据合约里。超过 24,000 字节时，真发布不会这样放，只能在实验里用状态覆盖放。</dd>
     <dt id="t-0ef4f486">合成网表、注入</dt><dd>我们自己生成的随机网表，用状态覆盖临时放进官方处理器的存储里，不发布、不花钱。</dd>
@@ -666,9 +683,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </section>
 <div class="thread">
 <details class="dbt" data-for="red-energy-003">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 定律四</span></summary>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律四</span></summary>
   <section class="box con" id="red-energy-003" aria-labelledby="red-energy-003-h" data-author="RED" data-id="red-energy-003" data-target="定律四" data-verdict="没推翻" data-date="2026-11-17" data-sha256="d6c35095d24c8807c5db8ff971eed10905195891ee5e27c9d4c5999e27993430">
-    <header><span class="kind" id="red-energy-003-h">反方 · RED · 第 3 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-d52b8c">定律四</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <header><span class="kind" id="red-energy-003-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-d52b8c">定律四</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="864568ab1b6583b5a32d9ce3477e2a01fa54ad8b33b16a543d5830a46455c93c">定律四（分块拼接）是在 6 到 94 块的合成网表上拟的；真发布的平网表一笔最多约 40 KB，所以真电路大多只有 2 块，正好落在它的拟合范围外。我（反方）把 BSC 全部 1,495 个处理器的 80,199 颗电路普查了一遍，读出网表、去掉含调用记录的、按 sha256 去重，真正超过 24,000 字节的平网表只有 21 份，全是 2 块。拿一个跑之前就钉死的模型去预测它们：我在单块电路上拟的直线（24,235 + 2,251.10·门 + 269.8·输入位 + 319.7·输出位），加上定律四的拼接增量，a=42.5、b=1.012、k₀=48,489、C=24,000 全照书里，一个不改。</p>
     <p class="said" data-sha256="a7fdae46f3b0ecb3b5a1a49e9aaa196fbaa99e59e425850453e525d43ac7ac4f">11 份不带锁存的，误差中位 0.22%、最大 0.32%：定律四外推到 2 块站得住，判没推翻。同一批电路，拿单块数据拟的带 N² 的式子（γ≈4.9×10⁻⁴，和 c₂ 一个量级）去预测，误差中位 0.81%，而且全部偏低——N² 那一项补不上跨块那份拼接费。所以在 BSC 的 2 块真电路上，「γ 替的是跨块拼接费」这个说法对得上：拼接费模型比带 N² 的好将近四倍。</p>
     <p class="said" data-sha256="faa0ce7098cb86c257ab0bc02da1eb1abb43c493be745f17737e82cc29684549">要说清的几点：只有 2 块的样本，BSC 上 3 到 5 块的平网表一份也没有；正方的 E17c 在 X Layer 上判「盲测不过」，和这里不一样——两边链不同，书里定律四的系数也只给了 BSC 的。这一条跑之前我已经看到过正方 E17c 的汇总数；判据和两个模型的系数在那之前就钉死提交了，没有改。另外我第一遍普查漏了每个处理器的最后一颗（电路编号是 1 到 nextId，不是到 nextId−1），补全以后整份重跑过，上面的数是重跑那一遍的，和第一遍一样。</p>
@@ -687,27 +704,27 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 
 </div><section class="box law" aria-labelledby="law-11827c">
-  <header><span class="kind">定律七</span><span class="name" id="law-11827c">上限定最大电路</span><span class="cite">fit·publish、controlled·56</span></header>
+  <header><span class="kind">定律七</span><span class="name" id="law-11827c">上限定最大电路</span><span class="cite">controlled·56、chunks·56、callcap·56、callcap·196、params·56、params·196、controlled·196</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>N</mi><mi>max</mi><mo>⁡</mo></msub><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">)</mo><mo>=</mo><mi>max</mi><mo>⁡</mo><mo stretchy="false">{</mo><mi>N</mi><mo>:</mo><mtext> </mtext><msub><mi>E</mi><mi>K</mi></msub><mo stretchy="false">(</mo><mi>N</mi><mo stretchy="false">)</mo><mo>≤</mo><mi>G</mi><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">N_{\max}(G)=\max\{N:\ E_K(N)\le G\}</annotation></semantics></math></span></math></div>
   <div class="tbl"><table>
     <thead><tr><th>上限 G</th><th>gas</th><th>算一次最大约多少门（按定律三、四推算）</th></tr></thead>
     <tbody>
       <tr><th scope="row">BSC 单笔交易</th><td class="r">16,777,216</td><td class="r">7,249</td></tr>
       <tr><th scope="row">X Layer 单笔交易（按块上限，只实测到 1 亿）</th><td class="r">210,000,000</td><td class="r">65,142</td></tr>
-      <tr><th scope="row">BSC 只读调用（NodeReal 带钥匙节点）</th><td class="r">550,000,000</td><td class="r">102,857</td></tr>
+      <tr><th scope="row">BSC 只读调用（官方 dataseed，公开、不用钥匙；带钥匙的 NodeReal 也是这个上限）</th><td class="r">550,000,000</td><td class="r">102,857</td></tr>
       <tr><th scope="row">X Layer 只读调用</th><td class="r">50,000,000</td><td class="r">20,671</td></tr>
     </tbody></table></div>
   <p></p>
   <ul><li>实测核对：BSC 10 万门 5.2 亿过、20 万门不过；X Layer 2 万门 4,669 万过。</li><li>推算时，单笔交易先扣掉起步价 21,000；只读调用先扣掉往下调用要留的 1/64，再留 3 万 gas 的余量。</li><li>这是只调一次 step（冷）、全 0 输入的门数。</li></ul>
-  <p><span class="tag fix">更正</span>上表的门数是按平铺网表推的：网表照真实发布切成 24,000 字节一块，每拼一块都要付拼接费。网表里放子电路调用记录的分层电路，不付这份费（第 2 章定律十二）。反方第 1 条在 BSC 带钥匙节点上量了 20 颗展开 4 万门以上的真分层电路，19 颗一次只读跑完，最大一颗展开 175,304 门、用了 402,633,121 gas。照这 19 颗拟一条直线，每个展开门约 2,362 gas，5.5 亿约装 23 万门（往外推的：跑完的最大一颗就是上面那颗）。X Layer 上 21 颗（4.8 万门起）在 5,000 万的节点上一颗也没跑完。</p>
-  <ul><li>发布和执行是两回事。上表说的是一次调用（或一笔交易）能算多大；能发布多大，单笔上限限的是一笔能存多少字节，不是电路多大。反方查了 BSC 上展开超过 5,774 门的 496 颗电路，全建在单笔上限生效以后，其中 493 颗是分层电路，最大一颗展开 623,504 门。（反方第 2 条）</li></ul>
+  <p><span class="tag fix">更正</span>上表的门数是按平铺网表推的：网表照真实发布切成 24,000 字节一块，每拼一块都要付拼接费。网表里放子电路调用记录的分层电路，不付这份费（第 2 章定律十二）。<a href="#red-memory-001">反方第 2 条</a>在 BSC 带钥匙节点上量了 20 颗展开 4 万门以上的真分层电路，19 颗一次只读跑完，最大一颗展开 175,304 门、用了 402,633,121 gas。照这 19 颗拟一条直线，每个展开门约 2,362 gas，5.5 亿约装 23 万门（往外推的：跑完的最大一颗就是上面那颗）。X Layer 上 21 颗（4.8 万门起）在 5,000 万的节点上一颗也没跑完。</p>
+  <ul><li>发布和执行是两回事。上表说的是一次调用（或一笔交易）能算多大；能发布多大，单笔上限限的是一笔能存多少字节，不是电路多大。反方查了 BSC 上展开超过 5,774 门的 496 颗电路，全建在单笔上限生效以后，其中 493 颗是分层电路，最大一颗展开 623,504 门。（<a href="#red-memory-002">反方第 3 条</a>）</li></ul>
 
 </section>
 <div class="thread">
 <details class="dbt" data-for="red-memory-001">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律七</span></summary>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律七</span></summary>
   <section class="box con" id="red-memory-001" aria-labelledby="red-memory-001-h" data-author="RED" data-id="red-memory-001" data-target="定律七" data-verdict="推翻" data-date="2026-11-17" data-sha256="f6c53b43c6acd1be3094b9bea34a63cf4f6a95032019cc5c15c51be61dccf0c5">
-    <header><span class="kind" id="red-memory-001-h">反方 · RED · 第 1 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-11827c">定律七</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <header><span class="kind" id="red-memory-001-h">反方 · RED · 第 2 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-11827c">定律七</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="7767069991608e1c49c62beafba647ac66e4b918a3a6a69b8faf4451f5599fae">书里说「免费读一次最多约 10 万门（NodeReal 5.5 亿额度）」，规模表推算 BSC 约 102,857 门；这是按平的、24,000 字节分块的网表推的。链上还有另一种电路：网表里放的是调用子电路的记录，网表本身几 KB，展开有几万到几十万门。我（反方）从两链全部处理器的普查里取出所有展开 ≥ 4 万门、没有锁存、网表含调用记录的电路，按网表去重（BSC 20 份、X Layer 21 份），在 BSC 带钥匙节点和 X Layer 公开节点上各做一次只读 step。</p>
     <p class="said" data-sha256="be722963e7a92687842e7dc2257154dbe441f6abc6857eec2a2bbb9f06632dea">BSC 上 20 份里 19 份一次跑完。最大的一颗（0xaa4528ef… 的 #891）展开 175,304 门，一次只读用了 402,633,121 gas；14.5 万门的四颗都在 3.5 亿上下；只有展开 623,504 门的那颗没跑完。所以「免费读一次最多约 10 万门」当作电路规模的上限不成立，我判推翻：真分层电路每个展开门大约 2,297 gas，而且和门数成直线，5.5 亿大约装得下 24 万门。X Layer 上 21 份（4.8 万到 17.5 万门）在 5,000 万的公开节点上一颗都没跑完，「X Layer 免费读约 2 万门」这句没推翻——只是我的样本从 4 万门起，2 万到 4 万门之间的没取到。</p>
     <p class="said" data-sha256="542e3d436fb3586030f9b83a40066dadd88defe6629cbba3520e6d2d118ada2e">建议：上限定最大电路那条写明「按平网表推」，另给分层电路的那一种（BSC 带钥匙节点约 24 万门）；结论里「功率上限定规模」也该补上分层这条路。</p>
@@ -724,9 +741,9 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </details>
 
 <details class="dbt" data-for="red-memory-002">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律七</span></summary>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 定律七</span></summary>
   <section class="box con" id="red-memory-002" aria-labelledby="red-memory-002-h" data-author="RED" data-id="red-memory-002" data-target="定律七" data-verdict="推翻" data-date="2026-11-17" data-sha256="e12f215c4c1424c86f5602ce9d00e3a3cd6021b688821ebc375011255d3b5c67">
-    <header><span class="kind" id="red-memory-002-h">反方 · RED · 第 2 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-11827c">定律七</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <header><span class="kind" id="red-memory-002-h">反方 · RED · 第 3 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-11827c">定律七</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="bcbd08bbaac8618e72f2582d4619e9046d9a7085ee902120c6cb4a9e04e22099">书里说「功率上限定规模」：BSC 单笔 2²⁴，一次最多发布约 5,774 个 NAND；规模表「一笔交易最大电路」也写约 5,774 个 NAND。我（反方）把 BSC 全部 1,495 个处理器 80,199 颗电路里展开门数超过 5,774 的 496 颗，一颗颗查了出身：按块高二分处理器的 nextId，找出它被建出来的那一块，再读那一块里那个处理器的日志、交易和回执（只读已上链的东西，不调也不模拟 tapeout）。496 颗全都建在单笔上限生效（2026-04-28）之后。</p>
     <p class="said" data-sha256="bac18dfe7df896e87340871d8ae8dba807d644438b65cb5be2581c34373011c9">其中展开超过 6,063 门（5,774 的 1.05 倍）的有 388 颗，最大 623,504 门——每一颗都是一笔交易建出来的，调用数据只有 292 到 34,148 字节（中位 708），gas 最少 25.7 万。它们是分层电路：网表里放的是调用子电路的记录，自己只有几百字节到几十 KB。所以单笔上限限住的是一笔能存多少字节，限不住电路有多大，「功率上限定规模」判推翻。</p>
     <p class="said" data-sha256="bda4371fab0721d5536a68dd7ab57751d735e64901e3edf861d922845d7b9c3b">「一次最多发布约 5,774 个 NAND」本身没推翻：平的网表里，没有一笔发出超过 6,063 个 NAND。不过一笔能发多少条记录要看是什么记录：锁存一条只有 4 个字节，0x872d63c0… 上有 3 颗以锁存为主的平电路（#15、#17、#19），各一笔发了 7,498 到 8,498 条记录。我判据里把「记录数」和「NAND」混着写了，按页面原话（NAND）判没推翻，按字面的记录数是会触发的，两种读法都照实写在这里。建议写成「一笔最多约 5,774 个 NAND（平网表；锁存约 8,500 条）；分层电路一笔就能发几十万门」。</p>
@@ -756,7 +773,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">电路太大，一笔交易放不下怎么办</span></header>
-  <ul><li>BSC 一笔交易只够约 7,249 门，X Layer 一笔约 65,142 门。</li><li>只要结果、不用上链：用只读调用，不花钱。BSC 的 NodeReal 带钥匙节点约 102,857 门，X Layer 约 20,671 门。</li><li>要上链：拆成子电路，父电路只放调用记录（第 2 章定律十二），绕开拼接费。</li></ul>
+  <ul><li>BSC 一笔交易只够约 7,249 门，X Layer 一笔约 65,142 门。</li><li>只要结果、不用上链：用只读调用，不花钱。BSC 的官方 dataseed（公开）或自己有钥匙的 NodeReal，上限都是 5.5 亿，约 102,857 门，X Layer 约 20,671 门。</li><li>要上链：拆成子电路，父电路只放调用记录（第 2 章定律十二），绕开拼接费。</li></ul>
 
 </section>
 <h2 id="s3-6"><span class="secno">3.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f3">
@@ -810,6 +827,11 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   }
   openFor();
   window.addEventListener('hashchange', openFor);
+  // 正文里「反方第 n 条」链到本页的框：读者看完收起、再点同一条，# 没变就没有 hashchange，框打不开——点了 # 和现在一样时也开
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (a && a.getAttribute('href') === location.hash) setTimeout(openFor, 0);
+  });
   var b = document.querySelector('.dbt-all');
   if (!b) return;
   function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }

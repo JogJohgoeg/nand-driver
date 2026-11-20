@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -568,6 +583,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -578,7 +594,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 5 章 面积与存储</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 5 章 面积与存储</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -601,6 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -615,7 +632,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>面积与存储：把电路放上链，按字节付钱</h1>
   <p class="lede">把电路放上链，就像在芯片上占一块面积，按字节付钱：每存一个字节的代码 200 gas，再加上交易数据和官方处理器自己的记账。DOT32_T 有 3,829 个门、26,803 字节，在 X Layer 上发布用了 11,202,698 gas，其中存代码那一项占 48%。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 14 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 15 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 2 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
@@ -635,6 +652,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <header><span class="kind">定义</span><span class="name" id="d5">本章用到的词</span></header>
   <dl class="terms">
     <dt id="t-5cf70b0c">面积</dt><dd>电路在链上占的地方。网表存成数据合约的代码，按字节付钱，永久留着。</dd>
+    <dt id="t-51175fa2">交易数据（calldata）</dt><dd>发交易时带上的字节。只进链的历史，合约之后读不到。</dd>
     <dt id="t-c728b2ae">存储字</dt><dd>合约自己的「寄存器」，每个 32 字节。读、写、清都要钱。</dd>
     <dt id="t-5e313b38">返还</dt><dd>把存储字清成 0，会退一点 gas，在交易结束时才结算。</dd>
     <dt id="t-b61f333b">发布</dt><dd>把网表发上链、登记成一颗电路的那笔交易。本书只读已有的发布回执，不模拟、也不调用发布用的那个函数。</dd>
@@ -651,7 +669,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">45,875</th><td class="r">1,370.3</td><td class="r">1,138.7</td><td class="r">107,506</td><td>BSC 51 笔</td><td class="r">0.24%</td><td class="r">7.5%</td></tr>
     </tbody></table></div>
   <p></p>
-  <ul><li>样本外：X Layer 上 DOT32_T 那笔回执，用 BSC 的系数算，差 −0.30%（例题 1）。</li><li><span class="tag fix">更正</span>锁存为主的发布会估高约 12%：反方找到 3 笔一笔就把整份平网表发上去的回执（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存），照这条算三笔都估高，偏差 −12.09%、−11.54%、−11.61%，超过按笔留一的 7.5%。拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个、一共 133 个，锁存那一项的系数定得不准。（反方第 1 条）</li><li>一笔交易最多能发布多少门：BSC 单笔上限 16,777,216，按这条推，平网表约 5,774 个与非门（例题 2）。锁存一条记录只有 4 字节，平电路一笔发过 8,498 条记录（8,496 个锁存）；分层电路一笔能建几十万门（第 3 章定律七）。</li></ul>
+  <ul><li>样本外：X Layer 上 DOT32_T 那笔回执，用 BSC 的系数算，差 −0.30%（例题 1）。</li><li><span class="tag fix">更正</span>锁存为主的发布会估高约 12%：反方找到 3 笔一笔就把整份平网表发上去的回执（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存），照这条算三笔都估高，偏差 −12.09%、−11.54%、−11.61%，超过按笔留一的 7.5%。拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个、一共 133 个，锁存那一项的系数定得不准。（<a href="#red-area-001">反方第 1 条</a>）</li><li>一笔交易最多能发布多少门：BSC 单笔上限 16,777,216，按这条推，平网表约 5,774 个与非门（例题 2）。锁存一条记录只有 4 字节，平电路一笔发过 8,498 条记录（8,496 个锁存）；分层电路一笔能建几十万门（第 3 章定律七）。</li></ul>
 
 </section>
 <div class="thread">
@@ -687,7 +705,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">100</th><td class="r">521,600</td><td class="r">417,280</td><td class="r">417,280</td></tr>
     </tbody></table></div>
   <p></p>
-  <ul><li><span class="tag fix">更正</span>k 只算交易开始时非零、结束时清成 0 的字（上表量的就是这一种，每个退 4,800）。另两种照 EIP-3529 另算：开始时为 0、同一笔里先写后清的字，每个退 19,900；改了又改回原值的字，每个退 2,800。反方在 BSC 上量了：先写后清 1 个字实扣 34,570，照本式算是 38,412；字一多，退款被五分之一的上限压平，k = 20、100 时才相等。五分之一的上限处处成立。（反方第 2 条）</li></ul>
+  <ul><li><span class="tag fix">更正</span>k 只算交易开始时非零、结束时清成 0 的字（上表量的就是这一种，每个退 4,800）。另两种照 EIP-3529 另算：开始时为 0、同一笔里先写后清的字，每个退 19,900；改了又改回原值的字，每个退 2,800。反方在 BSC 上量了：先写后清 1 个字实扣 34,570，照本式算是 38,412；字一多，退款被五分之一的上限压平，k = 20、100 时才相等。五分之一的上限处处成立。（<a href="#red-area-002">反方第 2 条</a>）</li></ul>
   <ul><li>k = 1 时退满 4,800；k = 4 起就碰到五分之一那个顶了。</li><li>返还在交易结束才结算，不能拿来付同一笔里的计算。</li></ul>
 
 </section>
@@ -731,7 +749,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <li><span class="when">只用了已有的回执。</span><span>规矩不许模拟发布函数，所以样本只能是别人已经发过的：BSC 51 笔、X Layer 1 笔。含子电路调用的发布没量。</span></li>
     <li><span class="when">记账那四个系数是 BSC 回执拟出来的。</span><span>X Layer 只有一笔能对，差 −0.30%；按笔留一，BSC 最大差 7.5%。</span></li>
     <li><span class="when">X Layer 那份是换了节点才量到的。</span><span>X Layer 官方节点不给模拟，四档都回「HTTP 403」；换 drpc 节点再量，四档的实扣和预测逐个相等。</span></li>
-    <li><span class="when">交易数据为主时另有地板价</span><span>（每字节非零 40、零 10）。发布电路时碰不到：52 笔回执里（BSC 51 笔、X Layer 1 笔），地板价最高只到实际用量的 11%。两链都跟了这条：反方对三笔纯数据交易用模拟核过 BSC，实扣正好等于带地板的数。要注意，节点的 eth_estimateGas 对这种交易会多报约 1%，要实扣的数按协议算或用模拟。（常数表页反方第 8 条）</span></li>
+    <li><span class="when">交易数据为主时另有地板价</span><span>（每字节非零 40、零 10）。发布电路时碰不到：52 笔回执里（BSC 51 笔、X Layer 1 笔），地板价最高只到实际用量的 11%。两链都跟了这条：反方对三笔纯数据交易用模拟核过 BSC，实扣正好等于带地板的数。要注意，节点的 eth_estimateGas 对这种交易会多报约 1%，要实扣的数按协议算或用模拟。（<a href="../constants/#red-constants-008">常数表页反方第 8 条</a>）</span></li>
     <li><span class="when">适用范围</span><span>：官方处理器；不含子电路调用的发布；锁存为主的发布会估高约 12%（见定律八的更正）。</span></li>
   </ol>
 </section>
@@ -740,7 +758,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li>DOT32_T 在 X Layer 上发布用了 11,202,698 gas，存代码占 48%；定律八估高 0.30%。</li>
   <li>BSC 一笔交易最多发布约 5,774 个与非门（平网表；分层电路一笔能建几十万门）。</li>
   <li>清存储字最多只退用量的五分之一，而且交易结束才退。</li>
-  <li>下一章：时钟与不可逆——链按块打拍，写进去的要等一阵才真的算数。</li>
+  <li>下一章：时钟与不可逆——链按块走时，写进去的要等一阵才真的算数。</li>
 </ul>
 
 <nav class="pn" aria-label="上一章和下一章">
@@ -773,6 +791,11 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   }
   openFor();
   window.addEventListener('hashchange', openFor);
+  // 正文里「反方第 n 条」链到本页的框：读者看完收起、再点同一条，# 没变就没有 hashchange，框打不开——点了 # 和现在一样时也开
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (a && a.getAttribute('href') === location.hash) setTimeout(openFor, 0);
+  });
   var b = document.querySelector('.dbt-all');
   if (!b) return;
   function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }

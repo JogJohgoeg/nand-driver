@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -568,6 +583,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     </ol></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -578,7 +594,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 8 章 加速器</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 8 章 加速器</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -601,6 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     </ol></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -626,6 +643,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <dl class="terms">
     <dt id="t-4c84c8d3">预编译合约（加速器）</dt><dd>链的客户端里用原生代码实现、放在固定地址的合约。调它和调普通合约一样，按固定的式子收 gas，比用虚拟机指令自己算便宜得多。</dd>
     <dt id="t-689f6a62">identity</dt><dd>地址 0x04 的那颗，原样复制输入，用来校准量法：复制 32 字节应该正好 18 gas。</dd>
+    <dt id="t-274d398a">零知识证明</dt><dd>链下算的人附上一份证明，链上验证明就行，不用重算（第 10 章细讲）。</dd>
     <dt id="t-f7a14922">硬分叉级别</dt><dd>链按升级批次启用新的加速器、改价。BSC 已经到 Osaka 那一级，X Layer 在 Prague 那一级。</dd>
   </dl>
 </section>
@@ -648,13 +666,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">P256VERIFY</th><td>验签（手机、通行密钥常用的曲线）</td><td class="r">6,900</td><td class="r">3,450</td></tr>
     </tbody></table></div>
   <p><span class="cite">e8·precompiles、判据·E8</span></p>
-  <ul><li>两链各两家节点，每家测 19 项（identity 测了两次，实际是 18 种预编译），18 项和规范写的价一个不差，另一项是 KZG 点求值，只判了在不在；同一条链两家节点读数逐个相同。</li><li>两链不同的两处都来自升级级别：大数模幂最低价 BSC 照 EIP-7883 是 500、X Layer 照 EIP-2565 是 200；P256VERIFY BSC 照 EIP-7951 是 6,900、X Layer 照 RIP-7212 是 3,450。</li><li>大数模幂不只最低价不同：反方量了另外三组更大的输入，BSC 是 X Layer 的 4.5 到 6 倍。照 EIP-7883 原文，Osaka 去掉了式子里的除以 3，底或模超过 32 字节时复杂度再翻倍，指数超过 32 字节那段的倍数从 8 变 16；反方照原文算了 BSC 四组，全对上。（常数表页反方第 9 条）</li><li>bn254 配对我只量了 0 对（45,000）；反方用合法的点量了 k = 1 到 4，两链都是 79,000 / 113,000 / 147,000 / 181,000，正好每多一对加 34,000。</li><li>KZG 点求值（EIP-4844）我只判了在不在：给它无效输入，它拒了。反方用零多项式造了一份一定能过的输入，两链的价都是 50,000。</li></ul>
+  <ul><li>两链各两家节点，每家测 19 项（identity 测了两次，实际是 18 种预编译），18 项和规范写的价一个不差，另一项是 KZG 点求值，只判了在不在；同一条链两家节点读数逐个相同。</li><li>两链不同的两处都来自升级级别：大数模幂最低价 BSC 照 EIP-7883 是 500、X Layer 照 EIP-2565 是 200；P256VERIFY BSC 照 EIP-7951 是 6,900、X Layer 照 RIP-7212 是 3,450。</li><li>大数模幂不只最低价不同：反方量了另外三组更大的输入，BSC 是 X Layer 的 4.5 到 6 倍。照 EIP-7883 原文，Osaka 去掉了式子里的除以 3，底或模超过 32 字节时复杂度再翻倍，指数超过 32 字节那段的倍数从 8 变 16；反方照原文算了 BSC 四组，全对上。（<a href="../constants/#red-constants-009">常数表页反方第 9 条</a>）</li><li>bn254 配对我只量了 0 对（45,000）；反方用合法的点量了 k = 1 到 4，两链都是 79,000 / 113,000 / 147,000 / 181,000，正好每多一对加 34,000。</li><li>KZG 点求值（EIP-4844）我只判了在不在：给它无效输入，它拒了。反方用零多项式造了一份一定能过的输入，两链的价都是 50,000。</li></ul>
 
 <h2 id="s8-4"><span class="secno">8.4</span>怎么量出来的</h2>  <ol><li>一次只读调用里，用一小段虚拟机代码挨个调这些加速器，量调用前后剩的 gas 差多少，再减掉调用本身的开销（119 gas）。</li><li>先拿 identity 校准：复制 32 字节量出来要正好是 18，复制 0 字节要正好是 15，对上了才往下量。</li><li>两链各两家节点各量一遍，和规范写的价逐个比。</li><li>全是只读，不发交易。</li></ol>
 
 <h2 id="s8-5"><span class="secno">8.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">链下算、链上只验证明</span></header>
-  <ul><li>第 3 章说 BSC 一笔交易只够算约 7,249 个门。电路再大，可以在链下算，链上只验一份零知识证明。</li><li>验一份 bn254 上的证明，配对要 45,000 + 34,000·k gas（k 是配对的对数；k = 1 到 4 反方两链都量过）。k = 4 时约 18.1 万 gas，和电路有多大无关。</li><li>这条路要信的是证明系统，不是谁替你算。</li></ul>
+  <ul><li>第 3 章说 BSC 一笔交易只够算约 7,249 个门。电路再大，可以在链下算，链上只验一份零知识证明。</li><li>验一份 bn254 上的证明，配对要 45,000 + 34,000·k gas（k 是配对的对数；k = 1 到 4 反方两链都量过）。k = 4 时约 18.1 万 gas，和电路有多大无关。这只是配对那部分；整份验证见第 10 章，一次 232,868 gas。</li><li>这条路要信的是证明系统，不是谁替你算。</li></ul>
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">要哈希，就别用门拼</span></header>

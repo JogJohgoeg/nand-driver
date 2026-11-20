@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -594,6 +609,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -604,7 +620,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 0 章 为什么链也有物理</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 0 章 为什么链也有物理</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="" aria-current="page"><span class="no">0</span>为什么链也有物理</a>
@@ -627,6 +643,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -639,12 +656,14 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <header class="chhead">
   <p class="chno">第 0 章</p>
   <h1>为什么链也有物理</h1>
-  <p class="lede">区块链是一台人人能用、谁也关不掉的公共计算机。它也有自己的物理：</p>
+  <p class="lede">区块链是一台人人能用、谁也关不掉的公共计算机，也有自己的物理：每一步都花能量，每次能花的有上限，按块走时，存东西占地方，写进去要过一阵才改不了。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 5 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 6 分钟</p>
 </header>
 
-<h2 id="s0-1"><span class="secno">0.1</span>直觉</h2>  <p class="lede-in">区块链是一台人人能用、谁也关不掉的公共计算机。它也有自己的物理：</p>
+<h2 id="s0-1"><span class="secno">0.1</span>直觉</h2>  <p class="lede-in">区块链是一台人人能用、谁也关不掉的公共计算机，也有自己的物理：每一步都花能量，每次能花的有上限，按块走时，存东西占地方，写进去要过一阵才改不了。</p>
+  <p>这五样，芯片上大多有对应的：</p>
+  <ul><li>每一步都要花能量（gas）；</li><li>每次能花的有上限，像功率的上限；</li><li>按块走时，像时钟；</li><li>存东西要占地方，像芯片上的面积；</li><li>写进去的东西要过一阵才改不了。</li></ul>
   <div class="tbl"><table>
     <thead><tr><th>量</th><th>像什么</th><th>代表数</th><th>在哪一章</th><th>出处</th></tr></thead>
     <tbody>
@@ -660,7 +679,10 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <dl class="terms">
     <dt id="t-96363271">链</dt><dd>本书量两条。  <ul><li>BSC：链号 56。</li><li>X Layer：链号 196，是一条挂在以太坊上的二层链。</li></ul>
 </dd>
-    <dt id="t-2410d860">节点</dt><dd>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；节点上限那一行例外，在第 4 章写明。</dd>
+    <dt id="t-744a1318">链号</dt><dd>每条链的编号，用来分清是哪条链：BSC 是 56，X Layer 是 196。</dd>
+    <dt id="t-45976b15">二层链</dt><dd>挂在另一条链上、把自己的结果交给那条链去确认的链。本书的 X Layer 挂在以太坊上。</dd>
+    <dt id="t-2410d860">节点</dt><dd>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；要用满 5.5 亿 gas 的只读调用时例外，用过 BSC 的 NodeReal 带钥匙节点，用到的地方都写明了（第 3、4 章）。</dd>
+    <dt id="t-371d41e9">测量机</dt><dd>做重活的一台台式电脑，不是链上的节点。仿真、求值、证明这类量都在它上面跑；书里写「测量机上量的」，都不是链上节点的数。</dd>
     <dt id="t-a4f1e2c6">只读调用（eth_call）</dt><dd>让节点「假装执行」一段调用，把结果和花了多少 gas 告诉你。不上链、不花钱、不用钱包。</dd>
     <dt id="t-97ebbe93">状态覆盖</dt><dd>只读调用时，临时把某个地址的代码或存储换成你给的。本书靠它把「量 gas 的小工具」放进去。</dd>
     <dt id="t-0f324da4">本书的「定律」</dt><dd>一条定律有五样，缺一样都不算。  <ol><li>一个式子；</li><li>照式子算出的预测；</li><li>实测；</li><li>适用范围；</li><li>什么时候不成立。</li></ol>
@@ -695,7 +717,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s0-6"><span class="secno">0.6</span>这本书有两个作者</h2>  <p><b>两个作者都是 AI 代理（Claude），一个写，一个驳。</b></p>
   <ul><li><b>正方 · OCH</b> 写正文：设计实验、先提交判据、量、写出定律。</li><li><b>反方 · RED</b> 专门来推翻正文。它自己独立重量，下结论之前不看正方的代码和结果文件。</li></ul>
   <p><b>反驳怎么放进书里</b></p>
-  <ul><li>反驳就挂在被反驳的定律或常数旁边，一个反驳一个框。</li><li>框头写「反方 · RED」、结果标签（推翻、削弱、没推翻、未决）和日期。</li><li>框里是 RED 自己的话和证据：交易号、块号、数据文件；能复测的配一个按钮，你可以自己点。</li><li>正方可以在下面写「正方回应 · OCH」：认、部分认、不认，并附证据；也可以不回。</li><li>反驳成立、正方也认了，正方改正文，在原处留「更正」标签；反方的框照留。</li></ul>
+  <ul><li>反驳就挂在被反驳的定律或常数旁边，一个反驳一个框。</li><li>框头写「反方 · RED」、结果标签（推翻、削弱、没推翻、未决）和日期。</li><li>框里是 RED 自己的话和证据：交易号、块号、数据文件；能复测的配一个按钮，你可以自己点。</li><li>正方可以在下面写「正方回应 · OCH」：认、部分认、不认，并附证据；也可以不回。</li><li>反驳判了推翻或削弱、正方也认了，正方改正文，在原处留「更正」标签；框里分项推翻或削弱、正文照改了的，也算。反方的框照留。</li></ul>
   <p><b>谁都不改对方的字</b></p>
   <ul><li>两方各写各的文件。生成页面时逐段核对：反方框里的每一段，和反方自己提交的原文逐字相同。</li><li>改自己那段，要留修订记录：哪天、改了什么。</li><li>编辑只管三件事：事实性错误退回作者本人改；去掉不该公开的东西、守规矩；版面能不能上线。编辑不当裁判，两方有分歧照样上线。</li></ul>
   <p><b>为什么这么写</b></p>

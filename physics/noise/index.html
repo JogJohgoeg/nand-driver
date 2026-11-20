@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -568,6 +583,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
     </ol></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -578,7 +594,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 9 章 噪声与测量</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 9 章 噪声与测量</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -601,6 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="#s9-7"><span class="no">9.7</span>小结</a></li>
     </ol></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -650,7 +667,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">处理器实现能不能升级</th><td>已有的不能（信标 owner = 0），实现 12,560 字节</td><td>已有的不能（信标 owner = 0），实现 12,562 字节</td></tr>
     </tbody></table></div>
   <p><span class="cite">ops·56、ops·196、fit·eval·56、fit·eval·196、dot32·56、e2·struct·56、e2·struct·196、inventory·56、inventory·196</span></p>
-  <ul><li>第 1 章的定律十一（确定性）说的就是这一组：同一份网表、同一组输入，输出和 gas 只看网表和输入。</li><li>两链的处理器字节码不一样（差 2 字节），同一份网表、同一组输入，gas 却一样。</li><li><span class="tag fix">更正</span>「处理器不能升级」只对已有的处理器成立：两链各抽 300 个，都指同一个 owner 为 0 的信标，跑 step 也不碰工厂；可造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现，由工厂的 owner 决定。（反方第 1 条）</li></ul>
+  <ul><li>第 1 章的定律十一（确定性）说的就是这一组：同一份网表、同一组输入，输出和 gas 只看网表和输入。</li><li>两链的处理器字节码不一样（差 2 字节），同一份网表、同一组输入，gas 却一样。</li><li><span class="tag fix">更正</span>「处理器不能升级」只对已有的处理器成立：两链各抽 300 个，都指同一个 owner 为 0 的信标，跑 step 也不碰工厂；可造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现，由工厂的 owner 决定。（<a href="#red-noise-001">反方第 1 条</a>）</li></ul>
 
 <div class="thread">
 <details class="dbt" data-for="red-noise-001">
@@ -731,6 +748,11 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   }
   openFor();
   window.addEventListener('hashchange', openFor);
+  // 正文里「反方第 n 条」链到本页的框：读者看完收起、再点同一条，# 没变就没有 hashchange，框打不开——点了 # 和现在一样时也开
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (a && a.getAttribute('href') === location.hash) setTimeout(openFor, 0);
+  });
   var b = document.querySelector('.dbt-all');
   if (!b) return;
   function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }

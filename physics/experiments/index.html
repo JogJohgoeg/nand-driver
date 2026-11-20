@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -559,6 +574,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -569,7 +585,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>实验索引</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>实验索引</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -583,6 +599,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -597,7 +614,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>实验索引</h1>
   <p class="lede"></p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 13 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 18 分钟</p>
 </header>
 
 <h2 id="s-1"><span class="secno"></span>怎么读这张表</h2>  <ul><li>每个实验动手前，先把判据写好、存进仓库，量完不改。「判据定下」「结果出来」两栏是判据和第一份结果各自存进仓库的时间，精确到秒；每一行都是判据在前。</li><li>「判定」照判据文件里运行记录的原话抄。判不过、样本不够的照列。</li><li>有 11 份判据文件当时没写运行记录，判定写在结果提交的说明里；11-17 只在这些文件末尾追加了「运行记录（11-17 事后补）」，照抄提交说明，判据正文没动。这几行的判定栏照抄结果提交说明里的原话。</li><li>结果文件都在 results/ 下。{56,196} 指 BSC（链号 56）、X Layer（链号 196）各一份。</li><li>「在哪一章」：正文点了这个实验的名字，或者引了它的判据、结果文件。</li></ul>
@@ -615,7 +632,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">E7</th><td>X Layer 上发布一颗电路，gas、数据占用、交易大小谁先到上限</td><td>11-16 21:36:13</td><td>11-16 21:37:14</td><td>e7_publish_da_20261116_213643.json</td><td>判据文件当时没写运行记录（11-17 在末尾补上）；结果提交的说明「P1 成立」「P2 成立」</td><td>第 7 章</td></tr>
       <tr><th scope="row">E8</th><td>两链有哪些预编译合约（加速器），一次多少 gas</td><td>11-16 21:56:38</td><td>11-16 21:57:43</td><td>e8_precompiles_20261116_215713.json</td><td>判据文件当时没写运行记录（11-17 在末尾补上）；结果提交的说明「19 项全按预测」</td><td>第 8 章</td></tr>
       <tr><th scope="row">E9</th><td>不可逆（finalized）落后随时间是什么形状（采 2 小时）</td><td>11-16 22:14:43</td><td>11-17 00:26:40</td><td>e9_finality_20261116_221444.json、e9_summary.json</td><td>F1「照原定义证伪」（24 段里 18 段）；F2、F3、F4「成立」</td><td>第 6 章（定律十八）、第 0 章</td></tr>
-      <tr><th scope="row">E9b</th><td>采 12 小时：那次 48 分钟的落后多常见</td><td>11-17 02:58:00</td><td>11-17 15:07:18</td><td>e9_finality_20261117_025801.json、e9b_summary.json</td><td>只描述、不设线；超过 30 分钟「0 次」；48 分钟那次「没再见到、原因未明」</td><td>第 6 章（定律十八）、第 0、9 章</td></tr>
+      <tr><th scope="row">E9b</th><td>采 12 小时：那次 48 分钟的落后多常见</td><td>11-17 02:58:00</td><td>11-17 15:07:18</td><td>e9_finality_20261117_025801.json、e9b_summary.json</td><td>只描述、不设线；超过 30 分钟「0 次」；48 分钟那次「没再见到、原因未明」</td><td>第 6 章（定律十八）、第 0 章</td></tr>
       <tr><th scope="row">E10</th><td>BSC 的 blob：每块最多几个、最低价、承诺对不对、能留多久</td><td>11-17 03:32:40</td><td>11-17 03:39:21</td><td>e10_blobs_20261117_{033452,033753}.json、e10_deep_20261117_033859.json</td><td>判据文件当时没写运行记录（11-17 在末尾补上）；结果提交的说明 B1、B2、B3「都成立」</td><td>正文没点名</td></tr>
       <tr><th scope="row">E10b</th><td>BSC 的 blob 是不是只落在块号是 5 的倍数的块里，价是不是被钉死</td><td>11-17 04:19:45</td><td>11-17 04:37:14</td><td>e10b_interval_20261117_043550.json</td><td>判据文件当时没写运行记录（11-17 在末尾补上）；结果提交的说明「B5 成立」「B6 成立」「B7 不过」</td><td>第 6 章（定律十九）</td></tr>
       <tr><th scope="row">E10c</th><td>blob 超额是不是只在父块是 5 的倍数时才更新（事后假设，换新块检）</td><td>11-17 04:37:14</td><td>11-17 04:48:10</td><td>e10c_clock_20261117_044740.json</td><td>判据文件当时没写运行记录（11-17 在末尾补上）；结果提交的说明「成立」</td><td>第 6 章（定律十九）</td></tr>
@@ -638,7 +655,27 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">E18</th><td>定律一扣掉取值项后，不同深度、连法的 gas 是不是逐个相等（盲测）</td><td>11-17 19:06:38</td><td>11-17 20:34:52</td><td>e18_depth_values_20261117_203305.json（depth_values_check.json 是判据外的事后核对）</td><td>「判定：过。」两组扣完的差都是 0（2,000 门 36 对、20,000 门 12 对）；负控甲、乙都判得出差</td><td>第 1 章</td></tr>
     </tbody></table></div>
 
-<h2 id="s-3"><span class="secno"></span>页面和关卡的判据</h2>  <div class="tbl"><table>
+<h2 id="s-3"><span class="secno"></span>高算力实验</h2>  <p>结果文件在高算力那组的目录下（不在 results/）。两个时间照上面的规矩取；结果文件挪过路径的，取它第一次进仓库的时间。这组判据文件里多半没有「运行记录」一节，判定照结果文件里的原话抄；结果文件里没写判定的，照正文写「判定写在第 N 章」。</p>
+  <div class="tbl"><table>
+    <thead><tr><th>实验</th><th>问什么（一句话）</th><th>判据定下</th><th>结果出来</th><th>结果文件</th><th>判定（照原话，判不过、作废、样本不够都照列）</th><th>在哪一章</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">HC1</th><td>链上直接算，离显卡级差几个数量级（第一笔账）</td><td>11-18 10:35:14</td><td>11-18 10:40:36</td><td>hc1_gap.json、hc1_paths.json</td><td>结果文件没写判定；判定写在第 10 章「什么时候不成立」第 1 条：这笔账有一处推翻、几处削弱（反方量的）</td><td>第 10 章</td></tr>
+      <tr><th scope="row">HC2</th><td>按位逐门求值的能量下限</td><td>11-18 11:22:45</td><td>11-18 12:45:15</td><td>hc2_floor.json、hc2_ops.json</td><td>结果文件没写判定；第 10 章写成定律二十一</td><td>第 10 章（定律二十一）</td></tr>
+      <tr><th scope="row">HC3</th><td>全链功率从哪来：节点执行速度</td><td>11-18 11:30:15</td><td>11-18 13:00:14</td><td>hc3_speed.json</td><td>结果文件：候选一 BSC「推翻」、X Layer「没推翻」；候选二两家节点都「削弱」。第 10 章照反方量的把「gas 按时间定价」判推翻</td><td>第 10 章（定律二十二、什么时候不成立第 3、4 条）</td></tr>
+      <tr><th scope="row">HC3b</th><td>「全链只有一台机器」改写后的盲测</td><td>11-18 13:13:29</td><td>11-18 20:42:03</td><td>hc3b_speed.json</td><td>结果文件：BSC 两家「没推翻」，X Layer 那家「作废」</td><td>第 10 章（定律二十四）</td></tr>
+      <tr><th scope="row">HC4</th><td>链下算、链上验：链上验证要多少 gas</td><td>11-18 12:39:07</td><td>11-18 13:25:41</td><td>hc4_verify.json、hc4_fraud2.json、hc4_zk_*.json；第一版 hc4_fraud.json（正文用的是第二版）</td><td>结果文件两项都「没推翻」：零知识验证不随电路大小变，欺诈证明裁一步按对数涨；第 10 章写成定律二十三</td><td>第 10 章（定律二十三）</td></tr>
+      <tr><th scope="row">HC5</th><td>链本身执行到显卡级，有哪些路</td><td>11-18 18:52:09</td><td>11-18 20:26:15</td><td>hc5_paths.json、hc5_cpu_netlist.json</td><td>结果文件：十二条路逐条「到不了」或「到得了（推的）」。单份拍率律反方独立重量：第一版合起来那条推翻，「和工人多少都无关」削弱，其余没推翻</td><td>第 11 章（定律二十五、二十六，十二条路）</td></tr>
+      <tr><th scope="row">HC6</th><td>几条链合起来算</td><td>11-18 18:52:09</td><td>11-19 02:31:56</td><td>hc6_multichain.json、hc6_fast.json、hc6_txcap.json 等</td><td>结果文件没写总判定。跨链桥实际要等多久只量到 4 对，不判（要 ≥ 100 对）；Monad、MegaETH 的协议单笔上限记未决</td><td>第 11 章（定律二十七）</td></tr>
+      <tr><th scope="row">HC7</th><td>交互网当一条候选路</td><td>11-19 00:03:37</td><td>11-19 01:59:05</td><td>hc7_inet_evm.json、hc7_inet.json、hc7_fraud.json</td><td>结果文件：每次交互的价，内存、存储两版都「削弱」；与非门编成交互网每次求值的价「没推翻」；能并行的倍数没写判定。正文：与非门编成交互网没推翻；链上裁一次交互，交换那种推翻，消去、擦除记削弱</td><td>第 11 章（交互网）</td></tr>
+      <tr><th scope="row">HC9</th><td>链上的价比原生慢多少倍（EVM 解释税）</td><td>11-19 00:09:34</td><td>11-19 01:59:05</td><td>hc9_tax.json、hc9_native.json</td><td>结果文件：甲、乙、丙都「没推翻」。反方独立重量（看过之后换的量法）总税 16–114 倍，判削弱</td><td>第 11 章（定律二十五）</td></tr>
+      <tr><th scope="row">HC11</th><td>单笔上限怎么绕过去（接力）</td><td>11-19 00:19:48</td><td>11-19 01:59:05</td><td>hc11_relay.json、hc11_verdict.json</td><td>结果文件：原来那条接力式子「推翻」，量的最多是它的 2.4 倍；改成带地板价的式子</td><td>第 11 章（单笔上限和接力）</td></tr>
+      <tr><th scope="row">HC12</th><td>纯链上的虚拟硬件能不能突破一台节点</td><td>11-19 02:47:42</td><td>11-19 04:10:04</td><td>hc12_beyond.json、hc12_near.json</td><td>判定是推的（照原文常数和公开节点的数算），写在第 11 章：对能拆开的吞吐成立，对单份不成立。NEAR 加片时每片会不会变小「量不到」（归档节点限流）</td><td>第 11 章（突破一台节点）</td></tr>
+      <tr><th scope="row">HC14</th><td>外面最新的几件（书里只用了 Solana 最终确认那一项）</td><td>11-19 05:13:14</td><td>11-19 08:35:57</td><td>hc14_solana.json</td><td>第一遍作废（读的报错太多）；重量的结果文件：「没推翻（Δ 中位 ≤ 1 次读：在分辨率以内，真时延 0 到 2 秒）」</td><td>第 11 章（定律二十七）</td></tr>
+      <tr><th scope="row">HC15</th><td>桥守恒、无套利：把几条链当电路看</td><td>11-19 05:33:54</td><td>11-19 11:04:47</td><td>hc15_bridge.json、hc15_loop.json</td><td>结果文件：甲「没推翻（只说这一座桥、这 24 小时、以太坊 → X Layer 这一个方向）」，样本很薄；乙「没推翻」</td><td>第 11 章（多链当电路看）</td></tr>
+      <tr><th scope="row">HC16</th><td>对次序定死、不读块环境的计算，链像不像弹性电路</td><td>11-19 05:59:01</td><td>11-19 11:14:56</td><td>hc16_env.json</td><td>结果文件：前提一「对处理器成立（线性扫）」；反方从外面另核一颗电路，没推翻；在途核账是恒等式，对上；前提二没核</td><td>第 6 章（弹性）、第 11 章（多链当电路看）</td></tr>
+    </tbody></table></div>
+
+<h2 id="s-4"><span class="secno"></span>页面和关卡的判据</h2>  <div class="tbl"><table>
     <thead><tr><th>判据</th><th>管什么</th><th>判据定下</th><th>结果出来</th><th>结果文件</th><th>判定（照原话）</th><th>在哪一章</th></tr></thead>
     <tbody>
       <tr><th scope="row">复测时页面不挪</th><td>/physics/ 点「全部复测」从头到尾，页面一处不挪</td><td>11-16 21:59:59</td><td>判据里没写结果文件</td><td>判据里没写</td><td>没有运行记录</td><td>正文没引</td></tr>
@@ -648,7 +685,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">单页版第三点一版</th><td>/physics/ 第三点一版，只带已定的更正</td><td>11-17 18:39:35</td><td>还没有</td><td>还没有</td><td>没有运行记录（「（空）」）</td><td>正文没引</td></tr>
     </tbody></table></div>
 
-<h2 id="s-4"><span class="secno"></span>补充说明</h2>  <ol><li><b>E6 的量法和判据有一处不同</b>：历史状态改用「创世就有的系统合约，eth_getCode 非空」来判节点还给不给。运行记录里写了，H1、H2 没写判定，表里只照抄了 H3 和「测不了」两项。</li><li><b>E13、E17 一份判据分两部分</b>，表里各拆两行。E13 判据写明「判定只看 B 部分的盲测」。E17 B 那条预测（0.00290）是 A 量完以后、B 量之前补进判据的（11-17 15:36 补进）。</li><li><b>先提交、后量</b>：按提交时间都成立，但有三处只差几秒：E8 的提交和结果是同一秒，E9b 差 1 秒，E4 差 2 秒。</li><li><b>没有判据文件的测量</b>不在表里：E1 之前的那批探测（受控扫描、拟合样本、操作码、参数、发布回执、DOT32、分块、上限、普查等，正文常引），第 1 章例题 2 的 BSC #10 八种输入，第 2 章定律六更正里重量反方原生的那次。</li><li><b>第三版关卡</b>：候选 b98e09c4「四项都过」后来作废、没交量，是因为定律二要照 E13 重写，不是判不过。</li></ol>
+<h2 id="s-5"><span class="secno"></span>补充说明</h2>  <ol><li><b>E6 的量法和判据有一处不同</b>：历史状态改用「创世就有的系统合约，eth_getCode 非空」来判节点还给不给。运行记录里写了，H1、H2 没写判定，表里只照抄了 H3 和「测不了」两项。</li><li><b>E13、E17 一份判据分两部分</b>，表里各拆两行。E13 判据写明「判定只看 B 部分的盲测」。E17 B 那条预测（0.00290）是 A 量完以后、B 量之前补进判据的（11-17 15:36 补进）。</li><li><b>先提交、后量</b>：按提交时间都成立，但有三处只差几秒：E8 的提交和结果是同一秒，E9b 差 1 秒，E4 差 2 秒。</li><li><b>没有判据文件的测量</b>不在表里：E1 之前的那批探测（受控扫描、拟合样本、操作码、参数、发布回执、DOT32、分块、上限、普查等，正文常引），第 1 章例题 2 的 BSC #10 八种输入，第 2 章定律六更正里重量反方原生的那次。</li><li><b>第三版关卡</b>：候选 b98e09c4「四项都过」后来作废、没交量，是因为定律二要照 E13 重写，不是判不过。</li></ol>
 
 
 <nav class="pn" aria-label="上一章和下一章">

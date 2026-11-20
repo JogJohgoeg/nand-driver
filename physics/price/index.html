@@ -235,9 +235,10 @@ nav.pn a.nx{text-align:right;grid-column:2}
 p.big{font-size:1.0625rem;color:var(--ink);line-height:1.75}
 p.cap{margin:.5rem 0 .25rem!important;font-size:var(--fs-sm);color:var(--mut)}
 p.aside-in{font-size:var(--fs-sm);color:var(--mut);border-top:1px dashed var(--line);padding-top:.5rem}
-dl.terms{margin:0;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
+dl.terms{margin:0;display:grid;grid-template-columns:fit-content(12em) minmax(0,1fr);gap:.375rem 1rem;font-size:var(--fs-sm)}
 dl.terms dt{font-weight:700;color:var(--ink);scroll-margin-top:4.5rem}
 dl.terms dd{margin:0}
+@media (max-width:480px){ dl.terms{display:block} dl.terms dt{margin-top:.625rem} dl.terms dt:first-child{margin-top:0} dl.terms dd{margin:.125rem 0 0} }   
 ol.how{padding-left:1.5em}
 ol.how ul{margin:.25rem 0 .375rem;padding-left:1.125em;font-size:var(--fs-sm)}
 .terms-line{font-size:var(--fs-xs);color:var(--mut)}
@@ -252,6 +253,7 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .tbl td:not(.r):not(.mono){min-width:6.5em}   
 .tbl th{position:static}
 .tbl tbody th{background:none;color:var(--ink);font-size:var(--fs-xs)}
+.tbl tbody th[scope="row"]{white-space:normal;min-width:4.5em}   
 .tbl .r{text-align:right;font-variant-numeric:tabular-nums}
 
 
@@ -453,6 +455,19 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.gap3 .tk b.d.cred{width:.4375rem;height:.4375rem}                                      
 .dotp.gap3 .tk b.d.cred.y0{top:20%} .dotp.gap3 .tk b.d.cred.y1{top:50%} .dotp.gap3 .tk b.d.cred.y2{top:80%}
 
+.dotp.beat{grid-template-columns:minmax(6rem,11rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.beat .lb,.dotp.beat .vl,.dotp.beat .vl small{white-space:normal}
+.lg .k.c196.ho{border-color:var(--aux)}
+.dotp.beat .tk.two{height:1.875rem}                                                          
+.dotp.beat .tk.two b.d.y0{top:28%} .dotp.beat .tk.two b.d.y1{top:72%}
+
+.dotp.paths{grid-template-columns:minmax(7rem,12rem) minmax(12rem,1fr) minmax(7rem,13rem)}
+.dotp.paths .lb,.dotp.paths .vl,.dotp.paths .vl small{white-space:normal}
+.dotp.paths .tk{height:1.875rem}
+.dotp.paths .tk b.d.y0{top:28%} .dotp.paths .tk b.d.y1{top:72%}
+.dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
+.dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -568,6 +583,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -578,7 +594,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </nav>
 
 <article class="ch">
-<details class="toc-top"><summary><span>目录</span><b>第 7 章 价格</b><span>共 11 章</span></summary>
+<details class="toc-top"><summary><span>目录</span><b>第 7 章 价格</b><span>共 12 章</span></summary>
 <nav class="toc" aria-label="全书目录">
 <ol>
   <li><a href="../"><span class="no">0</span>为什么链也有物理</a></li>
@@ -601,6 +617,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <li><a href="../precompiles/"><span class="no">8</span>加速器</a></li>
   <li><a href="../noise/"><span class="no">9</span>噪声与测量</a></li>
   <li><a href="../ceiling/"><span class="no">10</span>算力的天花板</a></li>
+  <li><a href="../chain/"><span class="no">11</span>链本身的算力</a></li>
 </ol>
 <p class="grp">书末</p>
 <ol>
@@ -637,19 +654,19 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <dl class="terms">
     <dt id="t-f2996c0e">gas 价</dt><dd>每 gas 付多少原生币，单位 wei（10⁻¹⁸ 个币）。BSC 用 BNB 付，X Layer 用 OKB 付。</dd>
     <dt id="t-208ad665">币价</dt><dd>原生币换成美元（或 USDT）的价，来自交易所的公开行情，不在链上。</dd>
-    <dt id="t-d5a80499">数据占用</dt><dd>X Layer（OP Stack 的 Jovian 升级以后）每块另记一个量，块头里叫 blobGasUsed。它按每笔交易原始字节的压缩长度估出一个字节数，再乘一个标量。不另收费，但和 gas 一样要装得进块里。</dd>
+    <dt id="t-d5a80499">数据占用（blobGasUsed）</dt><dd>X Layer（OP Stack 的 Jovian 升级以后）每块另记一个量，块头里叫 blobGasUsed；字段名借自 blob，可 X Layer 不收 blob，这里记的不是 blob。它按每笔交易原始字节的压缩长度估出一个字节数，再乘一个标量。不另收费，但和 gas 一样要装得进块里。</dd>
     <dt id="t-30810979">FastLZ</dt><dd>数据占用用的那种快速压缩算法。</dd>
     <dt id="t-36a4e457">存款交易</dt><dd>从以太坊主网过来的交易。块头的数据占用不算它；它自己的回执里也写了一个数，多数是 42,800。</dd>
   </dl>
 </section>
 <h2 id="s7-3"><span class="secno">7.3</span>定律和公式</h2>
-<h2 id="h-52a3a2"><span class="secno"></span>价格这一组（量出来的，时时在变）</h2>  <ul><li>官方处理器算一个门按每门 2,277 gas 算（受控扫描 100 到 1 万门的斜率）；编译版一门一路按 DOT32_T 实测的每门每 256 路 23.4 gas 除以 256。</li><li>只读调用不花钱。</li><li>一件事要多少钱 = gas × gas 价 × 币价。三个数都会变，但 gas 价不随拥挤涨：两链的基础费都涨不起来（BSC 量到的都是 0，X Layer 钉在块头里的最低值），能变的是小费和运营方设的参数；币价跟着行情走。</li></ul>
+<h2 id="h-52a3a2"><span class="secno"></span>价格这一组（量出来的，时时在变）</h2>  <ul><li>官方处理器算一个门按每门 2,277 gas 算（受控扫描 100 到 1 万门的斜率：网表照真实发布切块，跨块的拼接费算在里面；第 3 章的 c₁ 是网表整块放时的斜率，没算拼接费，所以这里不用它）；编译版一门一路按 DOT32_T 实测的每门每 256 路 23.4 gas 除以 256。</li><li>只读调用不花钱。</li><li>一件事要多少钱 = gas × gas 价 × 币价。三个数都会变，但 gas 价不随拥挤涨：两链的基础费都涨不起来（BSC 量到的都是 0，X Layer 钉在块头里的最低值），能变的是小费和运营方设的参数；币价跟着行情走。</li></ul>
   <p><span class="cite">prices·1745、params·56、params·196、controlled·56、dot32·196</span></p>
 <section class="box law" aria-labelledby="law-da7d6c">
   <header><span class="kind">定律十六</span><span class="name" id="law-da7d6c">数据占用律（X Layer，实验 E5，判据先提交）</span><span class="cite">e5·da·196、判据·E5</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>B</mi><mtext>blob</mtext></msub><mo>=</mo><mi>s</mi><munder><mo>∑</mo><mtext>非存款交易</mtext></munder><mi>u</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mspace width="2em"/><mi>u</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mi>max</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><mn>100</mn><mo separator="true">,</mo><mtext> </mtext><mo stretchy="false">⌊</mo><mi>v</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">⌋</mo><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">B_{\text{blob}}=s\sum_{\text{非存款交易}}u(tx),\qquad u(tx)=\max\!\left(100,\ \lfloor v(tx)\rfloor\right)</annotation></semantics></math></span></math></div>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mn>836,500</mn><mtext> </mtext><mrow><mi mathvariant="normal">f</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">z</mi></mrow><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>42,585,600</mn></mrow><msup><mn>10</mn><mn>6</mn></msup></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>s</mi><mo>=</mo><mn>400</mn></mrow><annotation encoding="application/x-tex">v(tx)=\frac{836{,}500\ \mathrm{flz}(tx)-42{,}585{,}600}{10^{6}},\qquad s=400</annotation></semantics></math></span></math></div>
-  <ul><li>B_blob：块头里的数据占用；u：每笔的估算字节数；flz：这笔交易原始字节的 FastLZ 压缩长度；s：标量。</li><li><b>零自由参数</b>：X Layer 80 块的块头逐块一个不差（最大一块 15,332,800）；这些块里 2,342 笔交易的回执逐笔相等。反方把样本放大到整个 Jovian 时期，1,820 块的块头、12,475 笔回执也都一个不差（反方第 1 条）。四种改错的式子（标量加减 1、不压缩直接用原始长度、压缩长度多 1、换一个输入）一块也对不上。</li><li>每块最多装多少：估算字节加起来不超过块上限 ÷ 标量 = 525,000 字节。</li><li><span class="tag fix">更正</span>块上限不是一直 2.1 亿：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿，所以 525,000 只对后一段，前一段每块最多 125,000。（反方第 1 条；这两个块号是它两份样本合起来的界，另一份见常数表页反方第 3 条）</li><li>不可压缩的数据，每字节占 334.6 gas 当量，而交易数据只收 16 gas。所以纯数据的块，先满的是数据占用。</li><li>抽 800 块看，54% 的块数据占用比 gas 用量大。那 800 块是第 75,809,957 到 76,109,582 块里等距抽的，约 3.5 天。</li><li><span class="tag fix">更正</span>这不是「平时」：反方抽最近 30 天 3,000 块，只有 19.7%，按 7 天一段在 4.7% 到 44.9% 之间变；Jovian 以来按月看在 0.6% 到 11.6% 之间，只有 2026 年 11 月到了 37%。随用量变。（常数表页反方第 7 条）</li></ul>
+  <ul><li>B_blob：块头里的数据占用；u：每笔的估算字节数；flz：这笔交易原始字节的 FastLZ 压缩长度；s：标量。</li><li><b>零自由参数</b>：X Layer 80 块的块头逐块一个不差（最大一块 15,332,800）；这些块里 2,342 笔交易的回执逐笔相等。反方把样本放大到整个 Jovian 时期，1,820 块的块头、12,475 笔回执也都一个不差（<a href="#red-price-001">反方第 1 条</a>）。四种改错的式子（标量加减 1、不压缩直接用原始长度、压缩长度多 1、换一个输入）一块也对不上。</li><li>每块最多装多少：估算字节加起来不超过块上限 ÷ 标量 = 525,000 字节。</li><li><span class="tag fix">更正</span>块上限不是一直 2.1 亿：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿，所以 525,000 只对后一段，前一段每块最多 125,000。（<a href="#red-price-001">反方第 1 条</a>；这两个块号是它两份样本合起来的界，另一份见<a href="../constants/#red-constants-003">常数表页反方第 5 条</a>）</li><li>不可压缩的数据，每字节占 334.6 gas 当量，而交易数据只收 16 gas。所以纯数据的块，先满的是数据占用。</li><li>抽 800 块看，54% 的块数据占用比 gas 用量大。那 800 块是第 75,809,957 到 76,109,582 块里等距抽的，约 3.5 天。</li><li><span class="tag fix">更正</span>这不是「平时」：反方抽最近 30 天 3,000 块，只有 19.7%，按 7 天一段在 4.7% 到 44.9% 之间变；Jovian 以来按月看在 0.6% 到 11.6% 之间，只有 2026 年 11 月到了 37%。随用量变。（<a href="../constants/#red-constants-007">常数表页反方第 7 条</a>）</li></ul>
   <p></p>
 
 </section>
@@ -733,6 +750,11 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   }
   openFor();
   window.addEventListener('hashchange', openFor);
+  // 正文里「反方第 n 条」链到本页的框：读者看完收起、再点同一条，# 没变就没有 hashchange，框打不开——点了 # 和现在一样时也开
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (a && a.getAttribute('href') === location.hash) setTimeout(openFor, 0);
+  });
   var b = document.querySelector('.dbt-all');
   if (!b) return;
   function sync() { b.setAttribute('data-state', ds.every(function (d) { return d.open; }) ? 'open' : 'closed'); }
