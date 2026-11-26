@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -569,7 +601,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s2-1"><span class="no">2.1</span>直觉</a></li>
   <li><a href="#s2-2"><span class="no">2.2</span>定义</a></li>
-  <li><a href="#s2-3"><span class="no">2.3</span>定律和公式</a></li>
+  <li><a href="#s2-3"><span class="no">2.3</span>公式</a></li>
   <li><a href="#s2-4"><span class="no">2.4</span>怎么量出来的</a></li>
   <li><a href="#s2-5"><span class="no">2.5</span>例题</a></li>
   <li><a href="#s2-6"><span class="no">2.6</span>什么时候不成立</a></li>
@@ -603,7 +635,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s2-1"><span class="no">2.1</span>直觉</a></li>
   <li><a href="#s2-2"><span class="no">2.2</span>定义</a></li>
-  <li><a href="#s2-3"><span class="no">2.3</span>定律和公式</a></li>
+  <li><a href="#s2-3"><span class="no">2.3</span>公式</a></li>
   <li><a href="#s2-4"><span class="no">2.4</span>怎么量出来的</a></li>
   <li><a href="#s2-5"><span class="no">2.5</span>例题</a></li>
   <li><a href="#s2-6"><span class="no">2.6</span>什么时候不成立</a></li>
@@ -632,7 +664,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>表示与编译：同一个函数，换种写法差多少</h1>
   <p class="lede">同一个函数，交给官方处理器一个门一个门地解释，算一次要 880 多万 gas；编译成直线字节码、一次并排算 256 组，每组只要约 350 gas。写法决定能量，差的不是几成，是几万倍。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 22 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 28 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
@@ -658,8 +690,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-117863f3">分层、子电路调用</dt><dd>父电路里不放全部门，只放「调用某颗子电路」的记录。</dd>
   </dl>
 </section>
-<h2 id="s2-3"><span class="secno">2.3</span>定律和公式</h2><section class="box law" aria-labelledby="law-6a25db">
-  <header><span class="kind">定律五</span><span class="name" id="law-6a25db">表示决定能量</span><span class="cite">compiled·196</span></header>
+<h2 id="s2-3"><span class="secno">2.3</span>公式</h2><section class="box obs" aria-labelledby="id-bb8b0e">
+  <header><a id="law-6a25db"></a><span class="kind">恒等式</span><span class="name" id="id-bb8b0e">表示决定能量</span><span class="knote">照定义成立</span><span class="cite">compiled·196</span></header>
   <p>编译版每个门花的 gas = 这个门编出来的那几条指令的价之和，再加上摊到每个门的内存费：</p>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>e</mi><mtext>门</mtext></msub><mo>=</mo><mo>∑</mo><msub><mi>g</mi><mtext>指令</mtext></msub><mo>+</mo><mfrac><mrow><mi mathvariant="normal">Δ</mi><msub><mi>C</mi><mtext>内存</mtext></msub></mrow><mi>N</mi></mfrac><mo separator="true">,</mo><mspace width="2em"/><msub><mi>C</mi><mtext>内存</mtext></msub><mo stretchy="false">(</mo><mi>W</mi><mo stretchy="false">)</mo><mo>=</mo><mn>3</mn><mi>W</mi><mo>+</mo><mrow><mo fence="true">⌊</mo><mfrac><msup><mi>W</mi><mn>2</mn></msup><mn>512</mn></mfrac><mo fence="true">⌋</mo></mrow></mrow><annotation encoding="application/x-tex">e_{\text{门}}=\sum g_{\text{指令}}+\frac{\Delta C_{\text{内存}}}{N},\qquad C_{\text{内存}}(W)=3W+\left\lfloor\frac{W^2}{512}\right\rfloor</annotation></semantics></math></span></math></div>
   <ul><li>e 是每个门、每 256 路的 gas，N 是门数，W 是一次调用用到的内存字数（同时活着的线，加上输入输出）。</li><li>同时活着的线只有几十根时，第二项小到可以不算，e 就是指令价之和（POP 一条 2 gas，别的每条 3 gas），e 是 24、20、12、3 这几档，见下表。线一多，第二项就显出来，见「什么时候不成立」第 2 条。</li></ul>
@@ -674,19 +706,21 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <ul><li>偏差不超过 1.2%。</li><li><span class="tag fix">更正</span>第一行的 24.27 是两样抵出来的：1,600 个门里 523 个的结果没人用，编成 20 gas；内存从 32 个字扩到 626 个字，多付 2,545 gas，摊到每门 1.59。照编译规则逐门数价、加上这笔内存费，门那一段正好 38,835 gas，和实测一个 gas 不差。这是反方提出内存项之后我回头核的（<a href="#red-representation-003">反方第 1 条</a>）。<span class="cite">compiled·196、law5·mix</span></li></ul>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-representation-003">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律五</span></summary>
-  <section class="box con" id="red-representation-003" aria-labelledby="red-representation-003-h" data-author="RED" data-id="red-representation-003" data-target="定律五" data-verdict="削弱" data-date="2026-11-18" data-sha256="08c189083a2bf5dd37554ba2fd860794427e27c0654a6860c55d259726060b02">
-    <header><span class="kind" id="red-representation-003-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-6a25db">定律五</a></span><time datetime="2026-11-18">2026-11-18</time></header>
-    <p class="said" data-sha256="60fae3ec466ac5901b2780d1d34d35697497de8fab65f482b946ff4b5dce0091">定律五说编译版每个门花的 gas 就是它编出来的那几条指令的价之和，每根线放一个内存字时是 8 条指令、24 gas，偏差不超过 1.2%；「什么时候不成立」那一节说，同时活着的线超过约 1.2 万根后，内存的平方项才会显出来（推算，没量）。可一次调用的内存费是 3W + ⌊W²/512⌋（W 是用到的内存字数），它摊在每个门上，又不是哪条指令的价。我（反方）自己写了编译器去量。电路有三族，都是 64 个输入、两输入与非门：随机电路，每个门从前面所有的线里随机抽两根输入；先宽后树，先算一大层，再两两合并到一根；近邻电路，只从最近 64 根线里抽，当对照。编法是一根线最后一次被用掉后，它的字就让给新线，所以用到的内存字数约等于同时活着的线。门数 250 到 12,000，两链各一家节点；每份 256 路的结果都和本地模拟逐位对过。</p>
-    <p class="said" data-sha256="8f821a04682d83648ec258f0ba808aeceed0a71e8bd4b2a3d72d8f68d9aedb8a">对照组同时活着的线只有 64 根，每门正好 24.000 gas，定律五的机理一个 gas 不差。另两族就不是了。随机电路：同时活着的线 131 根时每门 24.97（多 4.1%），1,189 根时 26.14（多 8.9%），2,368 根时 27.07（多 12.8%），4,639 根时 28.74（多 19.8%）。先宽后树：509 根时多 8.1%，3,010 根时多 18.9%，6,009 根时每门 31.49（多 31%）。全部 44 次测量（22 份程序、两条链）都和「指令价加 3W + ⌊W²/512⌋」算出来的逐个相等，两链也一样。偏差过 10% 在同时活着的线约 900 到 1,500 根，平方项单独到 10% 约在 2,300 到 3,000 根（这两个是相邻两点插出来的），都在书里说不用另算的 1.2 万根以内。按事先写的判法，判削弱。照字面「每根线一个字、从不复用」的编法，每门最少也是 27（多 12.5%），1.2 万门时是 50.7。</p>
-    <p class="said" data-sha256="ae68f0ea817df67a619957ef962443d2e319d142f07180396e2734e8a961d133">建议定律五把内存这一项写进式子：e = Σg + (3W + ⌊W²/512⌋ 的增量) ÷ 门数，W 是用到的内存字数，等于同时活着的线加上输入输出；我量的 44 次逐个和它相等。「什么时候不成立」那句建议改成：同时活着的线约 130 根时每门已多约 4%，约 900 到 1,500 根时多约 10%，6,000 根时多两到三成。书里的 1.2 万是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点。24 只在同时活着的线很少（几十根）时成立，比如近邻那种电路。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 恒等式 表示决定能量</span></summary>
+  <section class="box con" id="red-representation-003" aria-labelledby="red-representation-003-h" data-author="RED" data-id="red-representation-003" data-target="恒等式 表示决定能量" data-verdict="削弱" data-date="2026-11-18" data-sha256="205ea975ff757f4282261287e570ce34a2746613adf7774be106d1b52d5f477b">
+    <header><span class="kind" id="red-representation-003-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#id-bb8b0e">恒等式 表示决定能量</a></span><time datetime="2026-11-18">2026-11-18</time></header>
+    <p class="said" data-sha256="a6c0e4773073018a178642beb7050bc7d8bc090519c5698b16b4dabc385639a7">恒等式「表示决定能量」（原定律五）说编译版每个门花的 gas 就是它编出来的那几条指令的价之和，每根线放一个内存字时是 8 条指令、24 gas，偏差不超过 1.2%；「什么时候不成立」那一节说，同时活着的线超过约 1.2 万根后，内存的平方项才会显出来（推算，没量）。可一次调用的内存费是 3W + ⌊W²/512⌋（W 是用到的内存字数），它摊在每个门上，又不是哪条指令的价。我（反方）自己写了编译器去量。电路有三族，都是 64 个输入、两输入与非门：随机电路，每个门从前面所有的线里随机抽两根输入；先宽后树，先算一大层，再两两合并到一根；近邻电路，只从最近 64 根线里抽，当对照。编法是一根线最后一次被用掉后，它的字就让给新线，所以用到的内存字数约等于同时活着的线。门数 250 到 12,000，两链各一家节点；每份 256 路的结果都和本地模拟逐位对过。</p>
+    <p class="said" data-sha256="1e400badad074a7cd7fc3f71d83da307732afcee7e13175ddd3d4fd35315501c">对照组同时活着的线只有 64 根，每门正好 24.000 gas，恒等式「表示决定能量」的机理一个 gas 不差。另两族就不是了。随机电路：同时活着的线 131 根时每门 24.97（多 4.1%），1,189 根时 26.14（多 8.9%），2,368 根时 27.07（多 12.8%），4,639 根时 28.74（多 19.8%）。先宽后树：509 根时多 8.1%，3,010 根时多 18.9%，6,009 根时每门 31.49（多 31%）。全部 44 次测量（22 份程序、两条链）都和「指令价加 3W + ⌊W²/512⌋」算出来的逐个相等，两链也一样。偏差过 10% 在同时活着的线约 900 到 1,500 根，平方项单独到 10% 约在 2,300 到 3,000 根（这两个是相邻两点插出来的），都在书里说不用另算的 1.2 万根以内。按事先写的判法，判削弱。照字面「每根线一个字、从不复用」的编法，每门最少也是 27（多 12.5%），1.2 万门时是 50.7。</p>
+    <p class="said" data-sha256="427fe5ee8ea44c720103f88b875d48ea6e64924b65cbc2920cf3ab3c2cec5d6b">建议恒等式「表示决定能量」把内存这一项写进式子：e = Σg + (3W + ⌊W²/512⌋ 的增量) ÷ 门数，W 是用到的内存字数，等于同时活着的线加上输入输出；我量的 44 次逐个和它相等。「什么时候不成立」那句建议改成：同时活着的线约 130 根时每门已多约 4%，约 900 到 1,500 根时多约 10%，6,000 根时多两到三成。书里的 1.2 万是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点。24 只在同时活着的线很少（几十根）时成立，比如近邻那种电路。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="db9686ccb2947d0bd9d1362b733df1e1a175725de30e3d3adeaa2b027e6b5a7f">law5_red.json</span><span class="ev-n" data-sha256="0be6e715bfd84232508cc8e32f7aa4244d2062469b2e522752342054c5807a8b">三族电路、两种编法、22 份程序在两链上的实测 gas 和预测、同时活着的线、用到的内存字数、每门的价和偏差</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="5b3101f768a1782d426e71991a899ce694fa6b4bc730c7bad1dc436185e51114">134372451</span><span class="ev-n" data-sha256="bed6de6e90adababc89dc75b71a2ff24d1851b26e8eb971c261ef6904d53e3eb">BSC 量的时候的块</span></dd></div><div class="evi"><dt>块号（X Layer）</dt><dd><span class="ev-v" data-sha256="c4ed787865f40ea9ae36bb1e405f7befeb7a03c86bacb1c1929a24071d1d6996">76263374</span><span class="ev-n" data-sha256="909045665ee99cbf99d43d0d0aaa8ac5a20fc50c74e68ebd4b8862ef01d7af9e">X Layer 量的时候的块</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（2）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律五现在是恒等式「表示决定能量」；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律五」，现在照按章的新编号挂「恒等式 表示决定能量」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-representation-003" aria-labelledby="och-representation-003-h" data-author="OCH" data-to="red-representation-003" data-stance="认" data-date="2026-11-18">
     <header><span class="kind" id="och-representation-003-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-18">2026-11-18</time></header>
-    <p class="said" data-sha256="98ccc325b7a4b763e4d9d1712850100f88accf4daeac8790c3c7211abdcfb39e">这一条我认，照你的建议改。定律五的式子加上内存那一项：每门的价是指令价之和，再加摊到每个门的内存费 3W + ⌊W²/512⌋ 的增量。「什么时候不成立」那句照你量的点改写，数从你的结果文件现算。我原来写的 1.2 万根，是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点，你说得对。</p>
+    <p class="said" data-sha256="b0da4b93d2ba7228fc531a40375ed023b92a91b7d3d52d16f7cd316a44a9b26c">这一条我认，照你的建议改。恒等式「表示决定能量」的式子加上内存那一项：每门的价是指令价之和，再加摊到每个门的内存费 3W + ⌊W²/512⌋ 的增量。「什么时候不成立」那句照你量的点改写，数从你的结果文件现算。我原来写的 1.2 万根，是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点，你说得对。</p>
     <p class="said" data-sha256="4261293d39831da6a3348d75757918392523d3effb9ce5c2db589e61ff4c82d3">你的结果让我回头核了表里第一行：随机 1,600 门实测 24.27，只比 24 高 1.1%，是两样抵出来的。那颗电路有 523 个门的结果没人用，编成 20 gas；内存从 32 个字扩到 626 个字，多付 2,545 gas。照编译规则逐门数价、再加这笔内存费，门那一段正好 38,835 gas，和实测一个 gas 不差。所以表里的「不超过 1.2%」不是内存费可以不算，是死门省下的正好盖住了它。正文表下面写明了这一点。</p>
     <p class="said" data-sha256="4645ecdd0280a8bf79bc0525ed1da26bf7dd54263ebb89d4fa1f0ce5d512d0a4">你说的「每根线一个字、从不复用」那种编法每门最少 27，我没写进正文：书里的编译器是线用完就把字让出来的那种，表里也是它的数。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="3aab752bdf8d9daf9f1c0ac7f7028480b7d652dfb98e73ed24648fb4291f9eda">law5_mix_1600.json</span><span class="ev-n" data-sha256="1499ebfebd7fc81d635f5744fb60b76fd3401280fc565966a7f32cbd9ca66c7b">照编译规则逐门数价：死门 523 个、内存 32 → 626 个字，门那一段 38,835 gas，等于实测</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="8cb211a025ea27c075f5e5611618910ff76732709431bef7e7a9fce737f8b53e">compiled_196_20261116_172311.json</span><span class="ev-n" data-sha256="f0d7f6dd80244431e4fc32ed1f364c3bd0172e5d91ae56ce225c6022528ed9ca">表里那几行的实测</span></dd></div></dl>
@@ -695,65 +729,89 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </details>
 
 
-</div><section class="box law" aria-labelledby="law-4ca41a">
-  <header><span class="kind">定律六</span><span class="name" id="law-4ca41a">按位并行的分界</span><span class="cite">dot32·56、dot32·196；四方逐位一致</span></header>
+</div><section class="box obs" aria-labelledby="id-5b6444">
+  <header><a id="law-4ca41a"></a><span class="kind">恒等式</span><span class="name" id="id-5b6444">按位并行的分界</span><span class="knote">照定义成立</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><msub><mi>E</mi><mtext>编译</mtext></msub><mi>k</mi></mfrac><mo>&lt;</mo><msub><mi>E</mi><mtext>原生</mtext></msub><mtext>  </mtext><mo>⟺</mo><mtext>  </mtext><mi>k</mi><mo>&gt;</mo><msup><mi>k</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo>=</mo><mfrac><msub><mi>E</mi><mtext>编译</mtext></msub><msub><mi>E</mi><mtext>原生</mtext></msub></mfrac><mo>≈</mo><mn>20.2</mn></mrow><annotation encoding="application/x-tex">\frac{E_{\text{编译}}}{k}&lt;E_{\text{原生}}\iff k&gt;k^{*}=\frac{E_{\text{编译}}}{E_{\text{原生}}}\approx 20.2</annotation></semantics></math></span></math></div>
-  <ul><li>k：同一个电路、互不相干的输入有几组，最多 256 组同价。</li><li>E编译：编译版跑一遍 256 路的总 gas。DOT32_T 是 89,779。</li><li>E原生：原生合约算一组的 gas。DOT32_T 是 4,443.6。</li><li>k = 256 时，编译版每组 350.7，原生合约每组 4,443.6，编译版便宜 12.7 倍；少于约 20 组时原生合约更便宜。</li></ul>
+  <ul><li>k：同一个电路、互不相干的输入有几组，最多 256 组同价。</li><li>E编译：编译版跑一遍 256 路的总 gas。DOT32_T 是 89,779。</li><li>E原生：原生合约算一组的 gas。DOT32_T 是 4,443.6。</li></ul>
+
+</section>
+<section class="box obs" aria-labelledby="obs-ef64d3">
+  <header><span class="kind">观察 2.1</span><span class="name" id="obs-ef64d3">DOT32_T 的翻转点</span><span class="cite">dot32·56、dot32·196；四方逐位一致</span></header>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC、X Layer。两链的数逐个相同，不算两份独立的证据。编译版和 21nandkit 那份原生，BSC 是带钥匙的 NodeReal 量的，X Layer 是 OKX 的 rpc.xlayer.tech（DOT32_T 的网表都从 X Layer 读）；正方另把反方那份原生重量了一遍，BSC 问官方 dataseed，X Layer 问 rpc.xlayer.tech；反方量 317 那次，BSC 是带钥匙的 NodeReal，X Layer 那半走 OKX 的入口（哪个入口是照脚本推的，运营方是定的）。照严的读法，BSC 那两个入口算一家运营方。</li><li>电路：一个函数：21nandkit 在 X Layer 上发布的 DOT32_T。比的是两种写法：我们编译器编的 256 路直线字节码，和两份原生合约（21nandkit 那份逐路循环的、反方 643 字节按字运算的）。</li><li>点：一组 256 个输入。编译版一次跑完 256 路；原生合约 256 组逐组调，取热价。</li><li>大小：3,829 门，320 入 32 出。</li><li>时长：正方 11 月 16 日量编译版和 21nandkit 那份，11 月 17 日重量反方那份；反方量 317 那次是 11 月 17 日。</li><li>量法：<span class="mth h-obj">节点模拟·对象是放上去的</span>（编译版和两份原生合约都用状态覆盖放进去）。<small class="mth-note">对回执：BSC <span class="tier t-und">未决</span>；X Layer <span class="tier t-und">未决</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd><span class="cat c-impl">实现</span>（每组 350.7、4,443.6、479.3 和翻转点 20.2 组到约 283 组，是两边各自的写法定的：编译版是我们编译器编的那份直线字节码合约，原生是 21nandkit 那份和反方那份合约，算的都是 DOT32_T 这一个函数；换一种写法数就变）。</dd>
+<dt>怎么算它错</dt><dd>还写不出（翻转点看两边各自写得多好，还没有判线）。</dd>
+</dl>
+  <ul><li>k = 256 时，编译版每组 350.7，原生合约每组 4,443.6，编译版便宜 12.7 倍；少于约 20 组时原生合约更便宜。</li></ul>
   <p><span class="tag fix">更正</span>上面的 4,443.6、12.7 倍、20.2 组，是编译版和 21nandkit 那一份逐路循环的原生之比，不是「原生」这一类的性质（<a href="#red-representation-001">反方第 2 条</a>）。原生换成按字运算的写法（反方写的那份，643 字节），用同一套量法、同一组 256 个输入，我量出每组 479.3（单独调一次 2,977），输出全对；翻转点就成了 89,779 ÷ 479.3 ≈ 187 组，k = 256 时编译版只便宜 1.37 倍。反方用扣掉空调用开销的量法，得每组 317、翻转点约 283。所以原生基准换成更好的实现后，翻转点约 176–283 组：k* 取决于两边各自写得多好。<span class="cite">red_native_dot32·56、red_native_dot32·196</span></p>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-representation-001">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律六</span></summary>
-  <section class="box con" id="red-representation-001" aria-labelledby="red-representation-001-h" data-author="RED" data-id="red-representation-001" data-target="定律六" data-verdict="推翻" data-date="2026-11-17" data-sha256="74db0f397e1e50aa1fde9638d10f00a24be33ce4aa029334ac90a007b6f6d526">
-    <header><span class="kind" id="red-representation-001-h">反方 · RED · 第 2 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#law-4ca41a">定律六</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd over">推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 观察 2.1</span></summary>
+  <section class="box con" id="red-representation-001" aria-labelledby="red-representation-001-h" data-author="RED" data-id="red-representation-001" data-target="观察 2.1" data-verdict="推翻" data-date="2026-11-17" data-sha256="e5f7cf078214ae65c2818a81b412aa919ba7bce631d9c101b7e6296b291c3350">
+    <header><span class="kind" id="red-representation-001-h">反方 · RED · 第 2 条</span><span class="vd over">推翻</span><span class="on">针对 <a href="#obs-ef64d3">观察 2.1</a></span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="e505f1b9433158f4c0cc9f21db22e528a9dec9a0fede6479b564d441cb3d9ef6">书里说同一个 DOT32_T，编译成 256 路按位并行一组 350.7 gas，原生合约一组 4,443.6，编译比原生便宜 12.7 倍，独立输入少于约 20 组时原生才更便宜。这个 4,443.6 是 21nandkit 的原生写法：对 32 路逐路循环，每路移位、比较、条件加减。我（反方）用同样的调用约定另写了一个原生：不逐路循环，把 32 路放进一个 256 位的字里按字算——五步移位把 32 个 2 位权重码摊到 32 个字节，掩码选出 +1 和 −1 两组，再各用一次乘法做水平求和，一共 643 字节。先对拍，全过才量 gas：25,016 组输入（随机、21nandkit 用的特殊值、只取 ±1 的码）和照规格写的参考、和 21nandkit 原生逐位相同；X Layer 链上那颗 DOT32_T 网表（#3，sha256 b1507f55…）抽 64 组 eval，也全相同。</p>
     <p class="said" data-sha256="ecfdfde6310e00d9398eb26ba1e5408b059387f6a73cee8574e7c0b3d2cdaf79">量出来：我的原生每组 317 gas，BSC 和 X Layer 一样；同一个量法里 21nandkit 原生是 4,249（书里 4,443.6，差 4.4%）。编译那一边我照用书里的 89,779（一遍 256 路），不重量，取对正方最有利的数。翻转点 k* = 89,779 / 317 ≈ 283 组，不是 20.2；哪怕把我量法和书里原生之间差的 194 gas 也加到我这边，k* 也有约 176。把很多组放进一次调用里成批算，我这版第一组 432、之后每组多 388.5，翻转点约 230 组。所以「编译比原生便宜 12.7 倍、约 20 组以下原生才便宜」只对那个逐路循环的原生成立；换成按字运算的原生，编译和原生每组差不多（0.9 到 1.1 倍），原生在约 170 到 280 组以下都更便宜，而编译版一遍最多也就 256 路。</p>
-    <p class="said" data-sha256="85e803a6fa03d5a1f11bb52fb7c1aeb91b36bbdb9a930a19b61d4c79ecd3537a">要说清楚的范围：按位并行这个道理本身没错，一个 256 位的字一条指令就处理 256 路；错的是把 12.7 倍和 20 组安在「原生」这一类表示头上——那其实是两份具体实现之比，k* 跟着原生写得好坏变一个数量级。我没有把编译版要把输入转成按位切片、输出转回来的费用算进去（书里的 350.7 也没算），算进去编译版只会更贵。建议定律六写成「k* 取决于两边各自写得多好」，并列出两种原生的数；原来推荐「编译成 256 路直线字节码」的那一句，对 DOT32 这一类函数要加一句：按字运算的原生一样便宜、而且简单得多。</p>
+    <p class="said" data-sha256="d25b1f21b4e64494985c1e8736e829f576de47245dda5dbe71ab9ec7e1d25291">要说清楚的范围：按位并行这个道理本身没错，一个 256 位的字一条指令就处理 256 路；错的是把 12.7 倍和 20 组安在「原生」这一类表示头上——那其实是两份具体实现之比，k* 跟着原生写得好坏变一个数量级。我没有把编译版要把输入转成按位切片、输出转回来的费用算进去（书里的 350.7 也没算），算进去编译版只会更贵。建议观察 2.1（原定律六）写成「k* 取决于两边各自写得多好」，并列出两种原生的数；原来推荐「编译成 256 路直线字节码」的那一句，对 DOT32 这一类函数要加一句：按字运算的原生一样便宜、而且简单得多。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="662656da64e251571b9c571f908ab870e5cdef665a476d01af8b364f0405e369">dot32.json</span><span class="ev-n" data-sha256="cfec53afd60de6cd6b48a32c2f255a1c18e495803bc9c66a16fc572f21a67a50">三重对拍结果、逐组调用和成批两种量法的 gas、我的原生和驱动的字节码（原生 sha256 edbd883a…）</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="b15e0f8e45588796ecea514818f2c74e96ebe990b028a858e385cc9e407090c9">134207659</span><span class="ev-n" data-sha256="a57b7c0c90497dd8476fe0a1c0fd7cec73aeda74663a5bd8d259241897ca7124">BSC 上 gas 实测冻结在这个块（X Layer 抽查同价）</span></dd></div><div class="evi"><dt>只读请求（X Layer）</dt><dd><span class="ev-v" data-sha256="56c6e79e3b0d72a0398d5935a77e1a6bccea2c2b768d1d4f6157723536d46272">只读读 X Layer 上 DOT32_T（#3）的 circuitInfo</span><span class="ev-n" data-sha256="84204f07f5c13c4660ed2902b87b873892de9c7a5d61460e16163457fd1965a5">对拍用的链上网表是这一颗</span></dd></div></dl>
-    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>「结论六第一条」改成直接引那句话（旧版单页的编号书里没有）；数和判定都没变</span></li></ol></details>
+    <details class="revs"><summary>修订记录（2）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>「结论六第一条」改成直接引那句话（旧版单页的编号书里没有）；数和判定都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，原定律六拆成了恒等式「按位并行的分界」和观察 2.1，这一框攻的是 DOT32_T 的翻转点，挂在观察 2.1 上；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-representation-001" aria-labelledby="och-representation-001-h" data-author="OCH" data-to="red-representation-001" data-stance="认" data-date="2026-11-17">
     <header><span class="kind" id="och-representation-001-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="5ec7c0715983698ed2ab97d3276e2214dda64de8632b8954e08d0bb902b7d04e">这一条我认。书里的 4,443.6、12.7 倍、20.2 组，是编译版和 21nandkit 那一份逐路循环的原生之比。定律六的式子 k* = E编译 ÷ E原生 本身没问题，可 E原生 换一份写得好的实现就差一个数量级；书里把这个比安在「原生」这一类头上，说过头了。</p>
+    <p class="said" data-sha256="7ce33cac58aa7977338eade9f11690242f2aa5224aee000c982d8ecfd03875e7">这一条我认。书里的 4,443.6、12.7 倍、20.2 组，是编译版和 21nandkit 那一份逐路循环的原生之比。恒等式「按位并行的分界」（原定律六）的式子 k* = E编译 ÷ E原生 本身没问题，可 E原生 换一份写得好的实现就差一个数量级；书里把这个比安在「原生」这一类头上，说过头了。</p>
     <p class="said" data-sha256="dbe08345a3f013152bba542de29a8e63e9522df68426076a5138b13cfec1704f">我用自己的量法独立重量了反方的原生。从反方提交的结果文件读出那份运行码（643 字节，sha256 开头 edbd883a，和反方写的一样），放进书里量 4,443.6 的那个驱动里，同一个块、同一组 256 个输入。输出 256 组全和我的参考实现一样，另抽 2,048 组随机输入也全对；每组 479.3 gas（单独调一次 2,977），两条链一样。同一次量 21nandkit 原生是每组 4,443.6，和书里一个不差。所以照书里的量法，翻转点是 89,779 ÷ 479.3 ≈ 187 组，k = 256 时编译版只便宜 1.37 倍。</p>
-    <p class="said" data-sha256="99d24933e6314b1c06274e96659b625624b3b6fbf3d75b8ac8d885b60bc21036">反方量出 317、翻转点约 283，和我的 479.3、187 差在量法：我的数里含驱动每组的搬输入、调用、存结果，反方扣掉了空调用的开销。两种都照写。书里定律六原处留了【更正】：原生基准换成更好的实现后，翻转点约 176–283 组（我这套量法是 187），k* 取决于两边各自写得多好；原来那组数照留，写明是对 21nandkit 那份原生。</p>
+    <p class="said" data-sha256="2328020e201b7374a19b8786e7d7d6717569f93b28df11ff227c631d4d5bd8a1">反方量出 317、翻转点约 283，和我的 479.3、187 差在量法：我的数里含驱动每组的搬输入、调用、存结果，反方扣掉了空调用的开销。两种都照写。书里观察 2.1 原处留了【更正】：原生基准换成更好的实现后，翻转点约 176–283 组（我这套量法是 187），k* 取决于两边各自写得多好；原来那组数照留，写明是对 21nandkit 那份原生。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="4c9b1108271dc68ca18cf38fbfa3469ffdadeabf494e9f08fdad8deaf08ffba7">red_native_dot32_56_20261117_184234.json</span><span class="ev-n" data-sha256="cb661b3103515f0f8d8e15813dff65148507b1943a915fcc7e85b8678da503c5">BSC：反方原生和 21nandkit 原生用书里的量法并排量，同一组 256 个输入，另加 2,048 组对拍</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="01b4999779e428b17b126e83c247e575ab9433b83f46c91502aaa566faa66000">red_native_dot32_196_20261117_184243.json</span><span class="ev-n" data-sha256="6121151c1d559379657f9471197cd9e5e6277f4214d6169c99123501b22db248">X Layer：同上</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="79cdcbd48116688b85315735dfc7803c557ec9d3279320052ade4d7aec760841">dot32_56_20261116_174039.json</span><span class="ev-n" data-sha256="521c7f4df067301bf9df99f7908169a2d55e86237464613e44c0e60956ce87ac">书里编译版 89,779 和 21nandkit 原生 4,443.6 的原始测量</span></dd></div></dl>
   </section>
 
 </details>
 
 
-</div><section class="box law" aria-labelledby="law-ef81cc">
-  <header><span class="kind">定律十五</span><span class="name" id="law-ef81cc">真电路编译（实验 E3，判据先提交）</span><span class="cite">e3·compile</span></header>
+</div><section class="box obs" aria-labelledby="obs-889e55">
+  <header><a id="law-ef81cc"></a><span class="kind">观察 2.2</span><span class="name" id="obs-889e55">真电路编译（实验 E3，判据先提交）</span><span class="cite">e3·compile</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>E</mi><mtext>编译</mtext></msub><mo>=</mo><msub><mi>E</mi><mn>0</mn></msub><mo>+</mo><munder><mo>∑</mo><mtext>门</mtext></munder><msub><mi>e</mi><mtext>门</mtext></msub></mrow><annotation encoding="application/x-tex">E_{\text{编译}}=E_0+\sum_{\text{门}}e_{\text{门}}</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC、X Layer。BSC 是带钥匙的 NodeReal，X Layer 是 OKX 的 rpc.xlayer.tech，每链一家。</li><li>电路：39 颗链上发布的真电路，一种来源；BSC 16 颗、X Layer 23 颗。里面有重复的网表，没去重（比如 X Layer 的 #3968 和 #4746 是同一份）。</li><li>点：每颗编成 256 路跑一次，256 路逐位和本地参考比，再挑 4 路和官方 eval 比。</li><li>大小：10 到 10,000 门。14,999 到 114,746 倍只是门数 100 以上的那 26 颗；不到 100 门的 13 颗只有 4,350 到 11,723 倍。</li><li>时长：一次，11 月 16 日（BSC 第 134,014,886 块，X Layer 第 76,102,356 块）。</li><li>量法：<span class="mth h-tool">节点模拟·只放量具</span>（官方 eval 跑的是链上发布的真电路，只放计量套子）；<span class="mth h-obj">节点模拟·对象是放上去的</span>（编译版的字节码用状态覆盖放到空地址上）。<small class="mth-note">对回执：BSC <span class="tier t-und">未决</span>；X Layer <span class="tier t-und">未决</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-hard">硬</span>（E0 里调各段合约的冷访问 2,600 是 EIP-2929 的 COLD_ACCOUNT_ACCESS_COST（EIPs · EIPS/eip-2929 · b055feec 第 42 行）；每段不超过 24,000 字节，是因为合约代码最多 24,576 字节，照 EIP-170 的 MAX_CODE_SIZE 0x6000（EIPs · EIPS/eip-170 · b055feec 第 15 行））；代进去的数：<span class="cat c-impl">实现</span>（倍数是已有的官方处理器合约 eval 对我们编译器编的那份直线字节码合约之比，换一种编法就变）。</dd>
+<dt>怎么算它错</dt><dd>要是在 BSC 或 X Layer 上，另取门数 100 以上、只含与非门、输入不超过 1,024 位的已发布真电路，用书里这台编译器编成 256 路的直线字节码，256 路逐位和本地对上以后，官方 eval 每组的 gas 除以编译版每组的 gas 小于 1,000，有一颗就算它错（1,000 倍是 E3 判据事先写的线，比现有最小的 14,999 倍松一个数量级还多；要收紧，另写判据）。</dd>
+</dl>
   <p>官方处理器解释比编译版每组贵 <b>14,999–114,746 倍</b>。</p>
   <ul><li>E0：固定开销，包括驱动、调各段合约时的冷访问 2,600，以及输入输出搬运。</li><li>39 颗真电路，256 路的结果逐位和本地参考一致，4 路和官方 eval 一致。</li></ul>
 
-</section><section class="box law" aria-labelledby="law-90f883">
-  <header><span class="kind">定律十二</span><span class="name" id="law-90f883">分层省能（实验 E1b，判据先提交）</span><span class="cite">e1b·hier·56、e1b·hier·196、判据·E1b</span></header>
+</section>
+<section class="box obs" aria-labelledby="obs-52ad3c">
+  <header><a id="law-90f883"></a><span class="kind">观察 2.3</span><span class="name" id="obs-52ad3c">分层省能（实验 E1b，判据先提交）</span><span class="cite">e1b·hier·56、e1b·hier·196、判据·E1b</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><msub><mi>E</mi><mtext>分层</mtext></msub><msub><mi>E</mi><mtext>平铺</mtext></msub></mfrac><mo>≤</mo><mn>0.5</mn><mspace width="1em"/><mo stretchy="false">(</mo><mtext>判据</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\frac{E_{\text{分层}}}{E_{\text{平铺}}}\le 0.5\quad(\text{判据})</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC（判定只在 BSC）；X Layer 那颗 2 万门的只报数。E1b BSC 是带钥匙的 NodeReal，X Layer 那颗是 OKX 的 rpc.xlayer.tech；反方 BSC 那 19 颗也是带钥匙的 NodeReal（照严的读法和官方入口算一家运营方）。</li><li>电路：E1b 一个函数，展开 100,064 门，做成平铺、分层两份（分层拆成 30 颗子电路），注入官方处理器；X Layer 一颗 2 万门的；反方另量了 BSC 上 19 颗链上发布的真分层电路。</li><li>点：E1b 一颗、8 组输入；反方 19 颗各一个比值，分母用观察 3.2 预测的同门数平铺网表。</li><li>大小：E1b 100,064 门；X Layer 2 万门；反方 45,680 到 175,304 门。</li><li>时长：一次，E1b 11 月 16 日（BSC 第 134,013,100 块，X Layer 第 76,101,631 块）；反方 11 月 17 日（BSC 第 134,216,966 块）。</li><li>量法：<span class="mth h-obj">节点模拟·对象是放上去的</span>（E1b 的平铺、分层两份都注入官方处理器）；<span class="mth h-tool">节点模拟·只放量具</span>（反方那 19 颗是链上的真分层电路，只放计量套子）。<small class="mth-note">对回执：BSC <span class="tier t-und">未决</span>；X Layer <span class="tier t-und">未决</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-hard">硬</span>（省能的机理：平铺要一块一块拼进内存，内存费按字数的平方收，照 execution-specs · forks/bpo2/vm/gas · 391d8a05 第 270–273 行的 3w + ⌊w²/512⌋；要分块是因为合约代码最多 24,576 字节，照 EIP-170（EIPs · EIPS/eip-170 · b055feec 第 15 行））；代进去的数：<span class="cat c-frozen">冻结</span>（比值和要多少门才省过一半，是已有的官方处理器合约 step 读网表、拼块、调子电路的写法定的；新造的处理器可能用别的写法，要重量）。</dd>
+<dt>怎么算它错</dt><dd>要是在 BSC 的官方处理器上，取展开 10 万门以上的同一个函数，平铺的按 24,000 字节分块，分层的拆成每颗约 3,000 门的子电路调用，同一组输入、一笔里第一次调用，8 组里任一组分层的 gas 超过平铺的 0.5 倍，就算它错（10 万门这个界是看到反方 9.2 万门还是 0.54 以后才划的，范围划在反例之后）。</dd>
+</dl>
   <p>实测 <b>0.4517</b>。</p>
   <ul><li>电路是 100,064 门的同一个函数，拆成 30 颗子电路。</li><li>分层那一次花 234,779,878–234,813,496 gas，预测 2.3–2.4 亿。</li><li>X Layer 2 万门的旁证：比值 1.006，按律这么小的时候不省。</li></ul>
   <p></p>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-representation-002">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 定律十二</span></summary>
-  <section class="box con" id="red-representation-002" aria-labelledby="red-representation-002-h" data-author="RED" data-id="red-representation-002" data-target="定律十二" data-verdict="削弱" data-date="2026-11-17" data-sha256="1569cea1d2edc58aec6e03cd483054c3b00a4bd9d53d085bb6a5d39fbf2d8a46">
-    <header><span class="kind" id="red-representation-002-h">反方 · RED · 第 3 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-90f883">定律十二</a></span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="6e85e6f600e381ce3243f56b814457ca24771d6380e5217b00eff5722eebd9a4">定律十二说分层省能：≥ 4 万门时比平铺省一半以上（实测 100,064 门、30 颗子电路，比值 0.4517）。我（反方）拿链上的真分层电路去对：BSC 上展开 ≥ 4 万门、网表含调用记录、一次只读跑得完的 19 颗，实测 step 的 gas 除以定律四对同门数平铺网表的预测（书里的系数，只取定律四拟合过的块数以内）。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 观察 2.3</span></summary>
+  <section class="box con" id="red-representation-002" aria-labelledby="red-representation-002-h" data-author="RED" data-id="red-representation-002" data-target="观察 2.3" data-verdict="削弱" data-date="2026-11-17" data-sha256="77aafb6871e14941ffd1d2a0c18e6443ed568a92396b0d422ec7ba6370bac1a4">
+    <header><span class="kind" id="red-representation-002-h">反方 · RED · 第 3 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#obs-52ad3c">观察 2.3</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <p class="said" data-sha256="c139f7f9ec7c1b79c870579b6e2b9f8b3e5ca3d1f0f96f4e0323284de7ef79da">观察 2.3（原定律十二）说分层省能：≥ 4 万门时比平铺省一半以上（实测 100,064 门、30 颗子电路，比值 0.4517）。我（反方）拿链上的真分层电路去对：BSC 上展开 ≥ 4 万门、网表含调用记录、一次只读跑得完的 19 颗，实测 step 的 gas 除以观察 3.2（原定律四）对同门数平铺网表的预测（书里的系数，只取观察 3.2 拟合过的块数以内）。</p>
     <p class="said" data-sha256="32bbb4223ebf40e73a4df1be05d93827fcfb8a5b74103e8d03a62e95a105dfe2">比值中位 0.537，范围 0.15 到 0.85，而且跟着门数走：45,680 门 0.85（只省 15%），5.8 万到 6.1 万门 0.75 到 0.79，8.9 万到 9.2 万门 0.54，12 万门左右 0.34 到 0.36，14.5 万门 0.24，17.5 万门 0.15。按我事先写的线（中位在 0.5 到 0.75 之间）判削弱：省一半以上要到 10 万门上下才成立（9.2 万门还是 0.54、11.7 万门 0.36），4 万到 9 万门之间只省 15% 到 46%。</p>
     <p class="said" data-sha256="8ca1fdb03d1216a786049416712654746fac6e82a28ac53d2c906579cdfef20f">原因很直白：真分层电路每个展开门几乎都是 2,297 gas 上下，是一条直线；平铺那边的拼接费随块数涨得越来越快，所以门数越大，分层显得越省。建议把「≥ 4 万门省一半以上」改成「约 10 万门以上省一半以上，4 万门左右只省一两成」，或者直接给出分层每门约 2,300 gas 的那条直线。</p>
-    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="fb893e266837b27710277b9b320c13dab5c643930617db489cae5f72ba9d797b">hier.json</span><span class="ev-n" data-sha256="b65a0c127646b36f512ea82ea4d01b74a1380cdc7dcc259b8b42e3048caa5025">19 颗跑完的 BSC 分层电路：展开门数、实测 gas、定律四平铺预测、比值</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="d63e36686c376ed45decf646bb4ce1b65f24b0f250ec140ff3941dfbed46fc11">134216966</span><span class="ev-n" data-sha256="119fd949d02039df15a4119b58e772a84924d89ee20aca4d54ad02a75de5e993">测量冻结在这个 BSC 块</span></dd></div></dl>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="fb893e266837b27710277b9b320c13dab5c643930617db489cae5f72ba9d797b">hier.json</span><span class="ev-n" data-sha256="7aa3ccf14635837427297f74ba570da48abf0827051c6929b8e73146abbee5ad">19 颗跑完的 BSC 分层电路：展开门数、实测 gas、观察 3.2 平铺预测、比值</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="d63e36686c376ed45decf646bb4ce1b65f24b0f250ec140ff3941dfbed46fc11">134216966</span><span class="ev-n" data-sha256="119fd949d02039df15a4119b58e772a84924d89ee20aca4d54ad02a75de5e993">测量冻结在这个 BSC 块</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（2）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律十二现在是观察 2.3；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律十二」，现在照按章的新编号挂「观察 2.3」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-representation-002" aria-labelledby="och-representation-002-h" data-author="OCH" data-to="red-representation-002" data-stance="认" data-date="2026-11-17">
     <header><span class="kind" id="och-representation-002-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="945f7682fd6bb6bd3081eff7f88c18ef2b9dbf62c8075df12dc1085ca8dc8e3a">这一条我认。先说清一处：本章正文没写「≥ 4 万门时省一半以上」，那是本书之前的 /physics/ 单页版上的话；手抄清单（V31_HARDCODED.md）也查出它和数据对不上，单页版下一次小改版会改掉。本章写的是 E1b 那一颗：100,064 门，分层只花平铺的 0.4517。</p>
     <p class="said" data-sha256="c172faecdd9caaf7e64ac381400004f9af68198fbc6d1f15c39723d39f01c223">反方的 19 颗链上真分层电路把这条线补全了：实测 ÷ 同门数平铺网表的预测，中位 0.537，从 45,680 门的 0.85 降到 175,304 门的 0.15，要到 10 万门上下才省一半以上。这和第 3 章量到的拼接项占比对得上——4 万门时拼接项只占总数的 12%，8 万门时占 41%；分层能省掉的，主要就是平铺要付的这份拼接费。</p>
     <p class="said" data-sha256="819a8c98f07136f4b905832dc26c9f848774d2dd60dcd145a4f4bf9b44e94651">正文照改了：本章「什么时候不成立」第 4 条把反方这条曲线并列写上，E1b 那颗的 0.4517 照留。</p>
-    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="0544caee7cff650916294e3258c75d44b07ad2be31879b360868d25613385561">e1b_hier_56_20261116_181107.json</span><span class="ev-n" data-sha256="0ced2e6bde1d8de7aa815f5846c828d65a62514568000af04692db94afd6a0d5">E1b：10 万门 Feistel 分层对平铺</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="14bbcd803e41067352026a29aad2a4544e0a50590096a113726b2f26bd38b1bf">chunks_56_20261116_173913.json</span><span class="ev-n" data-sha256="11fbf498bfd494cbd8b04a18d7e87fff714ff911f4c8f2e4ef91fa5060b627ba">拼接项占比（第 3 章定律四）</span></dd></div></dl>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="0544caee7cff650916294e3258c75d44b07ad2be31879b360868d25613385561">e1b_hier_56_20261116_181107.json</span><span class="ev-n" data-sha256="0ced2e6bde1d8de7aa815f5846c828d65a62514568000af04692db94afd6a0d5">E1b：10 万门 Feistel 分层对平铺</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="14bbcd803e41067352026a29aad2a4544e0a50590096a113726b2f26bd38b1bf">chunks_56_20261116_173913.json</span><span class="ev-n" data-sha256="138eaf07c8ca828d8f98f8f37561e98b9839de4d5c24797f8b38c545f7b883ec">拼接项占比（第 3 章观察 3.2）</span></dd></div></dl>
     <details class="revs"><summary>修订记录（1）· OCH 改的是自己这段</summary><ol><li><time datetime="2026-11-17">2026-11-17</time><span>第 1 段那一页原来的叫法改成「本书之前的 /physics/ 单页版」，它的下一次小改版也照这样称呼：书上线时那一页原地换成本书目录；意思不变</span></li></ol></details>
   </section>
 
@@ -768,8 +826,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s2-5"><span class="secno">2.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">DOT32_T 的三种写法</span></header>
   <p>X Layer 处理器 0xa93e807f… 的第 3 号电路，就是 21nandkit 的 DOT32_T（32 路 int8 和三值做点积）：3,829 个门，320 入 32 出，网表分 2 块。</p>
-  <ul><li>官方处理器解释：每组 8,836,765。</li><li>原生合约：每组 4,443.6。</li><li>编译成门、256 组并排：每组 350.7。</li><li>官方 ÷ 编译 ≈ 25,198 倍；原生 ÷ 编译 ≈ 12.7 倍（21nandkit 那份原生；按字运算的原生只有 1.37 倍，见定律六的更正）。</li></ul>
-  <p><b>读者动手</b>：在 /circuits/ 打开这一行，量官方处理器算一次全 0 输入：清单上记录的是 8,815,674 gas。和上面的 8,836,765 差约 2 万，是因为那 4 组输入不全为 0，差的就是第 1 章取值律那部分。</p>
+  <ul><li>官方处理器解释：每组 8,836,765。</li><li>原生合约：每组 4,443.6。</li><li>编译成门、256 组并排：每组 350.7。</li><li>官方 ÷ 编译 ≈ 25,198 倍；原生 ÷ 编译 ≈ 12.7 倍（21nandkit 那份原生；按字运算的原生只有 1.37 倍，见观察 2.1 的更正）。</li></ul>
+  <p><b>读者动手</b>：在 /circuits/ 打开这一行，量官方处理器算一次全 0 输入：清单上记录的是 8,815,674 gas。和上面的 8,836,765 差约 2 万，是因为那 4 组输入不全为 0，差的就是第 1 章观察 1.3 那部分。</p>
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">什么时候该编译</span></header>
@@ -783,13 +841,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s2-6"><span class="secno">2.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f2">
   <header><span class="kind">这条会不成立</span><span class="name" id="f2">照实写</span></header>
   <ol class="cases">
-    <li><span class="when">定律十五的判据 2 被证伪。</span>  <ul><li>判据写的是：100 门以上的电路，每门每路落在 12–30 之间。实测 26 颗里只有 17 颗在区间内。</li><li>6 颗偏高：100–248 门，固定开销摊到百来个门上，每门 30–49。</li><li>3 颗偏低：1 入 1 出的反相器链，每门 5–8。</li><li>区间是我定错了，机理不受影响；判定照留。<span class="cite">判据·E3</span></li></ul>
+    <li><span class="when">观察 2.2 的判据 2 被证伪。</span>  <ul><li>判据写的是：100 门以上的电路，每门每路落在 12–30 之间。实测 26 颗里只有 17 颗在区间内。</li><li>6 颗偏高：100–248 门，固定开销摊到百来个门上，每门 30–49。</li><li>3 颗偏低：1 入 1 出的反相器链，每门 5–8。</li><li>区间是我定错了，机理不受影响；判定照留。<span class="cite">判据·E3</span></li></ul>
 </li>
-    <li><span class="when">定律五有两种情况要另算</span>  <ul><li>同时活着的线一多，内存项就显出来（反方量的）：随机电路同时活着 131 根线时每门 24.97，2,368 根时 27.07，4,639 根时 28.74；先宽后树 6,009 根时 31.49。两链 44 次实测都和「指令价 + 3W + ⌊W²/512⌋」逐个相等。</li><li>每门 24 只在同时活着的线很少时成立：近邻电路同时活着 64 根线，每门正好 24.00。</li><li><span class="tag fix">更正</span>我原来写的是「超过约 1.2 万根后才显出来」，那是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点（第 3 章；<a href="#red-representation-003">反方第 1 条</a>）；</li><li>百来个门的小电路，固定开销摊不开（定律十五）。</li></ul>
+    <li><span class="when">恒等式「表示决定能量」有两种情况要另算</span>  <ul><li>同时活着的线一多，内存项就显出来（反方量的）：随机电路同时活着 131 根线时每门 24.97，2,368 根时 27.07，4,639 根时 28.74；先宽后树 6,009 根时 31.49。两链 44 次实测都和「指令价 + 3W + ⌊W²/512⌋」逐个相等。</li><li>每门 24 只在同时活着的线很少时成立：近邻电路同时活着 64 根线，每门正好 24.00。</li><li><span class="tag fix">更正</span>我原来写的是「超过约 1.2 万根后才显出来」，那是平方项和门本身的价一样大的那一点，不是它开始显出来的那一点（第 3 章；<a href="#red-representation-003">反方第 1 条</a>）；</li><li>百来个门的小电路，固定开销摊不开（观察 2.2）。</li></ul>
 </li>
-    <li><span class="when">定律六只对「同一个电路、很多组互不相干的输入」成立。</span><span>每组电路不同、或者后一组要用前一组的结果，就不能并排算。</span>  <ul><li><span class="tag fix">更正</span>翻转点还看原生写得多好：对 21nandkit 那份逐路循环的原生是 20.2 组，对按字运算的原生约 176–283 组（<a href="#red-representation-001">反方第 2 条</a>；我的量法 187）。编译版把输入转成按位排列、把输出转回来的费用，两边都没算，算进去编译版只会更贵。</li></ul>
+    <li><span class="when">恒等式「按位并行的分界」只对「同一个电路、很多组互不相干的输入」成立。</span><span>每组电路不同、或者后一组要用前一组的结果，就不能并排算。</span>  <ul><li><span class="tag fix">更正</span>翻转点还看原生写得多好：对 21nandkit 那份逐路循环的原生是 20.2 组，对按字运算的原生约 176–283 组（<a href="#red-representation-001">反方第 2 条</a>；我的量法 187）。编译版把输入转成按位排列、把输出转回来的费用，两边都没算，算进去编译版只会更贵。</li></ul>
 </li>
-    <li><span class="when">定律十二只在大电路上省。</span><span>E1b 量的是 10 万门那一颗。拼接那一项在 4 万门时只占总数的 12%、8 万门时占 41%（第 3 章），门少的时候能省的有限。</span>  <ul><li><span class="tag fix">更正</span><a href="#red-representation-002">反方第 3 条</a>拿 19 颗链上的真分层电路量了：实测 ÷ 同门数平铺网表的预测，中位 0.537，从 45,680 门的 0.85 降到 175,304 门的 0.15，要到 10 万门上下才省一半以上。</li><li>实验 E1（随机网表）作废过两次，E1b 作废过一次（对拍时取错了数）。作废的记录都留着。</li></ul>
+    <li><span class="when">观察 2.3 只在大电路上省。</span><span>E1b 量的是 10 万门那一颗。拼接那一项在 4 万门时只占总数的 12%、8 万门时占 41%（第 3 章），门少的时候能省的有限。</span>  <ul><li><span class="tag fix">更正</span><a href="#red-representation-002">反方第 3 条</a>拿 19 颗链上的真分层电路量了：实测 ÷ 同门数平铺网表的预测，中位 0.537，从 45,680 门的 0.85 降到 175,304 门的 0.15，要到 10 万门上下才省一半以上。</li><li>实验 E1（随机网表）作废过两次，E1b 作废过一次（对拍时取错了数）。作废的记录都留着。</li></ul>
 </li>
     <li><span class="when">编译版是「实现」，不是链的规律。</span><span>换一种编法数就变；已有的官方处理器的解释是「冻结」的，改不了。</span></li>
   </ol>

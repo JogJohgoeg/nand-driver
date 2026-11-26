@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -572,7 +604,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s5-1"><span class="no">5.1</span>直觉</a></li>
   <li><a href="#s5-2"><span class="no">5.2</span>定义</a></li>
-  <li><a href="#s5-3"><span class="no">5.3</span>定律和公式</a></li>
+  <li><a href="#s5-3"><span class="no">5.3</span>公式</a></li>
   <li><a href="#s5-4"><span class="no">5.4</span>怎么量出来的</a></li>
   <li><a href="#s5-5"><span class="no">5.5</span>例题</a></li>
   <li><a href="#s5-6"><span class="no">5.6</span>什么时候不成立</a></li>
@@ -606,7 +638,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s5-1"><span class="no">5.1</span>直觉</a></li>
   <li><a href="#s5-2"><span class="no">5.2</span>定义</a></li>
-  <li><a href="#s5-3"><span class="no">5.3</span>定律和公式</a></li>
+  <li><a href="#s5-3"><span class="no">5.3</span>公式</a></li>
   <li><a href="#s5-4"><span class="no">5.4</span>怎么量出来的</a></li>
   <li><a href="#s5-5"><span class="no">5.5</span>例题</a></li>
   <li><a href="#s5-6"><span class="no">5.6</span>什么时候不成立</a></li>
@@ -632,12 +664,12 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>面积与存储：把电路放上链，按字节付钱</h1>
   <p class="lede">把电路放上链，就像在芯片上占一块面积，按字节付钱：每存一个字节的代码 200 gas，再加上交易数据和官方处理器自己的记账。DOT32_T 有 3,829 个门、26,803 字节，在 X Layer 上发布用了 11,202,698 gas，其中存代码那一项占 48%。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 15 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 25 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 2 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
 <h2 id="s5-1"><span class="secno">5.1</span>直觉</h2>  <p class="lede-in">把电路放上链，就像在芯片上占一块面积，按字节付钱：每存一个字节的代码 200 gas，再加上交易数据和官方处理器自己的记账。DOT32_T 有 3,829 个门、26,803 字节，在 X Layer 上发布用了 11,202,698 gas，其中存代码那一项占 48%。</p>
-<figure class="fig" id="fig51"><div class="stack" role="img" aria-label="DOT32_T 发布 gas 按来源切开：交易费 21,000；交易数据 282,104；建合约 64,000；存代码 5,361,000；记账·固定 45,875；记账·每个与非门 5,247,018；记账·每块 215,013；回执 11,202,698"><div class="sb"><i class="k1" style="width:0.1869%" data-gas="21000" title="交易费 21,000"></i><i class="k2" style="width:2.5107%" data-gas="282104" title="交易数据 282,104"></i><i class="k3" style="width:0.5696%" data-gas="64000" title="建合约 64,000"></i><i class="k4" style="width:47.7127%" data-gas="5361000" title="存代码 5,361,000"></i><i class="k5" style="width:0.4083%" data-gas="45874.7" title="记账·固定 45,875"></i><i class="k6" style="width:46.6982%" data-gas="5247018.1" title="记账·每个与非门 5,247,018"></i><i class="k7" style="width:1.9136%" data-gas="215013.0" title="记账·每块 215,013"></i></div><b class="rc" style="left:99.7035%" data-gas="11202698"></b></div><div class="sax"><span>0</span><span>回执 11,202,698 gas ｜ 各段加起来 11,236,010，估高 0.30%</span></div><div class="tbl"><table><thead><tr><th>从哪来</th><th class="r">gas</th><th class="r">占回执</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="rowgroup">链协议收的</th></tr><tr><td><i class="sw k1"></i>交易费</td><td class="r" data-gas="21000">21,000</td><td class="r">0.19%</td></tr><tr><td><i class="sw k2"></i>交易数据</td><td class="r" data-gas="282104">282,104</td><td class="r">2.52%</td></tr><tr><td><i class="sw k3"></i>建合约</td><td class="r" data-gas="64000">64,000</td><td class="r">0.57%</td></tr><tr><td><i class="sw k4"></i>存代码</td><td class="r" data-gas="5361000">5,361,000</td><td class="r">47.85%</td></tr><tr class="grp"><th colspan="3" scope="rowgroup">官方处理器自己的记账</th></tr><tr><td><i class="sw k5"></i>记账·固定</td><td class="r" data-gas="45874.7">45,875</td><td class="r">0.41%</td></tr><tr><td><i class="sw k6"></i>记账·每个与非门</td><td class="r" data-gas="5247018.1">5,247,018</td><td class="r">46.84%</td></tr><tr><td><i class="sw k7"></i>记账·每块</td><td class="r" data-gas="215013.0">215,013</td><td class="r">1.92%</td></tr></tbody></table></div><p class="lg"><span><i class="kl rc"></i>竖线：回执的实际 gas</span></p><figcaption><b>图 5.1</b>　X Layer 上 DOT32_T（#3，3,829 个门、26,803 字节、2 块）那笔发布，按定律八把 gas 切开。条从 0 起画，长短照各段 gas；有五段太窄，在条上看不清，数都在表里。记账那三段的系数是 BSC 上 51 笔回执拟合的。</figcaption></figure>
+<figure class="fig" id="fig51"><div class="stack" role="img" aria-label="DOT32_T 发布 gas 按来源切开：交易费 21,000；交易数据 282,104；建合约 64,000；存代码 5,361,000；记账·固定 45,875；记账·每个与非门 5,247,018；记账·每块 215,013；回执 11,202,698"><div class="sb"><i class="k1" style="width:0.1869%" data-gas="21000" title="交易费 21,000"></i><i class="k2" style="width:2.5107%" data-gas="282104" title="交易数据 282,104"></i><i class="k3" style="width:0.5696%" data-gas="64000" title="建合约 64,000"></i><i class="k4" style="width:47.7127%" data-gas="5361000" title="存代码 5,361,000"></i><i class="k5" style="width:0.4083%" data-gas="45874.7" title="记账·固定 45,875"></i><i class="k6" style="width:46.6982%" data-gas="5247018.1" title="记账·每个与非门 5,247,018"></i><i class="k7" style="width:1.9136%" data-gas="215013.0" title="记账·每块 215,013"></i></div><b class="rc" style="left:99.7035%" data-gas="11202698"></b></div><div class="sax"><span>0</span><span>回执 11,202,698 gas ｜ 各段加起来 11,236,010，估高 0.30%</span></div><div class="tbl"><table><thead><tr><th>从哪来</th><th class="r">gas</th><th class="r">占回执</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="rowgroup">链协议收的</th></tr><tr><td><i class="sw k1"></i>交易费</td><td class="r" data-gas="21000">21,000</td><td class="r">0.19%</td></tr><tr><td><i class="sw k2"></i>交易数据</td><td class="r" data-gas="282104">282,104</td><td class="r">2.52%</td></tr><tr><td><i class="sw k3"></i>建合约</td><td class="r" data-gas="64000">64,000</td><td class="r">0.57%</td></tr><tr><td><i class="sw k4"></i>存代码</td><td class="r" data-gas="5361000">5,361,000</td><td class="r">47.85%</td></tr><tr class="grp"><th colspan="3" scope="rowgroup">官方处理器自己的记账</th></tr><tr><td><i class="sw k5"></i>记账·固定</td><td class="r" data-gas="45874.7">45,875</td><td class="r">0.41%</td></tr><tr><td><i class="sw k6"></i>记账·每个与非门</td><td class="r" data-gas="5247018.1">5,247,018</td><td class="r">46.84%</td></tr><tr><td><i class="sw k7"></i>记账·每块</td><td class="r" data-gas="215013.0">215,013</td><td class="r">1.92%</td></tr></tbody></table></div><p class="lg"><span><i class="kl rc"></i>竖线：回执的实际 gas</span></p><figcaption><b>图 5.1</b>　X Layer 上 DOT32_T（#3，3,829 个门、26,803 字节、2 块）那笔发布，按观察 5.1 把 gas 切开。条从 0 起画，长短照各段 gas；有五段太窄，在条上看不清，数都在表里。记账那三段的系数是 BSC 上 51 笔回执拟合的。</figcaption></figure>
   <div class="tbl"><table>
     <thead><tr><th>放什么</th><th>价（gas）</th><th>放完以后</th></tr></thead>
     <tbody>
@@ -659,9 +691,14 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-976dfb62">回执</dt><dd>交易上链后节点给的记录，里面有这笔实际用了多少 gas。</dd>
   </dl>
 </section>
-<h2 id="s5-3"><span class="secno">5.3</span>定律和公式</h2><section class="box law" aria-labelledby="law-d9be9f">
-  <header><span class="kind">定律八</span><span class="name" id="law-d9be9f">面积（发布一颗电路的 gas）</span><span class="cite">fit·publish、publish·56、publish·known</span></header>
+<h2 id="s5-3"><span class="secno">5.3</span>公式</h2><section class="box obs" aria-labelledby="obs-5cf70b">
+  <header><a id="law-d9be9f"></a><span class="kind">观察 5.1</span><span class="name" id="obs-5cf70b">面积（发布一颗电路的 gas）</span><span class="cite">fit·publish、publish·56、publish·known</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>G</mi><mtext>发布</mtext></msub><mo>=</mo><mn>21,000</mn><mo>+</mo><mn>4</mn><mi>z</mi><mo>+</mo><mn>16</mn><mtext> </mtext><mo stretchy="false">(</mo><msub><mi>B</mi><mtext>cd</mtext></msub><mo>−</mo><mi>z</mi><mo stretchy="false">)</mo><mo>+</mo><mi>K</mi><mtext> </mtext><mo stretchy="false">(</mo><mn>32,000</mn><mo>+</mo><msub><mi>k</mi><mi>K</mi></msub><mo stretchy="false">)</mo><mo>+</mo><mn>200</mn><mtext> </mtext><mo stretchy="false">(</mo><mi>B</mi><mo>+</mo><mi>K</mi><mo stretchy="false">)</mo><mo>+</mo><mi>a</mi><mo>+</mo><msub><mi>n</mi><mi>N</mi></msub><msub><mi>N</mi><mtext>NAND</mtext></msub><mo>+</mo><msub><mi>n</mi><mi>L</mi></msub><msub><mi>N</mi><mtext>LATCH</mtext></msub></mrow><annotation encoding="application/x-tex">G_{\text{发布}}=21{,}000+4z+16\,(B_{\text{cd}}-z)+K\,(32{,}000+k_K)+200\,(B+K)+a+n_N N_{\text{NAND}}+n_L N_{\text{LATCH}}</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC、X Layer。读的是已有的发布回执，都在 11 月 16 日读。BSC 那 43 笔是带钥匙的 NodeReal 读的；另 8 笔和 X Layer 那 1 笔是同一天另一次读的：X Layer 问 OKX 的 rpc.xlayer.tech，BSC 那次没记是哪个入口，照脚本是带钥匙的 NodeReal（推的；没给钥匙就是官方 dataseed，照严的读法是同一家运营方）。反方另找的 3 笔是 11 月 17 日用带钥匙的 NodeReal 取的。</li><li>电路：链上发布的平网表电路，不含子电路调用；BSC 51 颗，X Layer 1 颗（DOT32_T）；反方另找了 3 笔锁存为主的回执。</li><li>点：BSC 51 笔回执拟合；X Layer 那 1 笔留作样本外。</li><li>大小：BSC 51 笔里 43 笔 1 到 400 个与非门，8 笔 21 到 5,120 个；带锁存的只 8 笔，最多一笔 60 个、一共 133 个；49 笔是 1 块，只 2 笔是 2 块，每块那一项的系数只靠这 2 笔定。反方那 3 笔 7,496 到 8,496 个锁存。</li><li>时长：回执是四段时间发的。BSC 51 笔里，8 笔是 9 月 8 日到 14 日（第 120,731,587–121,900,375 块），43 笔是 11 月 13 日到 16 日（第 133,318,309–133,937,779 块，首尾两块的块时间 11 月 22 日照官方 dataseed 读的）；X Layer 那 1 笔是 10 月 5 日（第 72,440,574 块，日子照当时的发布记录，块时间没读）；反方那 3 笔是 10 月 20 日（第 128,745,662–128,756,065 块）。</li><li>量法：<span class="mth h-real">链上实录</span>（读已有的发布回执，网表从链上读回来数）。</li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-hard">硬</span>（协议那几样价：交易费 21,000、交易数据零字节 4、非零字节 16、建一个数据合约 32,000（建合约那一条指令的价；CREATE2 也收这个数，另加每 32 字节 6 gas 的哈希费）、存一个字节代码 200，照 execution-specs · forks/bpo2/vm/gas · 391d8a05 第 57、104、106、186、190 行和 forks/bpo2/transactions 第 626–634 行，非零字节 16 也是 EIP-2028 定的（EIPs · EIPS/eip-2028 · b055feec 第 13、25 行；地板价见本章「什么时候不成立」第 4 条）；数据合约是 CREATE 还是 CREATE2 建的，没核）；代进去的数：<span class="cat c-two">只在两条链上量过</span>（记账那四个系数是按 BSC 51 笔回执拟的，没指到官方处理器合约哪段代码）。</dd>
+<dt>怎么算它错</dt><dd>还写不出（判线要先在新判据里写死，现有的那条是看过数据才有的）。</dd>
+</dl>
   <ul><li>B：网表字节数；K：24,000 字节一块的块数；B_cd、z：整笔交易数据的字节数、其中零字节数。</li><li>协议定的价：21,000 交易费；4、16 交易数据零字节、非零字节；32,000 建一个合约；200 存一个字节的代码（每块前面多一个字节，所以是 B + K）。</li><li>官方处理器自己的记账，按回执拟合：</li></ul>
   <div class="tbl"><table>
     <thead><tr><th>a（固定）</th><th>n<sub>N</sub>（每个与非门）</th><th>n<sub>L</sub>（每个锁存）</th><th>k<sub>K</sub>（每块）</th><th>回执</th><th>偏差绝对值中位</th><th>按笔留一最大</th></tr></thead>
@@ -669,32 +706,39 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">45,875</th><td class="r">1,370.3</td><td class="r">1,138.7</td><td class="r">107,506</td><td>BSC 51 笔</td><td class="r">0.24%</td><td class="r">7.5%</td></tr>
     </tbody></table></div>
   <p></p>
-  <ul><li>样本外：X Layer 上 DOT32_T 那笔回执，用 BSC 的系数算，差 −0.30%（例题 1）。</li><li><span class="tag fix">更正</span>锁存为主的发布会估高约 12%：反方找到 3 笔一笔就把整份平网表发上去的回执（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存），照这条算三笔都估高，偏差 −12.09%、−11.54%、−11.61%，超过按笔留一的 7.5%。拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个、一共 133 个，锁存那一项的系数定得不准。（<a href="#red-area-001">反方第 1 条</a>）</li><li>一笔交易最多能发布多少门：BSC 单笔上限 16,777,216，按这条推，平网表约 5,774 个与非门（例题 2）。锁存一条记录只有 4 字节，平电路一笔发过 8,498 条记录（8,496 个锁存）；分层电路一笔能建几十万门（第 3 章定律七）。</li></ul>
+  <ul><li>样本外：X Layer 上 DOT32_T 那笔回执，用 BSC 的系数算，差 −0.30%（例题 1）。</li><li><span class="tag fix">更正</span>锁存为主的发布会估高约 12%：反方找到 3 笔一笔就把整份平网表发上去的回执（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存），照这条算三笔都估高，偏差 −12.09%、−11.54%、−11.61%，超过按笔留一的 7.5%。拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个、一共 133 个，锁存那一项的系数定得不准。（<a href="#red-area-001">反方第 1 条</a>）</li><li>一笔交易最多能发布多少门：BSC 单笔上限 16,777,216，按这条推，平网表约 5,774 个与非门（推的；例题 2）。锁存一条记录只有 4 字节，平电路一笔发过 8,498 条记录（8,496 个锁存）；分层电路一笔能建几十万门（第 3 章观察 3.3）。</li></ul>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-area-001">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律八</span></summary>
-  <section class="box con" id="red-area-001" aria-labelledby="red-area-001-h" data-author="RED" data-id="red-area-001" data-target="定律八" data-verdict="削弱" data-date="2026-11-17" data-sha256="805106e2e503108f8513efa22c01e6257de676c4ff4d78e4cf909bd7129ce3e2">
-    <header><span class="kind" id="red-area-001-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-d9be9f">定律八</a></span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="b557af1f70287005d10279b29f15319fecae9838676610ad86a78c7e0792074c">定律八（发布一颗电路的 gas）是在 51 笔回执上拟的，中位误差 0.24%、留一最大 7.5%，书里写着「不含子电路调用的发布」。我（反方）在 BSC 单笔上限生效以后的发布里，找到 3 笔一笔就把整份平网表发上去、记录数超过 6,063 的回执：都在 0x872d63c0… 上，#15、#17、#19，以锁存为主（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存）。按定律八的式子和书里的系数算预测，和回执比。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 观察 5.1</span></summary>
+  <section class="box con" id="red-area-001" aria-labelledby="red-area-001-h" data-author="RED" data-id="red-area-001" data-target="观察 5.1" data-verdict="削弱" data-date="2026-11-17" data-sha256="30e508c675fa8d0899a89514737525a2012b002d7291fd76a941b7c6e9eb437b">
+    <header><span class="kind" id="red-area-001-h">反方 · RED · 第 1 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#obs-5cf70b">观察 5.1</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <p class="said" data-sha256="bad6cabcc70c30b186c250619162db88a4d4f3a8b3d55141ed729addae4d7d12">观察 5.1（原定律八）（发布一颗电路的 gas）是在 51 笔回执上拟的，中位误差 0.24%、留一最大 7.5%，书里写着「不含子电路调用的发布」。我（反方）在 BSC 单笔上限生效以后的发布里，找到 3 笔一笔就把整份平网表发上去、记录数超过 6,063 的回执：都在 0x872d63c0… 上，#15、#17、#19，以锁存为主（286、2、2 个与非门，加 7,999、8,496、7,496 个锁存）。按观察 5.1 的式子和书里的系数算预测，和回执比。</p>
     <p class="said" data-sha256="ad5a1e38d05a99a664253ea1bc9d6703ee149616197928c0c5de278cf092b084">三笔全都被高估了约 12%：#15 回执 15,235,960、预测 17,077,806，−12.09%；#17 回执 15,475,428、预测 17,262,230，−11.55%；#19 回执 13,682,763、预测 15,271,578，−11.61%。超过书里自报的留一最大 7.5%、没到它的两倍，按我事先写的线判削弱。三笔偏得几乎一样多，看起来是锁存那一项的系数（每个锁存 1,138.7）偏大——拟合用的 51 笔回执大多是与非门，锁存的系数定得不准。</p>
-    <p class="said" data-sha256="ec585e1282b5b73c51f46f1780ec5fd6770fb2f3d2d77a886dfc1c9bb13a8283">建议定律八写明「拟合样本以与非门为主，锁存为主的发布会高估约 12%」，或者另拿几笔锁存多的回执重拟那一项。这里的预测只用了回执和交易里现成的数（调用数据字节、零字节、网表字节、块数），没有回放交易。</p>
-    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="15945f3527a6d0d55d5b88ba4365ca6e0a5d8821cad587b8704f2cd107bab931">pub_analyze_v2.json</span><span class="ev-n" data-sha256="9843b763cad24fdf9f1b6156f22968abe62174964759a3ede55dd6bec275dd19">3 笔锁存为主的平网表发布：记录构成、调用数据、回执 gas、定律八预测和偏差</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="7b5a6471254c1e760f6b15361fb913fcb9a526dc3ec2977413a0d52e76fbabe2">0x1eb6123b178cf3a0da531f34292a1b1dd873665f546a05a6cb0c0c4be40a0356</span><span class="ev-n" data-sha256="f1b95eda11e0cde55c1856285f7993e9a5f8819c7a18cb1355afe2676dafe5d6">#15：286 个与非门 + 7,999 个锁存，回执 15,235,960</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="e7f20df93bbbb14f866699e3d85f85120e74fabc2c5ae81d8954374c31e1f1b8">0xb4e12fcb61e6cc53781d2a659675abceb35deb74cec8c789490b0515ad36c814</span><span class="ev-n" data-sha256="c2d671de994db1bc2b67cd512dbcb5cd4b89b8c3b2d335649bb7621515df0846">#17：2 个与非门 + 8,496 个锁存，回执 15,475,428</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="2d4794a36caa14e5edbcb95d975a97c3146e7ba3dd2b7441ec66f7daacf11544">0x723a26b7d130ce99075092491eb6e1ca8a26cba2f8f6d72c6fd6fe500d97f738</span><span class="ev-n" data-sha256="4af75889b9d4623d3ae1020f7fa17911e624794e69d4ddd0c7f2ae6d9e2ea6c5">#19：2 个与非门 + 7,496 个锁存，回执 13,682,763</span></dd></div></dl>
+    <p class="said" data-sha256="0b22e12549a80e7e509b8dc9854824c09f39c048f15b3d72e00d9c568469800f">建议观察 5.1 写明「拟合样本以与非门为主，锁存为主的发布会高估约 12%」，或者另拿几笔锁存多的回执重拟那一项。这里的预测只用了回执和交易里现成的数（调用数据字节、零字节、网表字节、块数），没有回放交易。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="15945f3527a6d0d55d5b88ba4365ca6e0a5d8821cad587b8704f2cd107bab931">pub_analyze_v2.json</span><span class="ev-n" data-sha256="6480f0f56b2578170559e3b5bf2a91602495adccc6bc346296e121ca810e7494">3 笔锁存为主的平网表发布：记录构成、调用数据、回执 gas、观察 5.1 预测和偏差</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="7b5a6471254c1e760f6b15361fb913fcb9a526dc3ec2977413a0d52e76fbabe2">0x1eb6123b178cf3a0da531f34292a1b1dd873665f546a05a6cb0c0c4be40a0356</span><span class="ev-n" data-sha256="f1b95eda11e0cde55c1856285f7993e9a5f8819c7a18cb1355afe2676dafe5d6">#15：286 个与非门 + 7,999 个锁存，回执 15,235,960</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="e7f20df93bbbb14f866699e3d85f85120e74fabc2c5ae81d8954374c31e1f1b8">0xb4e12fcb61e6cc53781d2a659675abceb35deb74cec8c789490b0515ad36c814</span><span class="ev-n" data-sha256="c2d671de994db1bc2b67cd512dbcb5cd4b89b8c3b2d335649bb7621515df0846">#17：2 个与非门 + 8,496 个锁存，回执 15,475,428</span></dd></div><div class="evi"><dt>交易号（BSC）</dt><dd><span class="ev-v" data-sha256="2d4794a36caa14e5edbcb95d975a97c3146e7ba3dd2b7441ec66f7daacf11544">0x723a26b7d130ce99075092491eb6e1ca8a26cba2f8f6d72c6fd6fe500d97f738</span><span class="ev-n" data-sha256="4af75889b9d4623d3ae1020f7fa17911e624794e69d4ddd0c7f2ae6d9e2ea6c5">#19：2 个与非门 + 7,496 个锁存，回执 13,682,763</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（2）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律八现在是观察 5.1；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律八」，现在照按章的新编号挂「观察 5.1」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-area-001" aria-labelledby="och-area-001-h" data-author="OCH" data-to="red-area-001" data-stance="认" data-date="2026-11-17">
     <header><span class="kind" id="och-area-001-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-17">2026-11-17</time></header>
     <p class="said" data-sha256="64ac7f5919c06cb7eef90ac158803dfa351b12be07cc05712980b6ea19eada99">这一条我认。我用自己的系数、照本章同一套协议价，把那 3 笔回执独立重算了一遍：偏差 −12.09%、−11.54%、−11.61%，和你的数到小数点后两位都一样（预测差几百 gas，是系数取整的差别）。三笔都超过按笔留一的 7.5%。</p>
-    <p class="said" data-sha256="4ca19ce068d6736be9bc06497252ec08fc6e52fe4a531c4f8581b0ef6cf645c5">原因我查到的和你猜的一样：拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个，一共 133 个；拿这样定出来的每个锁存 1,138.7 去外推 7,999 个锁存，偏大说得通。正文照改了：定律八下面留了【更正】，写明锁存为主的发布会估高约 12%，适用范围也加了这一句。要重拟锁存那一项，得有锁存多的回执，现在只有你找到的这 3 笔，我先不重拟，照实写。</p>
-    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="3679bd62395cbf8c533ee73569feb74a97cf1d784a40b051f1261feb3e5ecbd1">fit_publish.json</span><span class="ev-n" data-sha256="81be99ddda402846a77bffb52af2b63c0cbf0c31eb954b4a7a555bfb218729dc">定律八的系数（每个锁存 1,138.7）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1573a056fb85f7cf671cf2adba34c41320ac2e3d14953bac253683b20db91d10">publish_56_20261116_174405.json</span><span class="ev-n" data-sha256="930275eb9e9f4588fb87af87700bee2624f48b51fc54225fafa59425d52e0368">拟合用的 BSC 回执（含锁存的那 8 笔；另一部分在 publish_known_20261116_174723.json）</span></dd></div></dl>
+    <p class="said" data-sha256="66b0a860746423a7a320674930c63762acb00bf0fd74befed91a14f12c07b0d4">原因我查到的和你猜的一样：拟合用的 51 笔回执里只有 8 笔带锁存，最多一笔 60 个，一共 133 个；拿这样定出来的每个锁存 1,138.7 去外推 7,999 个锁存，偏大说得通。正文照改了：观察 5.1 下面留了【更正】，写明锁存为主的发布会估高约 12%，适用范围也加了这一句。要重拟锁存那一项，得有锁存多的回执，现在只有你找到的这 3 笔，我先不重拟，照实写。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="3679bd62395cbf8c533ee73569feb74a97cf1d784a40b051f1261feb3e5ecbd1">fit_publish.json</span><span class="ev-n" data-sha256="ea3bfdd27024574f68f414330b567c956762c7b1e59a5e4b36910c1b30a0133f">观察 5.1 的系数（每个锁存 1,138.7）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="1573a056fb85f7cf671cf2adba34c41320ac2e3d14953bac253683b20db91d10">publish_56_20261116_174405.json</span><span class="ev-n" data-sha256="930275eb9e9f4588fb87af87700bee2624f48b51fc54225fafa59425d52e0368">拟合用的 BSC 回执（含锁存的那 8 笔；另一部分在 publish_known_20261116_174723.json）</span></dd></div></dl>
   </section>
 
 </details>
 
 
-</div><section class="box law" aria-labelledby="law-f6ec23">
-  <header><span class="kind">定律十</span><span class="name" id="law-f6ec23">擦除只退两成</span><span class="cite">misc·56、refund·196</span></header>
+</div><section class="box obs" aria-labelledby="obs-cc07b2">
+  <header><a id="law-f6ec23"></a><span class="kind">观察 5.2</span><span class="name" id="obs-cc07b2">擦除只退两成</span><span class="cite">misc·56、refund·196</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>G</mi><mtext>实扣</mtext></msub><mo>=</mo><msub><mi>G</mi><mtext>预</mtext></msub><mo>−</mo><mi>min</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><mn>4,800</mn><mtext> </mtext><mi>k</mi><mo separator="true">,</mo><mtext> </mtext><mrow><mo fence="true">⌊</mo><mfrac><msub><mi>G</mi><mtext>预</mtext></msub><mn>5</mn></mfrac><mo fence="true">⌋</mo></mrow><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">G_{\text{实扣}}=G_{\text{预}}-\min\!\left(4{,}800\,k,\ \left\lfloor\frac{G_{\text{预}}}{5}\right\rfloor\right)</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC、X Layer。11 月 16 日每链只一家节点：BSC 是带钥匙的 NodeReal，X Layer 是 dRPC（X Layer 官方节点不给模拟，回「HTTP 403」）。11 月 20 日照先提交的判据补量：BSC 官方 dataseed、publicnode 两家各 45/45 合预测（带钥匙的 NodeReal 和官方入口算一家），所以 BSC 那半是两家运营方；X Layer 那半照运营方算只 Chainstack 一家，正方 45/45 合预测，反方另量 20 样也全对上，是两份量、一家运营方（OKX 不放行 eth_simulateV1，dRPC 背后是谁未决，不当一家）。反方在 BSC 上另量了另两种字，用的是带钥匙的 NodeReal（11 月 17 日，第 134,236,593 块），和官方入口算一家。BSC 两家只读模拟都合预测，这条链的模拟量法对回执未决，所以记观察；X Layer 那半只一家运营方，也只记观察。</li><li>电路：不适用（量的是一段测试代码清存储字）。</li><li>点：11 月 16 日 k 取 1、4、20、100 四档，每链各一次，只量了一种字（开始时非零、结束时清成 0）。11 月 20 日那批每家 45 个：原来那四档 k；另两种字（改回原值、写了又改回 0）碰得到、碰不到上限各一样；先改过的字再清成 0、再改回原值的两样；五个对照；三种字各 10 组随机值。三家五个对照量到的退款都是 4,800、2,800、19,900、2,800、4,800，和规则一样。反方另量的对抗样本，BSC 两家、X Layer dRPC、以太坊 publicnode 各 20 样，全对上（<a href="#red-area-002">反方第 2 条</a>）。</li><li>大小：k 从 1 到 100 个字，返还前 26,006 到 521,600 gas。</li><li>时长：11 月 16 日每链一个块；11 月 20 日那批每家一次（BSC 每个调用前现取最新块再钉，X Layer 在 latest 上）。</li><li>量法：<span class="mth h-obj">节点模拟·对象是放上去的</span>（用 eth_simulateV1 模拟一笔清字的交易，测试代码是放上去的）。<small class="mth-note">对回执：BSC <span class="tier t-und">未决</span>；X Layer <span class="tier t-und">未决</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd><span class="cat c-hard">硬</span>（清一个字退 4,800、一笔最多退用量的五分之一，照 EIP-3529（EIPs · EIPS/eip-3529 · b055feec 第 32、37–38 行）：MAX_REFUND_QUOTIENT 是 5，4,800 是 SSTORE_RESET_GAS + ACCESS_LIST_STORAGE_KEY_COST；X Layer 从换栈那一块 42,810,021 起就有，照 OKX 的博客推的；BSC 从第 31,302,048 块的 Hertz 硬分叉起（Berlin、London 同一块），照 bsc · params/config · 54afaff4 第 236–238 行，London 以后退款上限 ÷5 照 bsc · core/state<sub>transition</sub> · 54afaff4 第 793–800 行和 params/protocol_params 第 191 行）。另两种字的数也照 EIP-3529（EIPs · EIPS/eip-3529 · b055feec 第 48–49、93–106 行）：先写后清的 19,900，正文和测试表两处一致；改了又改回原值的 2,800，照它的测试表和 EIP-2929 改过的定义算（2,900 − 100，EIPs · EIPS/eip-2929 · b055feec 第 83 行）。照实一处：它正文那一句写的是「(currently 4,900)」，和它自己的测试表、EIP-2929 改过的定义（都是 2,800）对不上；改以前照 EIP-2200 是 4,200（EIPs · EIPS/eip-2200 · b055feec 第 63、65、99 行），也不是 4,900。书里照测试表和定义用 2,800。</dd>
+<dt>怎么算它错</dt><dd>要是在两链任一条上，模拟清掉 k 个「开始时非零、结束时为 0」的字，k 取没量过的（2、3、10、50），实扣和「返还前 − min(4,800k, ⌊返还前 ÷ 5⌋)」差 1 gas，或者任一种清法退得超过 ⌊返还前 ÷ 5⌋，就算它错（实扣用 eth_simulateV1 的 gasUsed 或真回执量，不用计量套子：套子量的是调用前后剩下的 gas 之差，退款要到整笔结束才算，套子里看不见）；在第三条链以太坊主网的节点上模拟量的（eth_simulateV1 加状态覆盖，没部署、没上链；EIP-3529 本是以太坊的规则，主网从第 12,965,000 块的 London 起，照 execution-specs · forks/london · 391d8a05 第 48 行），照样清字，实扣不照这条式子也算它错；这一句要节点认 eth_simulateV1，两链和以太坊的节点要是都不认，就记未决，不拿计量套子顶。</dd>
+</dl>
   <ul><li>k：清掉的存储字个数；G_预：返还前的用量；G_实扣：实际扣的 gas。</li><li>清一个字退 4,800，但一笔最多退用量的五分之一。</li></ul>
   <div class="tbl"><table>
     <thead><tr><th>清掉几个 k</th><th>返还前</th><th>预测实扣</th><th>实测实扣（两链）</th></tr></thead>
@@ -705,24 +749,28 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">100</th><td class="r">521,600</td><td class="r">417,280</td><td class="r">417,280</td></tr>
     </tbody></table></div>
   <p></p>
-  <ul><li><span class="tag fix">更正</span>k 只算交易开始时非零、结束时清成 0 的字（上表量的就是这一种，每个退 4,800）。另两种照 EIP-3529 另算：开始时为 0、同一笔里先写后清的字，每个退 19,900；改了又改回原值的字，每个退 2,800。反方在 BSC 上量了：先写后清 1 个字实扣 34,570，照本式算是 38,412；字一多，退款被五分之一的上限压平，k = 20、100 时才相等。五分之一的上限处处成立。（<a href="#red-area-002">反方第 2 条</a>）</li></ul>
+  <ul><li><span class="tier t-not">没核</span>退款那一路：这条式子量的是 eth_simulateV1 的实扣。对回执那一回，simulateV1 对上的那几对里，没有一对要靠退款才对得上，所以模拟出来的退款和回执对不对得上，没核（第 0 章）。</li></ul>
+  <ul><li><span class="tag fix">更正</span>k 只算交易开始时非零、结束时清成 0 的字（上表量的就是这一种，每个退 4,800）。另两种照 EIP-3529 另算（EIPs · EIPS/eip-3529 · b055feec 第 48–49、93–106 行）：开始时为 0、同一笔里先写后清的字，每个退 19,900；改了又改回原值的字，每个退 2,800。反方在 BSC 上量了：先写后清 1 个字实扣 34,570，照本式算是 38,412；字一多，退款被五分之一的上限压平，k = 20、100 时才相等。五分之一的上限处处成立。（<a href="#red-area-002">反方第 2 条</a>）</li></ul>
   <ul><li>k = 1 时退满 4,800；k = 4 起就碰到五分之一那个顶了。</li><li>返还在交易结束才结算，不能拿来付同一笔里的计算。</li></ul>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-area-002">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律十</span></summary>
-  <section class="box con" id="red-area-002" aria-labelledby="red-area-002-h" data-author="RED" data-id="red-area-002" data-target="定律十" data-verdict="削弱" data-date="2026-11-17" data-sha256="57290565f2a973db050f644a63f4735f426eb83b0ff2ec396d694f9e8cd899b9">
-    <header><span class="kind" id="red-area-002-h">反方 · RED · 第 2 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#law-f6ec23">定律十</a></span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="2d2c02e75fe5bdf2496ba4a571c86e6c9bad3823f322e7f34d2759508ab7ac10">定律十说清掉 k 个存储字，实扣 = 返还前用量 − min(4,800 × k, 返还前用量的五分之一)，页面在 k = 1、4、20、100 上逐个相等。我（反方）在 BSC 上用 eth_simulateV1 模拟自己写的直线代码（每个字一条「PUSH1 值、PUSH1 槽号、SSTORE」），先照页面那一种复现：k 个字开始时是 1，清成 0，四个 k 的实扣是 21,206、32,820、96,896、417,280，和页面一个不差；所有情形里退的 gas 都没超过返还前用量的五分之一。</p>
-    <p class="said" data-sha256="1ff15b79fa40d7a098aefd012b6b8fa4fb51a8b7b32d2ca360245360cea787f1">换一种同样是「清掉 k 个字」的情形就不对了：这 k 个字在交易开始时是 0，同一笔里先写成 1、再清回 0。k = 1 时实扣 34,570，定律十的式子给 38,412，多算了 3,842；k = 4 时实扣 87,879，式子给 90,648，多算 2,769；k = 20、100 时两边都被五分之一的上限压住，才又相等。差在每个字退多少：交易开始时是 0 的字，先写后清退的是 19,900（EIP-3529 的规则），不是 4,800；用 19,900 算，四个 k 都一个 gas 不差。按我事先写的线判削弱：「只退两成」那个上限在所有情形里都成立，但「每个清掉的字退 4,800」只对交易开始时非零的字成立。</p>
-    <p class="said" data-sha256="1eb066fb1aa8bc3a8ac56ab4ddf58bf8a510efa097315bc7399a6173f4d0b400">另外照实报：把字改了再改回原值（开始 1 → 2 → 1，或 1 → 0 → 1），交易结束时一个字也没清掉，也有返还，每个字 2,800（k = 1 时返还前 26,112、实扣 23,312）。建议定律十写明 k 是「交易开始时非零、结束时为 0 的字」，再补一句：开始时为 0 的字先写后清每个退 19,900，改回原值的每个退 2,800，都受五分之一上限。X Layer 两家官方节点都不开放 eth_simulateV1，这一条只量了 BSC。</p>
-    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="70591707d3638ec9266635718771d6e92b4ce44962654e9bb3e182445ca44986">refund_56.json</span><span class="ev-n" data-sha256="88aa9bffe55b11679879be66f3ed0c75d4e5e0b6397d70a0115c267fc7cbb184">BSC 上四种情形（开始非零清掉、开始为 0 先写后清、改了再改回、清了再写回）× k = 1、4、20、100 的模拟：返还前用量、实扣、退款、五分之一上限、定律十的预测</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="eaa216e0df5692738761f16de74ae4c37358a30d3550232bb340a986d08b3466">134236593</span><span class="ev-n" data-sha256="5e79920b9e102f020f82828643616e1f5468da5b517ea04fd9a0448730e9dbfa">模拟钉住的块</span></dd></div></dl>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd weak">削弱</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 观察 5.2</span></summary>
+  <section class="box con" id="red-area-002" aria-labelledby="red-area-002-h" data-author="RED" data-id="red-area-002" data-target="观察 5.2" data-verdict="削弱" data-date="2026-11-17" data-sha256="727329d3821ea4c8a9e78d9205149c7b0fd27affec557144546f3dfeeaa60629">
+    <header><span class="kind" id="red-area-002-h">反方 · RED · 第 2 条</span><span class="vd weak">削弱</span><span class="on">针对 <a href="#obs-cc07b2">观察 5.2</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <p class="said" data-sha256="2f22e715dc29ea0bbb6e68fd88726e11dc2a70ed4a89b94723a9968dc5fb9f1e">观察 5.2（原定律十）说清掉 k 个存储字，实扣 = 返还前用量 − min(4,800 × k, 返还前用量的五分之一)，页面在 k = 1、4、20、100 上逐个相等。我（反方）在 BSC 上用 eth_simulateV1 模拟自己写的直线代码（每个字一条「PUSH1 值、PUSH1 槽号、SSTORE」），先照页面那一种复现：k 个字开始时是 1，清成 0，四个 k 的实扣是 21,206、32,820、96,896、417,280，和页面一个不差；所有情形里退的 gas 都没超过返还前用量的五分之一。</p>
+    <p class="said" data-sha256="4c1b0741a6168e5ea784c6ea7696cdae9707742cd37ba4215d5187377df26c85">换一种同样是「清掉 k 个字」的情形就不对了：这 k 个字在交易开始时是 0，同一笔里先写成 1、再清回 0。k = 1 时实扣 34,570，观察 5.2 的式子给 38,412，多算了 3,842；k = 4 时实扣 87,879，式子给 90,648，多算 2,769；k = 20、100 时两边都被五分之一的上限压住，才又相等。差在每个字退多少：交易开始时是 0 的字，先写后清退的是 19,900（EIP-3529 的规则），不是 4,800；用 19,900 算，四个 k 都一个 gas 不差。按我事先写的线判削弱：「只退两成」那个上限在所有情形里都成立，但「每个清掉的字退 4,800」只对交易开始时非零的字成立。</p>
+    <p class="said" data-sha256="63518bd614d7638d9034f3e4e3d876a81cfb178a9929f1e549a03aba0c3d5c99">另外照实报：把字改了再改回原值（开始 1 → 2 → 1，或 1 → 0 → 1），交易结束时一个字也没清掉，也有返还，每个字 2,800（k = 1 时返还前 26,112、实扣 23,312）。建议观察 5.2 写明 k 是「交易开始时非零、结束时为 0 的字」，再补一句：开始时为 0 的字先写后清每个退 19,900，改回原值的每个退 2,800，都受五分之一上限。X Layer 两个官方入口（都是 OKX 的）都不开放 eth_simulateV1，11 月 17 日这一回只量了 BSC，节点是带钥匙的 NodeReal。</p>
+    <p class="said" data-sha256="ea4a1f407f3fde26642c3c8d9387fb119b5d757c287620b65a9188e6af08403a">正文照这一框加了更正以后，我照先写的判据，在 11 月 20 日对更正以后的写法另量了 20 样对抗样本：清 1、4、5 个槽，原值 1 和 2²⁵⁶ − 1 各一样；返还前用量卡在五分之一上限边上的五档；开始时为 0 的字先写后清，垫高返还前用量和不垫两样；改回原值五样；子调用里清掉一个槽，子调用回滚和不回滚各一样（回滚了，退款跟着作废）。量了五个入口：BSC 的官方 dataseed、publicnode，X Layer 的 dRPC、Chainstack，以太坊主网的 publicnode。每个入口 20 样的实扣都和预测一个 gas 不差，判没推翻。这些也都是 eth_simulateV1 的模拟，模拟出来的退款和真交易的回执对不对得上，没核（第 0 章）；X Layer 那两个入口里 dRPC 背后是谁未决，照运营方算只 Chainstack 一家。</p>
+    <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="70591707d3638ec9266635718771d6e92b4ce44962654e9bb3e182445ca44986">refund_56.json</span><span class="ev-n" data-sha256="0af0edbbc88ef652ae5685e4cf3a9446232dc704237c52525084d94567525627">BSC 上四种情形（开始非零清掉、开始为 0 先写后清、改了再改回、清了再写回）× k = 1、4、20、100 的模拟：返还前用量、实扣、退款、五分之一上限、观察 5.2 的预测</span></dd></div><div class="evi"><dt>块号（BSC）</dt><dd><span class="ev-v" data-sha256="eaa216e0df5692738761f16de74ae4c37358a30d3550232bb340a986d08b3466">134236593</span><span class="ev-n" data-sha256="5e79920b9e102f020f82828643616e1f5468da5b517ea04fd9a0448730e9dbfa">模拟钉住的块</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="571cf38ddbadbbc1bede832c1c7ccdd89e18eb2aadf0270c126ac3197fc8d5ec">c46/refund_56.json</span><span class="ev-n" data-sha256="af18f2d77efba2087d8dd2f768737df33f475fe082ba1f3808c65edcf16589a8">11 月 20 日那 20 样对抗样本在 BSC 两家（官方 dataseed、publicnode）上的预测和实扣</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a7b7eb8efb9200fd39530301b44fdecf2e7f129bc654feecd1b7c1564bb4e227">c46/refund_196.json</span><span class="ev-n" data-sha256="9f527aae7eaee7bfe97341336209ae8f24015cb70698b757a2607f0ba8b28fc7">同一份 20 样，X Layer 的 dRPC</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="c29c127b795ebbfa6695d543943fb7c6f24afc001ad4c24d50002c17c872d254">xl2_chainstack/J2_refund.jsonl</span><span class="ev-n" data-sha256="0d8b20e120cfedc65397970261daef5c5d8336abcf3392a836d09aee1791c8da">同一份 20 样，X Layer 的 Chainstack，原始回应</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a3c34dc4f319f3ebbc7b63b84ee465dc4e6817abe07dc7979ce3eef81cb494c8">c46/refund_1.json</span><span class="ev-n" data-sha256="01035fc16b24fe45ed7997bf188647c15e0deb7f50c3241f39784b7e36627b0d">同一份 20 样，以太坊主网的 publicnode</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（4）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律十现在是观察 5.2；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律十」，现在照按章的新编号挂「观察 5.2」；框里的数和结论都没变</span></li><li><time datetime="2026-11-22">2026-11-22</time><span>补第四段：11 月 20 日对正文更正以后的写法另量了 20 样对抗样本，五个入口都一个 gas 不差，判没推翻，证据加四个文件；第三段末句写明 11 月 17 日那一回只量了 BSC、节点是带钥匙的 NodeReal。头三段的数和这一框的判词（照 11 月 17 日那一回判的削弱）都没变</span></li><li><time datetime="2026-11-22">2026-11-22</time><span>改说法：照书里数家的规矩，同一运营方的几个入口不叫几家；第三段「X Layer 两家官方节点」改成「两个官方入口（都是 OKX 的）」，第四段「五家节点」「每家」「那两家」改成「五个入口」「每个入口」「那两个入口」。框里的数和判词都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-area-002" aria-labelledby="och-area-002-h" data-author="OCH" data-to="red-area-002" data-stance="认" data-date="2026-11-17">
     <header><span class="kind" id="och-area-002-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="635bd45aaf53b9c0cb850af667014977608b9e0f25c14a7d619462b76a42fdfe">这一条我认。定律十里的 k 我量的只有一种：交易开始时非零、结束时清成 0 的字，你复现的四档实扣和书里一个不差。书里没写这个前提，读的人会以为清掉任何一个字都退 4,800。</p>
-    <p class="said" data-sha256="79aea7e84e50fe510a8efb39f07bf825641ec2f62bdebde53588d8b7edf2025e">你另量的两种都照 EIP-3529 走：开始时为 0、同一笔里先写后清的字每个退 19,900，四档用它算都对上（1 个字时式子多算 3,842）；改了又改回原值的字每个退 2,800，1 个字时直接量得到。五分之一的上限处处成立，所以「只退两成」站得住。正文第 5 章定律十下面加了【更正】，写明 k 是哪一种字，另两种也列上。X Layer 那边你的节点不给模拟；书里 X Layer 那四档是 drpc 节点量的，也只有开始时非零的那一种。</p>
+    <p class="said" data-sha256="9126b4994da5f776b465c537b3c6883bf70116c5ccb8ef8708dd8d6aec82fc34">这一条我认。观察 5.2 里的 k 我量的只有一种：交易开始时非零、结束时清成 0 的字，你复现的四档实扣和书里一个不差。书里没写这个前提，读的人会以为清掉任何一个字都退 4,800。</p>
+    <p class="said" data-sha256="98d304444b1ceba97d5908c01708d0795e1aaeff78c8374a14e8353430842f2e">你另量的两种都照 EIP-3529 走：开始时为 0、同一笔里先写后清的字每个退 19,900，四档用它算都对上（1 个字时式子多算 3,842）；改了又改回原值的字每个退 2,800，1 个字时直接量得到。五分之一的上限处处成立，所以「只退两成」站得住。正文第 5 章观察 5.2 下面加了【更正】，写明 k 是哪一种字，另两种也列上。X Layer 那边你的节点不给模拟；书里 X Layer 那四档是 drpc 节点量的，也只有开始时非零的那一种。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a0124036af3f85489f94d2665e5a901528b658a45d782dc74111b97339f6f38a">misc_56_20261116_174342.json</span><span class="ev-n" data-sha256="d93f487a78586fa866fe16039a4737cc432004bf79319da062585f0e85c0a5de">BSC 四档（开始时非零、清成 0）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="709006d3391263a97bddb51ff6a991f240fb3626c125ef2d5b28bb2df54767e3">refund_196_20261116_214718.json</span><span class="ev-n" data-sha256="8a2b4a9666505920dd7358b5cfb53b7779eb9531fec78b13ffd36234db7ac2ab">X Layer 四档（drpc 节点，同一种字）</span></dd></div></dl>
   </section>
 
@@ -730,8 +778,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 
 </div>
-<h2 id="s5-4"><span class="secno">5.4</span>怎么量出来的</h2>  <ol><li><b>定律八</b>：只读已有的发布回执，不发交易，不模拟发布函数。  <ul><li>回执里有实际用的 gas；网表从链上读回来，数出与非门、锁存、字节数、块数和零字节。</li><li>先按协议的价算出协议那部分，剩下的对（固定、每个与非门、每个锁存、每块）做最小二乘。</li><li>含子电路调用的发布不进拟合。X Layer 只有 DOT32_T 那 1 笔，留作样本外。</li></ul>
-</li><li><b>定律十</b>：用 eth_simulateV1 模拟一笔清掉 k 个存储字的交易，读模拟回执里的用量，和按式子算的比。</li><li><b>常数</b>：都是在一次只读调用里，用一小段代码现量的。一个合约最多 24,576 字节代码，24,577 字节就建不出来。</li></ol>
+<h2 id="s5-4"><span class="secno">5.4</span>怎么量出来的</h2>  <ol><li><b>观察 5.1</b>：只读已有的发布回执，不发交易，不模拟发布函数。  <ul><li>回执里有实际用的 gas；网表从链上读回来，数出与非门、锁存、字节数、块数和零字节。</li><li>先按协议的价算出协议那部分，剩下的对（固定、每个与非门、每个锁存、每块）做最小二乘。</li><li>含子电路调用的发布不进拟合。X Layer 只有 DOT32_T 那 1 笔，留作样本外。</li></ul>
+</li><li><b>观察 5.2</b>：用 eth_simulateV1 模拟一笔清掉 k 个存储字的交易，读模拟回执里的用量，和按式子算的比。</li><li><b>常数</b>：都是在一次只读调用里，用一小段代码现量的。一个合约最多 24,576 字节代码，24,577 字节就建不出来。</li></ol>
 
 <h2 id="s5-5"><span class="secno">5.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">DOT32_T 在 X Layer 上发布用了多少</span></header>
@@ -740,7 +788,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">一笔交易最多能发布多大的电路</span></header>
-  <ul><li>BSC 单笔上限 16,777,216。照定律八，假设网表里零字节占 44%（大网表的中位数），平网表最多约 5,774 个与非门。</li><li>更大的电路，要么拆成子电路，父电路只放调用记录（第 2 章定律十二）；要么放在 X Layer，单笔按块上限 2.1 亿算（只实测到 1 亿）。</li></ul>
+  <ul><li>BSC 单笔上限 16,777,216。照观察 5.1，假设网表里零字节占 44%（大网表的中位数），平网表最多约 5,774 个与非门（推的）。</li><li>更大的电路，要么拆成子电路，父电路只放调用记录（第 2 章观察 2.3）；要么放在 X Layer，单笔按块上限 2.1 亿算（只实测到 1 亿）。</li></ul>
 
 </section>
 <h2 id="s5-6"><span class="secno">5.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f5">
@@ -749,14 +797,14 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <li><span class="when">只用了已有的回执。</span><span>规矩不许模拟发布函数，所以样本只能是别人已经发过的：BSC 51 笔、X Layer 1 笔。含子电路调用的发布没量。</span></li>
     <li><span class="when">记账那四个系数是 BSC 回执拟出来的。</span><span>X Layer 只有一笔能对，差 −0.30%；按笔留一，BSC 最大差 7.5%。</span></li>
     <li><span class="when">X Layer 那份是换了节点才量到的。</span><span>X Layer 官方节点不给模拟，四档都回「HTTP 403」；换 drpc 节点再量，四档的实扣和预测逐个相等。</span></li>
-    <li><span class="when">交易数据为主时另有地板价</span><span>（每字节非零 40、零 10）。发布电路时碰不到：52 笔回执里（BSC 51 笔、X Layer 1 笔），地板价最高只到实际用量的 11%。两链都跟了这条：反方对三笔纯数据交易用模拟核过 BSC，实扣正好等于带地板的数。要注意，节点的 eth_estimateGas 对这种交易会多报约 1%，要实扣的数按协议算或用模拟。（<a href="../constants/#red-constants-008">常数表页反方第 8 条</a>）</span></li>
-    <li><span class="when">适用范围</span><span>：官方处理器；不含子电路调用的发布；锁存为主的发布会估高约 12%（见定律八的更正）。</span></li>
+    <li><span class="when">交易数据为主时另有地板价</span><span>（每字节非零 40、零 10）。发布电路时碰不到：52 笔回执里（BSC 51 笔、X Layer 1 笔），地板价最高只到实际用量的 11%。两链都跟了这条：反方对三笔纯数据交易用模拟核过 BSC，实扣正好等于带地板的数。X Layer：照自编客户端（cee3d6c）的源码，从 Jovian 起照 Prague 收地板价；OKX 节点的估算也对得上。OKX 节点报的是 xlayer/v0.0.7，跑的是不是同一份代码，没核（xlayer-reth · crates/chainspec/src/lib · cee3d6c 第 26 行；op-revm · src/spec · 20.0.0 第 43 行，客户端自带的 deps/optimism a492b62b；revm-context-interface · src/cfg/gas_params · 19.0.3 第 299–311 行；revm-handler · src/handler · 20.0.3 第 261 行、src/post_execution 第 46–59 行；revm-context · src/cfg · 18.0.3 第 114、345 行）。要注意，节点的 eth_estimateGas 对这种交易会多报约 1%，要实扣的数按协议算或用模拟。（<a href="../constants/#red-constants-008">常数表页反方第 8 条</a>）</span></li>
+    <li><span class="when">适用范围</span><span>：官方处理器；不含子电路调用的发布；锁存为主的发布会估高约 12%（见观察 5.1 的更正）。</span></li>
   </ol>
 </section>
 <h2 id="s5-7"><span class="secno">5.7</span>小结</h2><ul class="sum">
   <li>发布一颗电路 ≈ 存代码（每字节 200）+ 官方处理器每个门约 1,370 的记账 + 交易数据 + 每块的建合约和记账。</li>
-  <li>DOT32_T 在 X Layer 上发布用了 11,202,698 gas，存代码占 48%；定律八估高 0.30%。</li>
-  <li>BSC 一笔交易最多发布约 5,774 个与非门（平网表；分层电路一笔能建几十万门）。</li>
+  <li>DOT32_T 在 X Layer 上发布用了 11,202,698 gas，存代码占 48%；观察 5.1 估高 0.30%。</li>
+  <li>BSC 一笔交易最多发布约 5,774 个与非门（推的；平网表；分层电路一笔能建几十万门）。</li>
   <li>清存储字最多只退用量的五分之一，而且交易结束才退。</li>
   <li>下一章：时钟与不可逆——链按块走时，写进去的要等一阵才真的算数。</li>
 </ul>

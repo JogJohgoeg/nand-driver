@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -614,14 +646,14 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>术语表</h1>
   <p class="lede"></p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 17 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 21 分钟</p>
 </header>
 
 <h2 id="s-1"><span class="secno"></span>第 0 章 为什么链也有物理</h2>  <div class="tbl"><table>
     <thead><tr><th>术语</th><th>意思</th></tr></thead>
     <tbody>
       <tr><th scope="row">链</th><td>本书量两条：BSC，链号 56；X Layer，链号 196，是一条挂在以太坊上的二层链。</td></tr>
-      <tr><th scope="row">节点</th><td>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；要用满 5.5 亿 gas 的只读调用时例外，用过 BSC 的 NodeReal 带钥匙节点，用到的地方都写明了（第 3、4 章）。</td></tr>
+      <tr><th scope="row">节点</th><td>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；要用满 5.5 亿 gas 的只读调用时例外，用过 BSC 的 NodeReal 带钥匙节点，用到的地方都在那一框的样本和范围里写明了。</td></tr>
       <tr><th scope="row">链号</th><td>每条链的编号，用来分清是哪条链：BSC 是 56，X Layer 是 196。</td></tr>
       <tr><th scope="row">二层链</th><td>挂在另一条链上、把自己的结果交给那条链去确认的链。本书的 X Layer 挂在以太坊上。</td></tr>
       <tr><th scope="row">测量机</th><td>做重活的一台台式电脑，不是链上的节点。仿真、求值、证明这类量都在它上面跑；书里写「测量机上量的」，都不是链上节点的数。</td></tr>
@@ -630,10 +662,15 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">状态覆盖</th><td>只读调用时，临时把某个地址的代码或存储换成你给的。本书靠它把「量 gas 的小工具」放进去。</td></tr>
       <tr><th scope="row">计量套子</th><td>我们量 gas 的工具：用 eth_call 的「状态覆盖」，在一个空地址上临时放一小段代码，让它去调处理器，量调用前后剩下的 gas 差多少；再减掉对一个空合约量出来的校准值，就是电路自己的执行 gas；不发交易、不连钱包，谁都能在浏览器里重做。（第 1 章的定义）</td></tr>
       <tr><th scope="row">校准</th><td>见第 0 章「怎么量出来的」</td></tr>
-      <tr><th scope="row">本书的「定律」</th><td>一条定律有五样，缺一样都不算：一个式子；照式子算出的预测；实测；适用范围；什么时候不成立。</td></tr>
-      <tr><th scope="row">判据先提交</th><td>每个实验动手前，先把「怎么判对错」写下来、存进代码仓库，量完不改。判不过的照样留着，见第 1 章「什么时候不成立」。</td></tr>
+      <tr><th scope="row">本书的「定律」</th><td>一条定律有六样，缺一样都不算：一个式子；样本和范围，哪条链、几颗电路、几个点、门数或大小的范围、多长时间、怎么量的（量法，见下），六样都写，没有的写「不适用」；照式子算出的预测；实测；怎么算它错，事先写好量什么、在哪量、超过多少就算错，写成「要是……就算它错」，要能量出反例；什么时候不成立，已经知道的失效处；样本不到最低数的、写不出怎么算它错的，不叫定律，叫观察，照定义就对、量不出错的，写成恒等式，照协议的规则或合约代码推出来，没独立量过，或者在范围里只有量错才会触发的，写成规则推论。</td></tr>
+      <tr><th scope="row">判据先提交</th><td>每个实验动手前，先把「怎么判对错」写下来、存进代码仓库，量完不改；判据里事先写最低样本数。判不过的照样留着，见第 1 章「什么时候不成立」。</td></tr>
       <tr><th scope="row">复测</th><td>见第 0 章「怎么量出来的」</td></tr>
-      <tr><th scope="row">四种标记（硬 / 冻结 / 实现 / 会变）</th><td>本书每个常数都标一种：硬，协议定的，只有硬分叉才改；冻结，已有的官方处理器的实现，指向它的信标已放弃所有权，已有的处理器改不了，以后新造的处理器用哪份实现，由工厂的 owner 决定（工厂是可升级合约）；实现，我们自己写的执行方式，换个写法就变；会变，价格、节点策略、链的配置，今天量的数明天可能不一样。</td></tr>
+      <tr><th scope="row">观察</th><td>量过的规律，可样本不够，或者还写不出怎么算它错。照样写式子和数，只是不叫定律。</td></tr>
+      <tr><th scope="row">编号</th><td>定律、观察各按章编号。「定律 6.1」是第 6 章第一条定律，「观察 6.1」是第 6 章第一条观察；恒等式、规则推论、定义不编号：4.4 以前，全书的定律统一编号，从一到二十七，书里写「原定律X」的就是那时的号，旧号的链接照旧跳到新的那一框。</td></tr>
+      <tr><th scope="row">五档</th><td>核对的结果分五档，每档一个签，只放在那一条的开头：核过并成立，核了，对得上，要写谁核的，和被核的一方共用了什么（同一台机器、同一处网络、同一家运营方的节点），共用的会一起错；核过、不成立，核了，对不上；未决，核了、没核成，比如量具出错、节点丢数、作废；没东西可核，这次查的范围里没有要核的东西，要写查的范围、放进一个已知有的确实查得到、两家对过条数，缺一样就记未决；没核，还没核；反方的「没推翻」不是其中任何一档，见下面「这本书有两个作者」。</td></tr>
+      <tr><th scope="row">类别（硬 / 冻结 / 实现 / 会变 / 只在两条链上量过）</th><td>每条定律、观察，每个常数，都标它会不会变，五种。一个签装不下的拆两半写：「式子：硬（依据）；代进去的数：会变（哪一天、哪个块）」。这五种对的是每一框「规则还是参数」那一问的分法：硬是甲（规则），会变是乙（参数），冻结、实现是「合约」，只在两条链上量过是丙（分不清）：硬，协议定的，只有硬分叉才改，要写依据：哪几个 EIP、BEP，或者执行规范；冻结，已有的官方处理器的实现，指向它的信标已放弃所有权，已有的处理器改不了，以后新造的处理器用哪份实现，由工厂的 owner 决定（工厂是可升级合约），要写哪份合约、哪个函数；实现，我们自己写的执行方式，换个写法就变，要写哪份合约或哪份代码、哪个函数；会变，价格、节点策略、链的配置，今天量的数明天可能不一样，要写哪一天、哪个块的值；只在两条链上量过，只在 BSC、X Layer 上量过，说不出是协议定的还是实现定的，换一条链不一定照样，分不清的，默认是这一类。</td></tr>
+      <tr><th scope="row">数的来历</th><td>和类别是两回事，每个数再分四种：量的，照判据真量出来的；推的，拿别的数和定律推出来的，数后面写「推的」；算的，照式子拿输入算的，写式子和输入；抄的，从文档或源码抄的，写哪份、哪一版、哪天取的；靠节点模拟量的说法，那一类量法拿真交易的回执对过一回，BSC、X Layer 判的都是未决，别的链没对过，量法写了节点模拟的框，量法签后面都接着它那几条链的档，见第 0 章「对回执」那一条。</td></tr>
+      <tr><th scope="row">量法</th><td>每条定律、观察的「样本和范围」里写一种（同一条量过两回、两回量法不一样的，两种都写），六种：链上实录，读真上了链的东西，块头、交易回执；节点模拟·原样，只读调用，跑的是链上真部署的合约，什么都没换；节点模拟·只放量具，只读调用，只用状态覆盖放进量具（计量套子、空合约），被量的合约、存储、块环境都是链上原样；节点模拟·对象是放上去的，只读调用，被量的东西本身是放上去的，比如注入的网表、拷贝的代理、改过的块环境，在第三条链上用状态覆盖量的，也是这一种；本地实测，在测量机上本地跑，不经任何节点，不是链上量的数；本地实测·自己编的客户端，在测量机上本地跑一份我们自己从源码编的链客户端，起一条只连本机的开发链来量，不是链上量的数，也不是官方发布的那份客户端量的数，没有官方二进制的校验值可对。</td></tr>
       <tr><th scope="row">正方</th><td>见第 0 章「这本书有两个作者」</td></tr>
       <tr><th scope="row">反方</th><td>见第 0 章「这本书有两个作者」</td></tr>
       <tr><th scope="row">更正</th><td>见第 0 章「什么时候不成立（本书通用的几条）」</td></tr>
@@ -651,14 +688,14 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">输入位</th><td>电路每算一次，吃进几位、吐出几位。</td></tr>
       <tr><th scope="row">输出位</th><td>电路每算一次，吃进几位、吐出几位。</td></tr>
       <tr><th scope="row">深度</th><td>从输入到输出最长要经过几个门。</td></tr>
-      <tr><th scope="row">网表</th><td>把电路写成字节的那一份清单，每个门 7 个字节。</td></tr>
+      <tr><th scope="row">网表</th><td>把电路写成字节的那一份清单，每个与非门 7 个字节（种类 1 个、两个输入线号各 3 个），每个锁存 4 个字节（种类 1 个、输入线号 3 个）。出处：E14c 照这个编码把带锁存的电路交给官方处理器，链上量的 gas 和预测对上了；编码本身写在内部记录里。</td></tr>
       <tr><th scope="row">处理器</th><td>TapeOut 上存电路、负责算电路的合约。step() 是让电路算一拍。</td></tr>
       <tr><th scope="row">step()</th><td>TapeOut 上存电路、负责算电路的合约。step() 是让电路算一拍。</td></tr>
       <tr><th scope="row">全 0 输入</th><td>见第 1 章「怎么量出来的」</td></tr>
-      <tr><th scope="row">留一</th><td>见第 1 章「定律二 能量可加（全 0 输入、一笔里第一次调用）」</td></tr>
-      <tr><th scope="row">按网表留一</th><td>见第 1 章「定律二 能量可加（全 0 输入、一笔里第一次调用）」</td></tr>
+      <tr><th scope="row">留一</th><td>见第 1 章「观察 1.2 能量可加（全 0 输入、一笔里第一次调用）」</td></tr>
+      <tr><th scope="row">按网表留一</th><td>见第 1 章「观察 1.2 能量可加（全 0 输入、一笔里第一次调用）」</td></tr>
       <tr><th scope="row">样本外</th><td>见第 1 章「怎么量出来的」</td></tr>
-      <tr><th scope="row">盲测</th><td>见第 1 章「定律一 深度免费」</td></tr>
+      <tr><th scope="row">盲测</th><td>见第 1 章「观察 1.1 深度免费」</td></tr>
     </tbody></table></div>
 
 <h2 id="s-3"><span class="secno"></span>第 2 章 表示与编译</h2>  <div class="tbl"><table>
@@ -675,7 +712,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">热价 / 冷价</th><td>见第 2 章「直觉」</td></tr>
       <tr><th scope="row">分层</th><td>父电路里不放全部门，只放「调用某颗子电路」的记录。</td></tr>
       <tr><th scope="row">子电路调用</th><td>父电路里不放全部门，只放「调用某颗子电路」的记录。</td></tr>
-      <tr><th scope="row">平铺</th><td>见第 2 章「定律十二 分层省能（实验 E1b，判据先提交）」</td></tr>
+      <tr><th scope="row">平铺</th><td>见第 2 章「观察 2.3 分层省能（实验 E1b，判据先提交）」</td></tr>
     </tbody></table></div>
 
 <h2 id="s-4"><span class="secno"></span>第 3 章 内存与大电路</h2>  <div class="tbl"><table>
@@ -712,7 +749,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">面积</th><td>电路在链上占的地方。网表存成数据合约的代码，按字节付钱，永久留着。</td></tr>
       <tr><th scope="row">代码</th><td>见第 5 章「直觉」</td></tr>
       <tr><th scope="row">交易数据</th><td>发交易时带上的字节。只进链的历史，合约之后读不到。</td></tr>
-      <tr><th scope="row">零字节</th><td>见第 5 章「定律八 面积（发布一颗电路的 gas）」</td></tr>
+      <tr><th scope="row">零字节</th><td>见第 5 章「观察 5.1 面积（发布一颗电路的 gas）」</td></tr>
       <tr><th scope="row">存储字</th><td>合约自己的「寄存器」，每个 32 字节。读、写、清都要钱。</td></tr>
       <tr><th scope="row">返还</th><td>把存储字清成 0，会退一点 gas，在交易结束时才结算。</td></tr>
       <tr><th scope="row">发布</th><td>把网表发上链、登记成一颗电路的那笔交易。本书只读已有的发布回执，不模拟、也不调用发布用的那个函数。</td></tr>
@@ -733,13 +770,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">握手</th><td>部分和部分之间用握手接起来，一头说「我有数」，一头说「我能收」，中间可以存几份的地方叫弹性缓冲。晚到的数只让下一部分多等，不会让它算错。第 3 章的「缓冲」是拼接时的内存缓冲，不是这个。</td></tr>
       <tr><th scope="row">弹性缓冲</th><td>部分和部分之间用握手接起来，一头说「我有数」，一头说「我能收」，中间可以存几份的地方叫弹性缓冲。晚到的数只让下一部分多等，不会让它算错。第 3 章的「缓冲」是拼接时的内存缓冲，不是这个。</td></tr>
       <tr><th scope="row">在途</th><td>跨链桥上已经锁进、还没在对方铸出的那些（第 11 章再细讲）。</td></tr>
-      <tr><th scope="row">回看</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希。</td></tr>
-      <tr><th scope="row">BLOCKHASH</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希。</td></tr>
-      <tr><th scope="row">EIP-2935</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希。</td></tr>
+      <tr><th scope="row">回看</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希（EIPs · EIPS/eip-2935 · b055feec 第 30 行）。</td></tr>
+      <tr><th scope="row">BLOCKHASH</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希（EIPs · EIPS/eip-2935 · b055feec 第 30 行）。</td></tr>
+      <tr><th scope="row">EIP-2935</th><td>合约执行时能读到的旧块信息。BLOCKHASH 能读最近 256 个块的块哈希；EIP-2935 的系统合约里存着最近 8,191 个块的块哈希（EIPs · EIPS/eip-2935 · b055feec 第 30 行）。</td></tr>
       <tr><th scope="row">finalized</th><td>节点说「这个块以后不会再变」的那个块号。最新块比它新多少，就要等多久才不可逆。</td></tr>
-      <tr><th scope="row">epoch</th><td>见第 6 章「定律十八 不可逆时间律（实验 E9、E9b，判据先提交）」</td></tr>
+      <tr><th scope="row">epoch</th><td>见第 6 章「定律 6.1 X Layer 的不可逆时间（实验 E9、E9b，判据先提交）」</td></tr>
       <tr><th scope="row">blob</th><td>交易可以另带的大块数据，每个 131,072 字节，单独计价，只保存一段时间。</td></tr>
-      <tr><th scope="row">超额（excessBlobGas）</th><td>见第 6 章「定律十九 blob 分频（实验 E10b、E10c，判据先提交）」</td></tr>
+      <tr><th scope="row">超额（excessBlobGas）</th><td>见第 6 章「定律 6.3 blob 分频（实验 E10b、E10c，判据先提交）」</td></tr>
     </tbody></table></div>
 
 <h2 id="s-8"><span class="secno"></span>第 7 章 价格</h2>  <div class="tbl"><table>
@@ -785,7 +822,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">历史深度</th><td>节点还能给多久以前的状态和日志。</td></tr>
       <tr><th scope="row">logsBloom</th><td>块头里的一个过滤器，块里只要有日志，它就不是全 0。</td></tr>
       <tr><th scope="row">静默丢数</th><td>节点该给数据时给了空的，又不报错。</td></tr>
-      <tr><th scope="row">换节点</th><td>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一家再问，结果旁边写明「换过节点」。</td></tr>
+      <tr><th scope="row">换节点</th><td>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一个节点再问，结果旁边写明「换过节点」。</td></tr>
       <tr><th scope="row">信标</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现。造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由它决定。</td></tr>
       <tr><th scope="row">实现</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现。造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由它决定。</td></tr>
       <tr><th scope="row">owner</th><td>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现。造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由它决定。</td></tr>
@@ -801,15 +838,15 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">换计算</th><td>不一个门一个门地算，换成别的东西：按字的算术、预编译、链下算链上验；也可以直接用硬件自己会做的运算（乘法器、矩阵乘），按「顶多少个门」折算，这种一律标推的（第 11 章）。</td></tr>
       <tr><th scope="row">欺诈证明</th><td>链下照常算；谁觉得结果不对就来挑战，双方二分找到第一处分歧，链上只裁一个门。</td></tr>
       <tr><th scope="row">公开输入</th><td>零知识证明里，链上要知道的那几个数。</td></tr>
-      <tr><th scope="row">Groth16</th><td>见第 10 章「定律二十三 链上验证律（实验 HC4，判据先提交）」</td></tr>
-      <tr><th scope="row">默克尔路径</th><td>见第 10 章「定律二十三 链上验证律（实验 HC4，判据先提交）」</td></tr>
+      <tr><th scope="row">Groth16</th><td>见第 10 章「规则推论 链上验证（实验 HC4，判据先提交）」</td></tr>
+      <tr><th scope="row">默克尔路径</th><td>见第 10 章「规则推论 链上验证（实验 HC4，判据先提交）」</td></tr>
       <tr><th scope="row">二分挑战</th><td>欺诈证明里双方对一长串计算有分歧时，一次次对半分，找到第一处分歧的那一步，链上只裁这一步。</td></tr>
     </tbody></table></div>
 
 <h2 id="s-12"><span class="secno"></span>第 11 章 链本身的算力</h2>  <div class="tbl"><table>
     <thead><tr><th>术语</th><th>意思</th></tr></thead>
     <tbody>
-      <tr><th scope="row">链本身执行</th><td>每台要跟上这条链的节点，在出块和验块时自己把计算做完。链下算、链上验不算（第 10 章定律二十三）。</td></tr>
+      <tr><th scope="row">链本身执行</th><td>每台要跟上这条链的节点，在出块和验块时自己把计算做完。链下算、链上验不算（第 10 章规则推论「链上验证」）。</td></tr>
       <tr><th scope="row">单份</th><td>只有一份状态，一拍接一拍。显卡级的目标是一颗电路一份状态，用这个读法判。</td></tr>
       <tr><th scope="row">并排</th><td>很多份互不相干的状态挤在一起算（一个 64 位字就是 64 份）。单位是门·拍·份 / 秒，和单份的数不相加。</td></tr>
       <tr><th scope="row">模拟</th><td>用通用的处理器（CPU、显卡）一条指令一条指令地算门。</td></tr>
@@ -819,7 +856,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">集显</th><td>和 CPU 做在同一颗芯片上的显卡。本章集显的数，是在测量机的集显上量的。</td></tr>
       <tr><th scope="row">R_硬</th><td>节点硬件自己每秒能算的门次（原生跑，不走 EVM）。</td></tr>
       <tr><th scope="row">税</th><td>同一段计算，链上的价折成时间，比原生代码多花的倍数（实验 HC9）。总税 = 税_价 × 税_实 = R_硬 ÷ (P × n)，BSC 上 16–114 倍。</td></tr>
-      <tr><th scope="row">税_价</th><td>价目那段，v_节点 ÷ P：节点走 EVM 比链规则让你用的快几倍。BSC 约 1.9，是规则。</td></tr>
+      <tr><th scope="row">税_价</th><td>价目那段，v_节点 ÷ P：节点走 EVM 比链规则让你用的快几倍。BSC 约 1.9，会变：跟着节点速度和 P 走；改价目、块上限或出块间隔会动它，换快的机器也会。</td></tr>
       <tr><th scope="row">税_实</th><td>节点比原生那段，R_硬 ÷ (v_节点 × n)：硬件原生比节点走 EVM 快几倍。8.5–60，是实现。</td></tr>
       <tr><th scope="row">结点</th><td>交互网这张图上的点。为了不和跟链的机器（节点）混，本章图上的点一律叫结点。</td></tr>
       <tr><th scope="row">承诺</th><td>先把一大堆数据压成一个默克尔树根放上链，之后谁都改不了；要用其中一项时，附上它到根的那条路径来核。</td></tr>

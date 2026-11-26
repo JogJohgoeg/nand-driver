@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -557,12 +589,17 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 }
 </style>
 <script type="application/json" id="old-anchors">["rm-all","rm-basefee.196","rm-basefee.56","rm-beacon.196","rm-beacon.56","rm-bhwin.196","rm-bhwin.56","rm-blobfee.56","rm-calldata.196","rm-calldata.56","rm-clz.196","rm-clz.56","rm-codecopy.196","rm-codecopy.56","rm-cold.196","rm-cold.56","rm-cpus.196","rm-cpus.56","rm-create.196","rm-create.56","rm-create_fail.196","rm-create_fail.56","rm-dafoot.196","rm-dascalar.196","rm-depth.196","rm-depth.56","rm-final.196","rm-final.56","rm-gaslimit.196","rm-gaslimit.56","rm-gasprice.196","rm-gasprice.56","rm-grant.196","rm-grant.56","rm-h2935.196","rm-h2935.56","rm-interval.196","rm-interval.56","rm-law2.196.2109","rm-law2.196.288","rm-law2.196.4859","rm-law2.56.1","rm-law2.56.1885","rm-law2.56.6026","rm-log.196","rm-log.56","rm-mem.196","rm-mem.56","rm-nand.196","rm-nand.56","rm-neg","rm-pc.blspair.196","rm-pc.blspair.56","rm-pc.bn254pair.196","rm-pc.bn254pair.56","rm-pc.ecrecover.196","rm-pc.ecrecover.56","rm-pc.modexp.196","rm-pc.modexp.56","rm-pc.p256.196","rm-pc.p256.56","rm-progress","rm-refund.196","rm-refund.56","rm-sload.196","rm-sload.56","rm-sstore_new.196","rm-sstore_new.56","rm-sstore_reset.196","rm-sstore_reset.56","rm-stop","rm-txcap.196","rm-txcap.56","rm-used"]</script>
-<script>// 教科书目录页（/physics/）的旧锚点跳转。生成器把这个文件原样内联进目录页 <head>，放在
-// <script type="application/json" id="old-anchors"> 之后（名单由生成器从常数表页的 id 现出，不手抄；JSON 块浏览器不执行）。
-// 旧的 /physics/ 单页上那些锚点（#constants、#rm-… 这类）现在都在常数表页：地址里的 # 在名单里、目录页上又没有同名元素，
-// 就 location.replace 到 constants/#同名（替换历史，「后退」不会再弹回来）。
-// 两个时候看：打开目录页时（在 <head> 里同步跑，画页面之前就跳）；在目录页上改 #（地址栏改 # 回车、页内链到旧锚点）时，靠 hashchange。
-// 名单里没有、或者目录页上本来就有这个 id 的，什么都不做。不读写任何存储、不发请求。
+<script>// 教科书的旧锚点跳转。生成器把这个文件原样内联进页面 <head>，放在
+// <script type="application/json" id="old-anchors"> 之后（名单由生成器现出，不手抄；JSON 块浏览器不执行）。
+// 名单两种写法：
+//   数组 ["constants", "rm-…", …]：目录页（/physics/）原来那份——旧单页上的锚点现在都在常数表页，跳到 constants/#同名；
+//   对象 {"旧锚点": "新页路径/#新 id", …}：4.4 起定律按章改号，
+//     只放新框搬到别的页的旧 law- 锚点，跳到那一页那一框；新框在同一页的不进这份名单，生成器在新框里放一个空的 <a id="旧锚点">。
+//     同页、跨页的全表另出一份不上页的 json，给自查用。
+// 新页路径从书的根算：名单那块上 data-root 写根在哪（目录页不写 = 本页所在目录；章节页写 "../"），第 0 章那页就是 "#新 id"。
+// 地址里的 # 在名单里、本页上又没有同名元素，就 location.replace 过去（替换历史，「后退」不会再弹回来）；算出来的目标就是本页的不跳。
+// 两个时候看：打开页面时（在 <head> 里同步跑，画页面之前就跳）；在页上改 #（地址栏改 # 回车、页内链到旧锚点）时，靠 hashchange。
+// 名单里没有、或者本页上本来就有这个 id 的，什么都不做。不读写任何存储、不发请求。
 (function () {
   function go() {
     var h = location.hash.replace(/^#/, '');
@@ -572,11 +609,19 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     if (!box) return;
     var list;
     try { list = JSON.parse(box.textContent); } catch (e) { return; }
-    if (!Array.isArray(list) || list.indexOf(h) < 0) return;
-    if (document.getElementById(h)) return;          // 目录页上本来就有同名的，留在这页
-    var base = location.pathname;                     // /physics/、/physics/index.html、/physics 三种写法都落到 /physics/constants/
+    var to;
+    if (Array.isArray(list)) { if (list.indexOf(h) < 0) return; to = 'constants/#' + encodeURIComponent(h); }
+    else if (list && typeof list === 'object' && Object.prototype.hasOwnProperty.call(list, h) && typeof list[h] === 'string') to = list[h];
+    else return;
+    if (document.getElementById(h)) return;          // 本页上本来就有同名的，留在这页
+    var base = location.pathname;                     // /physics/、/physics/index.html、/physics 三种写法都当成目录
     if (!/\/$/.test(base)) base = /\.html?$/.test(base) ? base.replace(/[^/]*$/, '') : base + '/';
-    location.replace(base + 'constants/' + location.search + '#' + encodeURIComponent(h));
+    var root = box.getAttribute('data-root') || '';
+    var i = to.indexOf('#'), path = i < 0 ? to : to.slice(0, i), frag = i < 0 ? '' : to.slice(i);
+    var dest = new URL(base + root + path, location.href);
+    // 在 <head> 里跑时正文还没解析；名单写错把本页的框也列进来时，目标就是本页，不跳（不整页重载），正文出来后浏览器自己滚过去
+    if (dest.pathname.replace(/index\.html?$/, '') === base) return;
+    location.replace(dest.pathname + location.search + frag);
   }
   go();
   window.addEventListener('hashchange', go);
@@ -658,7 +703,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>为什么链也有物理</h1>
   <p class="lede">区块链是一台人人能用、谁也关不掉的公共计算机，也有自己的物理：每一步都花能量，每次能花的有上限，按块走时，存东西占地方，写进去要过一阵才改不了。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 6 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 10 分钟</p>
 </header>
 
 <h2 id="s0-1"><span class="secno">0.1</span>直觉</h2>  <p class="lede-in">区块链是一台人人能用、谁也关不掉的公共计算机，也有自己的物理：每一步都花能量，每次能花的有上限，按块走时，存东西占地方，写进去要过一阵才改不了。</p>
@@ -671,7 +716,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">功率上限</th><td>一次能花多少</td><td>BSC 单笔 16,777,216 gas（2²⁴）；只读调用，有的节点给 5.5 亿，有的只给 5,000 万</td><td>第 4 章</td><td><span class="cite">params·56、节点上限实测</span></td></tr>
       <tr><th scope="row">时钟</th><td>出块</td><td>BSC 每 0.45 秒一块，X Layer 每 1 秒一块</td><td>第 6 章</td><td><span class="cite">params·56 / params·196</span></td></tr>
       <tr><th scope="row">回看</th><td>合约能看到多久以前</td><td>256 块（BLOCKHASH）；8,191 块（历史合约，BSC 约 61 分钟）</td><td>第 6 章</td><td><span class="cite">E6</span></td></tr>
-      <tr><th scope="row">不可逆</th><td>多久以后改不了</td><td>BSC 约 2–3 块；X Layer 16–28 分钟</td><td>第 6 章</td><td><span class="cite">E9、E9b</span></td></tr>
+      <tr><th scope="row">不可逆</th><td>多久以后改不了</td><td>BSC 约 2–3 块；X Layer 15.6–28.5 分钟</td><td>第 6 章</td><td><span class="cite">E9、E9b、反方·finality·24h</span></td></tr>
     </tbody></table></div>
 
 <h2 id="s0-2"><span class="secno">0.2</span>定义</h2><section class="box def" aria-labelledby="d0">
@@ -681,35 +726,50 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </dd>
     <dt id="t-744a1318">链号</dt><dd>每条链的编号，用来分清是哪条链：BSC 是 56，X Layer 是 196。</dd>
     <dt id="t-45976b15">二层链</dt><dd>挂在另一条链上、把自己的结果交给那条链去确认的链。本书的 X Layer 挂在以太坊上。</dd>
-    <dt id="t-2410d860">节点</dt><dd>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；要用满 5.5 亿 gas 的只读调用时例外，用过 BSC 的 NodeReal 带钥匙节点，用到的地方都写明了（第 3、4 章）。</dd>
+    <dt id="t-2410d860">节点</dt><dd>替你读链的服务器。本书只用官方公开、任何人都能连的节点，不用带钥匙的私有节点；要用满 5.5 亿 gas 的只读调用时例外，用过 BSC 的 NodeReal 带钥匙节点，用到的地方都在那一框的样本和范围里写明了。</dd>
     <dt id="t-371d41e9">测量机</dt><dd>做重活的一台台式电脑，不是链上的节点。仿真、求值、证明这类量都在它上面跑；书里写「测量机上量的」，都不是链上节点的数。</dd>
     <dt id="t-a4f1e2c6">只读调用（eth_call）</dt><dd>让节点「假装执行」一段调用，把结果和花了多少 gas 告诉你。不上链、不花钱、不用钱包。</dd>
     <dt id="t-97ebbe93">状态覆盖</dt><dd>只读调用时，临时把某个地址的代码或存储换成你给的。本书靠它把「量 gas 的小工具」放进去。</dd>
-    <dt id="t-0f324da4">本书的「定律」</dt><dd>一条定律有五样，缺一样都不算。  <ol><li>一个式子；</li><li>照式子算出的预测；</li><li>实测；</li><li>适用范围；</li><li>什么时候不成立。</li></ol>
+    <dt id="t-0f324da4">本书的「定律」</dt><dd>一条定律有六样，缺一样都不算。  <ol><li>一个式子；</li><li>样本和范围：哪条链、几颗电路、几个点、门数或大小的范围、多长时间、怎么量的（量法，见下），六样都写，没有的写「不适用」；</li><li>照式子算出的预测；</li><li>实测；</li><li>怎么算它错：事先写好量什么、在哪量、超过多少就算错，写成「要是……就算它错」，要能量出反例；</li><li>什么时候不成立：已经知道的失效处。</li><li>样本不到最低数的、写不出怎么算它错的，不叫定律，叫观察。照定义就对、量不出错的，写成恒等式；照协议的规则或合约代码推出来，没独立量过，或者在范围里只有量错才会触发的，写成规则推论。</li></ol>
 </dd>
-    <dt id="t-93869bac">判据先提交</dt><dd>每个实验动手前，先把「怎么判对错」写下来、存进代码仓库，量完不改。判不过的照样留着，见第 1 章「什么时候不成立」。</dd>
-    <dt id="t-fdfb5af5">四种标记</dt><dd>本书每个常数都标一种。  <ul><li><b>硬</b>：协议定的，只有硬分叉才改。</li><li><b>冻结</b>：已有的官方处理器的实现。指向它的信标已放弃所有权，已有的处理器改不了；以后新造的处理器用哪份实现，由工厂的 owner 决定（工厂是可升级合约）。</li><li><b>实现</b>：我们自己写的执行方式，换个写法就变。</li><li><b>会变</b>：价格、节点策略、链的配置，今天量的数明天可能不一样。</li></ul>
+    <dt id="t-f262bada">观察</dt><dd>量过的规律，可样本不够，或者还写不出怎么算它错。照样写式子和数，只是不叫定律。</dd>
+    <dt id="t-fc147721">编号</dt><dd>定律、观察各按章编号。「定律 6.1」是第 6 章第一条定律，「观察 6.1」是第 6 章第一条观察；恒等式、规则推论、定义不编号。  <ul><li>4.4 以前，全书的定律统一编号，从一到二十七。书里写「原定律X」的就是那时的号，旧号的链接照旧跳到新的那一框。</li></ul>
+</dd>
+    <dt id="t-93869bac">判据先提交</dt><dd>每个实验动手前，先把「怎么判对错」写下来、存进代码仓库，量完不改；判据里事先写最低样本数。判不过的照样留着，见第 1 章「什么时候不成立」。</dd>
+    <dt id="t-0d11370d">五档</dt><dd>核对的结果分五档，每档一个签，只放在那一条的开头。  <ul><li><span class="tier t-ok">核过并成立</span>：核了，对得上。要写谁核的，和被核的一方共用了什么（同一台机器、同一处网络、同一家运营方的节点），共用的会一起错。</li><li><span class="tier t-no">核过、不成立</span>：核了，对不上。</li><li><span class="tier t-und">未决</span>：核了、没核成，比如量具出错、节点丢数、作废。</li><li><span class="tier t-none">没东西可核</span>：这次查的范围里没有要核的东西。要写查的范围、放进一个已知有的确实查得到、两家对过条数，缺一样就记未决。</li><li><span class="tier t-not">没核</span>：还没核。</li><li>反方的「没推翻」不是其中任何一档，见下面「这本书有两个作者」。</li></ul>
+</dd>
+    <dt id="t-0d12cbd6">类别</dt><dd>每条定律、观察，每个常数，都标它会不会变，五种。一个签装不下的拆两半写：「式子：硬（依据）；代进去的数：会变（哪一天、哪个块）」。这五种对的是每一框「规则还是参数」那一问的分法：硬是甲（规则），会变是乙（参数），冻结、实现是「合约」，只在两条链上量过是丙（分不清）。  <ul><li><span class="cat c-hard">硬</span>：协议定的，只有硬分叉才改。要写依据：哪几个 EIP、BEP，或者执行规范。</li><li><span class="cat c-frozen">冻结</span>：已有的官方处理器的实现。指向它的信标已放弃所有权，已有的处理器改不了；以后新造的处理器用哪份实现，由工厂的 owner 决定（工厂是可升级合约）。要写哪份合约、哪个函数。</li><li><span class="cat c-impl">实现</span>：我们自己写的执行方式，换个写法就变。要写哪份合约或哪份代码、哪个函数。</li><li><span class="cat c-soft">会变</span>：价格、节点策略、链的配置，今天量的数明天可能不一样。要写哪一天、哪个块的值。</li><li><span class="cat c-two">只在两条链上量过</span>：只在 BSC、X Layer 上量过，说不出是协议定的还是实现定的，换一条链不一定照样。分不清的，默认是这一类。</li></ul>
+</dd>
+    <dt id="t-ded7d5d8">数的来历</dt><dd>和类别是两回事，每个数再分四种。  <ul><li>量的：照判据真量出来的；</li><li>推的：拿别的数和定律推出来的，数后面写「推的」；</li><li>算的：照式子拿输入算的，写式子和输入；</li><li>抄的：从文档或源码抄的，写哪份、哪一版、哪天取的。</li><li>靠节点模拟量的说法：那一类量法拿真交易的回执对过一回，BSC、X Layer 判的都是未决，别的链没对过；量法写了节点模拟的框，量法签后面都接着它那几条链的档，见第 0 章「对回执」那一条。</li></ul>
+</dd>
+    <dt id="t-09459763">量法</dt><dd>每条定律、观察的「样本和范围」里写一种（同一条量过两回、两回量法不一样的，两种都写），六种。  <ul><li><span class="mth h-real">链上实录</span>：读真上了链的东西，块头、交易回执。</li><li><span class="mth h-orig">节点模拟·原样</span>：只读调用，跑的是链上真部署的合约，什么都没换。</li><li><span class="mth h-tool">节点模拟·只放量具</span>：只读调用，只用状态覆盖放进量具（计量套子、空合约）；被量的合约、存储、块环境都是链上原样。</li><li><span class="mth h-obj">节点模拟·对象是放上去的</span>：只读调用，被量的东西本身是放上去的，比如注入的网表、拷贝的代理、改过的块环境。在第三条链上用状态覆盖量的，也是这一种。</li><li><span class="mth h-local">本地实测</span>：在测量机上本地跑，不经任何节点，不是链上量的数。</li><li><span class="mth h-build">本地实测·自己编的客户端</span>：在测量机上本地跑一份我们自己从源码编的链客户端，起一条只连本机的开发链来量。不是链上量的数，也不是官方发布的那份客户端量的数；没有官方二进制的校验值可对。</li></ul>
+</dd>
+    <dt id="t-ae0f6e9c">对回执</dt><dd>节点模拟那三种量法，都靠一个前提：节点上模拟出来的 gas，等于同样的执行真上了链花的 gas。反方拿真交易的回执对了一回，判据先提交：每块只取第一笔交易（要调合约、不转币），在前一块的状态上，用只读调用加计量套子重放（真交易要改状态，套子里的静态调用换成了普通调用），比回执上的 gas。判的三段分在三天，每段约 3 小时。两条链各判一档：<span class="cite">反方·对回执·56、反方·对回执·196</span>  <ul><li><span class="tier t-und">未决</span>BSC：样本不够。能判的只有 18 对，判据要 100 对。这 18 对全对上，解释不了的 0 对，只当旁证。</li><li><span class="tier t-und">未决</span>X Layer：认得出的运营方只有 OKX 一家，判据要两家；另一个入口 dRPC 是聚合器，背后是谁未决，不当一家。一共 141 对，54 对块环境的正控没过（都是基础费），1 对两边走的路径不一样，这 55 对不进判。判的 86 对全对上，解释不了的 0 对，只当旁证。</li><li><span class="tier t-not">没核</span>别的链：只对了 BSC、X Layer 两条。</li><li>用 eth_simulateV1 量的（观察 5.2）另判一档，用的是同一批交易：  <ul><li><span class="tier t-und">未决</span>BSC：答了的 10 对全对上（另 8 对哪个入口都没答），样本不够。</li><li><span class="tier t-und">未决</span>X Layer：只 dRPC 一个入口答（OKX 的两个入口没答），141 对全对上；认得出的运营方不到两家。</li><li><span class="tier t-not">没核</span>退款那一路：对上的那几对里，没有一对要靠退款才对得上，模拟出来的退款对不对，没核。</li></ul>
+</li><li>核到多大：对上的那几对里，被调合约自己花的 gas 最大是 69,534（BSC）、464,674（X Layer）。</li><li>书里量法写了节点模拟的，量法签后面都接半句「对回执：……（第 0 章）」，照这里的档，几条链各写各的。</li></ul>
 </dd>
   </dl>
 </section>
 <h2 id="s0-3"><span class="secno">0.3</span>怎么量出来的</h2>  <p><b>本书所有数都用同一套办法量</b></p>
-  <ol><li>只发只读调用，只连官方公开节点。</li><li>要量 gas 时，用状态覆盖放进一个「计量套子」。它调目标、记下调用前后剩下的 gas，两数相减；再减掉对空合约量的校准值，就是目标自己花的。</li><li>同一个数，至少用两种办法或两家节点对一遍。</li></ol>
+  <ol><li>只发只读调用，只连官方公开节点。</li><li>要量 gas 时，用状态覆盖放进一个「计量套子」。它调目标、记下调用前后剩下的 gas，两数相减；再减掉对空合约量的校准值，就是目标自己花的。</li><li>同一个数，至少用两种办法或两家运营方的节点对一遍。</li></ol>
   <p><b>从来不做的</b></p>
   <ul><li>不发交易，不连钱包，请求里不带任何钱包地址。</li><li>不调用、也不模拟发布电路的那个函数（tapeout）。</li></ul>
   <p><b>你可以自己重做</b></p>
   <ul><li>页面上标「复测」的数，点一下，就是你的浏览器直接向公开节点重做当初那段测量，结果和记录并排摆着。</li><li>读链的请求不经过我们的服务器。</li></ul>
 
+<h2 id="h-112fc0"><span class="secno"></span>量法的前提：确定性</h2>  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>y</mi><mtext>链上</mtext></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>y</mi><mtext>本地</mtext></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mspace width="2em"/><mi>E</mi><mo stretchy="false">(</mo><mtext>网表</mtext><mo separator="true">,</mo><mi>x</mi><mo stretchy="false">)</mo><mtext> 只看网表和 </mtext><mi>x</mi></mrow><annotation encoding="application/x-tex">y_{\text{链上}}(x)=y_{\text{本地}}(x),\qquad E(\text{网表},x)\ \text{只看网表和}\ x</annotation></semantics></math></span></math></div>
+  <ul><li>同一组输入，在哪个节点、哪一次算，输出都一样。</li><li>同一份网表（sha256 相同）换个编号重新登记，gas 也一样。</li><li>证据：两链里同一份网表的 86 对，gas 相差 0<span class="cite">E12c 补充核对</span>；不同网表、同样大小的 1 对也是 0。</li></ul>
+
 <h2 id="s0-4"><span class="secno">0.4</span>例题：量一个真电路算一次花多少 gas</h2>  <p>BSC 处理器 0x166df14a… 上的第 10 号电路：10 个门，3 入 1 出。</p>
-  <ol><li>你的浏览器读它的网表：10 个门 × 7 字节，加文件头。</li><li>浏览器在本地把 3 个输入全 0 时的结果算一遍。</li><li>请节点执行同样的输入，记下这次花的 gas：上次是 <b>47,615</b><span class="cite">清单自查、ch1_bsc10</span>。</li><li>两边结果逐位比对，gas 和第 1 章的定律比。</li></ol>
+  <ol><li>你的浏览器读它的网表：10 个与非门 × 7 字节，一共 70 字节。</li><li>浏览器在本地把 3 个输入全 0 时的结果算一遍。</li><li>请节点执行同样的输入，记下这次花的 gas：上次是 <b>47,615</b><span class="cite">清单自查、ch1_bsc10</span>。</li><li>两边结果逐位比对，gas 和第 1 章的定律比。</li></ol>
   <p><b>读者动手</b>：本页点「复测」。</p>
 
 <h2 id="s0-5"><span class="secno">0.5</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f0">
   <header><span class="kind">这条会不成立</span><span class="name" id="f0">照实写</span></header>
   <ol class="cases">
-    <li><span class="when">节点会说不一样的话</span><span>：</span>  <ul><li>同一个问题，几家节点偶尔答得不同；</li><li>有的节点会静默丢数据；</li><li>有的节点暂时缺某一块的状态，这时页面会换下一家，框里写「换过节点」。</li><li>见第 9 章。</li></ul>
+    <li><span class="when">节点会说不一样的话</span><span>：</span>  <ul><li>同一个问题，几个节点偶尔答得不同；</li><li>有的节点会静默丢数据；</li><li>有的节点暂时缺某一块的状态，这时页面会换下一个节点，框里写「换过节点」。</li><li>见第 9 章。</li></ul>
 </li>
     <li><span class="when">「会变」的数会变</span><span>：价格、上限、节点策略，过一阵再量可能不同。页面只在复测时现场比对，不拿旧数冒充新数。</span></li>
-    <li><span class="when">我们也会判错，判错了照实改</span><span>：</span>  <ul><li>第 1 章里，定律二的一次样本外检验判了「不过」，后来查出是判法和阈值的算法不一致。原判定留着，更正另写。</li><li>反方 RED 专门来推翻本书。它的反驳原样挂在被反驳的地方，见下一节「这本书有两个作者」。</li></ul>
+    <li><span class="when">我们也会判错，判错了照实改</span><span>：</span>  <ul><li>第 1 章里，观察 1.2 的一次样本外检验判了「不过」，后来查出是判法和阈值的算法不一致。原判定留着，更正另写。</li><li>反方 RED 专门来推翻本书。它的反驳原样挂在被反驳的地方，见下一节「这本书有两个作者」。</li></ul>
 </li>
     <li><span class="when">范围之外不外推</span><span>：本书只量了 BSC 和 X Layer 两条链、官方处理器、公开节点。别的链、别的实现，要自己重量。</span></li>
   </ol>
@@ -717,7 +777,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s0-6"><span class="secno">0.6</span>这本书有两个作者</h2>  <p><b>两个作者都是 AI 代理（Claude），一个写，一个驳。</b></p>
   <ul><li><b>正方 · OCH</b> 写正文：设计实验、先提交判据、量、写出定律。</li><li><b>反方 · RED</b> 专门来推翻正文。它自己独立重量，下结论之前不看正方的代码和结果文件。</li></ul>
   <p><b>反驳怎么放进书里</b></p>
-  <ul><li>反驳就挂在被反驳的定律或常数旁边，一个反驳一个框。</li><li>框头写「反方 · RED」、结果标签（推翻、削弱、没推翻、未决）和日期。</li><li>框里是 RED 自己的话和证据：交易号、块号、数据文件；能复测的配一个按钮，你可以自己点。</li><li>正方可以在下面写「正方回应 · OCH」：认、部分认、不认，并附证据；也可以不回。</li><li>反驳判了推翻或削弱、正方也认了，正方改正文，在原处留「更正」标签；框里分项推翻或削弱、正文照改了的，也算。反方的框照留。</li></ul>
+  <ul><li>反驳就挂在被反驳的定律或常数旁边，一个反驳一个框。</li><li>框头写「反方 · RED」、结果标签（推翻、削弱、没推翻、未决）和日期。  <ul><li>没推翻只说明攻过没倒，不等于核过并成立。</li></ul>
+</li><li>框里是 RED 自己的话和证据：交易号、块号、数据文件；能复测的配一个按钮，你可以自己点。</li><li>正方可以在下面写「正方回应 · OCH」：认、部分认、不认，并附证据；也可以不回。</li><li>反驳判了推翻或削弱、正方也认了，正方改正文，在原处留「更正」标签；框里分项推翻或削弱、正文照改了的，也算。反方的框照留。</li></ul>
   <p><b>谁都不改对方的字</b></p>
   <ul><li>两方各写各的文件。生成页面时逐段核对：反方框里的每一段，和反方自己提交的原文逐字相同。</li><li>改自己那段，要留修订记录：哪天、改了什么。</li><li>编辑只管三件事：事实性错误退回作者本人改；去掉不该公开的东西、守规矩；版面能不能上线。编辑不当裁判，两方有分歧照样上线。</li></ul>
   <p><b>为什么这么写</b></p>

@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -576,7 +608,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s9-1"><span class="no">9.1</span>直觉</a></li>
   <li><a href="#s9-2"><span class="no">9.2</span>定义</a></li>
-  <li><a href="#s9-3"><span class="no">9.3</span>定律和公式</a></li>
+  <li><a href="#s9-3"><span class="no">9.3</span>公式</a></li>
   <li><a href="#s9-4"><span class="no">9.4</span>怎么量出来的</a></li>
   <li><a href="#s9-5"><span class="no">9.5</span>例题</a></li>
   <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
@@ -610,7 +642,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s9-1"><span class="no">9.1</span>直觉</a></li>
   <li><a href="#s9-2"><span class="no">9.2</span>定义</a></li>
-  <li><a href="#s9-3"><span class="no">9.3</span>定律和公式</a></li>
+  <li><a href="#s9-3"><span class="no">9.3</span>公式</a></li>
   <li><a href="#s9-4"><span class="no">9.4</span>怎么量出来的</a></li>
   <li><a href="#s9-5"><span class="no">9.5</span>例题</a></li>
   <li><a href="#s9-6"><span class="no">9.6</span>什么时候不成立</a></li>
@@ -630,20 +662,20 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <header class="chhead">
   <p class="chno">第 9 章</p>
   <h1>噪声与测量：公开节点不总说同一句话</h1>
-  <p class="lede">链本身是确定的：同一段代码、同一个状态，哪家节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
+  <p class="lede">链本身是确定的：同一段代码、同一个状态，哪个节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
   <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 8 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
-<h2 id="s9-1"><span class="secno">9.1</span>直觉</h2>  <p class="lede-in">链本身是确定的：同一段代码、同一个状态，哪家节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
+<h2 id="s9-1"><span class="secno">9.1</span>直觉</h2>  <p class="lede-in">链本身是确定的：同一段代码、同一个状态，哪个节点算都一样，测试的 67 段两条链都逐个相同。可替你读链的公开节点各有各的毛病：有的只留几十秒的历史，有的旧日志悄悄变空，有的把 finalized 往回退，有的限你的请求数。量链之前，得先分清哪些是链的规律、哪些是节点的毛病。</p>
 <figure class="fig" id="fig91"><div class="dotp hbars" role="img" aria-label="各家节点还给多久以前的数据：BSC publicnode 状态 约 1.3 小时；BSC publicnode 日志 约 3.7 小时；BSC drpc 状态 没量出；BSC drpc 日志 没量出；BSC 官方 dataseed 状态 约 57 秒；BSC 官方 dataseed 日志 最近的也不给；X Layer 官方 rpc.xlayer.tech 状态 全历史；X Layer 官方 rpc.xlayer.tech 日志 全历史；X Layer 官方 xlayerrpc.okx.com 状态 全历史；X Layer 官方 xlayerrpc.okx.com 日志 全历史"><span class="grp">BSC publicnode</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:37.944%" data-age="4530"></b></span><span class="vl">约 1.3 小时（10,064 块）<small>再往前状态要付费（HTTP 403）（边界不是一刀切）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk cut"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:44.648%" data-age="13346"></b></span><span class="vl">约 3.7 小时（29,655 块）<small>再往前回空，不报错（边界不是一刀切）</small></span></span><span class="grp">BSC drpc</span><span class="row"><span class="lb">状态</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="unknown"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>没量出：限速（HTTP 429）</small></span></span><span class="grp">BSC 官方 dataseed</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb c56" style="width:10.798%" data-age="57"></b></span><span class="vl">约 57 秒（125 块）<small>再往前回「missing trie node」</small></span></span><span class="row"><span class="lb">日志</span><span class="tk none" data-status="recent-not-served"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i></span><span class="vl">—<small>最近的也不给（limit exceeded）</small></span></span><span class="grp">X Layer 官方 rpc.xlayer.tech</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,616 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,928 块）</span></span><span class="grp">X Layer 官方 xlayerrpc.okx.com</span><span class="row"><span class="lb">状态</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,110,626 块）</span></span><span class="row"><span class="lb">日志</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:14.286%"></i><i class="g" style="left:28.571%"></i><i class="g" style="left:42.857%"></i><i class="g" style="left:57.143%"></i><i class="g" style="left:71.429%"></i><i class="g" style="left:85.714%"></i><i class="g" style="left:100.000%"></i><b class="hb full c196" style="width:100%" data-status="full-history"></b></span><span class="vl">全历史（76,109,970 块）</span></span><span class="ax"><span class="e0" style="left:0.000%">10 秒</span><span class="alt" style="left:14.286%">100 秒</span><span style="left:28.571%">17 分</span><span class="alt" style="left:42.857%">2.8 时</span><span style="left:57.143%">1.2 天</span><span class="alt" style="left:71.429%">12 天</span><span style="left:85.714%">116 天</span><span class="alt e1" style="left:100.000%">3.2 年</span></span><span class="axu">往回多少（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span><span><i class="kl cutk"></i>条到这里断开：再往前回空、不报错</span></p><figcaption><b>图 9.1</b>　每家公开节点的状态、日志还给多久以前的，刻度每一格是 10 倍，条从 10 秒画起，长短只表示能回看到哪里。X Layer 两家都给全历史；BSC 官方 dataseed 的状态只留 约 57 秒，publicnode 的日志 约 3.7 小时 以前回空数组、不报错。没量出、最近的也不给的不画条。</figcaption></figure>
   <div class="tbl"><table>
     <thead><tr><th>节点</th><th>状态还给多久</th><th>日志还给多久</th><th>再往前会怎样</th></tr></thead>
     <tbody>
       <tr><th scope="row">BSC 官方 dataseed</th><td>125 块，约 57 秒</td><td>最近的也不给</td><td>状态回「missing trie node」</td></tr>
       <tr><th scope="row">BSC publicnode</th><td>10,064 块，约 1.3 小时</td><td>29,655 块，约 3.7 小时</td><td>状态要付费（HTTP 403）；日志<b>回空数组、不报错</b></td></tr>
-      <tr><th scope="row">X Layer 两家 OKX 节点</th><td>全历史</td><td>全历史</td><td class="r">—</td></tr>
+      <tr><th scope="row">X Layer OKX 的两个入口</th><td>全历史</td><td>全历史</td><td class="r">—</td></tr>
     </tbody></table></div>
   <p><span class="cite">e6·horizon·56、e6·horizon·196</span></p>
 
@@ -654,11 +686,11 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-cbbb0257">历史深度</dt><dd>节点还能给多久以前的状态和日志。</dd>
     <dt id="t-0bf8898f">logsBloom</dt><dd>块头里的一个过滤器，块里只要有日志，它就不是全 0。</dd>
     <dt id="t-5c461702">静默丢数</dt><dd>节点该给数据时给了空的，又不报错。</dd>
-    <dt id="t-a7088cc3">换节点</dt><dd>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一家再问，结果旁边写明「换过节点」。</dd>
+    <dt id="t-a7088cc3">换节点</dt><dd>复测时节点说缺状态（「missing trie node」或「header not found」），就换下一个节点再问，结果旁边写明「换过节点」。</dd>
     <dt id="t-74898015">信标、实现、owner</dt><dd>处理器合约通过一个信标合约指向实现代码；信标的 owner 是 0，已有的处理器就再也没人能换实现。造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现由它决定。</dd>
   </dl>
 </section>
-<h2 id="s9-3"><span class="secno">9.3</span>定律和公式</h2>
+<h2 id="s9-3"><span class="secno">9.3</span>公式</h2>
 <h2 id="h-778024"><span class="secno"></span>噪声这一组</h2>  <div class="tbl"><table>
     <thead><tr><th>量</th><th>BSC</th><th>X Layer</th></tr></thead>
     <tbody>
@@ -667,7 +699,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">处理器实现能不能升级</th><td>已有的不能（信标 owner = 0），实现 12,560 字节</td><td>已有的不能（信标 owner = 0），实现 12,562 字节</td></tr>
     </tbody></table></div>
   <p><span class="cite">ops·56、ops·196、fit·eval·56、fit·eval·196、dot32·56、e2·struct·56、e2·struct·196、inventory·56、inventory·196</span></p>
-  <ul><li>第 1 章的定律十一（确定性）说的就是这一组：同一份网表、同一组输入，输出和 gas 只看网表和输入。</li><li>两链的处理器字节码不一样（差 2 字节），同一份网表、同一组输入，gas 却一样。</li><li><span class="tag fix">更正</span>「处理器不能升级」只对已有的处理器成立：两链各抽 300 个，都指同一个 owner 为 0 的信标，跑 step 也不碰工厂；可造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现，由工厂的 owner 决定。（<a href="#red-noise-001">反方第 1 条</a>）</li></ul>
+  <ul><li>第 0 章「量法的前提：确定性」（原定律十一）说的就是这一组：同一份网表、同一组输入，输出和 gas 只看网表和输入。</li><li>两链的处理器字节码不一样（差 2 字节），同一份网表、同一组输入，gas 却一样。</li><li><span class="tag fix">更正</span>「处理器不能升级」只对已有的处理器成立：两链各抽 300 个，都指同一个 owner 为 0 的信标，跑 step 也不碰工厂；可造新处理器的工厂是可升级合约、有 owner，以后新造的处理器用哪份实现，由工厂的 owner 决定。（<a href="#red-noise-001">反方第 1 条</a>）</li></ul>
 
 <div class="thread">
 <details class="dbt" data-for="red-noise-001">
@@ -688,17 +720,17 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 
 </div>
-<h2 id="s9-4"><span class="secno">9.4</span>怎么量出来的</h2>  <ol><li><b>同一段代码问不同节点</b>：同一批 67 段测试代码，在两链各两家节点上用只读调用跑，读数逐个比。</li><li><b>输出对拍</b>：每次 step、eval 的输出，都和本地照语义规范写的模拟逐位比。</li><li><b>历史深度</b>：先试最近的块和第 1 块。最近的都不给，记「最近的也不给」；第 1 块也给，就是全历史。都不是，就在两者之间二分，找节点还给数据的最深一块，再往里、往外各试几块核对。状态用只读调用读旧块，日志专挑 logsBloom 不是全 0 的块读。  <ul><li>publicnode 的边界不是一刀切：往外再试一两块，有的还给。所以表里的深度是约数。</li></ul>
+<h2 id="s9-4"><span class="secno">9.4</span>怎么量出来的</h2>  <ol><li><b>同一段代码问不同节点</b>：同一批 67 段测试代码，在两链各两个入口上用只读调用跑（BSC 官方 dataseed 和带钥匙的 NodeReal，X Layer OKX 的两个；照运营方每链一家），读数逐个比。</li><li><b>输出对拍</b>：每次 step、eval 的输出，都和本地照语义规范写的模拟逐位比。</li><li><b>历史深度</b>：先试最近的块和第 1 块。最近的都不给，记「最近的也不给」；第 1 块也给，就是全历史。都不是，就在两者之间二分，找节点还给数据的最深一块，再往里、往外各试几块核对。状态用只读调用读旧块，日志专挑 logsBloom 不是全 0 的块读。  <ul><li>publicnode 的边界不是一刀切：往外再试一两块，有的还给。所以表里的深度是约数。</li></ul>
 </li><li><b>信标 owner</b>：直接读处理器信标合约的 owner。</li></ol>
 
 <h2 id="s9-5"><span class="secno">9.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">要读 1 小时以前的 BSC 状态</span></header>
-  <ul><li>官方 dataseed 不给：它只留约 57 秒。</li><li>publicnode 给：它留约 1.3 小时。</li><li>要读一天以前的，两家都不给，得找给全历史的节点；X Layer 两家 OKX 节点都给。</li></ul>
+  <ul><li>官方 dataseed 不给：它只留约 57 秒。</li><li>publicnode 给：它留约 1.3 小时。</li><li>要读一天以前的，两家都不给，得找给全历史的节点；X Layer OKX 的两个入口都给。</li></ul>
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">读旧日志，空的不一定是真没有</span></header>
-  <ul><li>往回 3.7 小时以内，publicnode 给的日志是对的。</li><li>再往前，块头的 logsBloom 明明不是全 0，它却回空数组、不报错。拿空结果当「这里没有事件」，就错了。</li><li>办法：先看块头的 logsBloom；不是全 0 却拿到空日志，就换一家节点再问。</li></ul>
-  <p><b>读者动手</b>：常数表里每个复测框都写着这次问的是哪家节点、换没换过节点。<a class="rmgo" href="../constants/">去常数表复测</a></p>
+  <ul><li>往回 3.7 小时以内，publicnode 给的日志是对的。</li><li>再往前，块头的 logsBloom 明明不是全 0，它却回空数组、不报错。拿空结果当「这里没有事件」，就错了。</li><li>办法：先看块头的 logsBloom；不是全 0 却拿到空日志，就换一个节点再问。</li></ul>
+  <p><b>读者动手</b>：常数表里每个复测框都写着这次问的是哪个节点、换没换过节点。<a class="rmgo" href="../constants/">去常数表复测</a></p>
 
 </section>
 <h2 id="s9-6"><span class="secno">9.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f9">
@@ -712,8 +744,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   </ol>
 </section>
 <h2 id="s9-7"><span class="secno">9.7</span>小结</h2><ul class="sum">
-  <li>链是确定的：67 段测试代码两链各家节点逐个相同，官方处理器的输出和本地模拟逐位一致。</li>
-  <li>节点不是链：BSC 官方 dataseed 的状态只留约 57 秒；publicnode 3.7 小时以前的日志回空、不报错；X Layer 两家 OKX 节点全历史。</li>
+  <li>链是确定的：67 段测试代码两链各个入口逐个相同，官方处理器的输出和本地模拟逐位一致。</li>
+  <li>节点不是链：BSC 官方 dataseed 的状态只留约 57 秒；publicnode 3.7 小时以前的日志回空、不报错；X Layer OKX 的两个入口全历史。</li>
   <li>已有的处理器实现不能升级（信标 owner = 0）；以后新造的处理器用哪份实现，由工厂的 owner 决定。</li>
   <li>下一章：算力的天花板。</li>
 </ul>

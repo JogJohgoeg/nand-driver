@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -574,7 +606,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s7-1"><span class="no">7.1</span>直觉</a></li>
   <li><a href="#s7-2"><span class="no">7.2</span>定义</a></li>
-  <li><a href="#s7-3"><span class="no">7.3</span>定律和公式</a></li>
+  <li><a href="#s7-3"><span class="no">7.3</span>公式</a></li>
   <li><a href="#s7-4"><span class="no">7.4</span>怎么量出来的</a></li>
   <li><a href="#s7-5"><span class="no">7.5</span>例题</a></li>
   <li><a href="#s7-6"><span class="no">7.6</span>什么时候不成立</a></li>
@@ -608,7 +640,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s7-1"><span class="no">7.1</span>直觉</a></li>
   <li><a href="#s7-2"><span class="no">7.2</span>定义</a></li>
-  <li><a href="#s7-3"><span class="no">7.3</span>定律和公式</a></li>
+  <li><a href="#s7-3"><span class="no">7.3</span>公式</a></li>
   <li><a href="#s7-4"><span class="no">7.4</span>怎么量出来的</a></li>
   <li><a href="#s7-5"><span class="no">7.5</span>例题</a></li>
   <li><a href="#s7-6"><span class="no">7.6</span>什么时候不成立</a></li>
@@ -632,7 +664,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>价格：gas 怎么换成钱</h1>
   <p class="lede">gas 是用量，乘上 gas 价、再乘币价，才是钱。11 月 16 日那会儿，BSC 上 1 gas 约 3.0×10⁻⁸ 美元，X Layer 约 1.7×10⁻⁹，便宜 17 倍；官方处理器算一个门，BSC 约 6.8×10⁻⁵ 美元，X Layer 约 3.9×10⁻⁶。X Layer 另外还数一样东西：交易的原始字节压缩以后有多长。它不另收钱，但占块的容量。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 12 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 16 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 1 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
@@ -659,26 +691,32 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-36a4e457">存款交易</dt><dd>从以太坊主网过来的交易。块头的数据占用不算它；它自己的回执里也写了一个数，多数是 42,800。</dd>
   </dl>
 </section>
-<h2 id="s7-3"><span class="secno">7.3</span>定律和公式</h2>
+<h2 id="s7-3"><span class="secno">7.3</span>公式</h2>
 <h2 id="h-52a3a2"><span class="secno"></span>价格这一组（量出来的，时时在变）</h2>  <ul><li>官方处理器算一个门按每门 2,277 gas 算（受控扫描 100 到 1 万门的斜率：网表照真实发布切块，跨块的拼接费算在里面；第 3 章的 c₁ 是网表整块放时的斜率，没算拼接费，所以这里不用它）；编译版一门一路按 DOT32_T 实测的每门每 256 路 23.4 gas 除以 256。</li><li>只读调用不花钱。</li><li>一件事要多少钱 = gas × gas 价 × 币价。三个数都会变，但 gas 价不随拥挤涨：两链的基础费都涨不起来（BSC 量到的都是 0，X Layer 钉在块头里的最低值），能变的是小费和运营方设的参数；币价跟着行情走。</li></ul>
   <p><span class="cite">prices·1745、params·56、params·196、controlled·56、dot32·196</span></p>
-<section class="box law" aria-labelledby="law-da7d6c">
-  <header><span class="kind">定律十六</span><span class="name" id="law-da7d6c">数据占用律（X Layer，实验 E5，判据先提交）</span><span class="cite">e5·da·196、判据·E5</span></header>
+<section class="box law" aria-labelledby="law-d5a804">
+  <header><a id="law-da7d6c"></a><a id="obs-d5a804"></a><span class="kind">定律 7.1</span><span class="name" id="law-d5a804">数据占用（X Layer，实验 E5，判据先提交）</span><span class="cite">e5·da·196、判据·E5</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>B</mi><mtext>blob</mtext></msub><mo>=</mo><mi>s</mi><munder><mo>∑</mo><mtext>非存款交易</mtext></munder><mi>u</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mspace width="2em"/><mi>u</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mi>max</mi><mo>⁡</mo><mtext> ⁣</mtext><mrow><mo fence="true">(</mo><mn>100</mn><mo separator="true">,</mo><mtext> </mtext><mo stretchy="false">⌊</mo><mi>v</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">⌋</mo><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">B_{\text{blob}}=s\sum_{\text{非存款交易}}u(tx),\qquad u(tx)=\max\!\left(100,\ \lfloor v(tx)\rfloor\right)</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：X Layer（BSC 不是 OP Stack，没有这一项）。近期 60 块两家运营方都读了，逐块一样：OKX，和 Chainstack（运营方是它自己说的，客户端和 OKX 同一种；回应头里看不到 OKX 入口的那两个标记，多半不是只转给 OKX（推的）。回应头只看得到前端，后端那台节点是谁的看不出）。整个 Jovian 时期（反方那 1,820 块）和 E5 那 80 块只问了 OKX（E5 问 rpc.xlayer.tech，反方主要问 xlayerrpc.okx.com，都是 OKX 的）；对抗样本 52 块也只 OKX 一家。第三条链 OP 主网那一路还没量。</li><li>电路：不适用。</li><li>点：E5 80 块（最近 25 块、数据占用最大的 25 块、随机 30 块），块里 2,342 笔回执；近期 60 块两家各读一遍，块头逐块一样，回执都对得上式子（OKX 1,195 笔，Chainstack 能和块对上的 672 笔）；反方 1,820 块、12,475 笔回执；反方的对抗样本 52 块（只 OKX），块头 52 块全对，回执里 336 笔用户交易逐笔全对。四种改错的式子做负控。存款那一半判据写错了（判据写存款的回执记 0，实际每笔都记了数，和上面那句一样），照实记成判据的错、不判。</li><li>大小：每块的数据占用最大一块 15,332,800；标量只见过 400 一个值。</li><li>时长：E5 的块取自约 3.5 天；反方盖住整个 Jovian 时期（X Layer 从 2025-12-02 起）；近期那 60 块和对抗样本那 52 块是 11 月 20 日读的。</li><li>量法：<span class="mth h-real">链上实录</span>（读块头、回执和原始交易，自己做 FastLZ 压缩照式子算）。</li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-hard">硬</span>（OP Stack 规范（Jovian：DA footprint）：从 Jovian 起，块头的 blobGasUsed 记的就是这一块的数据占用（specs · specs/protocol/jovian/exec-engine · f4b6735e 第 121–122 行）；X Layer 从 2025-12-02 16:00:01 UTC 起用 Jovian，照 xlayer-reth · crates/chainspec/src/lib · cee3d6c 第 26 行）；代进去的数：<span class="cat c-soft">会变</span>（标量只见过 400；块上限到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块起是 2.1 亿，每块最多装多少跟着变）。</dd>
+<dt>怎么算它错</dt><dd>要是在 X Layer 的 Jovian 以后，至少两家不同运营方的节点都读（OKX 的两个入口只算一家；第二家照 S1 判它背后是谁，判不出记未决），任取至少 50 块带非存款交易的块，有一块块头的 blobGasUsed 不等于「该块 L1 信息交易里的标量 × 各笔求和」，或者有一笔回执不等于它那一项，就算它错（四种改错的式子必须一块都对不上，不然这次检验不算）；在第三条链 OP 主网上（和 X Layer 同一刻上的 Jovian），照样读块头和回执，取至少 50 块，对不上也算它错。</dd>
+</dl>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>v</mi><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mn>836,500</mn><mtext> </mtext><mrow><mi mathvariant="normal">f</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">z</mi></mrow><mo stretchy="false">(</mo><mi>t</mi><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mn>42,585,600</mn></mrow><msup><mn>10</mn><mn>6</mn></msup></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>s</mi><mo>=</mo><mn>400</mn></mrow><annotation encoding="application/x-tex">v(tx)=\frac{836{,}500\ \mathrm{flz}(tx)-42{,}585{,}600}{10^{6}},\qquad s=400</annotation></semantics></math></span></math></div>
-  <ul><li>B_blob：块头里的数据占用；u：每笔的估算字节数；flz：这笔交易原始字节的 FastLZ 压缩长度；s：标量。</li><li><b>零自由参数</b>：X Layer 80 块的块头逐块一个不差（最大一块 15,332,800）；这些块里 2,342 笔交易的回执逐笔相等。反方把样本放大到整个 Jovian 时期，1,820 块的块头、12,475 笔回执也都一个不差（<a href="#red-price-001">反方第 1 条</a>）。四种改错的式子（标量加减 1、不压缩直接用原始长度、压缩长度多 1、换一个输入）一块也对不上。</li><li>每块最多装多少：估算字节加起来不超过块上限 ÷ 标量 = 525,000 字节。</li><li><span class="tag fix">更正</span>块上限不是一直 2.1 亿：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿，所以 525,000 只对后一段，前一段每块最多 125,000。（<a href="#red-price-001">反方第 1 条</a>；这两个块号是它两份样本合起来的界，另一份见<a href="../constants/#red-constants-003">常数表页反方第 5 条</a>）</li><li>不可压缩的数据，每字节占 334.6 gas 当量，而交易数据只收 16 gas。所以纯数据的块，先满的是数据占用。</li><li>抽 800 块看，54% 的块数据占用比 gas 用量大。那 800 块是第 75,809,957 到 76,109,582 块里等距抽的，约 3.5 天。</li><li><span class="tag fix">更正</span>这不是「平时」：反方抽最近 30 天 3,000 块，只有 19.7%，按 7 天一段在 4.7% 到 44.9% 之间变；Jovian 以来按月看在 0.6% 到 11.6% 之间，只有 2026 年 11 月到了 37%。随用量变。（<a href="../constants/#red-constants-007">常数表页反方第 7 条</a>）</li></ul>
+  <ul><li>B_blob：块头里的数据占用；u：每笔的估算字节数；flz：这笔交易原始字节的 FastLZ 压缩长度；s：标量。</li><li><b>零自由参数</b>：X Layer 80 块的块头逐块一个不差（最大一块 15,332,800）；这些块里 2,342 笔交易的回执逐笔相等。反方把样本放大到整个 Jovian 时期，1,820 块的块头、12,475 笔回执也都一个不差（<a href="#red-price-001">反方第 1 条</a>）。四种改错的式子（标量加减 1、不压缩直接用原始长度、压缩长度多 1、换一个输入）一块也对不上。</li><li>每块最多装多少：估算字节加起来不超过块上限 ÷ 标量 = 525,000 字节（推的）。</li><li><span class="tag fix">更正</span>块上限不是一直 2.1 亿：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿，所以 525,000 只对后一段，前一段每块最多 125,000。（<a href="#red-price-001">反方第 1 条</a>；这两个块号是它两份样本合起来的界，另一份见<a href="../constants/#red-constants-003">常数表页反方第 5 条</a>）</li><li>不可压缩的数据，每字节占 334.6 gas 当量（推的），而交易数据只收 16 gas。所以纯数据的块，先满的是数据占用。</li><li>抽 800 块看，54% 的块数据占用比 gas 用量大。那 800 块是第 75,809,957 到 76,109,582 块里等距抽的，约 3.5 天。</li><li><span class="tag fix">更正</span>这不是「平时」：反方抽最近 30 天 3,000 块，只有 19.7%，按 7 天一段在 4.7% 到 44.9% 之间变；Jovian 以来按月看在 0.6% 到 11.6% 之间，只有 2026 年 11 月到了 37%。随用量变。（<a href="../constants/#red-constants-007">常数表页反方第 7 条</a>）</li></ul>
   <p></p>
 
 </section>
 <div class="thread">
 <details class="dbt" data-for="red-price-001">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律十六</span></summary>
-  <section class="box con" id="red-price-001" aria-labelledby="red-price-001-h" data-author="RED" data-id="red-price-001" data-target="定律十六" data-verdict="没推翻" data-date="2026-11-17" data-sha256="cab81700f18f483fc81a679c976be60f0ada9fea5ab0816eddc7880d6b3e556e">
-    <header><span class="kind" id="red-price-001-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-da7d6c">定律十六</a></span><time datetime="2026-11-17">2026-11-17</time></header>
-    <p class="said" data-sha256="a68c8436296516cbb17c6c5c5d1731ae7a00163466b77fb794379c8edbf915c9">定律十六（数据占用律）说 X Layer 块头的 blobGasUsed = 400 × Σ max(100, ⌊(836,500 × flz − 42,585,600) / 10⁶⌋)，只加非存款交易，零自由参数，「Jovian 起的每一块」都一个不差；页面验了 80 块和 2,342 笔回执。我（反方）把样本放大到整个 Jovian 时期：Jovian 格式的 L1 信息交易从第 45,922,166 块开始，到第 76,200,083 块，按事先定的种子随机抽 1,500 块，加这段 10%、50%、90% 处三个 100 块的连续窗口，再加起点前后 23 块，共 1,823 块。FastLZ 压缩长度是我自己写的，先拿回执里的 l1GasUsed（Fjord 那条另外的规则）核过，12,477 笔全对。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律 7.1</span></summary>
+  <section class="box con" id="red-price-001" aria-labelledby="red-price-001-h" data-author="RED" data-id="red-price-001" data-target="定律 7.1" data-verdict="没推翻" data-date="2026-11-17" data-sha256="c90ad483a430b48f7570334f7a7f04e12e5b15a1f29c902189897631a3c662e0">
+    <header><span class="kind" id="red-price-001-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-d5a804">定律 7.1</a></span><time datetime="2026-11-17">2026-11-17</time></header>
+    <p class="said" data-sha256="5e853ce91e43d53bcead6035cfd1b5673c2150d02b6ac9365cf63987c403ed99">定律 7.1（原观察 7.1、原定律十六）说 X Layer 块头的 blobGasUsed = 400 × Σ max(100, ⌊(836,500 × flz − 42,585,600) / 10⁶⌋)，只加非存款交易，零自由参数，「Jovian 起的每一块」都一个不差；页面验了 80 块和 2,342 笔回执。我（反方）把样本放大到整个 Jovian 时期：Jovian 格式的 L1 信息交易从第 45,922,166 块开始，到第 76,200,083 块，按事先定的种子随机抽 1,500 块，加这段 10%、50%、90% 处三个 100 块的连续窗口，再加起点前后 23 块，共 1,823 块。FastLZ 压缩长度是我自己写的，先拿回执里的 l1GasUsed（Fjord 那条另外的规则）核过，12,477 笔全对。</p>
     <p class="said" data-sha256="3bb6f8252f5473ea70c21dd9fa9194054e7f970724bb1076b456a2b9ad68bd7c">结果一条没顶出去：起点之后的 1,820 块（1,492 块带普通交易）块头逐块一个不差，12,475 笔回执逐笔一个不差，回执里和 L1 信息交易里的标量都只出现过 400，没有一块超过上限。三种负控（flz 多加 68、拿原始长度代替压缩长度、把存款交易也算进去）在带普通交易的块里分别有 100%、97%、100% 对不上，说明这个检查分得出对错。判没推翻。</p>
     <p class="said" data-sha256="94e1f430aed8caf5ed794287a065e63919a0b22f33bb6e150cc7428985595339">照实报三件页面没写的事。一，块 gas 上限 G 不是一直 2.1 亿：样本里从起点到第 56,168,765 块是 5,000 万（1,820 块里 654 块），第 56,185,091 块起才是 2.1 亿；所以「每块最多 525,000 估算字节」只对后一段成立，前一段是 125,000。二，存款交易（每块第 0 笔，L1 信息）的回执也写了一个数据占用，起点之后 1,820 笔里 1,456 笔是 42,800，但块头不算它。三，Jovian 激活那一块是第 45,922,165 块（6 笔存款交易、没有普通交易），块头记 0；可它本来就没有要算的交易，「记 0」看不出是规则还是没东西可算。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="ad1ac0b8ef8eb3f9110255d38c6e7164b0b57b8ba93040be00e4401ba83c677b">da.json</span><span class="ev-n" data-sha256="bdd9cf6f6017526d14b79cc9804f32f7882d25c98f0e14c9154edfceaa99da27">1,823 块：块头 blobGasUsed、块 gas 上限、L1 信息交易里的标量；每笔交易的类型、原始长度、FastLZ 压缩长度、回执里的 blobGasUsed、标量、l1GasUsed</span></dd></div><div class="evi"><dt>块号（X Layer）</dt><dd><span class="ev-v" data-sha256="ebb49cb2ff532b722d2d880d671ed8acf982886092c5a52bd04bfa20bb722edf">45922165</span><span class="ev-n" data-sha256="8d25ca88749dc0bfcdbc4ae341de54fabca2f54c10cec1e727d4b48e2d698f9d">Jovian 激活那一块：6 笔存款交易、没有普通交易，块头 blobGasUsed 是 0</span></dd></div><div class="evi"><dt>块号（X Layer）</dt><dd><span class="ev-v" data-sha256="82d20b06230eebcba2b94f31ec01a1ab8635f2b5d65f0e6a659901d9e1ef7992">56185091</span><span class="ev-n" data-sha256="44bbbfe4c1178c42dbde04bce78b183132b68e189f9b803430f07eb92c428442">样本里第一次见到块 gas 上限 2.1 亿的块（前一个样本块 56,168,765 还是 5,000 万）</span></dd></div></dl>
+    <details class="revs"><summary>修订记录（3）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律十六现在是观察 7.1；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律十六」，现在照按章的新编号挂「观察 7.1」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：观察 7.1 升成定律 7.1（EDT 11:11，照 08:4x 先定的办；反方的对抗样本回执那一半 11:06 判过、没推翻），这一框原来挂「观察 7.1」，现在挂「定律 7.1」，第一段第一次出现处注了「原」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-price-001" aria-labelledby="och-price-001-h" data-author="OCH" data-to="red-price-001" data-stance="认" data-date="2026-11-17">
     <header><span class="kind" id="och-price-001-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-17">2026-11-17</time></header>
@@ -708,7 +746,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <ol class="cases">
     <li><span class="when">价格时时在变。</span><span>书里的 gas 价和币价是 11 月 16 日 17:45（美东）前后的；基础费两链都不随拥挤涨，但小费、运营方设的参数（X Layer 的基础费参数和块上限都在 2026 年 3 月改过）和币价都会变。</span></li>
     <li><span class="when">币价不在链上。</span><span>来自交易所，各家报价也不一样：同一时刻 BNB 一家报 593.87 美元，另一家报 595.27 USDT。</span></li>
-    <li><span class="when">数据占用律只在 X Layer。</span><span>BSC 不是 OP Stack，没有这一项；Jovian 激活的那一块记 0。</span></li>
+    <li><span class="when">定律 7.1 只在 X Layer。</span><span>BSC 不是 OP Stack，没有这一项；Jovian 激活的那一块记 0，可那一块里没有非存款交易，不拿它当证据。</span></li>
     <li><span class="when">按估算字节算，和真实压缩率无关。</span><span>式子是用压缩长度回归出来的估计，同样的压缩长度，不管实际内容怎样，都一样算。</span></li>
     <li><span class="when">交易大小的上限没量。</span><span>「最大 128 KiB」是假设，节点实际收多大的交易，要另量。</span></li>
   </ol>

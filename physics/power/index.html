@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -571,7 +603,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s4-1"><span class="no">4.1</span>直觉</a></li>
   <li><a href="#s4-2"><span class="no">4.2</span>定义</a></li>
-  <li><a href="#s4-3"><span class="no">4.3</span>定律和公式</a></li>
+  <li><a href="#s4-3"><span class="no">4.3</span>公式</a></li>
   <li><a href="#s4-4"><span class="no">4.4</span>怎么量出来的</a></li>
   <li><a href="#s4-5"><span class="no">4.5</span>例题</a></li>
   <li><a href="#s4-6"><span class="no">4.6</span>什么时候不成立</a></li>
@@ -605,7 +637,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s4-1"><span class="no">4.1</span>直觉</a></li>
   <li><a href="#s4-2"><span class="no">4.2</span>定义</a></li>
-  <li><a href="#s4-3"><span class="no">4.3</span>定律和公式</a></li>
+  <li><a href="#s4-3"><span class="no">4.3</span>公式</a></li>
   <li><a href="#s4-4"><span class="no">4.4</span>怎么量出来的</a></li>
   <li><a href="#s4-5"><span class="no">4.5</span>例题</a></li>
   <li><a href="#s4-6"><span class="no">4.6</span>什么时候不成立</a></li>
@@ -630,13 +662,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <header class="chhead">
   <p class="chno">第 4 章</p>
   <h1>上限：一笔、一块、一次只读调用各能烧多少</h1>
-  <p class="lede">链上的计算按 gas 收钱，也按 gas 设天花板：一笔交易最多烧多少，一个块最多装多少，节点免费替你算一次最多算多少。这几个数两条链不一样；同一条链上，每家节点给的只读调用上限也不一样，BSC 上大的是小的 11 倍。</p>
+  <p class="lede">链上的计算按 gas 收钱，也按 gas 设天花板：一笔交易最多烧多少，一个块最多装多少，节点免费替你算一次最多算多少。这几个数两条链不一样；同一条链上，每个入口给的只读调用上限也不一样，BSC 上大的是小的 11 倍。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 9 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 11 分钟</p>
 </header>
 
-<h2 id="s4-1"><span class="secno">4.1</span>直觉</h2>  <p class="lede-in">链上的计算按 gas 收钱，也按 gas 设天花板：一笔交易最多烧多少，一个块最多装多少，节点免费替你算一次最多算多少。这几个数两条链不一样；同一条链上，每家节点给的只读调用上限也不一样，BSC 上大的是小的 11 倍。</p>
-<figure class="fig" id="fig41"><div class="dotp" role="img" aria-label="两条链的上限：BSC 16,777,216；X Layer 210,000,000；BSC 70,000,000；X Layer 210,000,000；BSC · NodeReal 带钥匙节点 550,000,000；BSC · 官方 dataseed 550,000,000；BSC · publicnode 50,000,000；BSC · drpc 50,000,000；X Layer · 官方 rpc.xlayer.tech 50,000,000；X Layer · 官方 xlayerrpc.okx.com 50,000,000；X Layer · drpc 50,000,000"><span class="grp">一笔交易</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:11.236%" data-gas="16777216"></b></span><span class="vl">16,777,216<small>约 7,249 门</small></span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:66.111%" data-gas="210000000"></b></span><span class="vl">210,000,000<small>约 65,142 门</small></span></span><span class="grp">一个块</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:42.255%" data-gas="70000000"></b></span><span class="vl">70,000,000</span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:66.111%" data-gas="210000000"></b></span><span class="vl">210,000,000</span></span><span class="grp">一次只读调用</span><span class="row"><span class="lb">BSC · NodeReal 带钥匙节点</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:87.018%" data-gas="550000000"></b></span><span class="vl">550,000,000<small>约 102,857 门</small></span></span><span class="row"><span class="lb">BSC · 官方 dataseed</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:87.018%" data-gas="550000000"></b></span><span class="vl">550,000,000<small>约 102,857 门</small></span></span><span class="row"><span class="lb">BSC · publicnode</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">BSC · drpc</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · 官方 rpc.xlayer.tech</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · 官方 xlayerrpc.okx.com</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · drpc</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="ax"><span class="e0" style="left:0.000%">1,000 万</span><span style="left:50.000%">1 亿</span><span class="e1" style="left:100.000%">10 亿</span></span><span class="axu">gas（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span></p><figcaption><b>图 4.1</b>　两条链的三种上限，刻度每一格是 10 倍。右边小字是这个上限按第 3 章定律七最多能算多少门；一个块不是单笔能用的，不标门数。BSC 的只读调用看节点：大的 550,000,000，小的 50,000,000，差 11 倍。</figcaption></figure>
+<h2 id="s4-1"><span class="secno">4.1</span>直觉</h2>  <p class="lede-in">链上的计算按 gas 收钱，也按 gas 设天花板：一笔交易最多烧多少，一个块最多装多少，节点免费替你算一次最多算多少。这几个数两条链不一样；同一条链上，每个入口给的只读调用上限也不一样，BSC 上大的是小的 11 倍。</p>
+<figure class="fig" id="fig41"><div class="dotp" role="img" aria-label="两条链的上限：BSC 16,777,216；X Layer 210,000,000；BSC 70,000,000；X Layer 210,000,000；BSC · NodeReal 带钥匙节点 550,000,000；BSC · 官方 dataseed 550,000,000；BSC · publicnode 50,000,000；BSC · drpc 50,000,000；X Layer · 官方 rpc.xlayer.tech 50,000,000；X Layer · 官方 xlayerrpc.okx.com 50,000,000；X Layer · drpc 50,000,000"><span class="grp">一笔交易</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:11.236%" data-gas="16777216"></b></span><span class="vl">16,777,216<small>约 7,249 门</small></span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:66.111%" data-gas="210000000"></b></span><span class="vl">210,000,000<small>约 65,142 门</small></span></span><span class="grp">一个块</span><span class="row"><span class="lb">BSC</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:42.255%" data-gas="70000000"></b></span><span class="vl">70,000,000</span></span><span class="row"><span class="lb">X Layer</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:66.111%" data-gas="210000000"></b></span><span class="vl">210,000,000</span></span><span class="grp">一次只读调用</span><span class="row"><span class="lb">BSC · NodeReal 带钥匙节点</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:87.018%" data-gas="550000000"></b></span><span class="vl">550,000,000<small>约 102,857 门</small></span></span><span class="row"><span class="lb">BSC · 官方 dataseed</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:87.018%" data-gas="550000000"></b></span><span class="vl">550,000,000<small>约 102,857 门</small></span></span><span class="row"><span class="lb">BSC · publicnode</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">BSC · drpc</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c56" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · 官方 rpc.xlayer.tech</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · 官方 xlayerrpc.okx.com</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="row"><span class="lb">X Layer · drpc</span><span class="tk"><i class="g" style="left:0.000%"></i><i class="g" style="left:50.000%"></i><i class="g" style="left:100.000%"></i><b class="d c196" style="left:34.949%" data-gas="50000000"></b></span><span class="vl">50,000,000<small>约 20,671 门</small></span></span><span class="ax"><span class="e0" style="left:0.000%">1,000 万</span><span style="left:50.000%">1 亿</span><span class="e1" style="left:100.000%">10 亿</span></span><span class="axu">gas（10 倍刻度）</span></div><p class="lg"><span><i class="k c56"></i>BSC</span><span><i class="k c196"></i>X Layer</span></p><figcaption><b>图 4.1</b>　两条链的三种上限，刻度每一格是 10 倍。右边小字是这个上限按第 3 章观察 3.3 最多能算多少门；一个块不是单笔能用的，不标门数。BSC 的只读调用看节点：大的 550,000,000，小的 50,000,000，差 11 倍。</figcaption></figure>
   <div class="tbl"><table>
     <thead><tr><th></th><th>BSC</th><th>X Layer</th></tr></thead>
     <tbody>
@@ -657,25 +689,30 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-2e5a40e0">调用深度</dt><dd>合约调合约，一层套一层，最多能套几层。</dd>
   </dl>
 </section>
-<h2 id="s4-3"><span class="secno">4.3</span>定律和公式</h2>
+<h2 id="s4-3"><span class="secno">4.3</span>公式</h2>
 <h2 id="h-105d01"><span class="secno"></span>上限这一组（量出来的，会变）</h2>  <div class="tbl"><table>
     <thead><tr><th>上限</th><th>BSC</th><th>X Layer</th><th>谁定的</th></tr></thead>
     <tbody>
       <tr><th scope="row">一笔交易</th><td>16,777,216（2²⁴）</td><td>210,000,000（按块上限，只实测到 1 亿）</td><td>协议规则，硬分叉能改</td></tr>
       <tr><th scope="row">一个块</th><td>70,000,000（601 块的中位数）</td><td>210,000,000（601 块都一样）</td><td>BSC 验证人投票；X Layer 排序器</td></tr>
-      <tr><th scope="row">一次只读调用</th><td>NodeReal 带钥匙节点、官方 dataseed 550,000,000；publicnode、drpc 50,000,000</td><td>三家都是 50,000,000</td><td>每家节点自己</td></tr>
+      <tr><th scope="row">一次只读调用</th><td>NodeReal 带钥匙节点、官方 dataseed 550,000,000；publicnode、drpc 50,000,000</td><td>三个入口（OKX 两个、dRPC 一个）都是 50,000,000</td><td>每个入口自己</td></tr>
       <tr><th scope="row">一笔交易最多能发布多少门</th><td>平网表约 5,774 个与非门（按面积律，第 5 章）；分层电路一笔能建几十万门（展开）</td><td>没量，推算见第 7 章</td><td>由单笔上限推出来</td></tr>
     </tbody></table></div>
   <p><span class="cite">callcap·56、callcap·196、params·56、params·196、fit·publish</span></p>
-  <ul><li>X Layer 的块上限是运营方设的、改过：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿；最近 30 天 5,000 块都是 2.1 亿。（反方查的，见常数表页）</li><li>节点替你算有多快：给 5.5 亿的那两家，每秒约 298M 和 306M gas；publicnode 每秒 220M；X Layer 三家每秒 120M–125M。</li><li>全链每秒最多能烧多少（本书叫全链功率）= 块上限 ÷ 出块间隔：BSC 155.6M gas/秒，实际用了 17%；X Layer 210.0M，实际用了 1%。这两个用量是 11 月 16 日各量最近 601 块的平均；反方 24 小时两链各抽 2,000 块，平均 BSC 22.6%（每小时 13.4%–31.5%）、X Layer 1.4%。</li></ul>
-<section class="box law" aria-labelledby="law-ae9a71">
-  <header><span class="kind">定律九</span><span class="name" id="law-ae9a71">调用深度</span><span class="cite">ops·56、ops·196</span></header>
+  <ul><li>X Layer 的块上限是运营方设的、改过：到第 56,178,109 块还是 5,000 万，最晚从第 56,184,008 块（2026 年 3 月 31 日）起是 2.1 亿；最近 30 天 5,000 块都是 2.1 亿。（反方查的，见常数表页）</li><li>节点替你算有多快：给 5.5 亿的那两个入口（同一运营方），每秒约 298M 和 306M gas；publicnode 每秒 220M；X Layer 三个入口每秒 120M–125M。</li><li>全链每秒最多能烧多少（本书叫全链功率）= 块上限 ÷ 出块间隔：BSC 155.6M gas/秒，实际用了 17%；X Layer 210.0M，实际用了 1%。这两个用量是 11 月 16 日各量最近 601 块的平均；反方 24 小时两链各抽 2,000 块，平均 BSC 22.6%（每小时 13.4%–31.5%）、X Layer 1.4%。</li></ul>
+<section class="box obs" aria-labelledby="obs-2e5a40">
+  <header><a id="law-ae9a71"></a><a id="law-2e5a40"></a><span class="kind">观察 4.1</span><span class="name" id="obs-2e5a40">调用深度</span><span class="cite">ops·56、ops·196</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>g</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mo stretchy="false">(</mo><msub><mi>g</mi><mi>i</mi></msub><mo>−</mo><mi>c</mi><mo stretchy="false">)</mo><mo>−</mo><mrow><mo fence="true">⌊</mo><mfrac><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>−</mo><mi>c</mi></mrow><mn>64</mn></mfrac><mo fence="true">⌋</mo></mrow><mo separator="true">,</mo><mspace width="2em"/><msub><mi>g</mi><mn>1</mn></msub><mo>=</mo><mi>G</mi><mo>−</mo><mn>21,128</mn></mrow><annotation encoding="application/x-tex">g_{i+1}=(g_i-c)-\left\lfloor\frac{g_i-c}{64}\right\rfloor,\qquad g_1=G-21{,}128</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：BSC、X Layer。BSC 起先量的两个入口，官方 dataseed 和 NodeReal 带钥匙的入口，只算一家运营方（官方入口的答复经过 NodeReal 那套网关，反方核过）；11 月 20 日另在 Allnodes 的 publicnode 上补量，官方 dataseed 同一天也重量了一遍，所以 BSC 那半是两家运营方。X Layer 起先量的两个入口都是 OKX 的；11 月 20 日另在 Chainstack 上补量，正方、反方各一份，是两份量、一家运营方，所以 X Layer 那半也是两家运营方（OKX、Chainstack）；反方另问过 dRPC，背后是谁未决，不当一家。Chainstack 那家：运营方是它自己说的，客户端和 OKX 同一种；回应头里看不到 OKX 入口的那两个标记，多半不是只转给 OKX（推的）。回应头只看得到前端，后端那台节点是谁的看不出。两条链各两家只读模拟都合预测，这两条链的模拟量法对回执都未决，所以记观察。</li><li>电路：不适用（量的是我们的测试合约一层一层往下调，不是电路）。</li><li>点：G 四档，两链各两个入口（每链一家运营方），共 16 次，全和逐层算的相等；另有 300 个随机的 G，是这条式子对逐层模拟，没上链量。11 月 20 日 BSC 那两家（publicnode、官方 dataseed）、X Layer 那两家（OKX、Chainstack）各另量 36 个（四档、边界两边各一个、随机 30 个），全合预测。</li><li>大小：G 从 10 万到 3,000 万 gas，最深 504 层。</li><li>时长：一次，11 月 16 日；11 月 20 日 BSC 那两家、X Layer 那两家各另量一次。</li><li>量法：<span class="mth h-obj">节点模拟·对象是放上去的</span>（测试合约用状态覆盖放进去）。<small class="mth-note">对回执：BSC <span class="tier t-und">未决</span>；X Layer <span class="tier t-und">未决</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-hard">硬</span>（每层往下带走 63/64，是 EIP-150 的「all but one 64th」（EIPs · EIPS/eip-150 · b055feec 第 32 行）；1,024 层上限照 execution-specs · forks/bpo2/vm/interpreter · 391d8a05 第 63 行，要约 1.1×10¹¹ gas 才碰得到（推的），没量过，这半只照规则）；代进去的数：<span class="cat c-impl">实现</span>（c = 143、c_回 = 25 是照我们测试合约的指令价数的，合约换了就变）。</dd>
+<dt>怎么算它错</dt><dd>要是在两链任一个节点上，用同一个测试合约另取几档没量过的 G（事先用上面的式子算好最深层数），实测最深层数和算的差 1 层，就算它错；在第三条链以太坊主网的节点上模拟量的（状态覆盖 eth_call，没部署、没上链），同一个测试合约给 100 万 gas 该是 288 层，不是也算它错。</dd>
+</dl>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>D</mi><mo stretchy="false">(</mo><mi>G</mi><mo stretchy="false">)</mo><mo>=</mo><mi>max</mi><mo>⁡</mo><mrow><mo fence="true">{</mo><mi>i</mi><mo>:</mo><mtext> </mtext><mrow><mo fence="true">⌊</mo><mfrac><mrow><msub><mi>g</mi><mi>i</mi></msub><mo>−</mo><mi>c</mi></mrow><mn>64</mn></mfrac><mo fence="true">⌋</mo></mrow><mo>≥</mo><msub><mi>c</mi><mtext>回</mtext></msub><mo fence="true">}</mo></mrow></mrow><annotation encoding="application/x-tex">D(G)=\max\left\{i:\ \left\lfloor\frac{g_i-c}{64}\right\rfloor\ge c_{\text{回}}\right\}</annotation></semantics></math></span></math></div>
-  <ul><li>g<sub>i</sub>：第 i 层开始时剩的 gas。往下调用时带走 63/64，自己留 1/64。第 1 层先扣掉交易起步价和 32 字节数据。</li><li>c = 143：我们测试程序每一层走到下一次调用前花的 gas。</li><li>c_回 = 25：更深那一层失败以后，这一层把自己的层数返回去要花的 gas。只能拿自己留下的那 1/64 付，付不起，这一层也跟着失败。</li><li>D(G)：交易给 G gas 时，最深能把结果带回来的是第几层。它比「还走得到调用」的那一层浅 10–11 层。</li></ul>
-  <p><span class="tag fix">更正</span>本书之前的 /physics/ 单页版上，定律九的式子是 D(G) = max{i: g<sub>i</sub> ≥ c}，少了「返回」这一步，照它算每档要多 10–11 层；那一版的预测数（下表那 4 个）是用逐层精确模拟算的，没错。本书改用上面这条，和精确模拟在 4 个点、300 个随机的 G 上逐个相同。</p>
+  <ul><li>g<sub>i</sub>：第 i 层开始时剩的 gas。往下调用时带走 63/64，自己留 1/64。第 1 层先扣掉交易起步价和 32 字节数据。</li><li>c = 143：我们测试程序每一层走到下一次调用前花的 gas（算的：照测试合约这一段的指令价加起来）。</li><li>c_回 = 25：更深那一层失败以后，这一层把自己的层数返回去要花的 gas（算的：照返回那一段的指令价加起来）。只能拿自己留下的那 1/64 付，付不起，这一层也跟着失败。</li><li>D(G)：交易给 G gas 时，最深能把结果带回来的是第几层。它比「还走得到调用」的那一层浅 10–11 层（推的）。</li></ul>
+  <p><span class="tag fix">更正</span>本书之前的 /physics/ 单页版上，原定律九的式子是 D(G) = max{i: g<sub>i</sub> ≥ c}，少了「返回」这一步，照它算每档要多 10–11 层；那一版的预测数（下表那 4 个）是用逐层精确模拟算的，没错。本书改用上面这条，和精确模拟在 4 个点、300 个随机的 G 上逐个相同。</p>
   <div class="tbl"><table>
-    <thead><tr><th>给的 gas G</th><th>逐层算出来</th><th>实测（两链、各两家节点）</th></tr></thead>
+    <thead><tr><th>给的 gas G</th><th>逐层算出来</th><th>实测（两链、各两个入口）</th></tr></thead>
     <tbody>
       <tr><th scope="row">100,000</th><td class="r">134</td><td class="r">134</td></tr>
       <tr><th scope="row">1,000,000</th><td class="r">288</td><td class="r">288</td></tr>
@@ -683,26 +720,27 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">30,000,000</th><td class="r">504</td><td class="r">504</td></tr>
     </tbody></table></div>
   <p></p>
-  <ul><li>协议写的上限是 1,024 层。按这条式子，要约 1.1×10¹¹ gas 才碰得到，比哪条链的块上限都大得多，所以实际能套几层由 63/64 规则定。</li></ul>
+  <ul><li>协议写的上限是 1,024 层。按这条式子，要约 1.1×10¹¹ gas 才碰得到（推的），比哪条链的块上限都大得多，所以实际能套几层由 63/64 规则定。</li><li>另一份对抗样本在 BSC 官方入口（只读上限 5.5 亿）量到 644 层，碰不到 1,024。<span class="cite">反方·深度·56</span></li><li>原定律九。这两条链的模拟量法对回执都未决（第 0 章），量法没对上回执以前不当定律写，所以记观察。</li></ul>
 
 </section>
-<h2 id="s4-4"><span class="secno">4.4</span>怎么量出来的</h2>  <ol><li><b>单笔上限</b>：用 eth_estimateGas 问节点，要 1,000 万、1,600 万、1,700 万、2,000 万……gas 的交易能不能发。  <ul><li>BSC 三家节点都是 1,600 万过、1,700 万拒，回的错是「超过 16,777,216」。</li><li>X Layer：两家官方节点估算到约 1 亿都放行，再大的没试；单笔上限等于块上限 2.1 亿，是按协议推的。</li></ul>
-</li><li><b>块上限</b>：读最近 601 个块的块头，取中位数。BSC 单个块会偏离中位数（各验证人设的目标不同），601 块里最多到过 70,548,735。</li><li><b>只读调用上限</b>：对每家节点发一次只读调用，要的 gas 从 16,777,216 一直到 100 亿，看节点实际给了多少（程序开头读剩下的 gas，再加上起步价）。</li><li><b>执行速度</b>：让节点用满上限空转一个循环，看用了几秒。</li><li><b>调用深度</b>：一个测试程序一层一层地调自己，看给 G gas 时最深到第几层，和逐层算的比。</li><li>全是只读：不发交易，也不碰 tapeout()。</li></ol>
+
+<h2 id="s4-4"><span class="secno">4.4</span>怎么量出来的</h2>  <ol><li><b>单笔上限</b>：用 eth_estimateGas 问节点，要 1,000 万、1,600 万、1,700 万、2,000 万……gas 的交易能不能发。  <ul><li>BSC 三个入口（两家运营方）都是 1,600 万过、1,700 万拒，回的错是「超过 16,777,216」。</li><li>X Layer：OKX 的两个官方入口估算到约 1 亿都放行，再大的没试；单笔上限等于块上限 2.1 亿，是按协议推的。</li></ul>
+</li><li><b>块上限</b>：读最近 601 个块的块头，取中位数。BSC 单个块会偏离中位数（各验证人设的目标不同），601 块里最多到过 70,548,735。</li><li><b>只读调用上限</b>：对每个入口发一次只读调用，要的 gas 从 16,777,216 一直到 100 亿，看节点实际给了多少（程序开头读剩下的 gas，再加上起步价）。</li><li><b>执行速度</b>：让节点用满上限空转一个循环，看用了几秒。</li><li><b>调用深度</b>：一个测试程序一层一层地调自己，看给 G gas 时最深到第几层，和逐层算的比。</li><li>全是只读：不发交易，也不碰 tapeout()。</li></ol>
 
 <h2 id="s4-5"><span class="secno">4.5</span>例题</h2><section class="box ex" aria-labelledby="ex-8e82a0">
   <header><span class="kind">例题 1</span><span class="name" id="ex-8e82a0">一次只读调用能算多大的电路</span></header>
-  <ul><li>BSC 的 NodeReal 带钥匙节点给 5.5 亿：约 102,857 门（第 3 章定律七）。它每秒约跑 298M gas，用满 5.5 亿实测 1.844 秒。这是平铺网表的门数；网表里放子电路调用记录的分层电路不付拼接费，能到约 23 万门（第 3 章定律七的更正）。</li><li>换到 publicnode，只给 5,000 万：约 20,671 门，少了约五分之四。定律三、四两条链共用，所以 X Layer 三家也都是这个数。</li><li>所以要用只读调用算大电路，先查节点给多少。</li></ul>
-  <p><b>读者动手</b>：常数表里「一次只读 eth_call 最多烧」那一行，能现场量你连的那家节点给多少。<a class="rmgo" href="../constants/#c-power-call">去常数表复测这一项</a></p>
+  <ul><li>BSC 的 NodeReal 带钥匙节点给 5.5 亿：约 102,857 门（第 3 章观察 3.3）。它每秒约跑 298M gas，用满 5.5 亿实测 1.844 秒。这是平铺网表的门数；网表里放子电路调用记录的分层电路不付拼接费，能到约 23 万门（第 3 章观察 3.3 的更正）。</li><li>换到 publicnode，只给 5,000 万：约 20,671 门，少了约五分之四。观察 3.1、3.2 两条链共用，所以 X Layer 三个入口也都是这个数。</li><li>所以要用只读调用算大电路，先查节点给多少。</li></ul>
+  <p><b>读者动手</b>：常数表里「一次只读 eth_call 最多烧」那一行，能现场量你连的那个节点给多少。<a class="rmgo" href="../constants/#c-power-call">去常数表复测这一项</a></p>
 
 </section><section class="box ex" aria-labelledby="ex-af1052">
   <header><span class="kind">例题 2</span><span class="name" id="ex-af1052">一笔交易要多少才会被拒</span></header>
-  <ul><li>BSC：要 1,600 万执行 gas 的交易，NodeReal 带钥匙节点估出来 16,149,473，能发；要 1,700 万的，三家都拒。</li><li>所以一颗电路要在 BSC 上用交易调一次 step，执行 gas 得在 16,777,216 以内，约 7,249 门（第 3 章例题 2）。</li></ul>
+  <ul><li>BSC：要 1,600 万执行 gas 的交易，NodeReal 带钥匙节点估出来 16,149,473，能发；要 1,700 万的，三个入口都拒。</li><li>所以一颗电路要在 BSC 上用交易调一次 step，执行 gas 得在 16,777,216 以内，约 7,249 门（第 3 章例题 2）。</li></ul>
 
 </section>
 <h2 id="s4-6"><span class="secno">4.6</span>什么时候不成立</h2><section class="box fails" aria-labelledby="f4">
   <header><span class="kind">这条会不成立</span><span class="name" id="f4">照实写</span></header>
   <ol class="cases">
-    <li><span class="when">上限都会变。</span>  <ul><li>BSC 的单笔上限是协议规则，硬分叉能改。</li><li>块上限：BSC 由验证人投票，单个块会偏离中位数；X Layer 由排序器设，随时能改。</li><li>只读调用的上限是节点自己的设置，换一家、过一阵都可能不同。书里的数是 11 月 16 日量的。</li></ul>
+    <li><span class="when">上限都会变。</span>  <ul><li>BSC 的单笔上限是协议规则，硬分叉能改。</li><li>块上限：BSC 由验证人投票，单个块会偏离中位数；X Layer 由排序器设，随时能改。</li><li>只读调用的上限是节点自己的设置，换一个入口、过一阵都可能不同。书里的数是 11 月 16 日量的。</li></ul>
 </li>
     <li><span class="when">节点会限速，那和上限无关。</span><span>BSC 的 drpc 估算时回过「HTTP 429」，是请求太多被拒，不是上限到了。</span></li>
     <li><span class="when">调用深度里的 c 跟程序走。</span><span>c = 143 是我们测试程序的；别的合约每层花得多，能套的层数就少。</span></li>

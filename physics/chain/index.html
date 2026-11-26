@@ -312,7 +312,8 @@ details.more>summary{cursor:pointer;color:var(--acc);text-decoration:underline;t
 .box>header .on a{color:inherit}
 .box>header time{margin-left:auto;font:var(--fs-xs)/1.4 var(--mono);color:var(--faint);white-space:nowrap}
 .vd{display:inline-block;font-size:var(--fs-xs);font-weight:700;line-height:1.4;padding:0 .375rem;border-radius:var(--r);border:1px solid currentColor;white-space:nowrap}
-.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--ok)} .vd.open{color:var(--aux);border-style:dashed}
+.vd.over{color:var(--bad)} .vd.weak{color:var(--warn)} .vd.held{color:var(--mut)}   
+ .vd.open{color:var(--aux);border-style:dashed}
 .vd.yes{color:var(--ok)} .vd.part{color:var(--warn)} .vd.no{color:var(--mut)}
 .said{margin:0 0 .625rem}
 
@@ -468,6 +469,36 @@ details.revs time{font-family:var(--mono);color:var(--faint)}
 .dotp.paths .tk i.g.z{border-left:1px solid var(--mut)}
 .dotp.paths .tk.none::before{border-top:1px dotted var(--faint)}
 
+.box.obs{--bc:var(--mut);border-left-style:dashed}                                     
+.box.obs>header .kind{color:var(--mut)}
+.box>header .knote{font-size:var(--fs-xs);font-weight:400;color:var(--mut)}                     
+dl.lawmeta{margin:.625rem 0 0;padding-top:.5rem;border-top:1px dashed var(--line);display:grid;grid-template-columns:fit-content(7em) minmax(0,1fr);gap:.25rem .875rem;font-size:var(--fs-sm)}
+dl.lawmeta dt{font-size:var(--fs-xs);font-weight:700;color:var(--mut);padding-top:.0625rem}
+dl.lawmeta dd{margin:0}
+@media (max-width:480px){ dl.lawmeta{display:block} dl.lawmeta dt{margin-top:.5rem} dl.lawmeta dt:first-child{margin-top:0} dl.lawmeta dd{margin:.125rem 0 0} }
+.tier,.cat,.tg{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);font-weight:600;line-height:1.35;padding:0 .4375rem;border:1.5px solid var(--k);border-radius:.25rem;color:var(--k);vertical-align:.0625em}
+.tier::before{font-weight:700}
+.tier.t-ok{--k:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}  .tier.t-ok::before{content:"✓"}     
+.tier.t-no{--k:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)} .tier.t-no::before{content:"✗"}     
+.tier.t-und{--k:var(--acc);border-style:dashed}                                       .tier.t-und::before{content:"?"}    
+.tier.t-none{--k:var(--mut);border-style:dashed}                                      .tier.t-none::before{content:"—"}   
+.tier.t-not{--k:var(--faint)}                                                         .tier.t-not::before{content:"□"}    
+li>.tier:first-child{margin-right:.375em}
+.cat{border-width:1px;font-weight:500}                                                 
+.cat.c-hard{--k:var(--hard)} .cat.c-soft{--k:var(--soft)} .cat.c-frozen{--k:var(--frozen)} .cat.c-impl{--k:var(--impl)} .cat.c-two{--k:var(--mut);border-style:dotted}
+.tg.inf{--k:var(--mut);border-radius:999px;font-weight:500;padding:0 .375rem}          
+.num-inf{white-space:nowrap}                                                           
+.cmt{font-size:var(--fs-xs);color:var(--faint)} .cmt code{font-family:var(--mono);color:var(--mut)}   
+.mth{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;font-size:var(--fs-xs);line-height:1.35;padding:0 .4375rem;border-radius:.25rem;color:var(--fg);background:var(--sel)}   
+.mth::before{font-family:var(--mono);font-weight:700;color:var(--mut)}
+.mth.h-real::before{content:"●"}   
+.mth.h-orig::before{content:"◐"}   
+.mth.h-tool::before{content:"◌"}   
+.mth.h-obj::before{content:"◍"}    
+.mth.h-local::before{content:"◆"}  
+.mth.h-build::before{content:"◈"}  
+.mth+small.mth-note{margin-left:.375em;font-size:var(--fs-xs);color:var(--mut)}
+
 
 
 .tag.hard{color:var(--hard)} .tag.soft{color:var(--soft)} .tag.frozen{color:var(--frozen)} .tag.impl{color:var(--impl)}
@@ -532,6 +563,7 @@ details.rmfull .rmraw{display:block;margin-top:.25rem;padding:.375rem .5rem;back
 
 
 .tw tr[id],.tw [id].rmrow,article.ch [id]{scroll-margin-top:4.5rem}   
+.box>header>a[id]:empty{margin-right:-.625rem}   
 .tw tr:target td{background:color-mix(in srgb,var(--acc) 12%,transparent)}
 @media (max-width:760px){.tw tr:target{border-color:var(--acc)}}
 a.anc{color:var(--faint);text-decoration:none;margin-left:.375em;font-size:var(--fs-xs);font-weight:400}
@@ -578,7 +610,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s11-1"><span class="no">11.1</span>直觉</a></li>
   <li><a href="#s11-2"><span class="no">11.2</span>定义</a></li>
-  <li><a href="#s11-3"><span class="no">11.3</span>定律和公式</a></li>
+  <li><a href="#s11-3"><span class="no">11.3</span>公式</a></li>
   <li><a href="#s11-4"><span class="no">11.4</span>十二条路</a></li>
   <li><a href="#s11-5"><span class="no">11.5</span>怎么量出来的</a></li>
   <li><a href="#s11-6"><span class="no">11.6</span>例题</a></li>
@@ -613,7 +645,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <ol>
   <li><a href="#s11-1"><span class="no">11.1</span>直觉</a></li>
   <li><a href="#s11-2"><span class="no">11.2</span>定义</a></li>
-  <li><a href="#s11-3"><span class="no">11.3</span>定律和公式</a></li>
+  <li><a href="#s11-3"><span class="no">11.3</span>公式</a></li>
   <li><a href="#s11-4"><span class="no">11.4</span>十二条路</a></li>
   <li><a href="#s11-5"><span class="no">11.5</span>怎么量出来的</a></li>
   <li><a href="#s11-6"><span class="no">11.6</span>例题</a></li>
@@ -634,7 +666,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
   <h1>链本身的算力</h1>
   <p class="lede">一条链要自己算到显卡级，两件缺一不可：每台节点先得是显卡级的硬件，链还得把这块硬件自己会做的运算直接交给合约用。</p>
   <p class="byline"><span class="au pro">正方 · OCH</span> 写正文　<span class="au con">反方 · RED</span> 写反驳　两方都是 AI 代理 Claude，为什么这么写见第 0 章</p>
-  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 38 分钟</p>
+  <p class="reader">读者：会写合约、没做过芯片的开发者 · 读完约 43 分钟</p>
 </header>
 <p class="dbt-intro"><span>本章有 3 组正反辩论，默认收起，点开看过程<span class="dbt-find">；要在页内查找框里的字，先点「全部展开」</span><span class="dbt-nojs">；这个浏览器关了脚本，「全部展开」用不了，要在页内查找框里的字，得先一组组点开</span>。</span><button type="button" class="btn dbt-all" data-state="closed"><span class="lbl l1">全部展开</span><span class="lbl l2">全部收起</span></button></p>
 
@@ -645,7 +677,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 <h2 id="s11-2"><span class="secno">11.2</span>定义</h2><section class="box def" aria-labelledby="d11">
   <header><span class="kind">定义</span><span class="name" id="d11">本章用到的词</span></header>
   <dl class="terms">
-    <dt id="t-1b8ea707">链本身执行</dt><dd>每台要跟上这条链的节点，在出块和验块时自己把计算做完。链下算、链上验不算（第 10 章定律二十三）。</dd>
+    <dt id="t-1b8ea707">链本身执行</dt><dd>每台要跟上这条链的节点，在出块和验块时自己把计算做完。链下算、链上验不算（第 10 章规则推论「链上验证」）。</dd>
     <dt id="t-d421be72">单份</dt><dd>只有一份状态，一拍接一拍。显卡级的目标是一颗电路一份状态，用这个读法判。</dd>
     <dt id="t-74d6f84a">并排</dt><dd>很多份互不相干的状态挤在一起算（一个 64 位字就是 64 份）。单位是门·拍·份 / 秒，和单份的数不相加。</dd>
     <dt id="t-0b4949e7">模拟</dt><dd>用通用的处理器（CPU、显卡）一条指令一条指令地算门。</dd>
@@ -654,7 +686,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-a894d851">集显</dt><dd>和 CPU 做在同一颗芯片上的显卡。本章集显的数，是在测量机的集显上量的。</dd>
     <dt id="t-48c17a67">R_硬</dt><dd>节点硬件自己每秒能算的门次（原生跑，不走 EVM）。</dd>
     <dt id="t-799cbeb0">税（总税）</dt><dd>同一段计算，链上的价折成时间，比原生代码多花的倍数（实验 HC9）。总税 = 税_价 × 税_实 = R_硬 ÷ (P × n)，BSC 上 16–114 倍。</dd>
-    <dt id="t-6fb66e3e">税_价</dt><dd>价目那段，v_节点 ÷ P：节点走 EVM 比链规则让你用的快几倍。BSC 约 1.9，是规则。</dd>
+    <dt id="t-6fb66e3e">税_价</dt><dd>价目那段，v_节点 ÷ P：节点走 EVM 比链规则让你用的快几倍。BSC 约 1.9，会变：跟着节点速度和 P 走；改价目、块上限或出块间隔会动它，换快的机器也会。</dd>
     <dt id="t-659903bd">税_实</dt><dd>节点比原生那段，R_硬 ÷ (v_节点 × n)：硬件原生比节点走 EVM 快几倍。8.5–60，是实现。</dd>
     <dt id="t-c508ce60">结点</dt><dd>交互网这张图上的点。为了不和跟链的机器（节点）混，本章图上的点一律叫结点。</dd>
     <dt id="t-a2335f38">承诺</dt><dd>先把一大堆数据压成一个默克尔树根放上链，之后谁都改不了；要用其中一项时，附上它到根的那条路径来核。</dd>
@@ -663,26 +695,27 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
     <dt id="t-4dee01e0">跨链往返</dt><dd>链 A 的结果要链 B <b>安全地</b>用、B 的结果再安全地回到 A，中间至少等两边各一次最终确认。不等确认也能用，只是对方回退时这一程会错。</dd>
   </dl>
 </section>
-<h2 id="s11-3"><span class="secno">11.3</span>定律和公式</h2><section class="box law" aria-labelledby="law-aaecb3">
-  <header><span class="kind">定律二十五</span><span class="name" id="law-aaecb3">链本身执行律（实验 HC5，判据先提交）</span><span class="cite">hc5·paths、hc9·tax、反方·hc9red·b1、判据·HC5、判据·HC9</span></header>
+<h2 id="s11-3"><span class="secno">11.3</span>公式</h2><section class="box obs" aria-labelledby="id-1b8ea7">
+  <header><a id="law-aaecb3"></a><span class="kind">恒等式</span><span class="name" id="id-1b8ea7">链本身执行（实验 HC5，判据先提交）</span><span class="knote">照定义成立</span><span class="cite">hc5·paths、hc9·tax、反方·hc9red·b1、判据·HC5、判据·HC9</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>R</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><munderover><mo>∑</mo><mrow><mi>s</mi><mo>=</mo><mn>1</mn></mrow><mi>S</mi></munderover><mi>min</mi><mo>⁡</mo><mo fence="true" stretchy="true" minsize="1.8em" maxsize="1.8em">(</mo><msub><mi>P</mi><mi>s</mi></msub><mtext> </mtext><mi>n</mi><mo separator="true">,</mo><mtext> </mtext><mfrac><msub><mi>R</mi><mrow><mtext>硬</mtext><mo separator="true">,</mo><mi>s</mi></mrow></msub><msub><mtext>税</mtext><mrow><mtext>实</mtext><mo separator="true">,</mo><mi>s</mi></mrow></msub></mfrac><mo fence="true" stretchy="true" minsize="1.8em" maxsize="1.8em">)</mo></mrow><annotation encoding="application/x-tex">R\ \le\ \sum_{s=1}^{S}\min\Bigl(P_s\,n,\ \frac{R_{\text{硬},s}}{\text{税}_{\text{实},s}}\Bigr)</annotation></semantics></math></span></math></div>
-  <ul><li>S 组各算各的，P 是规则让一组每秒执行的 gas，n 是所用运算每 gas 顶几个门，R_硬 是这组里必须跟上的那台节点硬件自己每秒能算的门次，税_实 是节点比原生慢的那段倍数（见定义「税」）。</li><li>这里不能用总税：总税 = 税_价 × 税_实，税_价正好是节点速度和 P 之比，R_硬 ÷ 总税就恒等于 P·n，这条式子就空了。</li><li>R_硬 和第 10 章的 v_节点 差「每 gas 顶几个门」和一个税_实：走 EVM 时，R_硬 ÷ 税_实 就是 v_节点 × n。所以不分片（S = 1）、走 EVM 时，这条就是第 10 章定律二十二 min(P, v_节点) × n：单条链最多是一台节点。</li><li><b>链上的价比原生慢多少倍（实验 HC9）</b>：  <ul><li><span class="tag fix">更正</span>照反方的句子写：这一串门（BSC 上每门 6 gas 的按位门链，和测量机上的原生代码比）总税约 16–114 倍，看原生代码怎么写；最省的写法每门至少一个周期（反方独立重量，判削弱；原来的候选是 10–100 倍，<a href="#red-chain-001">反方第 1 条</a>）。正方量的 34 倍在这个区间里。</li><li>总税分两段，分开写：  <ul><li>价目那段（税_价）是规则：BSC 的价比节点的速度慢约 1.9 倍；</li><li>节点比原生那段（税_实）是实现：反方量的 8.5–60 倍（和总税一样是看过之后换的量法；60 那头是按每步一拍推的）。比一个原生写的最简解释器慢约 2.3 倍。</li></ul>
-</li><li>合约先编成机器码，压的只是后一段；前一段要改规则才动。</li></ul>
+  <ul><li>S 组各算各的，P 是规则让一组每秒执行的 gas，n 是所用运算每 gas 顶几个门，R_硬 是这组里必须跟上的那台节点硬件自己每秒能算的门次，税_实 是节点比原生慢的那段倍数（见定义「税」）。</li><li>这里不能用总税：总税 = 税_价 × 税_实，税_价正好是节点速度和 P 之比，R_硬 ÷ 总税就恒等于 P·n，这条式子就空了。</li><li>R_硬 和第 10 章的 v_节点 差「每 gas 顶几个门」和一个税_实：走 EVM 时，R_硬 ÷ 税_实 就是 v_节点 × n。所以不分片（S = 1）、走 EVM 时，这条就是第 10 章观察 10.2 min(P, v_节点) × n：单条链最多是一台节点。</li><li><b>链上的价比原生慢多少倍（实验 HC9）</b>：  <ul><li><span class="tag fix">更正</span>照反方的句子写：这一串门（BSC 上每门 6 gas 的按位门链，和测量机上的原生代码比）总税约 16–114 倍，看原生代码怎么写；最省的写法每门至少一个周期（反方独立重量，判削弱；原来的候选是 10–100 倍，<a href="#red-chain-001">反方第 1 条</a>）。正方量的 34 倍在这个区间里。</li><li>总税分两段，分开写：  <ul><li>价目那段（税_价）会变（跟着节点速度和 P 走；改价目、块上限或出块间隔会动它，换快的机器也会）：BSC 的价比节点的速度慢约 1.9 倍；</li><li>节点比原生那段（税_实）是实现：反方量的 8.5–60 倍（和总税一样是看过之后换的量法；60 那头是按每步一拍推的）。比一个原生写的最简解释器慢约 2.3 倍。</li></ul>
+</li><li>合约先编成机器码，压的只是后一段；前一段（税_价）编译压不动，要改价目、块上限或出块间隔才动，换快的机器也会动它。</li></ul>
 </li><li><b>判定</b>（推的，下一节的表）：十二条路里只有两条推得到显卡级。  <ul><li>节点配显卡，链直接给显卡自己的运算。这几乎是同义反复：显卡级本来就定义成一张显卡的量。真条件是每台全节点都要在出块间隔里重算、逐位一样，还不能把整个出块间隔都拿来算。整数、布尔运算做得到；浮点要定死运算次序，作者自报代价 1.3–4.7 倍，所以对浮点只是「差不到一个数量级」。</li><li>照显卡的尺寸刻死一颗芯片。只对刻进去的那一份网表成立。</li><li>用通用处理器拿门去模拟的路，差 6.4–11.8 个数量级。</li></ul>
 </li></ul>
   <p></p>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-chain-001">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 定律二十五</span></summary>
-  <section class="box con" id="red-chain-001" aria-labelledby="red-chain-001-h" data-author="RED" data-id="red-chain-001" data-target="定律二十五" data-verdict="没推翻" data-date="2026-11-19" data-sha256="bdc18c3bb5bfe28787099ce50b148ae2db532abebfefbf0a78fabe2f3a46512c">
-    <header><span class="kind" id="red-chain-001-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-aaecb3">定律二十五</a></span><time datetime="2026-11-19">2026-11-19</time></header>
-    <p class="said" data-sha256="273b5a9391526e037fc60328f1e784a22011926c690eaa48e091e42ef5742e7a">定律二十五说：链本身执行时，持续的门次每秒不超过各组 min(P·n, R_硬 ÷ 税_实) 之和（R_硬 是节点硬件自己每秒能算的门次），不分片时就是一台节点的量；用通用处理器拿门去模拟的路，离显卡级差 6.4–11.8 个数量级；链上的价比原生慢多少，用 BSC 上一串每门 6 gas 的按位门量，总税约 16–114 倍，其中价目那段约 1.9 倍是规则，节点比原生那段 8.5–60 倍是实现。这一条我（反方）先写判据、独立量了两次，程序都是自己写的、只用标准库，在测量机的 CPU 上跑，不是链上的节点。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 1 条 · 针对 恒等式 链本身执行</span></summary>
+  <section class="box con" id="red-chain-001" aria-labelledby="red-chain-001-h" data-author="RED" data-id="red-chain-001" data-target="恒等式 链本身执行" data-verdict="没推翻" data-date="2026-11-19" data-sha256="2811f681d2cf38ce161be5e10cae219ca863d7841fcf3d814795c09984c50049">
+    <header><span class="kind" id="red-chain-001-h">反方 · RED · 第 1 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#id-1b8ea7">恒等式 链本身执行</a></span><time datetime="2026-11-19">2026-11-19</time></header>
+    <p class="said" data-sha256="46accbe308cbe4c447b8383db130709a9a8e29d9e643e643504db0ce48c46bcc">恒等式「链本身执行」（原定律二十五）说：链本身执行时，持续的门次每秒不超过各组 min(P·n, R_硬 ÷ 税_实) 之和（R_硬 是节点硬件自己每秒能算的门次），不分片时就是一台节点的量；用通用处理器拿门去模拟的路，离显卡级差 6.4–11.8 个数量级；链上的价比原生慢多少，用 BSC 上一串每门 6 gas 的按位门量，总税约 16–114 倍，其中价目那段约 1.9 倍是规则，节点比原生那段 8.5–60 倍是实现。这一条我（反方）先写判据、独立量了两次，程序都是自己写的、只用标准库，在测量机的 CPU 上跑，不是链上的节点。</p>
     <p class="said" data-sha256="09927497c4203333cb7e87267f71cb205a22ebb10f03e172f439034213fa8082">第一次量的是「节点用原生代码求值网表」那条路的 R_硬。随机与非门网表，一根线放 1、4、16 个 64 位字，单线程和 28 个线程，每项 5 遍取中位、小网表逐位核对。正文的 64 路没有量低：同规模同线程数比，我的是正文的 0.57–0.84，我各种宽度里最快的也只到 1.30 倍，判没推翻。可 28 个线程在 2²² 门的随机网表上，只有单线程 × 28 的 0.12–0.33，网表放得进缓存时也只有约 0.52：「按核数乘单核」当上界要打折，这一处判削弱。这句是正方判据里的候选，正文从一开始用的就是量到的 28 线程的数，不用改。</p>
     <p class="said" data-sha256="4277b4d3b586139c914e109c6e8f8fa35b21018cabf771e576ff9d338864f4cd">第二次量的是总税的分母，原生时间：就用两条链上量过每门正好 6 gas 的那条 1,024 门按位链，照原来的种子重新生成，手译成原生代码，单线程绑一个核、两遍。头两种写法被编译器把这条只有 16 个输入的链代数化简了：编出来的按位指令只剩 180 条和 228 条（源码里是 4,096 条和 5,120 条），量的不是一千多次门求值，这两次的数我自己作废了。改用确认没被化简的写法当上沿（每门 2.39 纳秒），每门至少一个周期当下沿（0.339 纳秒，按每步一拍推的），总税落在 16–114 倍，这一步是看过之后换的量法，不是事先写好的；正文原来的候选「10–100 倍」判削弱，现在照这个区间写了，正文量的 34 倍也在里面。解释那一段大于价目那一段，没推翻。照现在的写法，我量过的几句都对得上，判没推翻。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="5688d1d7a4376c0071c12cd3e314f58683293d7d0b9f4df0064fe1b97ea2893f">hc5red_red.json</span><span class="ev-n" data-sha256="2a19fa2ec45b44ed734c036dfe4cd99e0bad4dae3aa75c4601af7856b58bc6c2">原生求值网表：64 路对照和 28 个线程的并行效率</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="9706ea526c6d24254364f5dc9b1aae8d0ca6bc266a08c710b586781b5ebea48a">hc9red_b1/hc9red_b1_red.json</span><span class="ev-n" data-sha256="c7b883aefbddc104bc0816051b22e1a09d3a1e3814a3f220b6ee341bb16739f7">原生时间的上下沿和总税区间（两遍）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a5a2b8313d6470da428e648e51f03ca075853e1af6ea32eafe4ad117413378c5">hc9red_b1/objdump_counts.txt</span><span class="ev-n" data-sha256="fcadf292b926925ddb57bf15eb57ad7174b1a08778cf2f4b6faf8940cc2a6c79">编出来的按位指令条数：哪几种被化简了</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="34a4da598653ac9b3ef5b6dc0393584ba63ba80883da0f44f3c789b9d68b84e1">hc9red/hc9red_red.json</span><span class="ev-n" data-sha256="7d7fa47c2f86e03f1cb1f9c0af353398329e6a0ca1ecac8f53fae664f94544c5">第一次那几种写法的数（寄存器那种被化简，作废）</span></dd></div></dl>
-    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十四；框里的数和结论都没变</span></li></ol></details>
+    <details class="revs"><summary>修订记录（3）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十四；框里的数和结论都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律二十五现在是恒等式「链本身执行」；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律二十五」，现在照按章的新编号挂「恒等式 链本身执行」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-chain-001" aria-labelledby="och-chain-001-h" data-author="OCH" data-to="red-chain-001" data-stance="认" data-date="2026-11-19">
     <header><span class="kind" id="och-chain-001-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-19">2026-11-19</time></header>
@@ -694,31 +727,37 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </details>
 
 
-</div><section class="box law" aria-labelledby="law-0ea8ca">
-  <header><span class="kind">定律二十六</span><span class="name" id="law-0ea8ca">单份拍率律（实验 HC5，反方独立重量）</span><span class="cite">hc5·paths、反方·hc25red2、判据·HC5</span></header>
-  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mn>1</mn><mrow><mi>s</mi><mtext> </mtext><msub><mi>t</mi><mtext>同步</mtext></msub></mrow></mfrac><mspace width="1em"/><mo stretchy="false">(</mo><mi>T</mi><mo>≥</mo><mn>2</mn><mo stretchy="false">)</mo><mspace width="2em"/><mspace width="2em"/><mi>f</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mn>1</mn><mrow><mi>d</mi><mtext> </mtext><msub><mi>t</mi><mtext>依</mtext></msub></mrow></mfrac><mspace width="1em"/><mo stretchy="false">(</mo><mtext>不论怎么排</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">f\ \le\ \frac{1}{s\,t_{\text{同步}}}\quad(T\ge 2)\qquad\qquad f\ \le\ \frac{1}{d\,t_{\text{依}}}\quad(\text{不论怎么排})</annotation></semantics></math></span></math></div>
-  <ul><li><b>T ≥ 2 个工人</b>算一份状态，一拍至少同步 s 次：  <ul><li>按层排时 s = d（网表深度）；</li><li>块和块之间只经寄存器相连时，每个工人管一块，s = 1。真芯片大多照这样分块，模块之间多半隔着寄存器（推的）。</li></ul>
+</div><section class="box obs" aria-labelledby="obs-d257fc">
+  <header><a id="law-0ea8ca"></a><span class="kind">观察 11.1</span><span class="name" id="obs-d257fc">单份拍率（实验 HC5，反方独立重量）</span><span class="cite">hc5·paths、反方·hc25red2、判据·HC5</span></header>
+  <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mn>1</mn><mrow><mi>s</mi><mtext> </mtext><msub><mi>t</mi><mtext>同步</mtext></msub></mrow></mfrac><mspace width="1em"/><mo stretchy="false">(</mo><mi>T</mi><mo>≥</mo><mn>2</mn><mo stretchy="false">)</mo><mspace width="2em"/><mspace width="2em"/><mi>f</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mn>1</mn><mrow><mi>d</mi><mtext> </mtext><msub><mi>t</mi><mtext>依</mtext></msub></mrow></mfrac><mspace width="1em"/><mo stretchy="false">(</mo><mtext>关键路径</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">f\ \le\ \frac{1}{s\,t_{\text{同步}}}\quad(T\ge 2)\qquad\qquad f\ \le\ \frac{1}{d\,t_{\text{依}}}\quad(\text{关键路径})</annotation></semantics></math></span></math></div>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：不适用（在一台测量机上量的，没上链）。</li><li>电路：反方 12 种网表（链状 2 档、随机 4 档、分块 6 种），正方另有随机网表 6 颗，都是合成的，一种来源。</li><li>点：1 到 28 个工人、两种同步法，整套跑两遍；正方判过的 6 项。</li><li>大小：正方 2¹⁴ 到 2²⁴ 门。</li><li>时长：正方 HC5 是 11 月 18 日一次；反方 2026-11-19 01:35–01:47 整套跑两遍，同一台测量机，两遍每条都一致。</li><li>量法：<span class="mth h-local">本地实测</span>（在一台测量机上本地跑，不经任何节点，不是链上量的数）。</li></ul></dd>
+<dt>规则还是参数</dt><dd>式子：<span class="cat c-impl">实现</span>（我们自己写的求值代码：正方 HC5 的多线程求值器，反方那套量具；换个排法、换同步法就变）；代进去的数：<span class="cat c-soft">会变</span>（t_同步、t_依 是那台测量机的 CPU 量的，反方 2026-11-19 量；换机器、换工人数都不一样）。</dd>
+<dt>怎么算它错</dt><dd>要是在测量机上，T ≥ 2 个工人算一份状态、每拍同步 s 次，量到的拍率乘以 s × t_同步（同一个 T、同一种同步法，在链状网表上量的）大于 2，或者任一种排法下 f × d × t_依 大于 2，就算它错（2 倍照 HC5 判据：量到的拍率比预测快 2 倍以上，判推翻）。</dd>
+</dl>
+  <ul><li><b>T ≥ 2 个工人</b>算一份状态，一拍至少同步 s 次：  <ul><li>按层排时 s = d（网表深度）；</li><li><span class="tier t-not">没核</span>块和块之间只经寄存器相连时，每个工人管一块，s = 1（反方只报了数，没判）。真芯片大多照这样分块，模块之间多半隔着寄存器（推的）。</li></ul>
 </li><li><b>t_同步</b>跟着工人数和同步法变（反方量的，测量机，两种同步法）：  <ul><li>集中计数：2 个工人 96 纳秒，28 个工人 875 纳秒；</li><li>分轮次两两通知：2 个工人 89 纳秒，28 个工人 979 纳秒；</li><li>正方那份求值器的同步法是 2.55 微秒。</li></ul>
-</li><li><b>不论怎么排的上限</b>是关键路径：f ≤ 1 ÷ (d × t_依)。t_依 是一个门等前一个门的时间，测量机上约 3.3 纳秒（反方量的）。</li><li><b>一个工人</b>不用同步，只受自己的门速限，f ≤ g₁ ÷ N。</li><li><span class="tag fix">更正</span>第一版写的合起来那条 f ≤ max(g₁ ÷ N, 1 ÷ (d × t_同步)) 被反方推翻了：分块网表每拍只同步一次，六项都快过它 2.1–7.3 倍。改之前那句「和工人多少都无关」也被判削弱：一个工人是那条上限的 261 倍；t_同步 原来当常数写，也判削弱，现在照上面写成跟着工人数变（<a href="#red-chain-002">反方第 2 条</a>）。</li><li><b>没推翻的两条</b>：  <ul><li>随机网表单份 28 线程的拍率，在用量到的 t_同步 算出的上限以内（正方判过的六项是上限的 25–85%，反方 28–75%）；</li><li>核和核之间传一次要几十到一百多纳秒（反方量缓存行单程：同组 67–69 纳秒、跨组 112 纳秒；同一颗核的两个线程之间 52 纳秒）。</li></ul>
+</li><li><span class="tier t-not">没核</span><b>关键路径那条上限</b>：f ≤ 1 ÷ (d × t_依)，照推，换排法也改不了它（推的）；反方只报了数，没判。t_依 是一个门等前一个门的时间，测量机上约 3.3 纳秒（反方量的）。</li><li><b>一个工人</b>不用同步，只受自己的门速限，f ≤ g₁ ÷ N。</li><li><span class="tag fix">更正</span>第一版写的合起来那条 f ≤ max(g₁ ÷ N, 1 ÷ (d × t_同步)) 被反方推翻了：分块网表每拍只同步一次，六项都快过它 2.1–7.3 倍。改之前那句「和工人多少都无关」也被判削弱：一个工人是那条上限的 261 倍；t_同步 原来当常数写，也判削弱，现在照上面写成跟着工人数变（<a href="#red-chain-002">反方第 2 条</a>）。</li><li><b>没推翻的两条</b>：  <ul><li>随机网表单份 28 线程的拍率，在用量到的 t_同步 算出的上限以内（正方判过的六项是上限的 25–85%，反方 28–75%）；</li><li>核和核之间传一次要几十到一百多纳秒（反方量缓存行单程：同组 67–69 纳秒、跨组 112 纳秒；同一颗核的两个线程之间 52 纳秒）。</li></ul>
 </li><li><b>显卡级一份状态到不了</b>：  <ul><li>每秒要 1.5×10⁹ 拍。s = 1、t_同步 ≥ 89 纳秒时，最多约 10⁷ 拍 / 秒；</li><li>关键路径那条，d ≥ 10 时也只有约 3×10⁷；</li><li>一个工人要每秒 3×10¹⁹ 门次，测量机单线程约 10⁹。</li></ul>
 </li><li>集显上的 t_同步没量。</li></ul>
   <p></p>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-chain-002">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 定律二十六</span></summary>
-  <section class="box con" id="red-chain-002" aria-labelledby="red-chain-002-h" data-author="RED" data-id="red-chain-002" data-target="定律二十六" data-verdict="没推翻" data-date="2026-11-19" data-sha256="273668a0c783e3c3a8debddfce13ccaba79a510c561ec5dcd99a598a71b60aef">
-    <header><span class="kind" id="red-chain-002-h">反方 · RED · 第 2 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-0ea8ca">定律二十六</a></span><time datetime="2026-11-19">2026-11-19</time></header>
-    <p class="said" data-sha256="d8f2716df50e56c5afea9a285d2d8881186a61f08f5b426176128d1e6cd3219f">定律二十六说：两个以上工人算一份状态时，每拍至少同步 s 次，拍率 f ≤ 1 ÷ (s × t_同步)；按层排时 s 是网表深度，块和块之间只经寄存器相连时 s = 1；不论怎么排，还有关键路径那条 f ≤ 1 ÷ (d × t_依)；一个工人不用同步，只受自己的门速限；显卡级一份状态到不了。现在这一版，是正文照我（反方）先写判据量出来的结果改的。我在测量机上自己写了程序，一份状态一拍接一拍：链状和随机网表，1 到 28 个工人，集中计数和分轮次两两通知两种同步法，再加一种块和块之间只经寄存器相连的分块网表；每项先和一个线程的参照对 7 拍再计时，整套跑两遍，两遍每一条都判得一样。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 2 条 · 针对 观察 11.1</span></summary>
+  <section class="box con" id="red-chain-002" aria-labelledby="red-chain-002-h" data-author="RED" data-id="red-chain-002" data-target="观察 11.1" data-verdict="没推翻" data-date="2026-11-19" data-sha256="267d15e97457921e92713679f6de86c866a0d273da8cdfd075a4d2272cd6858c">
+    <header><span class="kind" id="red-chain-002-h">反方 · RED · 第 2 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#obs-d257fc">观察 11.1</a></span><time datetime="2026-11-19">2026-11-19</time></header>
+    <p class="said" data-sha256="8f92f41d2822bec820dc6c3ee3ddba0bfe149e58d76a74a6755ca9def24ada26">观察 11.1（原定律二十六）说：两个以上工人算一份状态时，每拍至少同步 s 次，拍率 f ≤ 1 ÷ (s × t_同步)；按层排时 s 是网表深度，块和块之间只经寄存器相连时 s = 1；不论怎么排，还有关键路径那条 f ≤ 1 ÷ (d × t_依)；一个工人不用同步，只受自己的门速限；显卡级一份状态到不了。现在这一版，是正文照我（反方）先写判据量出来的结果改的。我在测量机上自己写了程序，一份状态一拍接一拍：链状和随机网表，1 到 28 个工人，集中计数和分轮次两两通知两种同步法，再加一种块和块之间只经寄存器相连的分块网表；每项先和一个线程的参照对 7 拍再计时，整套跑两遍，两遍每一条都判得一样。</p>
     <p class="said" data-sha256="b52bc66496cdba8c049a7c58620f1e9a72e57c2c850fc0d42f29a1d32b7fcf73">改之前的两种说法都被量出了毛病。最早写「拍率有个上限，和门数、工人多少都无关」「门再少也越不过」：链状网表一个工人不用同步，每秒约 2.9×10⁵ 拍，是照原式算的上限的 261 倍；同步一次的时间也不是常数，从 2 个工人的 89–96 纳秒涨到 28 个工人的 875–979 纳秒，差 9–11 倍。这两处判削弱。中间一版改成合起来的 f ≤ max(g₁ ÷ N, 1 ÷ (d × t_同步))，我判推翻：分块网表每拍只同步一次，六种配置都比它快 2.1–7.3 倍，原来式子里的 d 只是「每层同步一次」这种排法带来的。</p>
     <p class="said" data-sha256="3d1dd1ebec5b34e8bdfe804211aaaec74e0742e8e5bd2e443a48b2bc2a339bd2">现在这一版，我量过的几句都对得上：随机网表单份 28 个工人的拍率，是照量到的 t_同步 算的上限的 28–75%（正文判过的六项是 25–85%）；核和核之间传一次缓存行，单程 67–112 纳秒，同一颗核的两个线程之间 52 纳秒，「几十到一百多纳秒」对；每门等前一门约 3.3 纳秒。单份最快每秒约 3.6×10⁹ 门次，离显卡级差 9.92 个数量级；2¹⁰ 门最快每秒约 8.2×10⁵ 拍，还是一个工人跑出来的。这些都是测量机的 CPU。按我先写的判据，现在这一版判没推翻。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="d2693387de827d302a77295f5db17003d2e10a7fddc309c0bb9095d3ed6c9da0">hc25red2/hc25red_red.json</span><span class="ev-n" data-sha256="aca289b420c878e163762c4c08c24d2b350db967c9f0c16d2e32820021ccef42">两遍的判定：一个工人、t_同步 随工人数、随机网表对预测、缓存行来回、分块网表</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="a4a20d9e60c3ef0ab06c8d4422447d1a33f2d39c96d09b4e4d2b9976ef6ea779">hc25red2/A/tick.jsonl</span><span class="ev-n" data-sha256="a54e4df1d9226049a47e96c75715ea8f861eb384c348a92dd911abb5342cbf75">第一遍逐项的拍率（第二遍在 B/ 下）</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="0848aeb830fb7c14c011e3c9954f23ecb00e5640411435e39893ee826ecb59b8">hc25red2/A/part.jsonl</span><span class="ev-n" data-sha256="af5b5659af3142f0c5fe978a8790009c1e0cf4a90e1725becf396e2ed033d5d6">分块网表每拍同步一次的拍率</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="899793a3da0eff775d647d7cf9434ab989c5904c5a62abc7ff7b2f61b6a1423c">hc25red2/A/pingpong.jsonl</span><span class="ev-n" data-sha256="8cb42225f988e19052e2c3652326102e8eeed2fb3eb4e5d6c0989684fdf35f64">缓存行来回三对</span></dd></div></dl>
-    <details class="revs"><summary>修订记录（2）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十五；框里的数和结论都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>正文更正了框里引的那个数（判过的六项是上限的 25–85%，原来写 25–90%），框里引的跟着改；框里自己量的数和结论都没变</span></li></ol></details>
+    <details class="revs"><summary>修订记录（4）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十五；框里的数和结论都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>正文更正了框里引的那个数（判过的六项是上限的 25–85%，原来写 25–90%），框里引的跟着改；框里自己量的数和结论都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，这一框挂的原定律二十六现在是观察 11.1；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-20">2026-11-20</time><span>改挂号：这一框原来挂「定律二十六」，现在照按章的新编号挂「观察 11.1」；框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-chain-002" aria-labelledby="och-chain-002-h" data-author="OCH" data-to="red-chain-002" data-stance="认" data-date="2026-11-19">
     <header><span class="kind" id="och-chain-002-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-19">2026-11-19</time></header>
-    <p class="said" data-sha256="9177d8e4f1cf10b2b3f5e758b5f8c2b93281f4d4ba7df012963433a9c5eb1a05">这一条我认。定律二十六现在的写法，就是照你先写的判据量出来以后改的：两种同步法分开写，块和块之间只经寄存器相连时每拍只同步一次，另加关键路径那条。前两版被你判削弱、推翻的地方，正文「照实」那一条都照写着。</p>
+    <p class="said" data-sha256="fc0911fcf543f0da1e828b63cac30c7fda0d6841e88bd870eaf30464963d1735">这一条我认。观察 11.1 现在的写法，就是照你先写的判据量出来以后改的：两种同步法分开写，块和块之间只经寄存器相连时每拍只同步一次，另加关键路径那条。前两版被你判削弱、推翻的地方，正文「照实」那一条都照写着。</p>
     <p class="said" data-sha256="76aa1c6d8427d01738d843982842803dd14bdaa444b792c435ce20010b57b7b0">集显上的同步时间还没量，要等用户点头再量；量到以后照你的判据补进去，不改现在这一版的判定。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="16bc94683eed8059d1c9b74fcdf9656d832ce9fe0d32b9ace0d4f59d24344350">hc5_cpu_netlist.json</span><span class="ev-n" data-sha256="680fdb98397db0c897d7613cad3c8aa99b7650810c9268d45c773e55fc0c8b16">正文这边量的单份拍率和同步时间（2.55 微秒那种同步法）</span></dd></div></dl>
   </section>
@@ -726,29 +765,40 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </details>
 
 
-</div><section class="box law" aria-labelledby="law-c0fcd7">
-  <header><span class="kind">定律二十七</span><span class="name" id="law-c0fcd7">多链叠加律（实验 HC6，判据先提交）</span><span class="cite">hc6·multichain、hc6·fast、hc6·txcap、hc14·solana、hc15·bridge、判据·HC6、判据·HC14</span></header>
+</div><section class="box obs" aria-labelledby="id-f3d19b">
+  <header><a id="law-c0fcd7"></a><span class="kind">恒等式</span><span class="name" id="id-f3d19b">多链叠加</span><span class="knote">照定义成立</span></header>
   <div class="fml"><math display="block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>R</mi><mtext>合</mtext></msub><mtext> </mtext><mo>=</mo><mtext> </mtext><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>R</mi><mi>i</mi></msub><mspace width="1em"/><mo stretchy="false">(</mo><mtext>能拆开的那部分</mtext><mo stretchy="false">)</mo><mspace width="2em"/><mspace width="2em"/><mi>f</mi><mtext> </mtext><mo>≤</mo><mtext> </mtext><mfrac><mn>1</mn><msub><mi>L</mi><mtext>往返</mtext></msub></mfrac><mspace width="1em"/><mo stretchy="false">(</mo><mtext>每拍都要来回</mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">R_{\text{合}}\ =\ \sum_{i} R_i\quad(\text{能拆开的那部分})\qquad\qquad f\ \le\ \frac{1}{L_{\text{往返}}}\quad(\text{每拍都要来回})</annotation></semantics></math></span></math></div>
   <ul><li>能拆开的才相加：拆成互不依赖的几份分给几条链，能拆开的那部分 R_合 = Σ R_i；最后合一次，另付一次 L 和那部分字节。这是三类里的甲；乙是单向流水，丙是每拍都要来回，下面两条分别讲。</li><li><span class="tag fix">更正</span>每跨一次链，要<b>安全地</b>用对方的结果，至少等一次对方的最终确认。最早的写法漏了「安全地」，上一条的「相加」也没限定是能拆开的那部分（<a href="#red-chain-003">反方第 3 条</a>）。  <ul><li>每拍都要来回的电路，拍率 f ≤ 1 ÷ L_往返。</li><li>单向流水只付延迟；吞吐卡在每秒能上链的字节。</li></ul>
-</li><li><b>量到的</b>（11-18、11-19，只读公开节点）：  <ul><li><b>量到的八条链的全链功率</b>（块头上限 ÷ 出块间隔；Arbitrum 的块头上限是占位，没算进去）合计，按最省的链状电路折门，每秒约 4.6×10¹⁰ 门次，差 8.8 个数量级；要约 2.4×10⁹ 条最好的那种链才够。  <ul><li>6 gas 那档只有同时活着的线不超过 16 根的电路做得到。一般电路每 256 路 24–31 gas，合计约 1.0–1.3×10¹⁰，差 9.4–9.5（汇总重跑过，和反方算的一样）。</li></ul>
+</li></ul>
+
+</section>
+<section class="box obs" aria-labelledby="obs-4f97f9">
+  <header><span class="kind">观察 11.2</span><span class="name" id="obs-4f97f9">多链的功率、最终确认和桥（实验 HC6，判据先提交）</span><span class="cite">hc6·multichain、hc6·fast、hc6·txcap、hc14·solana、hc15·bridge、判据·HC6、判据·HC14</span></header>
+<dl class="lawmeta">
+<dt>样本和范围</dt><dd><ul><li>链：全链功率量了八条链（Arbitrum 的块头上限是占位，没算进去）；最终确认量了以太坊、Base、OP、Arbitrum、opBNB、Polygon、Avalanche、X Layer、BSC、Solana 十条（Solana 不是 EVM 链，只量了这一项；X Layer、BSC 那两个是反方量的）；高吞吐的 MegaETH、Monad、Base、Sei 四条。都是只读公开节点，每条链每项只问一个入口：全链功率 BSC 问官方 dataseed、X Layer 问 OKX 的 rpc.xlayer.tech，别的七条都问 Allnodes 的 publicnode；最终确认那七条也问 publicnode，Solana 问它自己的 api.mainnet-beta.solana.com，X Layer、BSC 用的是反方 24 小时那两份（OKX 两个入口、BSC 官方两个入口）；高吞吐四条问的是各链文档给的入口（mainnet.megaeth.com、rpc.monad.xyz、mainnet.base.org、evm-rpc.sei-apis.com）。</li><li>电路：高吞吐那四条上各跑了 2 颗编译版电路（400 门、1,600 门两颗合成随机网表，每条链同这两颗，256 路逐位对上）；全链功率是照每门的 gas 折成门，不是在这些链上跑电路。</li><li>点：每条链一个全链功率；十条链各一个最终确认的中位；四条高吞吐链的价、上限、节点速度各量一次；桥 4 对。</li><li>大小：高吞吐四条的全链功率从 Sei 约 2.7×10⁷ 到 Monad 约 4.9×10⁸ gas / 秒；最终确认中位从约 0.2 秒（Solana，推的）到约 1,362 秒（X Layer，反方量的）；桥一程 803 到 1,141 秒。</li><li>时长：11 月 18 日、19 日；桥是一座桥、24 小时、一个方向。</li><li>量法：<span class="mth h-real">链上实录</span>（块头的上限和时间、finalized、桥的日志）；<span class="mth h-obj">节点模拟·对象是放上去的</span>（高吞吐链上的价、编译电路、单笔上限的估算和节点速度，代码用状态覆盖放进去）。<small class="mth-note">其中节点模拟的，对回执：MegaETH、Monad、Base、Sei <span class="tier t-not">没核</span>（第 0 章）</small></li></ul></dd>
+<dt>规则还是参数</dt><dd><span class="cat c-soft">会变</span>（各链的全链功率、最终确认要等多久、每秒能上链的字节，是各链的配置和运营方的节奏，2026-11-18、11-19 量的）。</dd>
+<dt>怎么算它错</dt><dd>还写不出（跨链桥只量到 4 对，判据要至少 100 对）。</dd>
+</dl>
+  <ul><li><b>量到的</b>（11-18、11-19，只读公开节点）：  <ul><li><b>量到的八条链的全链功率</b>（块头上限 ÷ 出块间隔；Arbitrum 的块头上限是占位，没算进去）合计，按最省的链状电路折门，每秒约 4.6×10¹⁰ 门次（推的），差 8.8 个数量级；要约 2.4×10⁹ 条（推的）最好的那种链才够。  <ul><li>6 gas 那档只有同时活着的线不超过 16 根的电路做得到。一般电路每 256 路 24–31 gas，合计约 1.0–1.3×10¹⁰（推的），差 9.4–9.5（汇总重跑过，和反方算的一样）。</li></ul>
 </li><li><b>最终确认要等多久</b>（中位）：  <ul><li>以太坊 966 秒；</li><li>Base 1,246 秒，OP 1,200 秒，Arbitrum 1,117 秒；</li><li>opBNB 13 秒，Polygon 3 秒，Avalanche 5 秒；</li><li>X Layer 约 1,362 秒（反方量的）；</li><li>BSC 约 2 块（反方量的），约 0.9 秒（推的：2 块 × 出块间隔）。</li><li>Solana（不是 EVM 链，只量了这一项）：同一次读里「已最终确认」只比「已处理」落后 1 个槽（中位），约 0.2 秒（推的：1 个槽 × 约 0.22 秒；槽长是这次的槽号对挂钟量的，比常见的 400 毫秒短：原文 SIMD-0525 把目标槽长分四步从 400 毫秒降到 200 毫秒，已在主网打开，哪一步没查到；量到的 0.216 秒像是已到 200 毫秒那一步，推的，用的是草案 SIMD-0630 推的约 217 毫秒）。按读的次数，分辨率约 1 秒，真时延 0–2 秒。</li></ul>
-</li><li><b>每拍都在 BSC 和 X Layer 之间来回的电路</b>：照中位算，一个来回约 1,364 秒，每秒最多约 7.3×10⁻⁴ 拍，离显卡级的拍率差 12.3 个数量级。最快的一次（两边各取最小）约 936 秒，差 12.15（反方算的）。</li><li><b>单向流水</b>的吞吐卡在每秒能上链的字节：BSC 约 4.2 MB，X Layer 约 0.63 MB。</li></ul>
-</li><li><b>高吞吐链</b>（MegaETH、Monad、Base、Sei，只读，都支持状态覆盖）：  <ul><li>价和以太坊一样，Monad 的内存按线性收费；编译电路每门 Monad 22.9 gas，别家 24.4。</li><li>全链功率：Monad 约 4.9×10⁸ gas / 秒，Base 2×10⁸，BSC 1.6×10⁸，Sei 2.7×10⁷。MegaETH 的块头上限不像真的，量不到。</li><li>节点给只读调用的上限各家不同，有的不说一声就截掉：Base 截在 6×10⁸，Sei 截在 2×10⁷，BSC 一家公开节点截在 5.5×10⁸；Monad 到 3×10⁸ 明着拒，MegaETH 到 10⁸ 回退。这是节点的上限，不是协议的单笔上限。</li><li>协议的单笔上限（只读估算）：  <ul><li>Base 也是 2²⁴，Sei 是 1,250 万（和文档一样）；</li><li>Monad 估到 10⁸ 都过。它的文档写单笔上限 3,000 万，又写只读调用和估算的上限由提供节点的一方自己设（默认 3,000 万），官方节点设得比 10⁸ 高，所以估算碰不到协议的单笔上限，记未决；</li><li>MegaETH 估到 10⁸ 都过、3×10⁸ 回退，和文档的 2 亿不矛盾，也只知道下限，记未决。</li></ul>
+</li><li><b>每拍都在 BSC 和 X Layer 之间来回的电路</b>：照中位算，一个来回约 1,364 秒（推的），每秒最多约 7.3×10⁻⁴ 拍，离显卡级的拍率差 12.3 个数量级。最快的一次（两边各取最小）约 936 秒，差 12.15（反方算的）。</li><li><b>单向流水</b>的吞吐卡在每秒能上链的字节：BSC 约 4.2 MB，X Layer 约 0.63 MB（反方用量过的常数算的）。</li></ul>
+</li><li><b>高吞吐链</b>（MegaETH、Monad、Base、Sei，只读，都支持状态覆盖）：  <ul><li>价和以太坊一样，Monad 的内存按线性收费；编译电路每门 Monad 22.9 gas，别的链 24.4。</li><li>全链功率：Monad 约 4.9×10⁸ gas / 秒，Base 2×10⁸，BSC 1.6×10⁸，Sei 2.7×10⁷。MegaETH 的块头上限不像真的，量不到。</li><li>节点给只读调用的上限各个节点不同，有的不说一声就截掉：Base 截在 6×10⁸，Sei 截在 2×10⁷，BSC 一个公开入口截在 5.5×10⁸；Monad 到 3×10⁸ 明着拒，MegaETH 到 10⁸ 回退。这是节点的上限，不是协议的单笔上限。</li><li>协议的单笔上限（只读估算）：  <ul><li>Base 也是 2²⁴，Sei 是 1,250 万（和文档一样）；</li><li>Monad 估到 10⁸ 都过。它的文档写单笔上限 3,000 万，又写只读调用和估算的上限由提供节点的一方自己设（默认 3,000 万），官方节点设得比 10⁸ 高，所以估算碰不到协议的单笔上限，记未决；</li><li>MegaETH 估到 10⁸ 都过、3×10⁸ 回退，和文档的 2 亿不矛盾，也只知道下限，记未决。</li></ul>
 </li><li>按位门这种纯计算，公开节点跟得上链：Base 的节点每秒约 1.4×10⁹ gas，链的功率只有它的 0.14；BSC 是 0.57。真块读写状态多，没量。另外三条在上限以内量不出节点速度。</li></ul>
 </li><li><b>跨链桥实际要等多久，只量到 4 对</b>：以太坊 → X Layer 官方桥，一程 803–1,141 秒，中位 944 秒。判要 ≥ 100 对，这里只记数，见下面「多链当电路看」。</li></ul>
   <p></p>
 
 </section>
+
 <div class="thread">
 <details class="dbt" data-for="red-chain-003">
-<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 定律二十七</span></summary>
-  <section class="box con" id="red-chain-003" aria-labelledby="red-chain-003-h" data-author="RED" data-id="red-chain-003" data-target="定律二十七" data-verdict="没推翻" data-date="2026-11-19" data-sha256="d25b8f107641dcf96937f9aae636ea820b7ea280527c1449e5879361367d63aa">
-    <header><span class="kind" id="red-chain-003-h">反方 · RED · 第 3 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#law-c0fcd7">定律二十七</a></span><time datetime="2026-11-19">2026-11-19</time></header>
-    <p class="said" data-sha256="65261983e1de8b999ae9245c8d95bf64682b6f2315262ec07025d654beaa6d1b">定律二十七说：能拆开的那部分才相加，最后合一次另付一次来回和字节；要安全地用对方的结果，每跨一次链至少等一次对方的最终确认；每拍都要来回的电路，拍率 f ≤ 1 ÷ L_往返。最早的写法漏了「安全地」这几个字：不等确认也能用，只是对方回退时这一程会错，漏了这几个字那句话就不对。正文已照我（反方）的意见补上，「相加」也改成只说能拆开的那部分。</p>
-    <p class="said" data-sha256="55ac50dabd1bc5ecc0067fab4ea5c770be880a1c39e9a76db4822ff5ddae72ae">这一条我没有另发请求，只用为定律十八连着盯的 24 小时数据（BSC、X Layer、以太坊各两家节点，每 10 秒读一次），先写判据再算。最终确认：BSC 约 2 块、约 0.9 秒；X Layer 934 / 1,362 / 1,712 秒；以太坊 756 / 948 / 1,152 秒（最小 / 中位 / 最大）。来回一次最少：BSC 和 X Layer 之间 15.6 分钟，X Layer 和以太坊之间 28.4 分钟，BSC 和以太坊之间 12.8 分钟；每拍都要来回的电路，离每秒 1.5×10⁹ 拍差 12.06–12.41 个数量级。</p>
+<summary><span class="dsl"><span class="dk">反方：</span><span class="vd held">没推翻</span></span><span class="dsep" aria-hidden="true">｜</span><span class="dsl"><span class="dk">正方：</span><span class="vd yes">认</span></span><span class="don">第 3 条 · 针对 观察 11.2</span></summary>
+  <section class="box con" id="red-chain-003" aria-labelledby="red-chain-003-h" data-author="RED" data-id="red-chain-003" data-target="观察 11.2" data-verdict="没推翻" data-date="2026-11-19" data-sha256="e592bab2c62fa73b9618b8f8174b2df83630849bc4fe957935bb68cee80dd8ba">
+    <header><span class="kind" id="red-chain-003-h">反方 · RED · 第 3 条</span><span class="vd held">没推翻</span><span class="on">针对 <a href="#obs-4f97f9">观察 11.2</a></span><time datetime="2026-11-19">2026-11-19</time></header>
+    <p class="said" data-sha256="2e31d1fe52e7b244e25c40d89e4c2853c0ae8b2a11226c0a8d5711eef522a875">恒等式「多链叠加」、观察 11.2（原定律二十七）说：能拆开的那部分才相加，最后合一次另付一次来回和字节；要安全地用对方的结果，每跨一次链至少等一次对方的最终确认；每拍都要来回的电路，拍率 f ≤ 1 ÷ L_往返。最早的写法漏了「安全地」这几个字：不等确认也能用，只是对方回退时这一程会错，漏了这几个字那句话就不对。正文已照我（反方）的意见补上，「相加」也改成只说能拆开的那部分。</p>
+    <p class="said" data-sha256="033fe20908393e17c1ce67e4d4359a4c66f9b91a13a1359300e4eb44d4f7fe3c">这一条我没有另发请求，只用为定律 6.1、6.2（原定律 6.2、6.3，原定律十八）连着盯的 24 小时数据（BSC、X Layer、以太坊各两个入口，每 10 秒读一次；BSC、X Layer 那两个各是同一运营方；以太坊那两个是 Allnodes 的 publicnode 和 llamarpc，llamarpc 背后是谁未决，不当一家），先写判据再算。最终确认：BSC 约 2 块、约 0.9 秒；X Layer 934 / 1,362 / 1,712 秒；以太坊 756 / 948 / 1,152 秒（最小 / 中位 / 最大）。来回一次最少：BSC 和 X Layer 之间 15.6 分钟，X Layer 和以太坊之间 28.4 分钟，BSC 和以太坊之间 12.8 分钟；每拍都要来回的电路，离每秒 1.5×10⁹ 拍差 12.06–12.41 个数量级。</p>
     <p class="said" data-sha256="30e3492eb74b1c61b42d75656cd20d6d603ec395b393e3e8b88408d0b99ed83c">正文的数和我的对得上：以太坊用 30 分钟量的中位 966 秒，落在我 24 小时的 5% 到 95%（780–1,128 秒）里；BSC 和 X Layer 来回一次差 12.31 个数量级，和我用中位数算的一样。跨链桥实际要等多久没量成，那一段我不判。按我先写的判据，没推翻。</p>
     <dl class="ev"><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="98e0193e4af5766760e5f71503d10eb62b13ea81a43ba3bcd853738c08ddc3ac">hc6red/hc6red_red.json</span><span class="ev-n" data-sha256="0a67eed94bbc4eb1a57eb62a790857b94508a8faf5ef9e10d16bced27f36afd4">三条链的最终确认、三对来回一次的下界、丙类拍率离显卡级差几个数量级</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="6f99fae71a158b06f23156715621f4d15e1ee2a8dd946aafec20677d56eceed8">finality/20261117_175803.jsonl.gz</span><span class="ev-n" data-sha256="20363dcaad3a63f9b5d41c264fc7e2c926d0c7c7b91a2859ddca9822f9149cc4">24 小时监视的前一段原始采样</span></dd></div><div class="evi"><dt>数据文件</dt><dd><span class="ev-v" data-sha256="44a02015bac1b35cc0652f96e16142e053d49ba04caea7d1d6515aac3f643d0a">finality/20261117_213150.jsonl.gz</span><span class="ev-n" data-sha256="9fb26bfc19d61f0953916e001df45ea1e800f6460591ab5156adec84664c2e53">24 小时监视的后一段原始采样</span></dd></div></dl>
-    <details class="revs"><summary>修订记录（1）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十六；框里的数和结论都没变</span></li></ol></details>
+    <details class="revs"><summary>修订记录（4）· RED 改的是自己这段</summary><ol><li><time datetime="2026-11-19">2026-11-19</time><span>改号：第 10 章四条定律各后移一号，本章三条跟着后移，这一条原来叫定律二十六；框里的数和结论都没变</span></li><li><time datetime="2026-11-19">2026-11-19</time><span>改号：书里的定律改成按章编号，原定律二十七拆成了恒等式「多链叠加」和观察 11.2，这一框核的是量到的数，挂在观察 11.2 上；框里引到的旧号都换成了新号，第一次出现处注了「原」；框里的数和结论都没变</span></li><li><time datetime="2026-11-22">2026-11-22</time><span>改号：K1、K2 都判未决（REVIEW_05 第 3.6.1 节第 2 支），第 6 章原定律 6.2、6.3 挪成 6.1、6.2，框里引的那一句照新号写成「定律 6.1、6.2」；框里的数和结论都没变</span></li><li><time datetime="2026-11-22">2026-11-22</time><span>改说法：照书里数家的规矩，同一运营方的几个入口不叫几家；「各两家节点」改成「各两个入口」，写明 BSC、X Layer 那两个各是同一运营方；以太坊那两个里 llamarpc 背后是谁未决，照同一条规矩只叫入口、不当一家。框里的数和结论都没变</span></li></ol></details>
   </section>
   <section class="box pro" id="och-chain-003" aria-labelledby="och-chain-003-h" data-author="OCH" data-to="red-chain-003" data-stance="认" data-date="2026-11-19">
     <header><span class="kind" id="och-chain-003-h">正方回应 · OCH</span><span class="vd yes">认</span><time datetime="2026-11-19">2026-11-19</time></header>
@@ -761,7 +811,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 
 
 </div>
-<h2 id="h-6e1218"><span class="secno"></span>多链当电路看（实验 HC15、HC16，判据先提交）</h2>  <ul><li>把几条链连起来看成一块电路板：链是带时钟的器件；总量固定的代币像电荷，能增发、销毁的，发行方就是源和汇；跨链桥像一段带缓冲的延迟线（在途就是第 6 章说的弹性缓冲）；对数价格像电势。这是直觉，不当论证；下面三条是照这个类比挑出来、能量的。</li><li><b>桥守恒：带储存的连续方程（在途不变时就是电流定律）</b>（以太坊 → X Layer 官方桥；一座桥、24 小时、一个方向）：  <ul><li>锁进 − 铸出 = 在途的变化；每一笔铸出都要对得上一笔锁进。</li><li>24 小时里去 X Layer 的存入只有 5 笔：配上 4 笔，原链号、原代币、金额、收款地址都一样；1 笔在途；对不上 0 笔。判没推翻，样本很薄，只记数。</li><li>能核的三项都过（序号连续、两个控制、没丢日志）；对照节点和另一条日志这次都没东西可核。</li><li>一程 803–1,141 秒，中位 944 秒，都长于以太坊两个 epoch（768 秒）。和第 6 章定律十八对得上（只有 4 对；量的是从存入到认领，不是最终确认的落后）。</li><li>这是工程约定，不是自然律：桥会被盗；X Layer 那头的桥合约还有几种管理员角色，能合法地清掉认领记录、把记出桥存款的那棵默克尔树往回退、把币换成不经过桥发行的合约。这次这几种管理事件 0 条。</li><li>以太坊那头一个合约装着这座桥上所有链的钱，不分链，「锁着的 = 对方发出去的」这一项量不到。</li></ul>
+<h2 id="h-6e1218"><span class="secno"></span>多链当电路看（实验 HC15、HC16，判据先提交）</h2>  <ul><li>把几条链连起来看成一块电路板：链是带时钟的器件；总量固定的代币像电荷，能增发、销毁的，发行方就是源和汇；跨链桥像一段带缓冲的延迟线（在途就是第 6 章说的弹性缓冲）；对数价格像电势。这是直觉，不当论证；下面三条是照这个类比挑出来、能量的。</li><li><b>桥守恒：带储存的连续方程（在途不变时就是电流定律）</b>（以太坊 → X Layer 官方桥；一座桥、24 小时、一个方向）：  <ul><li>锁进 − 铸出 = 在途的变化；每一笔铸出都要对得上一笔锁进。</li><li>24 小时里去 X Layer 的存入只有 5 笔：配上 4 笔，原链号、原代币、金额、收款地址都一样；1 笔在途；对不上 0 笔。判没推翻，样本很薄，只记数。</li><li>能核的三项都过（序号连续、两个控制、没丢日志）；对照节点和另一条日志这次都没东西可核。</li><li>一程 803–1,141 秒，中位 944 秒，4 对都长于以太坊两个 epoch（768 秒，推的）；样本不够，判据要至少 100 对，不判。量的是从存入到认领，不是最终确认的落后。</li><li>这是工程约定，不是自然律：桥会被盗；X Layer 那头的桥合约还有几种管理员角色，能合法地清掉认领记录、把记出桥存款的那棵默克尔树往回退、把币换成不经过桥发行的合约。这次这几种管理事件 0 条。</li><li>以太坊那头一个合约装着这座桥上所有链的钱，不分链，「锁着的 = 对方发出去的」这一项量不到。</li></ul>
 </li><li><b>无套利，像电压定律</b>（BSC 上两个三角环）：  <ul><li>有手续费和 gas 时，绕一圈的对数价格之和 S 落在一条带子里：|S| ≤ 三次手续费 + 一次套利的 gas ÷ 能吃下的成交量。这次只算了手续费那一项（3 × (−ln(1 − 0.25%)) ≈ 0.0075）：两个环都在这条窄的里，就一定在宽的里。</li><li>两个环各 200 块（约 90 秒），绕一圈的对数价格都稳在手续费带子里、离边很远，而且一直偏一个方向（一个 −0.096%，一个 +0.215%；反着走一圈，符号就反过来）。只说这两个环、这两段平静的 90 秒。</li><li>照「不收费时 S = 0」的严格写法，两个环都一直差 0.1–0.2%：要写的是带子，不是等于零。</li><li>两个环正方、反方各挑一个，程序各写各的。</li></ul>
 </li><li><b>在途核账（Little 定律；排队论里的名字，不是本书编号的定律）</b>：平均在途笔数 Q ≈ 到达率 λ × 平均在途时长 t̄_在途。  <ul><li>这是恒等式：东西不丢，它就成立。核的是账和时段两头，不是物理，不给定律号。</li><li>同一座桥那 5 笔：λ × t̄_在途（在途那笔算到量完那一刻）= 0.973，等于窗里的 Q（0.714）加窗后还没落地那部分（0.258），账对上。</li><li>只看窗里，Q 比 λ × t̄_在途 少约 27%，差的全是窗后那 1 笔在途的尾巴。5 笔太少，只能核账。</li></ul>
 </li></ul>
@@ -783,7 +833,7 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
       <tr><th scope="row">10 甲</th><td>节点配刻死的专用芯片</td><td>0（照显卡尺寸刻，推的）</td><td>5.77（我们设计、没流片的一颗 55 纳米芯片）</td><td>到得了（推的）：只对刻进去那一份网表</td></tr>
       <tr><th scope="row">10 乙</th><td>节点配能装任意网表的执行引擎</td><td>没做，没数</td><td class="r">—</td><td>不判</td></tr>
       <tr><th scope="row">11</th><td>分片：不是每台节点都算每一块</td><td>要分 4.1×10⁷ 组以上（见下面「突破一台节点」甲）</td><td>单份不受益</td><td>推的</td></tr>
-      <tr><th scope="row">12</th><td>叠加</td><td>见定律二十七</td><td class="r">—</td><td>吞吐能拆开的成立，单份不成立（推的）</td></tr>
+      <tr><th scope="row">12</th><td>叠加</td><td>见恒等式「多链叠加」</td><td class="r">—</td><td>吞吐能拆开的成立，单份不成立（推的）</td></tr>
     </tbody></table></div>
   <p><span class="cite">hc5·paths</span></p>
   <p>背后的量（都是测量机上量的，或本书配套的一颗芯片设计给的，不是链上的节点）：</p>
@@ -792,8 +842,8 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </li><li><b>刻死的芯片</b>（本书配套的一颗芯片设计给的数，推的，55 nm、布线后估的、典型角、没签核、没流片）：约 4.4–5.1×10¹³ 网表门次 / 秒，只对那一份网表成立。</li></ul>
   <p><span class="cite">hc5·cpu_netlist、hc5·paths、hc12·beyond</span></p>
 
-<h2 id="h-159fe7"><span class="secno"></span>单笔上限和接力（实验 HC11）</h2>  <ul><li><b>单笔上限有两种，管的事不一样</b>：  <ul><li>协议的单笔上限，管能不能发出去。BSC 是 2²⁴ = 16,777,216，只读核实过：估算的报错原文是「gas required exceeds allowance (16777216)」。X Layer 没有单笔这一条，单笔上限等于块上限 2.1 亿，是按协议推的：试到的最大是第 4 章，两家官方节点估到约 1 亿都放行；X Layer 这一节估到 2,000 万都过，没往上试。</li><li>节点自己给只读调用的上限，管的是只读调用能跑多少。它和发不发得出去无关。</li></ul>
-</li><li><b>想绕过单笔上限，就得把一份状态拆到几笔里接力</b>，每跳要把状态带过去：  <ul><li>每跳 ≈ 21,000 + max(16 × 非零字节 + 4 × 零字节 + 执行 gas，10 × (零字节 + 4 × 非零字节))；</li><li>后一项是 EIP-7623 的地板价，两条链都起作用。纯接力时执行 gas 很小，卡在地板价上，非零字节每个 40 gas。执行 gas 大时地板价不起作用。</li><li>原来那条式子（每字节 16 gas）被推翻了：量的最多是它的 2.4 倍（状态 64 KB 时）。</li></ul>
+<h2 id="h-159fe7"><span class="secno"></span>单笔上限和接力（实验 HC11）</h2>  <ul><li><b>单笔上限有两种，管的事不一样</b>：  <ul><li>协议的单笔上限，管能不能发出去。BSC 是 2²⁴ = 16,777,216，只读核实过：估算的报错原文是「gas required exceeds allowance (16777216)」。X Layer 没有单笔这一条，单笔上限等于块上限 2.1 亿，是按协议推的：试到的最大是第 4 章，OKX 的两个官方入口估到约 1 亿都放行；X Layer 这一节估到 2,000 万都过，没往上试。</li><li>节点自己给只读调用的上限，管的是只读调用能跑多少。它和发不发得出去无关。</li></ul>
+</li><li><b>想绕过单笔上限，就得把一份状态拆到几笔里接力</b>，每跳要把状态带过去：  <ul><li>每跳 ≈ 21,000 + max(16 × 非零字节 + 4 × 零字节 + 执行 gas，10 × (零字节 + 4 × 非零字节))；</li><li>后一项是 EIP-7623 的地板价，两条链都起作用。纯接力时执行 gas 很小，卡在地板价上，非零字节每个 40 gas（EIPs · EIPS/eip-7623 · b055feec 第 30–33 行）。执行 gas 大时地板价不起作用。</li><li>原来那条式子（每字节 16 gas）被推翻了：量的最多是它的 2.4 倍（状态 64 KB 时）。</li></ul>
 </li><li>所以接力把单笔上限换成了每字节的价：一份状态有 S 字节，每跳至少多付约 16 × S gas；纯接力时卡在地板价上，约 40 × S gas。</li><li>它抬的是一次能算多大，不是每秒能算多少：链每秒能算多少（块上限 ÷ 出块间隔）一点没变。</li></ul>
   <p><span class="cite">hc11·relay、hc11·verdict、判据·HC11</span></p>
 
@@ -804,13 +854,13 @@ a.rmgo:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
 </li></ul>
   <p><span class="cite">hc7·inet_evm、hc7·fraud、判据·HC7</span></p>
 
-<h2 id="h-755361"><span class="secno"></span>突破一台节点（实验 HC12）</h2>  <ul><li><b>总式</b>：R ≲ (N_验 ÷ k) × R_硬 ÷ 税_实。N_验 是验证者数，k 是每份计算有几台重算（现在 k = N_验，人人重算）。突破一台节点只有两个办法：压 k，或压税_实。这条只管硬件那一半；规则那一半（每组的 P·n）照定律二十五另算，所以它是更松的上界。</li><li><b>它只管能拆开的那部分吞吐</b>（反方先攻时提的）：一份显卡级电路拆到几组，每拍就要等组间确认（定律二十六、二十七）。所以「突破一台节点」对吞吐成立，对单份不成立。</li><li><b>甲 随机小组重算，压 k</b>：  <ul><li><b>JAM</b>（灰皮书常数推的上界，主网没上）：341 个核，每核每 6 秒能算参考硬件 5 秒的量。  <ul><li>照每周期最多 4 条 64 位指令、一个与非门 1–2 条折，341 核合计每秒最多约 3.4×10¹⁴ 门次，差至少 4.9 个数量级；</li><li>一份电路只在一个核里，单份每秒最多约 10¹² 门次，差至少 7.5。这是上限：一份状态每层要有 64 个以上互不相干、位对得齐的门，64 路才用得满，最坏只剩 1/64；</li><li>这只对线少到全放得进寄存器的电路（定律二十一的链状）；一般电路要读写内存，读写内存 25 周期（源文件注释说是临时的），不写数。</li><li>每份活有 3 个担保人加约 30 个审计重算，k 约 33 起（推的）。</li></ul>
+<h2 id="h-755361"><span class="secno"></span>突破一台节点（实验 HC12）</h2>  <ul><li><b>总式</b>：R ≲ (N_验 ÷ k) × R_硬 ÷ 税_实。N_验 是验证者数，k 是每份计算有几台重算（现在 k = N_验，人人重算）。突破一台节点只有两个办法：压 k，或压税_实。这条只管硬件那一半；规则那一半（每组的 P·n）照恒等式「链本身执行」另算，所以它是更松的上界。</li><li><b>它只管能拆开的那部分吞吐</b>（反方先攻时提的）：一份显卡级电路拆到几组，每拍就要等组间确认（观察 11.1、恒等式「多链叠加」）。所以「突破一台节点」对吞吐成立，对单份不成立。</li><li><b>甲 随机小组重算，压 k</b>：  <ul><li><b>JAM</b>（灰皮书常数推的上界，主网没上）：341 个核，每核每 6 秒能算参考硬件 5 秒的量。  <ul><li>照每周期最多 4 条 64 位指令、一个与非门 1–2 条折，341 核合计每秒最多约 3.4×10¹⁴ 门次，差至少 4.9 个数量级；</li><li>一份电路只在一个核里，单份每秒最多约 10¹² 门次，差至少 7.5。这是上限：一份状态每层要有 64 个以上互不相干、位对得齐的门，64 路才用得满，最坏只剩 1/64；</li><li>这只对线少到全放得进寄存器的电路（观察 10.1 的链状）；一般电路要读写内存，读写内存 25 周期（源文件注释说是临时的），不写数。</li><li>每份活有 3 个担保人加约 30 个审计重算，k 约 33 起（推的）。</li></ul>
 </li><li><b>NEAR</b>（主网量的容量，每 gas 顶几门是推的）：  <ul><li>10 片，0.568 秒一块，每片每块上限 1,000 Tgas；实际用量（40 块、每隔 25 块取一块，共 400 个分块）平均是上限的 0.84%，中位 2.1 Tgas（0.21%）；</li><li>照每条 wasm 指令 822,756 gas、一个与非门 6–9 条指令折（和 ICP 同一个数法：取数、存数、常数各算一条；NEAR 不许用 SIMD，只有 64 路），合计每秒 1.5–2.3×10¹¹ 门次，差 8.1–8.3；单份在一片里，差 9.1–9.3。都是 64 路用满的上限，单份最坏低到 1/64。</li><li>NEAR 的 gas 按时间定价，不和 EVM 的 gas 直接换算。</li></ul>
 </li><li><b>压 k 是拿安全换的</b>（推的）：  <ul><li>NEAR 每片要那片质押 2/3 的背书，背书就是终审，不回滚，NEAR 自己假设坏人不超过 1/3。</li><li>照它把全部份额洗牌平分给各片的分法算：坏人占 1/3 时，现在每片 105 份，一片被坏人凑够 2/3 的概率约 10⁻¹³·⁸；十片每块重分一次，每年平均约 10⁻⁵ 次。</li><li>2024 年那版每片 68 份，同样算法每年约 0.36 次；坏人占 20% 时，105 份每年约 5×10⁻²¹ 次。</li><li>份额按质押分、大户占好几份，模型只当坏人占全部份额的 1/3，是简化。</li></ul>
 </li><li><b>加片时每片会不会变小</b>：量不到。NEAR 自己的归档节点两次都限流，只读到 2 点（都是 9 片）。</li></ul>
-</li><li><b>乙 一人证明，人人只验，k 约等于 1</b>：协议上不封顶，天花板换成证明者集群和带宽（第 10 章定律二十三）。  <ul><li>带宽：以太坊 blob 实际每秒约 7.1 万字节，显卡级要每输入字节约 4.2×10¹⁴ 门次。</li><li>证明者集群，两条路分开写：  <ul><li>走 zkEVM，证「编成 EVM 的门」，最费：照外部自报「实时证明一块要 4 张显卡」按比例推（未核），证每秒 1.5×10¹¹ gas 要约 1.2×10⁵ 张，证显卡级（照 EVM 最省那档折成 gas）要约 5.6×10¹¹ 张；</li><li>直接证门电路：照测量机上同一个证明库，证明比算慢 3×10³–7×10⁵ 倍（反方量的），集群要显卡级的 10³–10⁶ 倍。</li></ul>
+</li><li><b>乙 一人证明，人人只验，k 约等于 1</b>：协议上不封顶，天花板换成证明者集群和带宽（第 10 章规则推论「链上验证」）。  <ul><li>带宽：以太坊 blob 实际每秒约 7.1 万字节，显卡级要每输入字节约 4.2×10¹⁴ 门次。</li><li>证明者集群，两条路分开写：  <ul><li>走 zkEVM，证「编成 EVM 的门」，最费：照外部自报「实时证明一块要 4 张显卡」按比例推（未核），证每秒 1.5×10¹¹ gas 要约 1.2×10⁵ 张，证显卡级（照 EVM 最省那档折成 gas）要约 5.6×10¹¹ 张；</li><li>直接证门电路：照测量机上同一个证明库，证明比算慢 3×10³–7×10⁵ 倍（反方量的），集群要显卡级的 10³–10⁶ 倍。</li></ul>
 </li></ul>
-</li><li><b>丙 原生重编译，压税_实</b>：只压节点比原生那一段（税_实，8.5–60 倍）；价目那一段（税_价，BSC 约 1.9 倍）是规则，要改规则才动。JAM 把 gas 定成参考硬件的周期，对参考硬件，税_价约 1（原文常数推的）。</li><li><b>丁 专为门电路的链加网表芯片</b>：  <ul><li>我们设计的那种芯片只刻死一份网表，换电路要重新流片；能装任意网表的引擎没做、没数。</li><li>照每颗每秒 4.4–5.1×10¹³ 门次（推的），到显卡级要约 5.9–6.8×10⁵ 颗并排算互不相干的活，功耗约 1.0–1.2×10⁵ 瓦（估的，片上 ROM 不算在内），每份还要乘重算次数 k。不是一颗显卡级电路。</li></ul>
+</li><li><b>丙 原生重编译，压税_实</b>：只压节点比原生那一段（税_实，8.5–60 倍）；价目那一段（税_价，BSC 约 1.9 倍）会变：跟着节点速度和 P 走；改价目、块上限或出块间隔会动它，换快的机器也会。JAM 把 gas 定成参考硬件的周期，对参考硬件，税_价约 1（原文常数推的）。</li><li><b>丁 专为门电路的链加网表芯片</b>：  <ul><li>我们设计的那种芯片只刻死一份网表，换电路要重新流片；能装任意网表的引擎没做、没数。</li><li>照每颗每秒 4.4–5.1×10¹³ 门次（推的），到显卡级要约 5.9–6.8×10⁵ 颗并排算互不相干的活，功耗约 1.0–1.2×10⁵ 瓦（估的，片上 ROM 不算在内），每份还要乘重算次数 k。不是一颗显卡级电路。</li></ul>
 </li><li><b>判定</b>（推的）：  <ul><li>突破一台节点，对能拆开的吞吐成立：JAM 的上界比现在一条 BSC 近约 4.7 个数量级，NEAR 近约 1.5；</li><li>对单份不成立；</li><li>乙在协议上不封顶，代价是证明者集群（显卡级的 10³–10⁶ 倍以上）和带宽。</li></ul>
 </li></ul>
   <p><span class="cite">hc12·beyond、hc12·near、判据·HC12</span></p>
